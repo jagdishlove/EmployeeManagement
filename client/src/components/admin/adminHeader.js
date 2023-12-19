@@ -12,7 +12,6 @@ import { adminHeaderStyle } from "./approvalTimesheets/adminHeaderStyle.js";
 import TimesheetTab from "./approvalTimesheets/timesheetTab.js";
 
 const AdminHeader = () => {
-  console.log("hello");
   const theme = useTheme();
   const style = adminHeaderStyle(theme);
   const role = useSelector((state) => state?.persistData.data.role);
