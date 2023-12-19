@@ -1,0 +1,124 @@
+ .dashedBorderStyle{
+    border: 2px dashed rgba(0, 128, 128, 0.4) !important;
+    padding:20px;
+    border-radius: 20px;
+  }
+
+   .holidayListStyle{
+    background-color: #D4D7E3;
+    border-radius: 20px;
+    padding:20px;
+    
+   } 
+
+  
+  .gridspace{
+    border: 2px dashed rgba(0, 128, 128, 0.4) !important;
+    padding:20px;
+    margin-bottom: 40px !important;
+    border-radius: 20px;  
+  }
+.leaveRequestForm{
+  color:  rgba(0, 128, 128, 128);
+  text-align: center;
+  font-weight: bold;
+  text-decoration: underline;
+  word-spacing: 2.5px;
+  padding-bottom:20px;
+ 
+}
+.leaveBalance{
+  color:  rgba(0, 128, 128, 128);
+  text-align: center;
+  font-weight: bold;
+  text-decoration: underline;
+  padding-bottom: 20px;
+  word-spacing: 2.5px;
+}
+.holidayListHeader{
+    color:  rgba(0, 128, 128, 128);
+    text-align: center;
+    font-weight: bold;
+    
+}
+.holidayListTitle{
+    color:#000000;
+    text-align: center;
+  font-weight: bold;
+  padding: 20px 0px 10px 0px;
+  text-decoration: underline;
+}
+.holidayListTitle01{
+    color:#000000;
+    text-align: center;
+  font-weight: bold;
+  padding: 50px 0px 10px 0px;
+  text-decoration: underline;
+}
+
+.holidaylist{
+    text-decoration: none !important;
+    line-height: 15px;
+}
+
+
+.grid{
+        display: flex;
+        justify-content: center;
+        height: 100%;
+        border: 2px dashed  rgba(0, 128, 128, 0.4);
+        border-radius: 15px;
+    
+}
+.gridforLeaveRequestForm{
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    padding: 0;
+    border: 2px dashed  rgba(0, 128, 128, 0.4);
+    border-radius: 15px;
+}
+.holidayList{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;       
+}
+.holidayTypo{
+    color:  rgba(0, 128, 128, 128);
+    text-align: center;
+    font-weight: bold;
+    text-decoration: underline;
+    word-spacing: 2.5px;
+}
+.leaveHistory{
+    display: flex;
+    justify-content: center;
+    border: 2px dashed  rgba(0, 128, 128, 0.4);
+    
+}
+.leaveHistorycol{
+    border: 2px dashed  white;
+   
+    
+}
+.leaveHistoryrow{
+    border:2px dashed rgba(0, 128, 128, 0.4);
+    border-right:none;
+    font-size:80%;
+    font-weight: bold;
+    font-family:Impact, Haettenschweiler, 'Arial ', sans-serif;
+    background-color: rgba(0, 128, 128, 128);
+    color: white;
+}
+.leaveHistoryline{
+    color: rgba(0, 128, 128, 0.4) ; 
+    border-top: 1px solid rgba(0, 128, 128, 0.4);
+}
+.leaveHistorycolumn{
+    border: 2px dashed  rgba(0, 128, 128, 0.4);
+}
+.verticalLine{
+    color: rgba(0, 128, 128, 0.4) ; 
+    border-top: 1px solid rgba(0, 128, 128, 0.4);
+}
