@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  CircularProgress,
-  Dialog,
-} from "@mui/material";
+import { Box, CircularProgress, Dialog } from "@mui/material";
 import { LocalizationProvider, StaticDatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
@@ -19,7 +15,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 
 const ApprovalLeavesPage = () => {
   const dispatch = useDispatch();
-  const { getLeaveData, getLeaveLoading } = useSelector(
+  const { getLeaveData } = useSelector(
     (state) => state.nonPersist.approvalLeavesData
   );
 
@@ -85,15 +81,15 @@ const ApprovalLeavesPage = () => {
     fromDate: dateData === "CALENDER" ? selectedDate.format("YYYY-MM-DD") : "",
     toDate: dateData === "CALENDER" ? dayjs().format("YYYY-MM-DD") : "",
     dateBand: dateData,
-    size: 2*counter
-  }
+    size: 2 * counter,
+  };
 
   const fetchData = async () => {
-      if (TeamMemberData || dateData === "CALENDER") {
-       dispatch(getLeaveRequestData(payload))
-      } 
-    } 
-  
+    if (TeamMemberData || dateData === "CALENDER") {
+      dispatch(getLeaveRequestData(payload));
+    }
+  };
+
   useEffect(() => {
     if (dateData === "CALENDER") {
       return;
@@ -103,20 +99,18 @@ const ApprovalLeavesPage = () => {
     }, 500);
   }, [TeamMemberData, dateData, selectedDate]);
 
-
   const teamMemberSelectHandler = (e) => {
     setTeamMemberData(e.target.value);
   };
 
-  const approveRejectLeavesHandler = async (id, status, approverComment) => {
+  const approveRejectLeavesHandler = (id, status, approverComment) => {
     const payload = {
       leaveRequestId: id,
       approverComment,
       status,
     };
-      await dispatch(approveRejectLeavesAction(payload));
-      fetchData();
-
+    dispatch(approveRejectLeavesAction(payload));
+    fetchData();
   };
 
   const shouldDisableDate = (date) => {
@@ -124,10 +118,11 @@ const ApprovalLeavesPage = () => {
   };
 
   const fetchMore = () => {
+    // Fetch more data only if there is more data available
     dispatch(getLeaveRequestData(payload));
-    setCounter(counter + 1);
+    const nextPage = counter + 1;
+    setCounter(nextPage);
   };
-  
 
   return (
     <Box>
@@ -163,30 +158,26 @@ const ApprovalLeavesPage = () => {
       ) : (
         <InfiniteScroll
           dataLength={getLeaveData?.content?.length || 0}
-          hasMore={true}
+          hasMore={getLeaveData?.totalElements > getLeaveData?.content.length}
           next={fetchMore}
         >
-          {getLeaveData.content ? (
-            getLeaveData.content.map((cardData) => (
+          {getLeaveData ? (
+            getLeaveData?.content?.map((cardData) => (
               <Box key={cardData.leaveRequestId}>
-                {getLeaveLoading ? (
-                  <Box mt={5} sx={{ display: "flex", justifyContent: "center" }}>
-                    <CircularProgress />
-                  </Box>
-                ) : (
-                  <DataCard
-                    key={cardData.leaveRequestId}
-                    cardData={cardData}
-                    approveRejectLeavesHandler={approveRejectLeavesHandler}
-                  />
-                )}
+                <DataCard
+                  key={cardData.leaveRequestId}
+                  cardData={cardData}
+                  approveRejectLeavesHandler={approveRejectLeavesHandler}
+                />
               </Box>
             ))
-          ) : null}
+          ) : (
+            <Box mt={5} sx={{ display: "flex", justifyContent: "center" }}>
+              <CircularProgress />
+            </Box>
+          )}
         </InfiniteScroll>
       )}
-
-
     </Box>
   );
 };
