@@ -154,7 +154,7 @@ const LoginForm = () => {
             Sign in to start managing your projects.
           </Typography>
         </Box>
-        <Box sx={style.inputBox1}>
+        <Box component={"form"} onSubmit={handleSubmit} sx={style.inputBox1}>
           <InputFields
             styling="true"
             label="Email"
@@ -201,7 +201,6 @@ const LoginForm = () => {
               color="secondary"
               variant="contained"
               type="submit"
-              onClick={handleSubmit}
             >
               <Typography variant="h5" color="primary">
                 Sign In
@@ -215,7 +214,6 @@ const LoginForm = () => {
               color="primary"
               variant="contained"
               type="submit"
-              onClick={handleSubmit}
             >
               <Typography variant="h6" color="secondary">
                 Sign In
