@@ -132,7 +132,7 @@ const LeaveHistory = ({
       leaveMasterId: data.leaveMasterId,
       comments: data.comments,
       manager: managerData.managerName || "",
-      cc: JSON.parse(data.cc),
+      cc: JSON.parse(data.cc) || "",
     });
 
     setDisableSave(data.status);

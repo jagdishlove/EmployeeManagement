@@ -76,42 +76,30 @@ const HistoryCalendar = ({
   const changeMonthAccordingly = () => {
     const currentYear = moment().year();
     const yearList = [];
-    
-  let startYear, endYear;
-
-  if (selectedMonth <= moment().month()) {
-    // If the selected month is less than or equal to the current month,
-    // include the current year
-    startYear = currentYear;
-    endYear = currentYear;
-  } else {
-    // If the selected month is in the future, include the current year and the next year
-    startYear = currentYear;
-    endYear = currentYear + 1;
-  }
-
-  for (let year = startYear; year <= endYear; year++) {
-    yearList.push(year);
-  }
   
-
-    setYears(yearList);
-
-    const monthList = [];
-    const currentMonth = moment().month();
-    let startMonth;
-    let endMonth;
-
-    if (currentMonth < 11) {
-      // If current month is before December, include months from the current month to December of the previous year
-      startMonth = 0; // Start from the current month
-      endMonth = currentMonth; // December
+    let startYear, endYear;
+  
+    if (selectedMonth <= moment().month()) {
+      // If the selected month is less than or equal to the current month,
+      // include the current year
+      startYear = currentYear;
+      endYear = currentYear;
     } else {
-      // If current month is December, include months from January to the current month of the current year
-      startMonth = currentMonth; // January
-      endMonth = 11; // Current month
+      // If the selected month is in the future, include the current year and the next year
+      startYear = currentYear - 1; // Subtract 1 to include the last 12 months
+      endYear = currentYear;
     }
-
+  
+    for (let year = startYear; year <= endYear; year++) {
+      yearList.push(year);
+    }
+  
+    setYears(yearList);
+  
+    const monthList = [];
+    const startMonth = selectedMonth <= moment().month() ? 0 : moment().month();
+    const endMonth = moment().month();
+  
     for (let month = startMonth; month <= endMonth; month++) {
       const date = moment().year(selectedYear).month(month).startOf("month");
       monthList.push({
@@ -119,9 +107,12 @@ const HistoryCalendar = ({
         label: date.format("MMMM"),
       });
     }
-
+  
     setMonths(monthList);
   };
+  
+  
+  
 
   useEffect(() => {
     getHistoryData(selectedMonth, selectedYear);

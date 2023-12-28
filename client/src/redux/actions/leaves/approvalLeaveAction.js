@@ -141,9 +141,6 @@ export const getLeaveRequestData = (data) => {
         dispatch(getRefreshToken());
       } else if (err.response.data.errorCode === 500) {
         dispatch(getLeaveRequestFail(err.response.data.errorMessage));
-        toast.error(err.response.data.errorMessage, {
-          position: toast.POSITION.BOTTOM_CENTER,
-        });
       }
     }
   };
@@ -174,9 +171,6 @@ export const approveRejectLeavesAction = (data) => {
       }
       // Handle 403 error here
       // For example, you can dispatch an action to update the state
-      toast.error(err.response.data.errorMessage || err.response.data, {
-        position: toast.POSITION.BOTTOM_CENTER,
-      });
       dispatch(approveLeavesFail(err.response.data.errorMessage));
     }
   };

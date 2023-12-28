@@ -3,24 +3,23 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import dayjs from 'dayjs';
 
-const HiddenDataCard = ({ cardData, approveRejectLeavesHandler }) => {
+const HiddenDataCard = ({ cardData, approveRejectLeavesHandler  ,approval,error,leaveRequest}) => {
 
-  const [comment, setComment] = useState(''); 
+  const [comments, setComments] = useState({});
+    /* eslint-disable no-unused-vars */
+    const [isApprovedOrRejected, setIsApprovedOrRejected] = useState(false);
 
-  const [error, setError] = useState('');
 
   const masterData = useSelector((state) => state?.persistData?.masterData)
 
   
 
-  const handleApproval = (status) => {
-    if (!comment.trim()) {
-      setError('Please add details in the comments section.');
-      return;
-    }
-    setError('');
-    approveRejectLeavesHandler(cardData.leaveRequestId, status, comment);
+  const handleApproval = (status, leaveRequestId,comments) => {
+
+    approveRejectLeavesHandler(leaveRequestId, status, comments);
+    setIsApprovedOrRejected(true);
   };
+
 
   const getLeaveType = (leaveMasterId) => {
     const leaveTypeObject = masterData?.leaveTypes?.find(
@@ -71,7 +70,7 @@ const HiddenDataCard = ({ cardData, approveRejectLeavesHandler }) => {
           <TextField
             fullWidth
             label="From"
-            value={dayjs(cardData.fromDate).format('ddd, MMM D, YYYY')}
+            value={dayjs(cardData.fromDate).format('ddd, DD-MMM-YY')}
             variant="outlined"
             disabled
           />
@@ -80,7 +79,7 @@ const HiddenDataCard = ({ cardData, approveRejectLeavesHandler }) => {
           <TextField
             fullWidth
             label="To"
-            value={dayjs(cardData.toDate).format('ddd, MMM D, YYYY')}
+            value={dayjs(cardData.toDate).format('ddd, DD-MMM-YY')}
             variant="outlined"
             disabled
           />
@@ -179,8 +178,13 @@ const HiddenDataCard = ({ cardData, approveRejectLeavesHandler }) => {
           fullWidth
           label="Comments"
           variant="outlined"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
+          value={comments[cardData.leaveRequestId] || ''}
+                  onChange={(e) =>
+                    setComments((prevComments) => ({
+                      ...prevComments,
+                      [cardData.leaveRequestId]: e.target.value,
+                    }))
+                  }
           multiline
           rows={10}
         />
@@ -219,9 +223,8 @@ const HiddenDataCard = ({ cardData, approveRejectLeavesHandler }) => {
                 color:'white'
               }
             }}
-            onClick={() =>
-              handleApproval("APPROVED")
-            }
+            onClick={() => handleApproval("APPROVED", cardData.leaveRequestId)}
+
           >
             APPROVE
           </Button>
@@ -256,9 +259,8 @@ const HiddenDataCard = ({ cardData, approveRejectLeavesHandler }) => {
 
               },
             }}
-            onClick={() =>
-              handleApproval("REJECTED")
-            }
+            onClick={() => handleApproval("REJECTED", cardData.leaveRequestId)}
+
           >
             REJECT
           </Button>
@@ -274,23 +276,18 @@ const HiddenDataCard = ({ cardData, approveRejectLeavesHandler }) => {
         gap={2}
         style={{ marginTop: 10, position: "relative" }}
       >
-        {error && (
-          <p
-            className="error-message"
-            style={{
-              color: "red",
-              marginLeft: 20,
-              fontSize: "14px",
-              textAlign: "left",
-              position: "absolute",
-              top: 0, // Adjust the top property
-              left: 0,
-              width: "100%", // Ensure the message spans the entire width
-            }}
-          >
-            {error}
-          </p>
-        )}
+        {approval &&  (
+                <>
+                {cardData?.leaveRequestId === leaveRequest && (
+  <Grid style={{ width: '100%' }}>
+    <p style={{ color: 'red', position: 'absolute', width: '100%' ,fontSize:'14.5px',lineHeight:'20px'}}>
+      {error}
+    </p>
+  </Grid>
+)}
+
+                </>
+              )}
       </Grid>
 
     </Grid>

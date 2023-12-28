@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Box, CircularProgress, Dialog } from "@mui/material";
+import { Box, CircularProgress, Dialog, Typography } from "@mui/material";
 import { LocalizationProvider, StaticDatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+import React, { useEffect, useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 import { useDispatch, useSelector } from "react-redux";
 import {
   approveRejectLeavesAction,
@@ -11,7 +12,6 @@ import {
 } from "../../../redux/actions/leaves/approvalLeaveAction";
 import DataCard from "./DataCard";
 import ApprovalLeaveHeader from "./approvalLeaveHeader";
-import InfiniteScroll from "react-infinite-scroll-component";
 
 const ApprovalLeavesPage = () => {
   const dispatch = useDispatch();
@@ -25,28 +25,30 @@ const ApprovalLeavesPage = () => {
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [counter, setCounter] = useState(2);
 
+  const [errorValidation, setErrorValidation] = useState({});
+
+  const [leaveRequestId,setLeaveRequestId] = useState();
+
+  const [error,setError] = useState('')
+
   const newSize = 5 * counter;
 
-  useEffect(() => {
-    const payload = {
-      fromDate: "",
-      toDate: "",
-      dateBand: dateData,
-    };
+  
 
+  useEffect(() => {
     if (dateData === "CALENDER") {
       const currentDate = dayjs().format("YYYY-MM-DD");
       payload.fromDate = selectedDate.format("YYYY-MM-DD");
       payload.toDate = currentDate;
-      setIsOpenCalender(true);
     }
 
-    setTeamMemberData("All");
+
 
     setTeamMemberData("All");
+
 
     dispatch(getApprovalLeaveTeamMemberAction(payload));
-  }, [dateData, selectedDate, setIsOpenCalender, dispatch]);
+  }, [dateData, selectedDate, dispatch]);
 
   const dateChangeHandler = (e) => {
     const { value } = e.target;
@@ -57,31 +59,36 @@ const ApprovalLeavesPage = () => {
     setIsOpenCalender(true);
   };
 
-  const calendarDateChangeHandler = (date) => {
-    setIsOpenCalender(false);
-    setSelectedDate(date);
 
-    const payload = {
-      fromDate: date.format("YYYY-MM-DD"),
-      toDate: dayjs().format("YYYY-MM-DD"),
-      dateBand: dateData,
-      size: newSize,
-    };
+
+  const calendarDateAcceptHandler = async (date) => {
+    setIsOpenCalender(false);
 
     if (dateData === "CALENDER") {
-      dispatch(getLeaveRequestData(payload));
-    } else {
-      setTeamMemberData("All");
-      setTeamMemberData("All");
+      const payload = {
+        empId: TeamMemberData === "All" ? "" : TeamMemberData || "",
+        fromDate: date.format("YYYY-MM-DD"),
+        toDate: dayjs().format("YYYY-MM-DD"),
+        dateBand: dateData,
+        size: newSize,
+      };
+  
+      await dispatch(getLeaveRequestData(payload));
     }
+  
+    setSelectedDate(date);
+    setIsOpenCalender(false);
   };
+   
+
+
 
   const payload = {
     empId: TeamMemberData === "All" ? "" : TeamMemberData || "",
     fromDate: dateData === "CALENDER" ? selectedDate.format("YYYY-MM-DD") : "",
     toDate: dateData === "CALENDER" ? dayjs().format("YYYY-MM-DD") : "",
     dateBand: dateData,
-    size: 2 * counter,
+    size: 5 * counter,
   };
 
   const fetchData = async () => {
@@ -94,23 +101,48 @@ const ApprovalLeavesPage = () => {
     if (dateData === "CALENDER") {
       return;
     }
-    setTimeout(() => {
-      fetchData();
-    }, 500);
-  }, [TeamMemberData, dateData, selectedDate]);
+    const fetchDataWithDelay = async () => {
+      await fetchData();
+    };
+
+    fetchDataWithDelay();
+  }, [TeamMemberData, dateData, selectedDate, counter]);
 
   const teamMemberSelectHandler = (e) => {
     setTeamMemberData(e.target.value);
   };
 
+  const validationForm = (approverComment) => {
+    const newErrors = {};
+
+    let activity = {};
+
+    if (activity.approvalCommentRequired === true && !approverComment) {
+      newErrors.adminCommentError =
+        "Please add details in the comments section.";
+    }
+
+    return newErrors;
+  }; 
+
   const approveRejectLeavesHandler = (id, status, approverComment) => {
+    const newErrors = validationForm(approverComment);
+    if (Object.keys(newErrors).length === 0) {
     const payload = {
       leaveRequestId: id,
       approverComment,
       status,
     };
+    setLeaveRequestId(id)
     dispatch(approveRejectLeavesAction(payload));
-    fetchData();
+    setError('Please add details in the comments section.')
+    setErrorValidation({});
+  }
+  else {
+    setErrorValidation({
+      [id]: newErrors,
+    });
+  }
   };
 
   const shouldDisableDate = (date) => {
@@ -119,9 +151,19 @@ const ApprovalLeavesPage = () => {
 
   const fetchMore = () => {
     // Fetch more data only if there is more data available
-    dispatch(getLeaveRequestData(payload));
-    const nextPage = counter + 1;
-    setCounter(nextPage);
+    // dispatch(getLeaveRequestData(payload));
+    const nextPage = 10 * counter;
+    const nextPagePayload = {
+      empId: TeamMemberData === "All" ? "" : TeamMemberData || "",
+      fromDate:
+        dateData === "CALENDER" ? selectedDate.format("YYYY-MM-DD") : "",
+      toDate: dateData === "CALENDER" ? dayjs().format("YYYY-MM-DD") : "",
+      dateBand: dateData,
+      size: nextPage,
+    };
+
+    dispatch(getLeaveRequestData(nextPagePayload));
+    setCounter(counter);
   };
 
   return (
@@ -132,16 +174,17 @@ const ApprovalLeavesPage = () => {
         onClick={(e) => e.stopPropagation()}
       >
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <StaticDatePicker
-            sx={{ overflow: "scroll" }}
-            onClose={() => {
-              setIsOpenCalender(false);
-            }}
-            defaultValue={dayjs()}
-            value={selectedDate}
-            shouldDisableDate={shouldDisableDate} // function to disable future dates
-            onChange={calendarDateChangeHandler}
-          />
+        <StaticDatePicker
+          sx={{ overflow: "scroll" }}
+          onClose={() => {
+            setIsOpenCalender(false);
+          }}
+          defaultValue={dayjs()}
+          value={selectedDate}
+          shouldDisableDate={shouldDisableDate}
+          onAccept={calendarDateAcceptHandler} // Add this line
+        />
+
         </LocalizationProvider>
       </Dialog>
       <ApprovalLeaveHeader
@@ -153,21 +196,30 @@ const ApprovalLeavesPage = () => {
         teamMemberSelectHandler={teamMemberSelectHandler}
         handleCalendarClick={handleCalendarClick} // Pass the callback function
       />
-      {getLeaveData?.content?.length === 0 ? (
-        <p>No available data</p>
+     
+      {(getLeaveData?.content?.length ?? 0) === 0 ? (
+        <Box mt={5} sx={{ display: "flex", justifyContent: "center" }}>
+          <Typography>No LeaveRequest From The Employees </Typography>
+        </Box>
       ) : (
         <InfiniteScroll
           dataLength={getLeaveData?.content?.length || 0}
-          hasMore={getLeaveData?.totalElements > getLeaveData?.content.length}
+          hasMore={getLeaveData?.totalElements > getLeaveData?.content?.length}
+        
           next={fetchMore}
         >
-          {getLeaveData ? (
-            getLeaveData?.content?.map((cardData) => (
+          
+          {getLeaveData?.content?.length > 0 ? (
+            getLeaveData?.content.map((cardData) => (
               <Box key={cardData.leaveRequestId}>
                 <DataCard
                   key={cardData.leaveRequestId}
                   cardData={cardData}
+                  approval={true}
                   approveRejectLeavesHandler={approveRejectLeavesHandler}
+                  errorValidation={errorValidation[cardData.leaveRequestId]}
+                  error={error}
+                  leaveRequest={leaveRequestId}
                 />
               </Box>
             ))
@@ -178,6 +230,8 @@ const ApprovalLeavesPage = () => {
           )}
         </InfiniteScroll>
       )}
+
+
     </Box>
   );
 };
