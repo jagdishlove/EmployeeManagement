@@ -174,10 +174,11 @@ const HolidayList = () => {
               </Typography>
             </Box>
 
-            <hr style={{ borderTop: "3px solid #D9D9D9", margin: "16px 0" }} />
+            <hr style={{ borderTop: "3px solid #001F1F", margin: "16px 0" , color:'#D9D9D9'}} />
 
             <Typography
               variant="h6"
+              style={{marginBottom:'-2%'}}
               sx={{ color: "#008080", textAlign: "center" }}
             >
               For more details on any of the leave policies or any queries,

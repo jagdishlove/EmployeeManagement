@@ -179,7 +179,10 @@ export const saveLeaveFormAction = (data, param, disableSave) => {
     ) {
       newData = {
         ...data,
-        leaveRequestId: undefined,
+        leaveRequestId:
+          getState()?.nonPersist?.leavesData.savedLeaveData.leaveRequestId ||
+          data.leaveRequestId ||
+          undefined,
       };
     } else {
       newData = {

@@ -94,8 +94,19 @@ const LoginForm = () => {
     }
   };
 
+  const handleKeyPress = (e) => {
+    // Check if the pressed key is 'Enter' (key code 13)
+    if (e.key === 'Enter') {
+      // Prevent the default behavior of the 'Enter' key (form submission)
+      e.preventDefault();
+      // Call the handleSubmit function to handle the form submission
+      handleSubmit(e);
+    }
+  };
+
   return (
     <Box sx={style.mainBoxRight}>
+     <form onKeyPress={handleKeyPress}>
       {mobile ? (
         <Box sx={style.logoBox}>
           <img
@@ -249,6 +260,7 @@ const LoginForm = () => {
           &copy; 2023 ALL RIGHTS RESERVED
         </Typography>
       )}
+      </form>
     </Box>
   );
 };

@@ -15,7 +15,7 @@ import {  useSelector } from "react-redux";
 import dayjs from 'dayjs';
 
 
-const DataCard = ({ cardData, approveRejectLeavesHandler }) => {
+const DataCard = ({ cardData, approveRejectLeavesHandler ,approval,error,leaveRequest}) => {
   const [expanded, setExpanded] = useState(false);
 
   /* eslint-disable no-unused-vars */
@@ -25,20 +25,9 @@ const DataCard = ({ cardData, approveRejectLeavesHandler }) => {
   const [errors, setErrors] = useState({});
 
 
-  const handleApproval = (status, leaveRequestId) => {
-    const comment = comments[leaveRequestId];
-    if (!comment || !comment.trim()) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        [leaveRequestId]: 'Please add details in the comments section.',
-      }));
-      return;
-    }
+  const handleApproval = (status, leaveRequestId,comments) => {
 
-    // Clear error for the current record
-    setErrors((prevErrors) => ({ ...prevErrors, [leaveRequestId]: '' }));
-
-    approveRejectLeavesHandler(leaveRequestId, status, comment);
+    approveRejectLeavesHandler(leaveRequestId, status, comments);
     setIsApprovedOrRejected(true);
   };
 
@@ -103,19 +92,19 @@ const DataCard = ({ cardData, approveRejectLeavesHandler }) => {
               </div>
               <Grid item xs={12} sm={12} md={6} lg={6} display={"flex"}>
                 
-                <TextField 
-                  label="From"
-                  value={dayjs(cardData.fromDate).format('ddd, MMM D, YY')}
-                  disabled
-                  variant="outlined"
-                />
-                <TextField
-                   label="To"
-                   value={dayjs(cardData.toDate).format('ddd, MMM D, YY')}
-                   disabled
-                   variant="outlined"
-                   sx={{ marginLeft: 2 }}
-                />
+              <TextField 
+                label="From"
+                value={dayjs(cardData.fromDate).format('ddd, DD-MMM-YY')}
+                disabled
+                variant="outlined"
+              />
+              <TextField
+                label="To"
+                value={dayjs(cardData.toDate).format('ddd, DD-MMM-YY')}
+                disabled
+                variant="outlined"
+                sx={{ marginLeft: 2 }}
+              />
 
                 <Typography
                   sx={{
@@ -175,7 +164,7 @@ const DataCard = ({ cardData, approveRejectLeavesHandler }) => {
                       background: "#006666", 
                     }
                   }}
-                  onClick={() => handleApproval("APPROVED", cardData.leaveRequestId)}
+                  onClick={() => handleApproval("APPROVED", cardData.leaveRequestId, comments[cardData.leaveRequestId])}
                 >
                   APPROVE
                 </Button>
@@ -190,29 +179,34 @@ const DataCard = ({ cardData, approveRejectLeavesHandler }) => {
                       color: 'white' 
                     },
                   }}
-                  onClick={() => handleApproval("REJECTED", cardData.leaveRequestId)}
+                  onClick={() => handleApproval("REJECTED", cardData.leaveRequestId, comments[cardData.leaveRequestId])}
                 >
                   REJECT
                 </Button>
 
               </Grid>
-              {errors[cardData.leaveRequestId] && (
-                <p
-                  className="error-message"
-                  style={{
-                    marginLeft: 20,
-                    marginTop: '4px',
-                    color: 'red',
-                  }}
-                >
-                  {errors[cardData.leaveRequestId]}
-                </p>
+              {approval &&  (
+                <>
+                {
+                  (cardData?.leaveRequestId === leaveRequest) && (
+                    <Grid item xs={12} sm={12} md={12} lg={12}>
+                    <span style={{ color: "red",position:'absolute' }}>
+                      {error}
+                    </span>
+                  </Grid>
+                  )
+                }
+                </>
               )}
             </Grid>
           ) : (
             <HiddenDataCard
+              key={cardData.leaveRequestId}
               cardData={cardData}
               approveRejectLeavesHandler={approveRejectLeavesHandler}
+              approval={true}
+              error={error}
+              leaveRequest={leaveRequest}
             />
           )}
         </AccordionSummary>

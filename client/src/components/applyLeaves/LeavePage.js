@@ -38,9 +38,8 @@ const LeavePage = () => {
     toSession: "",
     leaveMasterId: "",
     comments: "",
-
     manager: managerData.managerName || "",
-    cc: [],
+    cc: [] || "",
   };
 
   const [disableSave, setDisableSave] = useState("");
@@ -177,6 +176,7 @@ const LeavePage = () => {
             disableSave={disableSave}
           />
         </Grid>
+        <Grid style={{ position: 'absolute', borderLeft: '2px dotted #008080', height: '120%', marginLeft: '55.3%', marginTop: '10%', transform: 'translateX(-50%)' }}/>
         <Grid item xs={12} sm={4} md={4} lg={4}>
           <HolidayList />
         </Grid>

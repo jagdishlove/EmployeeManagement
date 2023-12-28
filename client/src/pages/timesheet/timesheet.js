@@ -125,7 +125,7 @@ const Timesheet = () => {
       >        
        TIMESHEET
         </Typography>
-      <hr style={{ width: "100%", margin: "auto", marginBottom: "20px" }} />
+      <div style={{ width: "100%", margin: "auto", marginBottom: "18px",border:'1px solid #008080' }} />
      
       <Tabs
         value={value}

@@ -9,7 +9,6 @@ import { getSearchEmailAction } from "../../redux/actions/leaves/leaveAction";
 import { masterDataAction } from "../../redux/actions/masterData/masterDataAction";
 import Dropdown from "../forms/dropdown/dropdown";
 import "./leaves.css";
-
 import dayjs from "dayjs";
 import InputFileUpload from "../forms/customInputs/uploadFile";
 
@@ -134,6 +133,7 @@ const LeaveRequestForm = ({
       leaveRqstData.leaveMasterId === "11" ||
       leaveRqstData.leaveMasterId === "5" ||
       leaveRqstData.leaveMasterId === "8" ||
+      leaveRqstData.leaveMasterId === "10" ||
       (leaveRqstData.leaveMasterId === "3" &&
         numberOfDays >= 3 &&
         !leaveRqstData.attachment)
@@ -143,6 +143,7 @@ const LeaveRequestForm = ({
 
     return errors;
   };
+  
 
   return (
     <Box className="dashedBorderStyle">
@@ -160,11 +161,12 @@ const LeaveRequestForm = ({
               md={5}
               lg={5}
               direction="column"
+              
             >
               <Typography variant="body1" align="center" fontWeight="bold">
                 From
               </Typography>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <LocalizationProvider dateAdapter={AdapterDayjs} >
                 <DatePicker
                   name="fromDate"
                   format="ddd, MMM DD,YYYY"
@@ -173,7 +175,7 @@ const LeaveRequestForm = ({
                   renderInput={(params) => <TextField {...params} />}
                 />
               </LocalizationProvider>
-              <Typography variant="body1" align="center" fontWeight="bold">
+              <Typography variant="body1" align="center" fontWeight="bold" style={{marginTop:'10%'}}>
                 To
               </Typography>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -185,7 +187,7 @@ const LeaveRequestForm = ({
                   renderInput={(params) => <TextField {...params} />}
                 />
               </LocalizationProvider>
-              <Typography color="error">{errors.fromDate}</Typography>
+              <Typography color="error" style={{position:'absolute',marginTop:'7%'}}>{errors.fromDate}</Typography>
             </Grid>
             <Grid
               container
@@ -216,10 +218,10 @@ const LeaveRequestForm = ({
                 />
                 {errors.fromSession && (
                   <Box>
-                    <Typography color="error">{errors.fromSession}</Typography>
+                    <Typography color="error"  style={{position:'absolute'}}>{errors.fromSession}</Typography>
                   </Box>
                 )}
-                <Typography variant="body1" align="center" fontWeight="bold">
+                <Typography variant="body1" align="center" fontWeight="bold" style={{marginTop:'11%'}}>
                   Session
                 </Typography>
                 <Dropdown
@@ -236,7 +238,7 @@ const LeaveRequestForm = ({
                 />
                 {errors.toSession && (
                   <Box>
-                    <Typography color="error">{errors.toSession}</Typography>
+                    <Typography color="error"  style={{position:'absolute'}}>{errors.toSession}</Typography>
                   </Box>
                 )}
               </Grid>
@@ -262,10 +264,10 @@ const LeaveRequestForm = ({
                     fontSize: "12px",
                     fontWeight: "bold",
                     textAlign: "center",
-                    padding: "20px",
+                    padding: "28px",
                     backgroundColor: "#008080",
-                    height: "135px",
-                    borderRadius: "20px",
+                    height: "155px",
+                    borderRadius: "10px",
                   }}
                 >
                   <Typography marginTop="35px" fontSize="20px">
@@ -297,7 +299,7 @@ const LeaveRequestForm = ({
                   />
                   {errors.leaveMasterId && (
                     <Box>
-                      <Typography color="error">
+                      <Typography color="error"  style={{position:'absolute'}}>
                         {errors.leaveMasterId}
                       </Typography>
                     </Box>
@@ -324,7 +326,7 @@ const LeaveRequestForm = ({
                   />
                   {errors.comments && (
                     <Box>
-                      <Typography color="error">{errors.comments}</Typography>
+                      <Typography color="error"  style={{position:'absolute'}}>{errors.comments}</Typography>
                     </Box>
                   )}
                 </Grid>
@@ -382,7 +384,13 @@ const LeaveRequestForm = ({
                   <InputFileUpload onChange={onChangeFormDataHandler} />
                   {errors.attachment && (
                     <Box>
-                      <Typography color="error">{errors.attachment}</Typography>
+                      <Typography
+                        color="error"
+                        style={{ position: "absolute" }}
+                      >
+                        {" "}
+                        {errors.attachment}
+                      </Typography>
                     </Box>
                   )}
                 </Box>
