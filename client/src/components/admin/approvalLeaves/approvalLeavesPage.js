@@ -127,7 +127,7 @@ const ApprovalLeavesPage = () => {
         status,
       };
       setLeaveRequestId(id);
-      dispatch(approveRejectLeavesAction(payload, getDataPayload));
+      dispatch(approveRejectLeavesAction(payload,getDataPayload));
       setError({});
     } else {
       setError(() => ({ [id]: newErrors }));

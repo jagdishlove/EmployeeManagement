@@ -1,5 +1,5 @@
 import { Button, Grid, TextField, Typography } from "@mui/material";
-import React, { useState } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import dayjs from "dayjs";
 
@@ -9,16 +9,13 @@ const HiddenDataCard = ({
   approval,
   error,
   index,
+  setComments,
+  comments,
 }) => {
-  const [comments, setComments] = useState({});
-  /* eslint-disable no-unused-vars */
-  const [isApprovedOrRejected, setIsApprovedOrRejected] = useState(false);
-
   const masterData = useSelector((state) => state?.persistData?.masterData);
 
-  const handleApproval = (status, leaveRequestId, comments) => {
+  const handleApproval = (status, leaveRequestId) => {
     approveRejectLeavesHandler(leaveRequestId, status, comments);
-    setIsApprovedOrRejected(true);
   };
 
   const getLeaveType = (leaveMasterId) => {
@@ -187,13 +184,8 @@ const HiddenDataCard = ({
           fullWidth
           label="Comments"
           variant="outlined"
-          value={comments[cardData.leaveRequestId] || ""}
-          onChange={(e) =>
-            setComments((prevComments) => ({
-              ...prevComments,
-              [cardData.leaveRequestId]: e.target.value,
-            }))
-          }
+          value={comments}
+          onChange={(e) => setComments(e.target.value)}
           multiline
           rows={10}
         />
