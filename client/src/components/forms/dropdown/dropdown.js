@@ -23,13 +23,12 @@ const Dropdown = ({
       <Select
         labelId="demo-simple-select-label"
         value={
-          // options?.length === 1
-          //   ? options[0].id ||
-          //     options[0].value ||
-          //     options[0].projectName ||
-          //     options[0].activityId
-          //   :
-          value
+          options?.length === 1
+            ? options[0].id ||
+              options[0].value ||
+              options[0].projectName ||
+              options[0].activityId
+            : value
         }
         name={name}
         placeholder={title}

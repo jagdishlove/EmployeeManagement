@@ -24,16 +24,13 @@ const ApprovalLeavesPage = () => {
   const [TeamMemberData, setTeamMemberData] = useState("All");
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [counter, setCounter] = useState(2);
+  const [error, setError] = useState({});
 
-  const [errorValidation, setErrorValidation] = useState({});
+  // const [errorValidation, setErrorValidation] = useState({});
 
-  const [leaveRequestId,setLeaveRequestId] = useState();
-
-  const [error,setError] = useState('')
+  const [leaveRequestId, setLeaveRequestId] = useState();
 
   const newSize = 5 * counter;
-
-  
 
   useEffect(() => {
     if (dateData === "CALENDER") {
@@ -42,10 +39,7 @@ const ApprovalLeavesPage = () => {
       payload.toDate = currentDate;
     }
 
-
-
     setTeamMemberData("All");
-
 
     dispatch(getApprovalLeaveTeamMemberAction(payload));
   }, [dateData, selectedDate, dispatch]);
@@ -59,8 +53,6 @@ const ApprovalLeavesPage = () => {
     setIsOpenCalender(true);
   };
 
-
-
   const calendarDateAcceptHandler = async (date) => {
     setIsOpenCalender(false);
 
@@ -72,16 +64,13 @@ const ApprovalLeavesPage = () => {
         dateBand: dateData,
         size: newSize,
       };
-  
+
       await dispatch(getLeaveRequestData(payload));
     }
-  
+
     setSelectedDate(date);
     setIsOpenCalender(false);
   };
-   
-
-
 
   const payload = {
     empId: TeamMemberData === "All" ? "" : TeamMemberData || "",
@@ -113,36 +102,28 @@ const ApprovalLeavesPage = () => {
   };
 
   const validationForm = (approverComment) => {
-    const newErrors = {};
-
-    let activity = {};
-
-    if (activity.approvalCommentRequired === true && !approverComment) {
-      newErrors.adminCommentError =
-        "Please add details in the comments section.";
+    let newErrors = "";
+    if (!approverComment) {
+      newErrors = "Please add details in the comments section.";
     }
 
     return newErrors;
-  }; 
+  };
 
   const approveRejectLeavesHandler = (id, status, approverComment) => {
     const newErrors = validationForm(approverComment);
     if (Object.keys(newErrors).length === 0) {
-    const payload = {
-      leaveRequestId: id,
-      approverComment,
-      status,
-    };
-    setLeaveRequestId(id)
-    dispatch(approveRejectLeavesAction(payload));
-    setError('Please add details in the comments section.')
-    setErrorValidation({});
-  }
-  else {
-    setErrorValidation({
-      [id]: newErrors,
-    });
-  }
+      const payload = {
+        leaveRequestId: id,
+        approverComment,
+        status,
+      };
+      setLeaveRequestId(id);
+      dispatch(approveRejectLeavesAction(payload));
+      setError({});
+    } else {
+      setError(() => ({ [id]: newErrors }));
+    }
   };
 
   const shouldDisableDate = (date) => {
@@ -174,17 +155,16 @@ const ApprovalLeavesPage = () => {
         onClick={(e) => e.stopPropagation()}
       >
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <StaticDatePicker
-          sx={{ overflow: "scroll" }}
-          onClose={() => {
-            setIsOpenCalender(false);
-          }}
-          defaultValue={dayjs()}
-          value={selectedDate}
-          shouldDisableDate={shouldDisableDate}
-          onAccept={calendarDateAcceptHandler} // Add this line
-        />
-
+          <StaticDatePicker
+            sx={{ overflow: "scroll" }}
+            onClose={() => {
+              setIsOpenCalender(false);
+            }}
+            defaultValue={dayjs()}
+            value={selectedDate}
+            shouldDisableDate={shouldDisableDate}
+            onAccept={calendarDateAcceptHandler} // Add this line
+          />
         </LocalizationProvider>
       </Dialog>
       <ApprovalLeaveHeader
@@ -196,7 +176,7 @@ const ApprovalLeavesPage = () => {
         teamMemberSelectHandler={teamMemberSelectHandler}
         handleCalendarClick={handleCalendarClick} // Pass the callback function
       />
-     
+
       {(getLeaveData?.content?.length ?? 0) === 0 ? (
         <Box mt={5} sx={{ display: "flex", justifyContent: "center" }}>
           <Typography>No LeaveRequest From The Employees </Typography>
@@ -205,21 +185,18 @@ const ApprovalLeavesPage = () => {
         <InfiniteScroll
           dataLength={getLeaveData?.content?.length || 0}
           hasMore={getLeaveData?.totalElements > getLeaveData?.content?.length}
-        
           next={fetchMore}
         >
-          
           {getLeaveData?.content?.length > 0 ? (
             getLeaveData?.content.map((cardData) => (
               <Box key={cardData.leaveRequestId}>
                 <DataCard
-                  key={cardData.leaveRequestId}
+                  index={cardData.leaveRequestId}
                   cardData={cardData}
                   approval={true}
                   approveRejectLeavesHandler={approveRejectLeavesHandler}
-                  errorValidation={errorValidation[cardData.leaveRequestId]}
-                  error={error}
                   leaveRequest={leaveRequestId}
+                  error={error}
                 />
               </Box>
             ))
@@ -230,8 +207,6 @@ const ApprovalLeavesPage = () => {
           )}
         </InfiniteScroll>
       )}
-
-
     </Box>
   );
 };
