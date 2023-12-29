@@ -171,7 +171,6 @@ export const getSearchEmailAction = (payload) => {
 
 export const saveLeaveFormAction = (data, param, disableSave) => {
   return async (dispatch, getState) => {
-    console.log("disableSave", disableSave);
     let newData = {};
     if (
       ["SUBMITTED", "APPROVED", "SAVED"].includes(disableSave) &&

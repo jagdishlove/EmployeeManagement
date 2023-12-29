@@ -135,7 +135,7 @@ export const getLeaveRequestData = (data) => {
         data
       );
       dispatch(getLeaveRequestSuccess(response));
-      return response;
+      return data;
     } catch (err) {
       if (err.response.data.errorCode === 403) {
         dispatch(getRefreshToken());
@@ -146,7 +146,7 @@ export const getLeaveRequestData = (data) => {
   };
 };
 
-export const approveRejectLeavesAction = (data) => {
+export const approveRejectLeavesAction = (data, getDataPayload) => {
   return async (dispatch) => {
     try {
       dispatch(approveLeavesRequest());
@@ -156,6 +156,7 @@ export const approveRejectLeavesAction = (data) => {
         data
       );
       dispatch(approveLeavesSuccess());
+      dispatch(getApprovalLeaveTeamMemberAction(getDataPayload));
       if (data.status === "APPROVED") {
         toast.success("Leaves Approved Successfully.", {
           position: toast.POSITION.BOTTOM_CENTER,
