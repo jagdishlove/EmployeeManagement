@@ -112,6 +112,14 @@ const ApprovalLeavesPage = () => {
 
   const approveRejectLeavesHandler = (id, status, approverComment) => {
     const newErrors = validationForm(approverComment);
+    const getDataPayload = {
+      empId: TeamMemberData === "All" ? "" : TeamMemberData || "",
+      fromDate:
+        dateData === "CALENDER" ? selectedDate.format("YYYY-MM-DD") : "",
+      toDate: dateData === "CALENDER" ? dayjs().format("YYYY-MM-DD") : "",
+      dateBand: dateData,
+      size: 5 * counter,
+    };
     if (Object.keys(newErrors).length === 0) {
       const payload = {
         leaveRequestId: id,
@@ -119,7 +127,7 @@ const ApprovalLeavesPage = () => {
         status,
       };
       setLeaveRequestId(id);
-      dispatch(approveRejectLeavesAction(payload));
+      dispatch(approveRejectLeavesAction(payload, getDataPayload));
       setError({});
     } else {
       setError(() => ({ [id]: newErrors }));

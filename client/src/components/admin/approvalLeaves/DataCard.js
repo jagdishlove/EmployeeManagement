@@ -24,7 +24,6 @@ const DataCard = ({
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [comments, setComments] = useState();
-  console.log("error", error[index]);
 
   const handleApproval = (status, leaveRequestId) => {
     approveRejectLeavesHandler(leaveRequestId, status, comments);
