@@ -156,7 +156,7 @@ export const approveRejectLeavesAction = (data, getDataPayload) => {
         data
       );
       dispatch(approveLeavesSuccess());
-      dispatch(getApprovalLeaveTeamMemberAction(getDataPayload));
+      dispatch(getLeaveRequestData(getDataPayload));
       if (data.status === "APPROVED") {
         toast.success("Leaves Approved Successfully.", {
           position: toast.POSITION.BOTTOM_CENTER,
