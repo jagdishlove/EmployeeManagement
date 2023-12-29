@@ -1,31 +1,31 @@
 import { Button, Grid, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 
-const HiddenDataCard = ({ cardData, approveRejectLeavesHandler  ,approval,error,leaveRequest}) => {
-
+const HiddenDataCard = ({
+  cardData,
+  approveRejectLeavesHandler,
+  approval,
+  error,
+  index,
+}) => {
   const [comments, setComments] = useState({});
-    /* eslint-disable no-unused-vars */
-    const [isApprovedOrRejected, setIsApprovedOrRejected] = useState(false);
+  /* eslint-disable no-unused-vars */
+  const [isApprovedOrRejected, setIsApprovedOrRejected] = useState(false);
 
+  const masterData = useSelector((state) => state?.persistData?.masterData);
 
-  const masterData = useSelector((state) => state?.persistData?.masterData)
-
-  
-
-  const handleApproval = (status, leaveRequestId,comments) => {
-
+  const handleApproval = (status, leaveRequestId, comments) => {
     approveRejectLeavesHandler(leaveRequestId, status, comments);
     setIsApprovedOrRejected(true);
   };
-
 
   const getLeaveType = (leaveMasterId) => {
     const leaveTypeObject = masterData?.leaveTypes?.find(
       (data) => data.leaveMasterId === leaveMasterId
     );
-    return leaveTypeObject ? leaveTypeObject.leaveType : '';
+    return leaveTypeObject ? leaveTypeObject.leaveType : "";
   };
 
   const sessionValue = (sessionName) => {
@@ -70,7 +70,7 @@ const HiddenDataCard = ({ cardData, approveRejectLeavesHandler  ,approval,error,
           <TextField
             fullWidth
             label="From"
-            value={dayjs(cardData.fromDate).format('ddd, DD-MMM-YY')}
+            value={dayjs(cardData.fromDate).format("ddd, DD-MMM-YY")}
             variant="outlined"
             disabled
           />
@@ -79,7 +79,7 @@ const HiddenDataCard = ({ cardData, approveRejectLeavesHandler  ,approval,error,
           <TextField
             fullWidth
             label="To"
-            value={dayjs(cardData.toDate).format('ddd, DD-MMM-YY')}
+            value={dayjs(cardData.toDate).format("ddd, DD-MMM-YY")}
             variant="outlined"
             disabled
           />
@@ -168,23 +168,32 @@ const HiddenDataCard = ({ cardData, approveRejectLeavesHandler  ,approval,error,
               justifyContent: "center",
             }}
           >
-          {getLeaveType(cardData.leaveMasterId)}
+            {getLeaveType(cardData.leaveMasterId)}
           </Typography>
         </Grid>
       </Grid>
 
-      <Grid item container xs={12} sm={12} md={4} lg={4} gap={2} style={{height:'100px'}}>
+      <Grid
+        item
+        container
+        xs={12}
+        sm={12}
+        md={4}
+        lg={4}
+        gap={2}
+        style={{ height: "100px" }}
+      >
         <TextField
           fullWidth
           label="Comments"
           variant="outlined"
-          value={comments[cardData.leaveRequestId] || ''}
-                  onChange={(e) =>
-                    setComments((prevComments) => ({
-                      ...prevComments,
-                      [cardData.leaveRequestId]: e.target.value,
-                    }))
-                  }
+          value={comments[cardData.leaveRequestId] || ""}
+          onChange={(e) =>
+            setComments((prevComments) => ({
+              ...prevComments,
+              [cardData.leaveRequestId]: e.target.value,
+            }))
+          }
           multiline
           rows={10}
         />
@@ -197,16 +206,21 @@ const HiddenDataCard = ({ cardData, approveRejectLeavesHandler  ,approval,error,
         md={2}
         lg={2}
         gap={3}
-        style={{ height: "100%",position: "relative"  }}
+        style={{ height: "100%", position: "relative" }}
       >
         <Grid
           item
           xs={12}
-          style={{ height: "47%", display: "flex", justifyContent: "center",position: "relative"  }}
+          style={{
+            height: "47%",
+            display: "flex",
+            justifyContent: "center",
+            position: "relative",
+          }}
         >
           <Button
             sx={{
-              border:"1px solid green",
+              border: "1px solid green",
               color: "black",
               padding: "15px",
               borderRadius: "5px",
@@ -218,13 +232,12 @@ const HiddenDataCard = ({ cardData, approveRejectLeavesHandler  ,approval,error,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              "&:hover" : {
-                background: "#006666", 
-                color:'white'
-              }
+              "&:hover": {
+                background: "#006666",
+                color: "white",
+              },
             }}
             onClick={() => handleApproval("APPROVED", cardData.leaveRequestId)}
-
           >
             APPROVE
           </Button>
@@ -237,7 +250,7 @@ const HiddenDataCard = ({ cardData, approveRejectLeavesHandler  ,approval,error,
             display: "flex",
             marginTop: "10px", // Add margin-top to create space
             justifyContent: "center",
-            position: "relative" 
+            position: "relative",
           }}
         >
           <Button
@@ -255,12 +268,10 @@ const HiddenDataCard = ({ cardData, approveRejectLeavesHandler  ,approval,error,
               justifyContent: "center",
               "&:hover": {
                 background: "Red",
-                color:'white' 
-
+                color: "white",
               },
             }}
             onClick={() => handleApproval("REJECTED", cardData.leaveRequestId)}
-
           >
             REJECT
           </Button>
@@ -276,24 +287,28 @@ const HiddenDataCard = ({ cardData, approveRejectLeavesHandler  ,approval,error,
         gap={2}
         style={{ marginTop: 10, position: "relative" }}
       >
-        {approval &&  (
-                <>
-                {cardData?.leaveRequestId === leaveRequest && (
-  <Grid style={{ width: '100%' }}>
-    <p style={{ color: 'red', position: 'absolute', width: '100%' ,fontSize:'14.5px',lineHeight:'20px'}}>
-      {error}
-    </p>
-  </Grid>
-)}
-
-                </>
-              )}
+        {approval && (
+          <>
+            {
+              <Grid style={{ width: "100%" }}>
+                <p
+                  style={{
+                    color: "red",
+                    position: "absolute",
+                    width: "100%",
+                    fontSize: "14.5px",
+                    lineHeight: "20px",
+                  }}
+                >
+                  {error[index]}
+                </p>
+              </Grid>
+            }
+          </>
+        )}
       </Grid>
-
     </Grid>
-    
   );
 };
 
 export default HiddenDataCard;
-

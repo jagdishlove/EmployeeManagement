@@ -11,30 +11,26 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import HiddenDataCard from "./HiddenDataCard";
-import {  useSelector } from "react-redux";
-import dayjs from 'dayjs';
+import { useSelector } from "react-redux";
+import dayjs from "dayjs";
 
-
-const DataCard = ({ cardData, approveRejectLeavesHandler ,approval,error,leaveRequest}) => {
+const DataCard = ({
+  cardData,
+  approveRejectLeavesHandler,
+  approval,
+  leaveRequest,
+  error,
+  index,
+}) => {
   const [expanded, setExpanded] = useState(false);
+  const [comments, setComments] = useState();
+  console.log("error", error[index]);
 
-  /* eslint-disable no-unused-vars */
-  const [isApprovedOrRejected, setIsApprovedOrRejected] = useState(false);
-
-  const [comments, setComments] = useState({});
-  const [errors, setErrors] = useState({});
-
-
-  const handleApproval = (status, leaveRequestId,comments) => {
-
+  const handleApproval = (status, leaveRequestId) => {
     approveRejectLeavesHandler(leaveRequestId, status, comments);
-    setIsApprovedOrRejected(true);
   };
 
-
-
-  const masterData = useSelector((state) => state?.persistData?.masterData)
-
+  const masterData = useSelector((state) => state?.persistData?.masterData);
 
   const handleAccordionToggle = () => {
     setExpanded(!expanded);
@@ -43,10 +39,8 @@ const DataCard = ({ cardData, approveRejectLeavesHandler ,approval,error,leaveRe
     const leaveTypeObject = masterData?.leaveTypes?.find(
       (data) => data.leaveMasterId === leaveMasterId
     );
-    return leaveTypeObject ? leaveTypeObject.leaveType : '';
+    return leaveTypeObject ? leaveTypeObject.leaveType : "";
   };
-
-
   return (
     <Box sx={{ marginTop: "25px" }}>
       <Accordion
@@ -91,20 +85,19 @@ const DataCard = ({ cardData, approveRejectLeavesHandler ,approval,error,leaveRe
                 </Typography>
               </div>
               <Grid item xs={12} sm={12} md={6} lg={6} display={"flex"}>
-                
-              <TextField 
-                label="From"
-                value={dayjs(cardData.fromDate).format('ddd, DD-MMM-YY')}
-                disabled
-                variant="outlined"
-              />
-              <TextField
-                label="To"
-                value={dayjs(cardData.toDate).format('ddd, DD-MMM-YY')}
-                disabled
-                variant="outlined"
-                sx={{ marginLeft: 2 }}
-              />
+                <TextField
+                  label="From"
+                  value={dayjs(cardData.fromDate).format("ddd, DD-MMM-YY")}
+                  disabled
+                  variant="outlined"
+                />
+                <TextField
+                  label="To"
+                  value={dayjs(cardData.toDate).format("ddd, DD-MMM-YY")}
+                  disabled
+                  variant="outlined"
+                  sx={{ marginLeft: 2 }}
+                />
 
                 <Typography
                   sx={{
@@ -130,28 +123,23 @@ const DataCard = ({ cardData, approveRejectLeavesHandler ,approval,error,leaveRe
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
-                    fontSize: '15px',
+                    fontSize: "15px",
                     width: "23%",
                     textAlign: "center",
                   }}
                 >
-                {getLeaveType(cardData.leaveMasterId)
-                    ?.split(' ')
-                    .map(word => word.charAt(0))
-                    .join('')}                
+                  {getLeaveType(cardData.leaveMasterId)
+                    ?.split(" ")
+                    .map((word) => word.charAt(0))
+                    .join("")}
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={12} md={6} lg={6} display={"flex"}>
-              <TextField
+                <TextField
                   label="Comments"
                   variant="outlined"
-                  value={comments[cardData.leaveRequestId] || ''}
-                  onChange={(e) =>
-                    setComments((prevComments) => ({
-                      ...prevComments,
-                      [cardData.leaveRequestId]: e.target.value,
-                    }))
-                  }
+                  value={comments}
+                  onChange={(e) => setComments(e.target.value)}
                   sx={{ width: "70%" }}
                 />
                 <Button
@@ -160,11 +148,13 @@ const DataCard = ({ cardData, approveRejectLeavesHandler ,approval,error,leaveRe
                     color: "white",
                     marginLeft: 2,
                     padding: "15px",
-                    "&:hover" : {
-                      background: "#006666", 
-                    }
+                    "&:hover": {
+                      background: "#006666",
+                    },
                   }}
-                  onClick={() => handleApproval("APPROVED", cardData.leaveRequestId, comments[cardData.leaveRequestId])}
+                  onClick={() =>
+                    handleApproval("APPROVED", cardData.leaveRequestId)
+                  }
                 >
                   APPROVE
                 </Button>
@@ -176,32 +166,31 @@ const DataCard = ({ cardData, approveRejectLeavesHandler ,approval,error,leaveRe
                     transition: "background 0.5s",
                     "&:hover": {
                       background: "Red",
-                      color: 'white' 
+                      color: "white",
                     },
                   }}
-                  onClick={() => handleApproval("REJECTED", cardData.leaveRequestId, comments[cardData.leaveRequestId])}
+                  onClick={() =>
+                    handleApproval("REJECTED", cardData.leaveRequestId)
+                  }
                 >
                   REJECT
                 </Button>
-
               </Grid>
-              {approval &&  (
+              {approval && (
                 <>
-                {
-                  (cardData?.leaveRequestId === leaveRequest) && (
+                  {
                     <Grid item xs={12} sm={12} md={12} lg={12}>
-                    <span style={{ color: "red",position:'absolute' }}>
-                      {error}
-                    </span>
-                  </Grid>
-                  )
-                }
+                      <span style={{ color: "red", position: "absolute" }}>
+                        {error[index]}
+                      </span>
+                    </Grid>
+                  }
                 </>
               )}
             </Grid>
           ) : (
             <HiddenDataCard
-              key={cardData.leaveRequestId}
+              index={cardData.leaveRequestId}
               cardData={cardData}
               approveRejectLeavesHandler={approveRejectLeavesHandler}
               approval={true}

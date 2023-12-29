@@ -126,7 +126,7 @@ const TimesheetTab = () => {
           next={fetchMore}
         >
           {approvalData ? (
-            approvalData.content.map((entry) => (
+            approvalData?.content?.map((entry) => (
               <TimesheetRow
                 key={entry.timesheetEntryId}
                 data={entry}

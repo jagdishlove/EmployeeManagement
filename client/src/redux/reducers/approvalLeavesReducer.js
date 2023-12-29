@@ -75,6 +75,7 @@ const ApprovalLeavesReducer = (state = initialState, action) => {
     case GET_LEAVE_FAIL: {
       return {
         ...state,
+        getLeaveData: null,
         getLeaveLoading: false,
       };
     }
