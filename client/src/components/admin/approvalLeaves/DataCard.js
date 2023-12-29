@@ -195,6 +195,8 @@ const DataCard = ({
               approval={true}
               error={error}
               leaveRequest={leaveRequest}
+              setComments={setComments}
+              comments={comments}
             />
           )}
         </AccordionSummary>
