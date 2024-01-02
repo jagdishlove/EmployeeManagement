@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import prakat_favicon_list from "../../assets/prakat_favicon_list.png";
 import { getHolidayListAction } from "../../redux/actions/leaves/leaveAction";
+import CloseIcon from '@mui/icons-material/Close';
+
 const formatDateString = (inputDate) => {
   const options = { weekday: "short", day: "numeric", month: "short" };
   const formattedDate = new Date(inputDate).toLocaleDateString(
@@ -113,6 +115,12 @@ const HolidayList = () => {
             </Box>
 
             <Box sx={{ paddingTop: "30px", backgroundColor: "#ffffff" }}>
+            <IconButton
+              style={{ position: 'absolute', top: '10px', right: '10px', color: '#008080' }}
+              onClick={handleCloseModal}
+            >
+              <CloseIcon />
+            </IconButton>
               <Typography sx={{ lineHeight: "20px", marginBottom: "10px" }}>
                 <img src={prakat_favicon_list} /> 12 days of public holidays are
                 offered to all employees

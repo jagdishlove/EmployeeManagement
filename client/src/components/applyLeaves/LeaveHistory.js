@@ -1,3 +1,6 @@
+import { Close } from "@mui/icons-material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import {
   Button,
   CircularProgress,
@@ -7,6 +10,7 @@ import {
   DialogContentText,
   DialogTitle,
   Grid,
+  IconButton,
   Paper,
   Table,
   TableBody,
@@ -17,15 +21,10 @@ import {
 } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import { Box } from "@mui/system";
-import React, { useState } from "react";
-import "./leaves.css";
 import { format } from "date-fns";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import { IconButton } from "@mui/material";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { Close } from "@mui/icons-material";
-
+import "./leaves.css";
 
 const Pagination = ({
   totalItems,
@@ -109,10 +108,10 @@ const LeaveHistory = ({
   setCurrentPage,
   currentPage,
   setDisableSave,
+  clearErrorOnEdit,
 }) => {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [leaveToDelete, setLeaveToDelete] = useState(null);
-
 
   const managerData = useSelector(
     (state) => state.persistData.masterData?.manager
@@ -123,6 +122,7 @@ const LeaveHistory = ({
   );
 
   const handleEditAction = (data) => {
+    clearErrorOnEdit();
     setLeaveReqstData({
       leaveRequestId: data.leaveRequestId,
       fromDate: data.fromDate,
@@ -226,7 +226,6 @@ const LeaveHistory = ({
               </TableHead>
               <TableBody>
                 {historyData && historyData?.content?.length > 0 ? (
-
                   historyData?.content?.map((entry, index) => (
                     <TableRow key={index}>
                       <TableCell
@@ -379,12 +378,24 @@ const LeaveHistory = ({
           <DialogContentText
             style={{
               textAlign: "center",
+              fontSize: "14px",
+
+              color: "#000000",
+              fontFamily: "Nunito Sans",
+              lineHeight: "19.1px",
+            }}
+          >
+            Your leave request will be deleted permanently.
+          </DialogContentText>
+          <DialogContentText
+            style={{
+              textAlign: "center",
               fontWeight: "bold",
               fontSize: "20px",
               color: "black",
             }}
           >
-            Are you sure?
+            Are you sure you want to delete it?
           </DialogContentText>
         </DialogContent>
         <DialogActions style={{ justifyContent: "center" }}>

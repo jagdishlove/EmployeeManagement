@@ -135,6 +135,8 @@ const TimesheetRow = ({
     data ? editedSelectedValues : initialSelectedValues
   );
 
+  console.log("selectedValues", selectedValues);
+
   const handleEditClick = () => {
     editButtonHandler(id);
     setDisabledWhileEditing(true);

@@ -26,6 +26,10 @@ const ApprovalLeaveHeader = ({
 
   const dispatch = useDispatch();
 
+  const { getLeaveData } = useSelector(
+    (state) => state.nonPersist.approvalLeavesData
+  );
+  
   const dates = useSelector(
     (state) =>
       state?.nonPersist?.approvalLeavesData?.approvalLeaveDatesData
@@ -99,6 +103,25 @@ const ApprovalLeaveHeader = ({
               style={{ background: "white" }}
               approve={true}
             />
+          </Grid>
+          <Grid item xs={12} sm={12} md={4} lg={3} margin={"auto"}>
+            <Typography
+              variant="h6"
+              color={"secondary"}
+              textAlign={"right"}
+              sx={{ textWrap: "nowrap" }}
+              marginTop={1}
+            >
+              <b>
+                {" "}
+                Total Entries{" "}
+                {getLeaveData?.numberOfElements
+                  ? getLeaveData.numberOfElements
+                  : "0"}
+                /
+                {getLeaveData?.totalElements ? getLeaveData.totalElements : "0"}
+              </b>
+            </Typography>
           </Grid>
         </Grid>
       </Box>
