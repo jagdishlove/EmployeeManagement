@@ -36,7 +36,7 @@ const HolidayList = () => {
   };
 
   return (
-    <div className="holidayListStyle" style={{ height: "100%" }}>
+    <div className="holidayListStyle" style={{ height: "100%", width:"100%" }}>
       <Box variant="h6" className="holidayListHeader">
         <b style={{ textDecoration: "underline" }}> HOLIDAY LIST</b>
         <h6 className="holidayListTitle">Fixed</h6>
