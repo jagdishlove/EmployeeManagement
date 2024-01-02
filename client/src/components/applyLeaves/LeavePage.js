@@ -192,8 +192,10 @@ const LeavePage = () => {
             errors={errors}
           />
         </Grid>
-        <Grid item xs={12} sm={4} md={4} lg={4}>
-          <HolidayList />
+       
+        <Grid item xs={12} sm={4} md={4} lg={4} display={"flex"}>
+        <div style={{ borderLeft:  "2px dashed rgba(0, 128, 128, 0.4)" , height: '100%', marginLeft: '-10px', marginRight:"10px", }}></div>
+          <HolidayList   />
         </Grid>
 
         <Grid item xs={12} sm={12} md={12} lg={12}>
