@@ -127,7 +127,7 @@ const ApprovalLeavesPage = () => {
         status,
       };
       setLeaveRequestId(id);
-      dispatch(approveRejectLeavesAction(payload,getDataPayload));
+      dispatch(approveRejectLeavesAction(payload, getDataPayload));
       setError({});
     } else {
       setError(() => ({ [id]: newErrors }));
@@ -158,7 +158,7 @@ const ApprovalLeavesPage = () => {
   return (
     <Box>
       <Dialog
-        open={isOpenCalender}
+        open={false}
         onClose={() => setIsOpenCalender(false)}
         onClick={(e) => e.stopPropagation()}
       >
@@ -187,7 +187,7 @@ const ApprovalLeavesPage = () => {
 
       {(getLeaveData?.content?.length ?? 0) === 0 ? (
         <Box mt={5} sx={{ display: "flex", justifyContent: "center" }}>
-          <Typography>No LeaveRequest From The Employees </Typography>
+          <Typography>Oops! No leave requests found.</Typography>
         </Box>
       ) : (
         <InfiniteScroll

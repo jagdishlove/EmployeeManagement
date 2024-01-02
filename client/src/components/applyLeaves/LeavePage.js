@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteLeave,
+  getLeaveBalanceAction,
   getNumbersOfDaysAction,
   saveLeaveFormAction,
 } from "../../redux/actions/leaves/leaveAction";
@@ -29,6 +30,7 @@ const LeavePage = () => {
   const [historyData, setHistoryData] = useState([]);
   const [leaveHistoryData, setLeaveHistoryData] = useState([]);
   const [leaveDelete, setLeaveDelete] = useState(true);
+  const [errors, setErrors] = useState({});
 
   const initialData = {
     leaveRequestId: "",
@@ -45,6 +47,7 @@ const LeavePage = () => {
   const [disableSave, setDisableSave] = useState("");
   const [leaveRqstData, setLeaveReqstData] = useState(initialData);
   const [currentPage, setCurrentPage] = useState(0);
+  const [leaveBalance, setLeaveBalance] = useState(false);
 
   const [saveSubmitStatus, setSaveSubmitStatus] = useState(false);
 
@@ -60,6 +63,11 @@ const LeavePage = () => {
   useEffect(() => {
     setLeaveHistoryData(leaveHistory);
   }, [leaveHistory, leaveDelete]);
+
+  useEffect(() => {
+    dispatch(getLeaveBalanceAction());
+    setLeaveBalance(false);
+  }, [dispatch, leaveBalance]);
 
   const addHistoryEntry = (entry) => {
     setHistoryData([...historyData, entry]);
@@ -77,6 +85,7 @@ const LeavePage = () => {
         return { ...prevData, content: newArray };
       });
       setLeaveDelete(true);
+      setLeaveBalance(true);
     });
   };
 
@@ -136,19 +145,20 @@ const LeavePage = () => {
       action: type,
     };
 
-    if (type === "Save" || type === "Submit") {
-      // Set numberOfDays to empty when saving or submitting
-      dispatch({ type: "NUMBERS_OF_DAYS", payload: { numberOfDays: "" } });
-    }
+    // if (type === "Save" || type === "Submit") {
+    //   // Set numberOfDays to empty when saving or submitting
+    //   dispatch({ type: "NUMBERS_OF_DAYS", payload: { numberOfDays: "" } });
+    // }
 
     if (type === "Save") {
       payload.cc = JSON.stringify(payload.cc);
       dispatch(saveLeaveFormAction(payload, param, disableSave));
+      setLeaveBalance(true);
     } else if (type === "Submit") {
       setDisableSave("");
       payload.cc = JSON.stringify(payload.cc);
-      console.log("disableSave", disableSave);
       dispatch(saveLeaveFormAction(payload, param, disableSave));
+      setLeaveBalance(true);
     }
   };
 
@@ -159,6 +169,10 @@ const LeavePage = () => {
     }
   }, [formDataLoading, leaveFormError]);
 
+  const clearErrorOnEdit = () => {
+    setErrors({});
+  };
+
   return (
     <Box>
       <Grid container spacing={3}>
@@ -167,16 +181,17 @@ const LeavePage = () => {
         </Grid>
 
         <Grid item xs={12} sm={8} md={8} lg={8}>
-          <LeaveBalance />
+          <LeaveBalance leave={leaveBalance} />
           <LeaveRequestForm
             addHistoryEntry={addHistoryEntry}
             onChangeFormDataHandler={onChangeFormDataHandler}
             leaveRqstData={leaveRqstData}
             handleSaveLeaveApplyData={handleSaveLeaveApplyData}
             disableSave={disableSave}
+            setErrors={setErrors}
+            errors={errors}
           />
         </Grid>
-        <Grid style={{ position: 'absolute', borderLeft: '2px dotted #008080', height: '120%', marginLeft: '55.3%', marginTop: '10%', transform: 'translateX(-50%)' }}/>
         <Grid item xs={12} sm={4} md={4} lg={4}>
           <HolidayList />
         </Grid>
@@ -190,6 +205,7 @@ const LeavePage = () => {
             setLeaveDelete={setLeaveDelete}
             onDeleteLeave={handleDeleteLeave}
             currentPage={currentPage}
+            clearErrorOnEdit={clearErrorOnEdit}
           />
         </Grid>
       </Grid>

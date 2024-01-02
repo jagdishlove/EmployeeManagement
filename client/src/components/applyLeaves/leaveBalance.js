@@ -1,20 +1,12 @@
 import { Grid, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getLeaveBalanceAction } from "../../redux/actions/leaves/leaveAction";
+import React from "react";
+import {useSelector } from "react-redux";
 
 const LeaveBalance = () => {
-  const dispatch = useDispatch();
-
   const leaveBalance = useSelector(
     (state) => state?.nonPersist?.leavesData?.leaveBalanceData
   );
-
-
-  useEffect(() => {
-    dispatch(getLeaveBalanceAction());
-  }, [dispatch]);
 
   const leaveTypeMasterData = useSelector(
     (state) => state.persistData.masterData?.leaveTypes

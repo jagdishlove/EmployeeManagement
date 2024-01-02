@@ -3,14 +3,14 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Typography from "@mui/material/Typography";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getSearchEmailAction } from "../../redux/actions/leaves/leaveAction";
 import { masterDataAction } from "../../redux/actions/masterData/masterDataAction";
+import InputFileUpload from "../forms/customInputs/uploadFile";
 import Dropdown from "../forms/dropdown/dropdown";
 import "./leaves.css";
-import dayjs from "dayjs";
-import InputFileUpload from "../forms/customInputs/uploadFile";
 
 const LeaveRequestForm = ({
   addHistoryEntry,
@@ -18,10 +18,12 @@ const LeaveRequestForm = ({
   leaveRqstData,
   handleSaveLeaveApplyData,
   disableSave,
+  errors,
+  setErrors,
 }) => {
   const { numberOfDays } = useSelector((state) => state?.nonPersist.leavesData);
   const [status, setStatus] = useState("Saved");
-  const [errors, setErrors] = useState({});
+
   const style = {};
 
   const dispatch = useDispatch();
@@ -143,7 +145,6 @@ const LeaveRequestForm = ({
 
     return errors;
   };
-  
 
   return (
     <Box className="dashedBorderStyle">
@@ -161,12 +162,11 @@ const LeaveRequestForm = ({
               md={5}
               lg={5}
               direction="column"
-              
             >
               <Typography variant="body1" align="center" fontWeight="bold">
                 From
               </Typography>
-              <LocalizationProvider dateAdapter={AdapterDayjs} >
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   name="fromDate"
                   format="ddd, MMM DD,YYYY"
@@ -175,7 +175,19 @@ const LeaveRequestForm = ({
                   renderInput={(params) => <TextField {...params} />}
                 />
               </LocalizationProvider>
-              <Typography variant="body1" align="center" fontWeight="bold" style={{marginTop:'10%'}}>
+              {errors.fromDate && (
+                <Box>
+                  <Typography color="error" style={{ position: "absolute" }}>
+                    {errors.fromDate}
+                  </Typography>
+                </Box>
+              )}
+              <Typography
+                variant="body1"
+                align="center"
+                fontWeight="bold"
+                style={{ marginTop: "10%" }}
+              >
                 To
               </Typography>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -187,7 +199,6 @@ const LeaveRequestForm = ({
                   renderInput={(params) => <TextField {...params} />}
                 />
               </LocalizationProvider>
-              <Typography color="error" style={{position:'absolute',marginTop:'7%'}}>{errors.fromDate}</Typography>
             </Grid>
             <Grid
               container
@@ -212,16 +223,23 @@ const LeaveRequestForm = ({
                   style={{
                     ...style.TimesheetTextField,
                     border: "1px solid #8897ad87",
-                    borderRadius: "10px",
+                    borderRadius: "5px",
                     textAlign: "center",
                   }}
                 />
                 {errors.fromSession && (
                   <Box>
-                    <Typography color="error"  style={{position:'absolute'}}>{errors.fromSession}</Typography>
+                    <Typography color="error" style={{ position: "absolute" }}>
+                      {errors.fromSession}
+                    </Typography>
                   </Box>
                 )}
-                <Typography variant="body1" align="center" fontWeight="bold" style={{marginTop:'11%'}}>
+                <Typography
+                  variant="body1"
+                  align="center"
+                  fontWeight="bold"
+                  style={{ marginTop: "11%" }}
+                >
                   Session
                 </Typography>
                 <Dropdown
@@ -232,13 +250,15 @@ const LeaveRequestForm = ({
                   style={{
                     ...style.TimesheetTextField,
                     border: "1px solid #8897ad87",
-                    borderRadius: "10px",
+                    borderRadius: "5px",
                     textAlign: "center",
                   }}
                 />
                 {errors.toSession && (
                   <Box>
-                    <Typography color="error"  style={{position:'absolute'}}>{errors.toSession}</Typography>
+                    <Typography color="error" style={{ position: "absolute" }}>
+                      {errors.toSession}
+                    </Typography>
                   </Box>
                 )}
               </Grid>
@@ -267,7 +287,7 @@ const LeaveRequestForm = ({
                     padding: "28px",
                     backgroundColor: "#008080",
                     height: "155px",
-                    borderRadius: "10px",
+                    borderRadius: "5px",
                   }}
                 >
                   <Typography marginTop="35px" fontSize="20px">
@@ -299,7 +319,10 @@ const LeaveRequestForm = ({
                   />
                   {errors.leaveMasterId && (
                     <Box>
-                      <Typography color="error"  style={{position:'absolute'}}>
+                      <Typography
+                        color="error"
+                        style={{ position: "absolute" }}
+                      >
                         {errors.leaveMasterId}
                       </Typography>
                     </Box>
@@ -326,7 +349,12 @@ const LeaveRequestForm = ({
                   />
                   {errors.comments && (
                     <Box>
-                      <Typography color="error"  style={{position:'absolute'}}>{errors.comments}</Typography>
+                      <Typography
+                        color="error"
+                        style={{ position: "absolute" }}
+                      >
+                        {errors.comments}
+                      </Typography>
                     </Box>
                   )}
                 </Grid>

@@ -4,6 +4,9 @@ import makeRequest from "../../../api/api";
 import { errorMessage } from "../errors/errorsAction";
 import { getRefreshToken } from "../login/loginAction";
 import {
+  DELETE_LEAVE_FAILURE,
+  DELETE_LEAVE_REQUEST,
+  DELETE_LEAVE_SUCCESS,
   HOLIDAY_LIST_FAIL,
   HOLIDAY_LIST_REQUEST,
   HOLIDAY_LIST_SUCCESS,
@@ -16,9 +19,6 @@ import {
   SEARCH_EMAIL_FAIL,
   SEARCH_EMAIL_REQUEST,
   SEARCH_EMAIL_SUCCESS,
-  DELETE_LEAVE_FAILURE,
-  DELETE_LEAVE_REQUEST,
-  DELETE_LEAVE_SUCCESS,
 } from "./leavesActionType";
 
 const getLeaveBalanceRequest = () => {
@@ -211,6 +211,7 @@ export const saveLeaveFormAction = (data, param, disableSave) => {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
+      dispatch({ type: "NUMBERS_OF_DAYS", payload: { numberOfDays: "" } });
       return response;
     } catch (err) {
       if (err.response.data.errorCode === 403) {
