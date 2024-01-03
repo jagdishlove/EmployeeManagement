@@ -165,8 +165,9 @@ const ApprovalLeavesPage = () => {
     };
 
     dispatch(getLeaveRequestData(nextPagePayload));
-    setCounter(counter);
+    setCounter((counter) => counter + 1);
   };
+
 
   return (
     <Box>
@@ -209,7 +210,7 @@ const ApprovalLeavesPage = () => {
       ) : (
         <InfiniteScroll
           dataLength={getLeaveData?.content?.length || 0}
-          hasMore={getLeaveData?.totalElements > getLeaveData?.content?.length}
+          hasMore={getLeaveData?.totalElements > getLeaveData?.numberOfElements}
           next={fetchMore}
         >
           {getLeaveData?.content?.length > 0 ? (
