@@ -14,21 +14,10 @@ const mainApi = axios.create({
   },
   withCredentials: true,
 });
-
-
 const addApi = axios.create({
   baseURL,
   headers: {
     "Content-Type": "multipart/form-data",
-  },
-  withCredentials: true,
-});
-
-const downloadApi = axios.create({
-  baseURL,
-  headers: {
-    "Content-Type": "application/octet-stream",
-    responseType: 'arraybuffer' 
   },
   withCredentials: true,
 });
@@ -95,29 +84,5 @@ export const addRequest = async (method, url, data, queryParams) => {
     throw error;
   }
 };
-
-export const downloadRequest = async (method, url, data, queryParams) => {
-  // eslint-disable-next-line no-useless-catch
-  try {
-    const token = store.getState().persistData.data.jwtAccessToken;
-    const headers = {};
-
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-
-    const response = await downloadApi.request({
-      method,
-      url: queryParams ? `${url}?${new URLSearchParams(queryParams)}` : url,
-      data,
-      headers,
-    });
-
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
 export default makeRequest;
 

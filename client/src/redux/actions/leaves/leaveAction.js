@@ -176,12 +176,12 @@ export const saveLeaveFormAction = (data, param, disableSave) => {
 
     formData.append('fromDate', formatDate(data.fromDate));
     formData.append('toDate', formatDate(data.toDate));
+    formData.append('file', data.file);  // Assuming 'file' is the key expected by the server
+
     for (const key in data) {
-      formData.append(key, data[key]);
-    }
-
-
-
+      if (key !== 'file') {
+        formData.append(key, data[key]);
+      }    }
     try {
       dispatch(saveLeaveFormRequest());
       const response = await addRequest(

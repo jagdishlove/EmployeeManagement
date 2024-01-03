@@ -193,9 +193,7 @@ const HiddenDataCard = ({
               please click on the icon to download the file
             </Typography>
           )}
-
       </Grid>
-
       <Grid
         item
         container

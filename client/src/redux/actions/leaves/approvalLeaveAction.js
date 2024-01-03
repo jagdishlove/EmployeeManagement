@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import makeRequest, { downloadRequest } from "../../../api/api";
+import makeRequest from "../../../api/api";
 import { errorMessage } from "../errors/errorsAction";
 import { getRefreshToken } from "../login/loginAction";
 import {
@@ -198,17 +198,13 @@ export const downloadFileAction = (file, fileName) => {
   return async (dispatch) => {
     try {
       dispatch(downloadFileRequest());
-
-      // Assuming response.data is the binary data
-      const response = await downloadRequest("GET", `${file}`, null, null, true);
+      const response = await makeRequest("GET", `${file}`, null, null, true);
       const fileData = response.data;
 
-      // Use FileSaver.js to trigger the download
-      saveAs(new Blob([fileData]), fileName);
-
+      const blob = new Blob([fileData], { type: 'application/pdf' });
+      saveAs(blob, fileName);
       dispatch(downloadFileSuccess(response));
     } catch (err) {
-      // Handle errors
       if (err.response?.data?.errorCode === 403) {
         dispatch(getRefreshToken());
       }

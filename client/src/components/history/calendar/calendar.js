@@ -75,33 +75,26 @@ const HistoryCalendar = ({
 
   const changeMonthAccordingly = () => {
     const currentYear = moment().year();
+    const currentMonth = moment().month();
     const yearList = [];
+    const monthList = [];
   
-    let startYear, endYear;
+    // Include the current year
+    yearList.push(currentYear);
   
-    if (selectedMonth <= moment().month()) {
-      // If the selected month is less than or equal to the current month,
-      // include the current year
-      startYear = currentYear;
-      endYear = currentYear;
-    } else {
-      // If the selected month is in the future, include the current year and the next year
-      startYear = currentYear - 1; // Subtract 1 to include the last 12 months
-      endYear = currentYear;
-    }
-  
-    for (let year = startYear; year <= endYear; year++) {
-      yearList.push(year);
+    // Include the previous year if the current month is January
+    if (currentMonth === 0) {
+      yearList.push(currentYear - 1);
     }
   
     setYears(yearList);
   
-    const monthList = [];
-    const startMonth = selectedMonth <= moment().month() ? 0 : moment().month();
-    const endMonth = moment().month();
+    // Start from the current month and include the past 11 months
+    for (let i = 0; i < 12; i++) {
+      const month = currentMonth - i;
+      const year = month < 0 ? currentYear - 1 : currentYear;
+      const date = moment().year(year).month(month).startOf("month");
   
-    for (let month = startMonth; month <= endMonth; month++) {
-      const date = moment().year(selectedYear).month(month).startOf("month");
       monthList.push({
         value: month,
         label: date.format("MMMM"),
@@ -110,8 +103,6 @@ const HistoryCalendar = ({
   
     setMonths(monthList);
   };
-  
-  
   
 
   useEffect(() => {
