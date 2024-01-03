@@ -20,13 +20,14 @@ export default function InputFileUpload() {
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
+    console.log('Selected file:', file);
     setSelectedFile(file);
   };
 
   return (
     <Button component="label" variant="contained" startIcon={<CloudUploadIcon />}>
       {selectedFile ? `File: ${selectedFile.name}` : 'Upload file'}
-      <VisuallyHiddenInput type="file" accept=".doc, .docx, .zip, .jpg, .jpeg, .png, .xlsx, .xls" onChange={handleFileChange} />
+      <VisuallyHiddenInput type="file" accept=".doc, .docx, .zip, .jpg, .jpeg, .png, .xlsx, .xls,.pdf" onChange={handleFileChange} />
     </Button>
   );
 }

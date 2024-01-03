@@ -150,12 +150,13 @@ const LeaveRequestForm = ({
     return errors;
   };
 
-  const inputFileChangeHandler = (e) => {
-    const selectedFile = e.target.files[0];
-    onChangeFormDataHandler(e, selectedFile, "file");
-    setFile(selectedFile)
+  const inputFileChangeHandler = (event) => {
+    const file = event.target.files[0];
+    console.log('Seledddddcted file:', file);
+    setFile(file);
   };
 
+  
 
   return (
     <Box className="dashedBorderStyle">
