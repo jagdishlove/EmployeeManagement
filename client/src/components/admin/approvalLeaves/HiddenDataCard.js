@@ -1,7 +1,9 @@
-import { Button, Grid, TextField, Typography } from "@mui/material";
+import { Button, Grid, IconButton, TextField, Typography } from "@mui/material";
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import dayjs from "dayjs";
+import { CloudDownload } from "@mui/icons-material";
+import { downloadFileAction } from "../../../redux/actions/leaves/approvalLeaveAction";
 
 const HiddenDataCard = ({
   cardData,
@@ -18,6 +20,8 @@ const HiddenDataCard = ({
     approveRejectLeavesHandler(leaveRequestId, status, comments);
   };
 
+  const dispatch = useDispatch();
+
   const getLeaveType = (leaveMasterId) => {
     const leaveTypeObject = masterData?.leaveTypes?.find(
       (data) => data.leaveMasterId === leaveMasterId
@@ -32,6 +36,9 @@ const HiddenDataCard = ({
     return sessionObject ? sessionObject.sessionValue : sessionName;
   };
 
+  const handleDownload = (file) => {
+    dispatch(downloadFileAction(file, cardData.fileName))
+  }
   return (
     <Grid container spacing={2} style={{ padding: "10px" }}>
       <div
@@ -168,6 +175,25 @@ const HiddenDataCard = ({
             {getLeaveType(cardData.leaveMasterId)}
           </Typography>
         </Grid>
+        {cardData.fileName && (
+            <Grid style={{ marginRight: "50%", marginLeft: "-80%" }}>
+              <IconButton
+                style={{ marginRight: "50%", marginLeft: "-100%" }}
+                onClick={() => handleDownload(cardData?.fileDownloadLink)}
+              >
+                <CloudDownload />
+              </IconButton>
+              <Grid style={{ marginLeft: "-13%", marginTop: "-3%", position: "absolute" }}>
+                <Typography>{cardData.fileName}</Typography>
+              </Grid>
+            </Grid>
+          )}
+          {cardData.fileName && (
+            <Typography style={{ position: 'absolute', marginLeft: '-34%', fontSize: '10px', marginTop: '-1%' }}>
+              please click on the icon to download the file
+            </Typography>
+          )}
+
       </Grid>
 
       <Grid
@@ -277,7 +303,7 @@ const HiddenDataCard = ({
         md={4}
         lg={4}
         gap={2}
-        style={{ marginTop: 10, position: "relative" }}
+        style={{ marginTop: 13, position: "relative" }}
       >
         {approval && (
           <>

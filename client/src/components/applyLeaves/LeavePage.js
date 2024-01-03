@@ -1,9 +1,6 @@
 import { Box, Grid } from "@mui/material";
-
 import { useEffect, useState } from "react";
-
 import dayjs from "dayjs";
-
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteLeave,
@@ -27,11 +24,16 @@ const LeavePage = () => {
     (state) => state?.nonPersist?.leavesData
   );
 
+
   const [historyData, setHistoryData] = useState([]);
   const [leaveHistoryData, setLeaveHistoryData] = useState([]);
   const [leaveDelete, setLeaveDelete] = useState(true);
   const [errors, setErrors] = useState({});
 
+  const [file,setFile] = useState(null)
+
+  
+console.log('file',file)
   const initialData = {
     leaveRequestId: "",
     fromDate: dayjs(new Date()),
@@ -42,6 +44,7 @@ const LeavePage = () => {
     comments: "",
     manager: managerData.managerName || "",
     cc: [] || "",
+    file:file || " "
   };
 
   const [disableSave, setDisableSave] = useState("");
@@ -56,18 +59,20 @@ const LeavePage = () => {
   const leaveHistory = useSelector(
     (state) => state?.nonPersist?.leaveHistoryData?.data
   );
+
   useEffect(() => {
     dispatch(fetchLeaveHistory({ page: currentPage }));
-  }, [dispatch, saveSubmitStatus, leaveDelete, currentPage]);
+  }, [dispatch, saveSubmitStatus, leaveDelete, currentPage, leaveBalance]);
 
   useEffect(() => {
     setLeaveHistoryData(leaveHistory);
-  }, [leaveHistory, leaveDelete]);
+  }, [leaveHistory, leaveDelete, leaveBalance]);
 
   useEffect(() => {
     dispatch(getLeaveBalanceAction());
     setLeaveBalance(false);
   }, [dispatch, leaveBalance]);
+   
 
   const addHistoryEntry = (entry) => {
     setHistoryData([...historyData, entry]);
@@ -85,6 +90,7 @@ const LeavePage = () => {
         return { ...prevData, content: newArray };
       });
       setLeaveDelete(true);
+      setLeaveBalance(true);
       setLeaveBalance(true);
     });
   };
@@ -150,14 +156,18 @@ const LeavePage = () => {
     //   dispatch({ type: "NUMBERS_OF_DAYS", payload: { numberOfDays: "" } });
     // }
 
+    payload.file = leaveRqstData.file;
+
     if (type === "Save") {
       payload.cc = JSON.stringify(payload.cc);
       dispatch(saveLeaveFormAction(payload, param, disableSave));
+      setLeaveBalance(true);
       setLeaveBalance(true);
     } else if (type === "Submit") {
       setDisableSave("");
       payload.cc = JSON.stringify(payload.cc);
       dispatch(saveLeaveFormAction(payload, param, disableSave));
+      setLeaveBalance(true);
       setLeaveBalance(true);
     }
   };
@@ -190,7 +200,9 @@ const LeavePage = () => {
             disableSave={disableSave}
             setErrors={setErrors}
             errors={errors}
+            setFile={setFile}
           />
+
         </Grid>
        
         <Grid item xs={12} sm={4} md={4} lg={4} display={"flex"}>
