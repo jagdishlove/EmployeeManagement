@@ -20,13 +20,13 @@ const LeaveRequestForm = ({
   disableSave,
   errors,
   setErrors,
-  setFile
+  setFile,
+  file,
 }) => {
   const { numberOfDays } = useSelector((state) => state?.nonPersist.leavesData);
   const [status, setStatus] = useState("Saved");
 
   const style = {};
-
 
   const dispatch = useDispatch();
 
@@ -38,8 +38,7 @@ const LeaveRequestForm = ({
       numberOfDays: numberOfDays,
       status: status,
       ccEmails: leaveRqstData.CC,
-      file: leaveRqstData.file, 
-
+      file: leaveRqstData.file,
     };
     addHistoryEntry(newEntry);
   };
@@ -136,13 +135,14 @@ const LeaveRequestForm = ({
 
     // Check for mandatory attachment for specific leave types (11, 5, or 8)
     if (
-      leaveRqstData.leaveMasterId === "11" ||
-      leaveRqstData.leaveMasterId === "5" ||
-      leaveRqstData.leaveMasterId === "8" ||
-      leaveRqstData.leaveMasterId === "10" ||
-      (leaveRqstData.leaveMasterId === "3" &&
-        numberOfDays >= 3 &&
-        !leaveRqstData.attachment)
+      (leaveRqstData.leaveMasterId === "11" ||
+        leaveRqstData.leaveMasterId === "5" ||
+        leaveRqstData.leaveMasterId === "8" ||
+        leaveRqstData.leaveMasterId === "10" ||
+        (leaveRqstData.leaveMasterId === "3" &&
+          numberOfDays >= 3 &&
+          !leaveRqstData.attachment)) &&
+      !file
     ) {
       errors.attachment = "Attachment Mandatory";
     }
@@ -152,11 +152,8 @@ const LeaveRequestForm = ({
 
   const inputFileChangeHandler = (event) => {
     const file = event.target.files[0];
-    console.log('Seledddddcted file:', file);
     setFile(file);
   };
-
-  
 
   return (
     <Box className="dashedBorderStyle">
@@ -421,9 +418,11 @@ const LeaveRequestForm = ({
             <Grid item xs={12}>
               <Box sx={{ display: "flex", gap: "10px", justifyContent: "end" }}>
                 <Box sx={{ margin: "auto" }}>
-                <InputFileUpload onChange={inputFileChangeHandler} />
-               
-              {errors.attachment && (
+                  <InputFileUpload
+                    onChange={inputFileChangeHandler}
+                    file={file}
+                  />
+                  {errors.attachment && (
                     <Box>
                       <Typography
                         color="error"

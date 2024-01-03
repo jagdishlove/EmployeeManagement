@@ -24,15 +24,12 @@ const LeavePage = () => {
     (state) => state?.nonPersist?.leavesData
   );
 
-
   const [historyData, setHistoryData] = useState([]);
   const [leaveHistoryData, setLeaveHistoryData] = useState([]);
   const [leaveDelete, setLeaveDelete] = useState(true);
   const [errors, setErrors] = useState({});
 
-  const [file,setFile] = useState(null)
-
-  
+  const [file, setFile] = useState(null);
 
   const initialData = {
     leaveRequestId: "",
@@ -44,7 +41,7 @@ const LeavePage = () => {
     comments: "",
     manager: managerData.managerName || "",
     cc: [] || "",
-    file:file || " "
+    file: file || " ",
   };
 
   const [disableSave, setDisableSave] = useState("");
@@ -72,7 +69,6 @@ const LeavePage = () => {
     dispatch(getLeaveBalanceAction());
     setLeaveBalance(false);
   }, [dispatch, leaveBalance]);
-   
 
   const addHistoryEntry = (entry) => {
     setHistoryData([...historyData, entry]);
@@ -151,8 +147,6 @@ const LeavePage = () => {
       action: type,
     };
 
-   
-
     payload.file = leaveRqstData.file;
 
     if (type === "Save") {
@@ -198,13 +192,20 @@ const LeavePage = () => {
             setErrors={setErrors}
             errors={errors}
             setFile={setFile}
+            file={file}
           />
-
         </Grid>
-       
+
         <Grid item xs={12} sm={4} md={4} lg={4} display={"flex"}>
-        <div style={{ borderLeft:  "2px dashed rgba(0, 128, 128, 0.4)" , height: '100%', marginLeft: '-10px', marginRight:"10px", }}></div>
-          <HolidayList   />
+          <div
+            style={{
+              borderLeft: "2px dashed rgba(0, 128, 128, 0.4)",
+              height: "100%",
+              marginLeft: "-10px",
+              marginRight: "10px",
+            }}
+          ></div>
+          <HolidayList />
         </Grid>
 
         <Grid item xs={12} sm={12} md={12} lg={12}>
