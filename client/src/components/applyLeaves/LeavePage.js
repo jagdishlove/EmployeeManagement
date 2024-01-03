@@ -33,7 +33,7 @@ const LeavePage = () => {
   const [file,setFile] = useState(null)
 
   
-console.log('file',file)
+
   const initialData = {
     leaveRequestId: "",
     fromDate: dayjs(new Date()),
@@ -151,10 +151,7 @@ console.log('file',file)
       action: type,
     };
 
-    // if (type === "Save" || type === "Submit") {
-    //   // Set numberOfDays to empty when saving or submitting
-    //   dispatch({ type: "NUMBERS_OF_DAYS", payload: { numberOfDays: "" } });
-    // }
+   
 
     payload.file = leaveRqstData.file;
 
