@@ -1,4 +1,10 @@
-import { Box, CircularProgress, Dialog, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  Typography,
+} from "@mui/material";
 import { LocalizationProvider, StaticDatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
@@ -35,14 +41,14 @@ const ApprovalLeavesPage = () => {
   useEffect(() => {
     if (dateData === "CALENDER") {
       const currentDate = dayjs().format("YYYY-MM-DD");
-      payload.fromDate = selectedDate.format("YYYY-MM-DD");
+      payload.fromDate = selectedDate?.format("YYYY-MM-DD");
       payload.toDate = currentDate;
     }
 
     setTeamMemberData("All");
 
     dispatch(getApprovalLeaveTeamMemberAction(payload));
-  }, [dateData, selectedDate, dispatch]);
+  }, [selectedDate, dispatch]);
 
   const dateChangeHandler = (e) => {
     const { value } = e.target;
@@ -53,13 +59,12 @@ const ApprovalLeavesPage = () => {
     setIsOpenCalender(true);
   };
 
-  const calendarDateAcceptHandler = async (date) => {
+  const calendarDateAcceptHandler = async () => {
     setIsOpenCalender(false);
-
     if (dateData === "CALENDER") {
       const payload = {
         empId: TeamMemberData === "All" ? "" : TeamMemberData || "",
-        fromDate: date.format("YYYY-MM-DD"),
+        fromDate: selectedDate?.format("YYYY-MM-DD"),
         toDate: dayjs().format("YYYY-MM-DD"),
         dateBand: dateData,
         size: newSize,
@@ -67,21 +72,18 @@ const ApprovalLeavesPage = () => {
 
       await dispatch(getLeaveRequestData(payload));
     }
-
-    setSelectedDate(date);
-    setIsOpenCalender(false);
   };
 
   const payload = {
     empId: TeamMemberData === "All" ? "" : TeamMemberData || "",
-    fromDate: dateData === "CALENDER" ? selectedDate.format("YYYY-MM-DD") : "",
+    fromDate: dateData === "CALENDER" ? selectedDate?.format("YYYY-MM-DD") : "",
     toDate: dateData === "CALENDER" ? dayjs().format("YYYY-MM-DD") : "",
     dateBand: dateData,
     size: 5 * counter,
   };
 
   const fetchData = async () => {
-      dispatch(getLeaveRequestData(payload));
+    dispatch(getLeaveRequestData(payload));
   };
 
   useEffect(() => {
@@ -106,6 +108,19 @@ const ApprovalLeavesPage = () => {
     }
 
     return newErrors;
+  };
+
+  const cancleHandler = () => {
+    setIsOpenCalender(false);
+  };
+
+  const ActionList = () => {
+    return (
+      <Box>
+        <Button onClick={calendarDateAcceptHandler}>Okay</Button>
+        <Button onClick={cancleHandler}>Cancel</Button>
+      </Box>
+    );
   };
 
   const approveRejectLeavesHandler = (id, status, approverComment) => {
@@ -134,7 +149,6 @@ const ApprovalLeavesPage = () => {
 
   const shouldDisableDate = (date) => {
     return dayjs(date).isAfter(dayjs(), "day"); // Disable future dates
-
   };
 
   const fetchMore = () => {
@@ -157,20 +171,24 @@ const ApprovalLeavesPage = () => {
   return (
     <Box>
       <Dialog
-        open={false}
+        open={isOpenCalender}
         onClose={() => setIsOpenCalender(false)}
         onClick={(e) => e.stopPropagation()}
       >
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <StaticDatePicker
-            sx={{ overflow: "scroll" }}
-            onClose={() => {
-              setIsOpenCalender(false);
+            sx={{
+              overflow: "scroll",
+              display: "flex",
+              flexDirection: "column",
             }}
             defaultValue={dayjs()}
             value={selectedDate}
             shouldDisableDate={shouldDisableDate}
-            onAccept={calendarDateAcceptHandler} // Add this line
+            onChange={(date) => setSelectedDate(date)}
+            slots={{
+              actionBar: ActionList,
+            }}
           />
         </LocalizationProvider>
       </Dialog>
