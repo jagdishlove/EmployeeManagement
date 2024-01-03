@@ -200,7 +200,6 @@ const DataCard = ({
             />
           )}
         </AccordionSummary>
-
         <Box sx={{ width: "100%", textAlign: "center", cursor: "pointer" }}>
           <RemoveIcon onClick={handleAccordionToggle} />
         </Box>

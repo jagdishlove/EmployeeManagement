@@ -160,7 +160,7 @@ const HolidayList = () => {
                 weeks of maternity leave 6 weeks before the child&apos;s birth
               </Typography>
               <Typography sx={{ lineHeight: "20px", marginBottom: "10px" }}>
-                <img src={prakat_favicon_list} /> 5 Paternity leaves are offered
+                <img src={prakat_favicon_list} /> 10 Paternity leaves are offered
                 to all male permanent employees. Eligibility of the leaves is
                 only one month from the date of birth of the child
               </Typography>

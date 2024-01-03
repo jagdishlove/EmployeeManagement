@@ -81,9 +81,7 @@ const ApprovalLeavesPage = () => {
   };
 
   const fetchData = async () => {
-    if (TeamMemberData || dateData === "CALENDER") {
       dispatch(getLeaveRequestData(payload));
-    }
   };
 
   useEffect(() => {
@@ -136,6 +134,7 @@ const ApprovalLeavesPage = () => {
 
   const shouldDisableDate = (date) => {
     return dayjs(date).isAfter(dayjs(), "day"); // Disable future dates
+
   };
 
   const fetchMore = () => {

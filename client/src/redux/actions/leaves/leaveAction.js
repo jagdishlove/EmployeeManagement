@@ -1,6 +1,6 @@
 // import { toast } from "react-toastify";
 import { toast } from "react-toastify";
-import makeRequest from "../../../api/api";
+import makeRequest, { addRequest } from "../../../api/api";
 import { errorMessage } from "../errors/errorsAction";
 import { getRefreshToken } from "../login/loginAction";
 import {
@@ -170,53 +170,42 @@ export const getSearchEmailAction = (payload) => {
 };
 
 export const saveLeaveFormAction = (data, param, disableSave) => {
-  return async (dispatch, getState) => {
-    let newData = {};
-    if (
-      ["SUBMITTED", "APPROVED", "SAVED"].includes(disableSave) &&
-      param.action === "Save"
-    ) {
-      newData = {
-        ...data,
-        leaveRequestId:
-          getState()?.nonPersist?.leavesData.savedLeaveData.leaveRequestId ||
-          data.leaveRequestId ||
-          undefined,
-      };
-    } else {
-      newData = {
-        ...data,
-        leaveRequestId:
-          getState()?.nonPersist?.leavesData.savedLeaveData.leaveRequestId ||
-          data.leaveRequestId ||
-          undefined,
-      };
+  return async (dispatch) => {
+    console.log("disableSave", disableSave);
+    let formData = new FormData();
+
+    formData.append('fromDate', formatDate(data.fromDate));
+    formData.append('toDate', formatDate(data.toDate));
+    for (const key in data) {
+      formData.append(key, data[key]);
     }
+
+
 
     try {
       dispatch(saveLeaveFormRequest());
-      const response = await makeRequest(
+      const response = await addRequest(
         "POST",
         "/api/leave/apply",
-        newData,
+        formData, 
         param
       );
       dispatch(saveLeaveFormSuccess(response));
       if (param.action === "Save") {
-        toast.success("Leave Applied Successfully Saved", {
+        toast.success("Your leaves are saved successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       } else if (param.action === "Submit") {
-        toast.success("Leave Applied Successfully Submitted", {
+        toast.success("Your leaves have been submitted successfully for approval ", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
       dispatch({ type: "NUMBERS_OF_DAYS", payload: { numberOfDays: "" } });
       return response;
     } catch (err) {
-      if (err.response.data.errorCode === 403) {
+      if (err.response && err.response.data && err.response.data.errorCode === 403) {
         dispatch(getRefreshToken());
-      } else if (err.response.data.errorCode === 500) {
+      } else if (err.response && err.response.data && err.response.data.errorCode === 500) {
         dispatch(saveLeaveFormFail(err.response.data.errorMessage));
         toast.error(err.response.data.errorMessage, {
           position: toast.POSITION.BOTTOM_CENTER,
@@ -225,6 +214,11 @@ export const saveLeaveFormAction = (data, param, disableSave) => {
     }
   };
 };
+
+function formatDate(date) {
+  return new Date(date).toISOString().split('T')[0];
+}
+
 
 export const getNumbersOfDaysAction = (data) => {
   return async (dispatch) => {

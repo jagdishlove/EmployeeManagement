@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import makeRequest from "../../../api/api";
+import makeRequest, { downloadRequest } from "../../../api/api";
 import { errorMessage } from "../errors/errorsAction";
 import { getRefreshToken } from "../login/loginAction";
 import {
@@ -15,7 +15,12 @@ import {
   GET_LEAVE_FAIL,
   GET_LEAVE_REQUEST,
   GET_LEAVE_SUCCESS,
+  DOWNLOAD_FILE_REQUEST,
+  DOWNLOAD_FILE_SUCCESS,
+  DOWNLOAD_FILE_FAIL
 } from "./approvalLeaveActionType";
+import { saveAs } from 'file-saver';
+
 
 const getApprovalLeaveDatesRequest = () => {
   return {
@@ -86,6 +91,18 @@ const approveLeavesFail = () => {
     type: APPROVE_LEAVES_FAIL,
   };
 };
+const downloadFileRequest = () => ({
+  type: DOWNLOAD_FILE_REQUEST,
+});
+
+const downloadFileSuccess = (data) => ({
+  type: DOWNLOAD_FILE_SUCCESS,
+  payload: data,
+});
+
+const downloadFileFail = () => ({
+  type: DOWNLOAD_FILE_FAIL,
+});
 
 export const getApprovalLeaveDatesAction = () => {
   return async (dispatch) => {
@@ -173,6 +190,30 @@ export const approveRejectLeavesAction = (data, getDataPayload) => {
       // Handle 403 error here
       // For example, you can dispatch an action to update the state
       dispatch(approveLeavesFail(err.response.data.errorMessage));
+    }
+  };
+};
+
+export const downloadFileAction = (file, fileName) => {
+  return async (dispatch) => {
+    try {
+      dispatch(downloadFileRequest());
+
+      // Assuming response.data is the binary data
+      const response = await downloadRequest("GET", `${file}`, null, null, true);
+      const fileData = response.data;
+
+      // Use FileSaver.js to trigger the download
+      saveAs(new Blob([fileData]), fileName);
+
+      dispatch(downloadFileSuccess(response));
+    } catch (err) {
+      // Handle errors
+      if (err.response?.data?.errorCode === 403) {
+        dispatch(getRefreshToken());
+      }
+      dispatch(downloadFileFail());
+      dispatch(errorMessage(err.response?.data?.errorMessage || 'Failed to download file'));
     }
   };
 };

@@ -26,7 +26,7 @@ export default function InputFileUpload() {
   return (
     <Button component="label" variant="contained" startIcon={<CloudUploadIcon />}>
       {selectedFile ? `File: ${selectedFile.name}` : 'Upload file'}
-      <VisuallyHiddenInput type="file" accept=".doc, .docx, .zip" onChange={handleFileChange} />
+      <VisuallyHiddenInput type="file" accept=".doc, .docx, .zip, .jpg, .jpeg, .png, .xlsx, .xls" onChange={handleFileChange} />
     </Button>
   );
 }

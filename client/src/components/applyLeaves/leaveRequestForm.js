@@ -20,11 +20,13 @@ const LeaveRequestForm = ({
   disableSave,
   errors,
   setErrors,
+  setFile
 }) => {
   const { numberOfDays } = useSelector((state) => state?.nonPersist.leavesData);
   const [status, setStatus] = useState("Saved");
 
   const style = {};
+
 
   const dispatch = useDispatch();
 
@@ -36,6 +38,8 @@ const LeaveRequestForm = ({
       numberOfDays: numberOfDays,
       status: status,
       ccEmails: leaveRqstData.CC,
+      file: leaveRqstData.file, 
+
     };
     addHistoryEntry(newEntry);
   };
@@ -145,6 +149,13 @@ const LeaveRequestForm = ({
 
     return errors;
   };
+
+  const inputFileChangeHandler = (e) => {
+    const selectedFile = e.target.files[0];
+    onChangeFormDataHandler(e, selectedFile, "file");
+    setFile(selectedFile)
+  };
+
 
   return (
     <Box className="dashedBorderStyle">
@@ -409,8 +420,9 @@ const LeaveRequestForm = ({
             <Grid item xs={12}>
               <Box sx={{ display: "flex", gap: "10px", justifyContent: "end" }}>
                 <Box sx={{ margin: "auto" }}>
-                  <InputFileUpload onChange={onChangeFormDataHandler} />
-                  {errors.attachment && (
+                <InputFileUpload onChange={inputFileChangeHandler} />
+               
+              {errors.attachment && (
                     <Box>
                       <Typography
                         color="error"
