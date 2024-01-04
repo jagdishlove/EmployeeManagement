@@ -23,8 +23,6 @@ const LeaveRequestForm = ({
   file,
   errors,
   setErrors,
-  setFile,
-  file,
 }) => {
   const { numberOfDays } = useSelector((state) => state?.nonPersist.leavesData);
   const [status, setStatus] = useState("Saved");
@@ -45,7 +43,6 @@ const LeaveRequestForm = ({
     };
     addHistoryEntry(newEntry);
     clearFile();
-
   };
 
   const leaveRequestSession = useSelector(
@@ -99,6 +96,32 @@ const LeaveRequestForm = ({
   };
 
   const validateForm = () => {
+    const findLeaveMasterId = (leaveType) => {
+      const foundLeave = leaveRequestType.find(
+        (leave) => leave.leaveType === leaveType
+      );
+
+      if (foundLeave) {
+        return foundLeave.leaveMasterId;
+      } else {
+        // Handle the case when leave type is not found
+        console.error(`Leave type "${leaveType}" not found`);
+        return null; // or any default value
+      }
+    };
+
+    // Usage example
+    const privilegeLeaveId = findLeaveMasterId("Privilege Leave");
+    console.log("privilegeLeaveId", privilegeLeaveId);
+    const paternityLeaveId = findLeaveMasterId("Paternity Leave");
+    const compensatoryLeaveId = findLeaveMasterId("Compensatory Leave");
+    const maternityLeaveId = findLeaveMasterId("Maternity Leave");
+    const maternityIllnessLeaveId = findLeaveMasterId(
+      "Maternity Illness Leave"
+    );
+    const adoptionLeaveId = findLeaveMasterId("Adoption Leave");
+    const sickLeaveId = findLeaveMasterId("Sick Leave");
+
     const errors = {};
     // Example validation for fromDate
     if (!leaveRqstData.fromSession) {
@@ -125,10 +148,10 @@ const LeaveRequestForm = ({
 
     // Additional validation for "PL, PaL, COL, ML  Leave"
     if (
-      leaveRqstData.leaveMasterId === "4" ||
-      leaveRqstData.leaveMasterId === "5" ||
-      leaveRqstData.leaveMasterId === "6" ||
-      leaveRqstData.leaveMasterId === "8"
+      leaveRqstData.leaveMasterId === `${privilegeLeaveId}` ||
+      leaveRqstData.leaveMasterId === `${paternityLeaveId}` ||
+      leaveRqstData.leaveMasterId === `${compensatoryLeaveId}` ||
+      leaveRqstData.leaveMasterId === `${maternityLeaveId}`
     ) {
       const currentDate = dayjs();
       const selectedFromDate = dayjs(leaveRqstData.fromDate);
@@ -140,11 +163,11 @@ const LeaveRequestForm = ({
 
     // Check for mandatory attachment for specific leave types (11, 5, or 8)
     if (
-      (leaveRqstData.leaveMasterId === "11" ||
-        leaveRqstData.leaveMasterId === "5" ||
-        leaveRqstData.leaveMasterId === "8" ||
-        leaveRqstData.leaveMasterId === "10" ||
-        (leaveRqstData.leaveMasterId === "3" &&
+      (leaveRqstData.leaveMasterId === `${maternityIllnessLeaveId}` ||
+        leaveRqstData.leaveMasterId === `${paternityLeaveId}` ||
+        leaveRqstData.leaveMasterId === `${maternityLeaveId}` ||
+        leaveRqstData.leaveMasterId === `${adoptionLeaveId}` ||
+        (leaveRqstData.leaveMasterId === `${sickLeaveId}` &&
           numberOfDays >= 3 &&
           !leaveRqstData.attachment)) &&
       !file

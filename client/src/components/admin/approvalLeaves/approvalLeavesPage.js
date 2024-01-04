@@ -59,7 +59,7 @@ const ApprovalLeavesPage = () => {
     setIsOpenCalender(true);
   };
 
-  const calendarDateAcceptHandler = async () => {
+  const calendarDateAcceptHandler = () => {
     setIsOpenCalender(false);
     if (dateData === "CALENDER") {
       const payload = {
@@ -70,7 +70,7 @@ const ApprovalLeavesPage = () => {
         size: newSize,
       };
 
-      await dispatch(getLeaveRequestData(payload));
+      dispatch(getLeaveRequestData(payload));
     }
   };
 
@@ -82,19 +82,19 @@ const ApprovalLeavesPage = () => {
     size: 5 * counter,
   };
 
-  const fetchData = async () => {
-    dispatch(getLeaveRequestData(payload));
-  };
+  // const fetchData = async () => {
+  //   dispatch(getLeaveRequestData(payload));
+  // };
 
   useEffect(() => {
     if (dateData === "CALENDER") {
       return;
     }
-    const fetchDataWithDelay = async () => {
-      await fetchData();
-    };
+    // const fetchDataWithDelay = async () => {
+    //   await fetchData();
+    // };
 
-    fetchDataWithDelay();
+    // fetchDataWithDelay();
   }, [TeamMemberData, dateData, selectedDate, counter]);
 
   const teamMemberSelectHandler = (e) => {
@@ -167,7 +167,6 @@ const ApprovalLeavesPage = () => {
     dispatch(getLeaveRequestData(nextPagePayload));
     setCounter((counter) => counter + 1);
   };
-
 
   return (
     <Box>
