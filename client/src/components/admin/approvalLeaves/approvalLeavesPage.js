@@ -29,14 +29,14 @@ const ApprovalLeavesPage = () => {
   const [dateData, setDateData] = useState("THIS_WEEK");
   const [TeamMemberData, setTeamMemberData] = useState("All");
   const [selectedDate, setSelectedDate] = useState(dayjs());
-  const [counter, setCounter] = useState(2);
   const [error, setError] = useState({});
+  const [pageCounter, setPageCounter] = useState(2);
 
   // const [errorValidation, setErrorValidation] = useState({});
 
   const [leaveRequestId, setLeaveRequestId] = useState();
 
-  const newSize = 5 * counter;
+  const newSize = 5 * 2;
 
   useEffect(() => {
     setTeamMemberData("All");
@@ -62,7 +62,7 @@ const ApprovalLeavesPage = () => {
         dateBand: dateData,
         size: newSize,
       };
-
+      setPageCounter(2);
       await dispatch(getLeaveRequestData(payload));
     }
   };
@@ -72,7 +72,7 @@ const ApprovalLeavesPage = () => {
     fromDate: dateData === "CALENDER" ? selectedDate?.format("YYYY-MM-DD") : "",
     toDate: dateData === "CALENDER" ? dayjs().format("YYYY-MM-DD") : "",
     dateBand: dateData,
-    size: 5 * counter,
+    size: 5 * 2,
   };
 
   const fetchData = async () => {
@@ -85,7 +85,7 @@ const ApprovalLeavesPage = () => {
     };
 
     fetchDataWithDelay();
-  }, [TeamMemberData, dateData, selectedDate, counter]);
+  }, [TeamMemberData, dateData, selectedDate]);
 
   const teamMemberSelectHandler = (e) => {
     setTeamMemberData(e.target.value);
@@ -121,7 +121,7 @@ const ApprovalLeavesPage = () => {
         dateData === "CALENDER" ? selectedDate.format("YYYY-MM-DD") : "",
       toDate: dateData === "CALENDER" ? dayjs().format("YYYY-MM-DD") : "",
       dateBand: dateData,
-      size: 5 * counter,
+      size: 5 * 2,
     };
     if (Object.keys(newErrors).length === 0) {
       const payload = {
@@ -144,7 +144,7 @@ const ApprovalLeavesPage = () => {
   const fetchMore = () => {
     // Fetch more data only if there is more data available
     // dispatch(getLeaveRequestData(payload));
-    const nextPage = 10 * counter;
+    const nextPage = 10 * pageCounter;
     const nextPagePayload = {
       empId: TeamMemberData === "All" ? "" : TeamMemberData || "",
       fromDate:
@@ -155,7 +155,7 @@ const ApprovalLeavesPage = () => {
     };
 
     dispatch(getLeaveRequestData(nextPagePayload));
-    setCounter((counter) => counter + 1);
+    setPageCounter((counter) => counter + 1);
   };
 
   return (
