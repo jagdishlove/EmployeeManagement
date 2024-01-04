@@ -57,6 +57,10 @@ const LeavePage = () => {
     (state) => state?.nonPersist?.leaveHistoryData?.data
   );
 
+  const clearFile = () => {
+    setFile(null);
+  };
+
   useEffect(() => {
     dispatch(fetchLeaveHistory({ page: currentPage }));
   }, [dispatch, saveSubmitStatus, leaveDelete, currentPage, leaveBalance]);
@@ -167,6 +171,7 @@ const LeavePage = () => {
     if (!formDataLoading && !leaveFormError) {
       // If form data loading is complete and there's no error, reset the form
       setLeaveReqstData(initialData);
+      setFile(null);
     }
   }, [formDataLoading, leaveFormError]);
 
@@ -207,7 +212,6 @@ const LeavePage = () => {
           ></div>
           <HolidayList />
         </Grid>
-
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <LeaveHistory
             setDisableSave={setDisableSave}

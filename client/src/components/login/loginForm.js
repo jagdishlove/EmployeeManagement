@@ -143,7 +143,7 @@ const LoginForm = () => {
           </Typography>
         </Box>
 
-        <Box sx={style.inputOutsideBox}>
+        <Box sx={style.inputOutsideBox} >
           <Box sx={style.inputOutsideBoxText}>
             <Typography
               sx={{
@@ -154,6 +154,9 @@ const LoginForm = () => {
                 "@media (min-width:820px ) and (min-height: 1180px)": {
                   fontWeight: "bold",
                 },
+              }}
+              style={{
+                marginTop:'25%'
               }}
             >
               Welcome Back 👋{" "}
@@ -250,12 +253,13 @@ const LoginForm = () => {
               textAlign: "center",
               marginTop: "auto", // Pushes the text to the bottom
             }}
+            style={{marginTop:'5%'}}
           >
             {" "}
             &copy; 2023 ALL RIGHTS RESERVED
           </Typography>
         ) : (
-          <Typography sx={style.ARRMobile}>
+          <Typography sx={style.ARRMobile} > 
             {" "}
             &copy; 2023 ALL RIGHTS RESERVED
           </Typography>

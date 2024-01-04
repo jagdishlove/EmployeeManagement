@@ -183,7 +183,7 @@ const HiddenDataCard = ({
               >
                 <CloudDownload />
               </IconButton>
-              <Grid style={{ marginLeft: "-13%", marginTop: "-3%", position: "absolute" }}>
+              <Grid style={{ marginLeft: "-14%", marginTop: "-3.5%", position: "absolute" }}>
                 <Typography>{cardData.fileName}</Typography>
               </Grid>
             </Grid>

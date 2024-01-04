@@ -18,6 +18,9 @@ const LeaveRequestForm = ({
   leaveRqstData,
   handleSaveLeaveApplyData,
   disableSave,
+  setFile,
+  clearFile,
+  file,
   errors,
   setErrors,
   setFile,
@@ -41,6 +44,8 @@ const LeaveRequestForm = ({
       file: leaveRqstData.file,
     };
     addHistoryEntry(newEntry);
+    clearFile();
+
   };
 
   const leaveRequestSession = useSelector(
