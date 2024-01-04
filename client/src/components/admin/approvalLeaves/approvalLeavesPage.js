@@ -39,16 +39,9 @@ const ApprovalLeavesPage = () => {
   const newSize = 5 * counter;
 
   useEffect(() => {
-    if (dateData === "CALENDER") {
-      const currentDate = dayjs().format("YYYY-MM-DD");
-      payload.fromDate = selectedDate?.format("YYYY-MM-DD");
-      payload.toDate = currentDate;
-    }
-
     setTeamMemberData("All");
-
     dispatch(getApprovalLeaveTeamMemberAction(payload));
-  }, [selectedDate, dispatch]);
+  }, [selectedDate, dispatch, dateData]);
 
   const dateChangeHandler = (e) => {
     const { value } = e.target;
@@ -59,7 +52,7 @@ const ApprovalLeavesPage = () => {
     setIsOpenCalender(true);
   };
 
-  const calendarDateAcceptHandler = () => {
+  const calendarDateAcceptHandler = async () => {
     setIsOpenCalender(false);
     if (dateData === "CALENDER") {
       const payload = {
@@ -70,7 +63,7 @@ const ApprovalLeavesPage = () => {
         size: newSize,
       };
 
-      dispatch(getLeaveRequestData(payload));
+      await dispatch(getLeaveRequestData(payload));
     }
   };
 
@@ -82,19 +75,16 @@ const ApprovalLeavesPage = () => {
     size: 5 * counter,
   };
 
-  // const fetchData = async () => {
-  //   dispatch(getLeaveRequestData(payload));
-  // };
+  const fetchData = async () => {
+    dispatch(getLeaveRequestData(payload));
+  };
 
   useEffect(() => {
-    if (dateData === "CALENDER") {
-      return;
-    }
-    // const fetchDataWithDelay = async () => {
-    //   await fetchData();
-    // };
+    const fetchDataWithDelay = async () => {
+      await fetchData();
+    };
 
-    // fetchDataWithDelay();
+    fetchDataWithDelay();
   }, [TeamMemberData, dateData, selectedDate, counter]);
 
   const teamMemberSelectHandler = (e) => {

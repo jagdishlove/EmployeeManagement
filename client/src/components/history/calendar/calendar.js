@@ -174,8 +174,21 @@ const HistoryCalendar = ({
     const DATETYPES = [
       "LEAVE",
       "SICKLEAVE",
+      "LEAVEWITHOUTPAY",
       "HOLIDAY",
       "OPTIONALHOLIDAY",
+      "HALFDAYLEAVE",
+      "HALFDAYSICKLEAVE",
+      "COMPENSATORYLEAVE",
+      "HALFDAYCOMPENSATORYLEAVE",
+      "CASUALLEAVE",
+      "PATERNITYLEAVE",
+      "SABBATICALLEAVE",
+      "MATERNITYLEAVE",
+      "ADOPTIONLEAVE",
+      "MATERNITYILLNESSLEAVE",
+      "HALFDAYCASUALLEAVE",
+      "HALFDAYLEAVEWITHOUTPAY",
       "UNKNOWN",
     ];
 
@@ -229,7 +242,7 @@ const HistoryCalendar = ({
             whiteSpace: "break-spaces",
           }}
         >
-          {event.type === "HOLIDAY" ? (
+          {event.type === "HOLIDAY" ? ( 
             <Box display={"flex"} flexDirection={"column"}>
               <div>Holiday</div>
               {event.dayTypeDescription && (
@@ -242,7 +255,33 @@ const HistoryCalendar = ({
             "Sick Leave"
           ) : event.type === "OPTIONALHOLIDAY" ? (
             "Optional Holiday"
-          ) : (
+          ) : event.type === "LEAVEWITHOUTPAY" ? (
+            "Leave Without Pay"
+          ) : event.type === "HALFDAYLEAVE" ? (
+            "Half Day Leave"
+          ) : event.type === "HALFDAYSICKLEAVE" ? (
+            "Half Day Sick Leave"
+          ) : event.type === "COMPENSATORYLEAVE" ? (
+            " Compensatory Leave"
+          ) : event.type === "HALFDAYCOMPENSATORYLEAVE" ? (
+            "Half Day Compensatory Leave"
+          ) : event.type === "CASUALLEAVE" ? (
+            "Casual Leave"
+          ) : event.type === "PATERNITYLEAVE" ? (
+            "Paternity Leave"
+          ): event.type === "SABBATICALLEAVE" ? (
+            "Sabbatical Leave"
+          ): event.type === "MATERNITYLEAVE" ? (
+            "Maternity Leave"
+          ): event.type === "ADOPTIONLEAVE" ? (
+            "Adoption Leave"
+          ): event.type === "MATERNITYILLNESSLEAVE" ? (
+            "Maternity Illness Leave"
+          ) : event.type === "HALFDAYCASUALLEAVE" ? (
+            "Half Day Casual Leave"
+          ): event.type === "HALFDAYLEAVEWITHOUTPAY" ? (
+            "Half Day Leave Without Pay"
+          ):(
             "UNKNOWN"
           )}
         </Typography>
