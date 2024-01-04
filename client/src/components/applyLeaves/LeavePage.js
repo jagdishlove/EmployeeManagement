@@ -57,9 +57,7 @@ const LeavePage = () => {
     (state) => state?.nonPersist?.leaveHistoryData?.data
   );
 
-  const clearFile = () => {
-    setFile(null);
-  };
+ 
 
   useEffect(() => {
     dispatch(fetchLeaveHistory({ page: currentPage }));
