@@ -19,7 +19,6 @@ import {
   DOWNLOAD_FILE_SUCCESS,
   DOWNLOAD_FILE_FAIL
 } from "./approvalLeaveActionType";
-import { saveAs } from 'file-saver';
 
 
 const getApprovalLeaveDatesRequest = () => {
@@ -199,10 +198,21 @@ export const downloadFileAction = (file, fileName) => {
     try {
       dispatch(downloadFileRequest());
       const response = await makeRequest("GET", `${file}`, null, null, true);
-      const fileData = response.data;
+      const fileData = response;
+      const binaryData = await fileData.arrayBuffer();
 
-      const blob = new Blob([fileData], { type: 'application/pdf' });
-      saveAs(blob, fileName);
+    const blob = new Blob([binaryData], { type: 'application/octet-stream' });
+
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName; 
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+
       dispatch(downloadFileSuccess(response));
     } catch (err) {
       if (err.response?.data?.errorCode === 403) {
@@ -213,3 +223,4 @@ export const downloadFileAction = (file, fileName) => {
     }
   };
 };
+
