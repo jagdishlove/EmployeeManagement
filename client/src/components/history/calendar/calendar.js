@@ -65,6 +65,12 @@ const HistoryCalendar = ({
     }
   );
 
+  const getDataType = (event) => {
+    return transformedData.find((data) => data.type === event).type;
+  };
+
+  console.log("transformedData", historyData.timesheetUtilizationEntryList);
+
   const getHistoryData = (month, year) => {
     const paramas = {
       month: parseInt(month) + 1,
@@ -171,6 +177,7 @@ const HistoryCalendar = ({
   };
 
   const eventRenderer = ({ event }) => {
+    console.log("getData", getDataType(event.type));
     const DATETYPES = [
       "LEAVE",
       "SICKLEAVE",
@@ -194,9 +201,7 @@ const HistoryCalendar = ({
 
     // Check if the event type is "WEEKEND" and all event data is 0
     if (
-      (event.type === "WEEKEND" ||
-        event.type === "HALFDAYLEAVE" ||
-        event.type === "HALFDAYSICKLEAVE") &&
+      (event.type === "WEEKEND" ) &&
       event.tasks === 0 &&
       event.meetings === 0 &&
       event.breaks === 0 &&
@@ -249,40 +254,8 @@ const HistoryCalendar = ({
                 <div>{event.dayTypeDescription}</div>
               )}
             </Box>
-          ) : event.type === "LEAVE" ? (
-            event.dayTypeDescription 
-          ) : event.type === "SICKLEAVE" ? (
-            event.dayTypeDescription 
-          ) : event.type === "OPTIONALHOLIDAY" ? (
-            event.dayTypeDescription 
-          ) : event.type === "LEAVEWITHOUTPAY" ? (
-            event.dayTypeDescription 
-          ) : event.type === "HALFDAYLEAVE" ? (
-            event.dayTypeDescription 
-          ) : event.type === "HALFDAYSICKLEAVE" ? (
-            event.dayTypeDescription 
-          ) : event.type === "COMPENSATORYLEAVE" ? (
+          ) : event.type === getDataType(event.type) ? (
             event.dayTypeDescription
-          ) : event.type === "HALFDAYCOMPENSATORYLEAVE" ? (
-            event.dayTypeDescription 
-          ) : event.type === "CASUALLEAVE" ? (
-            event.dayTypeDescription 
-          ) : event.type === "PATERNITYLEAVE" ? (
-            event.dayTypeDescription 
-          ) : event.type === "SABBATICALLEAVE" ? (
-            event.dayTypeDescription 
-          ) : event.type === "MATERNITYLEAVE" ? (
-            event.dayTypeDescription 
-          ) : event.type === "ADOPTIONLEAVE" ? (
-            event.dayTypeDescription 
-          ) : event.type === "MATERNITYILLNESSLEAVE" ? (
-            event.dayTypeDescription 
-          ) : event.type === "HALFDAYCASUALLEAVE" ? (
-            event.dayTypeDescription 
-          ) : event.type === "HALFDAYLEAVEWITHOUTPAY" ? (
-            event.dayTypeDescription 
-          )  : event.type === "HALFDAYSICKLEAVE" && "LEAVE" ? (
-            event.dayTypeDescription 
           ) : (
             "UNKNOWN"
           )}

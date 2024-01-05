@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import makeRequest from "../../../api/api";
+import makeRequest, { downloadApi } from "../../../api/api";
 import { errorMessage } from "../errors/errorsAction";
 import { getRefreshToken } from "../login/loginAction";
 import {
@@ -19,6 +19,7 @@ import {
   DOWNLOAD_FILE_SUCCESS,
   DOWNLOAD_FILE_FAIL
 } from "./approvalLeaveActionType";
+// import { saveAs } from "file-saver";
 
 
 const getApprovalLeaveDatesRequest = () => {
@@ -193,34 +194,31 @@ export const approveRejectLeavesAction = (data, getDataPayload) => {
   };
 };
 
+
 export const downloadFileAction = (file, fileName) => {
   return async (dispatch) => {
     try {
       dispatch(downloadFileRequest());
-      const response = await makeRequest("GET", `${file}`, null, null, true);
-      const fileData = response;
-      const binaryData = await fileData.arrayBuffer();
+      const response = await downloadApi("GET", `${file}`);
+      console.log('Response:', response); 
 
-    const blob = new Blob([binaryData], { type: 'application/octet-stream' });
 
-    const url = window.URL.createObjectURL(blob);
+      const url = window.URL.createObjectURL(new Blob([response]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
 
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName; 
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-
+      console.log('url',url)
+      console.log('link',link)
 
       dispatch(downloadFileSuccess(response));
+      dispatch(downloadFileFail())
     } catch (err) {
-      if (err.response?.data?.errorCode === 403) {
-        dispatch(getRefreshToken());
-      }
-      dispatch(downloadFileFail());
-      dispatch(errorMessage(err.response?.data?.errorMessage || 'Failed to download file'));
+      // Handle errors
     }
   };
 };
+
 
