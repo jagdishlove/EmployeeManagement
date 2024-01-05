@@ -26,7 +26,6 @@ const LeavePage = () => {
 
   const [historyData, setHistoryData] = useState([]);
   const [leaveHistoryData, setLeaveHistoryData] = useState([]);
-  const [leaveDelete, setLeaveDelete] = useState(true);
   const [errors, setErrors] = useState({});
 
   const [file, setFile] = useState(null);
@@ -50,6 +49,7 @@ const LeavePage = () => {
   const [leaveBalance, setLeaveBalance] = useState(false);
 
   const [saveSubmitStatus, setSaveSubmitStatus] = useState(false);
+  console.log(saveSubmitStatus)
 
   const dispatch = useDispatch();
 
@@ -61,11 +61,10 @@ const LeavePage = () => {
 
   useEffect(() => {
     dispatch(fetchLeaveHistory({ page: currentPage }));
-  }, [dispatch, saveSubmitStatus, leaveDelete, currentPage, leaveBalance]);
-
+  }, [ currentPage, leaveBalance]);
   useEffect(() => {
     setLeaveHistoryData(leaveHistory);
-  }, [leaveHistory, leaveDelete, leaveBalance]);
+  }, [leaveHistory]);
 
   useEffect(() => {
     dispatch(getLeaveBalanceAction());
@@ -87,7 +86,6 @@ const LeavePage = () => {
         );
         return { ...prevData, content: newArray };
       });
-      setLeaveDelete(true);
       setLeaveBalance(true);
       setLeaveBalance(true);
     });
@@ -149,7 +147,10 @@ const LeavePage = () => {
       action: type,
     };
 
-    payload.file = leaveRqstData.file;
+    if (file) {
+      payload.file = file;
+    }
+
 
     if (type === "Save") {
       payload.cc = JSON.stringify(payload.cc);
@@ -216,7 +217,6 @@ const LeavePage = () => {
             setLeaveReqstData={setLeaveReqstData}
             setCurrentPage={setCurrentPage}
             historyData={leaveHistoryData}
-            setLeaveDelete={setLeaveDelete}
             onDeleteLeave={handleDeleteLeave}
             currentPage={currentPage}
             clearErrorOnEdit={clearErrorOnEdit}

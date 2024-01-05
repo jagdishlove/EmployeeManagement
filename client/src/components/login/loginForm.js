@@ -156,7 +156,7 @@ const LoginForm = () => {
                 },
               }}
               style={{
-                marginTop:'25%'
+                marginTop:'10%'
               }}
             >
               Welcome Back 👋{" "}
@@ -253,7 +253,7 @@ const LoginForm = () => {
               textAlign: "center",
               marginTop: "auto", // Pushes the text to the bottom
             }}
-            style={{marginTop:'5%'}}
+            style={{marginTop:'15%'}}
           >
             {" "}
             &copy; 2023 ALL RIGHTS RESERVED
