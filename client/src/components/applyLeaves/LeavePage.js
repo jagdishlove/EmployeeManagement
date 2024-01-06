@@ -1,4 +1,4 @@
-import { Box, Grid } from "@mui/material";
+import { Box, Button, Grid, Modal, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,6 +14,7 @@ import LeaveHeader from "./LeaveHeader";
 import LeaveHistory from "./LeaveHistory";
 import LeaveBalance from "./leaveBalance";
 import LeaveRequestForm from "./leaveRequestForm";
+import CloseIcon from "@mui/icons-material/Close";
 
 const LeavePage = () => {
   const managerData = useSelector(
@@ -47,9 +48,10 @@ const LeavePage = () => {
   const [leaveRqstData, setLeaveReqstData] = useState(initialData);
   const [currentPage, setCurrentPage] = useState(0);
   const [leaveBalance, setLeaveBalance] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const [saveSubmitStatus, setSaveSubmitStatus] = useState(false);
-  console.log(saveSubmitStatus)
+  console.log(saveSubmitStatus);
 
   const dispatch = useDispatch();
 
@@ -57,11 +59,34 @@ const LeavePage = () => {
     (state) => state?.nonPersist?.leaveHistoryData?.data
   );
 
- 
+  const leaveBalances = useSelector(
+    (state) => state?.nonPersist?.leavesData?.leaveBalanceData
+  );
+
+  const leaveTypeMasterData = useSelector(
+    (state) => state.persistData.masterData?.leaveTypes
+  );
+
+  const result = leaveBalances.map((item) => {
+    const leaveMasterId = parseInt(Object.keys(item)[0]);
+    const matchingMasterData = leaveTypeMasterData.find(
+      (data) => data.leaveMasterId === leaveMasterId
+    );
+
+    return {
+      leaveMasterId,
+      leaveType: matchingMasterData ? matchingMasterData.leaveType : undefined,
+      numberDays: item[leaveMasterId],
+    };
+  });
+
+  const hasNumberDaysGreaterThanZero = result.some(
+    (leave) => [3, 4, 6].includes(leave.leaveMasterId) && leave.numberDays > 0
+  );
 
   useEffect(() => {
     dispatch(fetchLeaveHistory({ page: currentPage }));
-  }, [ currentPage, leaveBalance]);
+  }, [currentPage, leaveBalance]);
   useEffect(() => {
     setLeaveHistoryData(leaveHistory);
   }, [leaveHistory]);
@@ -92,6 +117,9 @@ const LeavePage = () => {
   };
 
   const onChangeFormDataHandler = (e, values, type) => {
+    if (e.target.value === 12 && !hasNumberDaysGreaterThanZero) {
+      setShowModal(true);
+    }
     if (type === "fromDate" || type === "toDate") {
       const formattedDate = dayjs(e).format("YYYY-MM-DD");
       setLeaveReqstData((prevData) => ({
@@ -151,7 +179,6 @@ const LeavePage = () => {
       payload.file = file;
     }
 
-
     if (type === "Save") {
       payload.cc = JSON.stringify(payload.cc);
       dispatch(saveLeaveFormAction(payload, param, disableSave));
@@ -179,51 +206,96 @@ const LeavePage = () => {
   };
 
   return (
-    <Box>
-      <Grid container spacing={3}>
-        <Grid item xs={12} sm={12} md={12} lg={12}>
-          <LeaveHeader />
-        </Grid>
-
-        <Grid item xs={12} sm={8} md={8} lg={8}>
-          <LeaveBalance leave={leaveBalance} />
-          <LeaveRequestForm
-            addHistoryEntry={addHistoryEntry}
-            onChangeFormDataHandler={onChangeFormDataHandler}
-            leaveRqstData={leaveRqstData}
-            handleSaveLeaveApplyData={handleSaveLeaveApplyData}
-            disableSave={disableSave}
-            setErrors={setErrors}
-            errors={errors}
-            setFile={setFile}
-            file={file}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={4} md={4} lg={4} display={"flex"}>
-          <div
-            style={{
-              borderLeft: "2px dashed rgba(0, 128, 128, 0.4)",
-              height: "100%",
-              marginLeft: "-10px",
-              marginRight: "10px",
+    <>
+      <Modal
+        open={showModal}
+        onClose={() => {
+          setShowModal(false);
+          setLeaveReqstData({ ...leaveRqstData, leaveMasterId: "" });
+        }}
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            background: "white",
+            p: 4,
+            border: "5px solid #008080",
+            overflow: "auto",
+          }}
+        >
+          <CloseIcon
+            onClick={() => {
+              setShowModal(false);
+              setLeaveReqstData({ ...leaveRqstData, leaveMasterId: "" });
             }}
-          ></div>
-          <HolidayList />
-        </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={12}>
-          <LeaveHistory
-            setDisableSave={setDisableSave}
-            setLeaveReqstData={setLeaveReqstData}
-            setCurrentPage={setCurrentPage}
-            historyData={leaveHistoryData}
-            onDeleteLeave={handleDeleteLeave}
-            currentPage={currentPage}
-            clearErrorOnEdit={clearErrorOnEdit}
+            sx={{ position: "absolute", top: 0, left: 0 }}
           />
+          <Typography>
+            Are you sure you want to apply leave without pay
+          </Typography>
+          <Box sx={{ textAlign: "center" }}>
+            <Button onClick={() => setShowModal(false)}>Okay</Button>
+            <Button
+              onClick={() => {
+                setLeaveReqstData({ ...leaveRqstData, leaveMasterId: "" });
+                setShowModal(false);
+              }}
+            >
+              Cancel
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+      <Box>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={12} md={12} lg={12}>
+            <LeaveHeader />
+          </Grid>
+
+          <Grid item xs={12} sm={8} md={8} lg={8}>
+            <LeaveBalance leave={leaveBalance} />
+            <LeaveRequestForm
+              addHistoryEntry={addHistoryEntry}
+              onChangeFormDataHandler={onChangeFormDataHandler}
+              leaveRqstData={leaveRqstData}
+              handleSaveLeaveApplyData={handleSaveLeaveApplyData}
+              disableSave={disableSave}
+              setErrors={setErrors}
+              errors={errors}
+              setFile={setFile}
+              file={file}
+              hasNumberDaysGreaterThanZero={hasNumberDaysGreaterThanZero}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={4} md={4} lg={4} display={"flex"}>
+            <div
+              style={{
+                borderLeft: "2px dashed rgba(0, 128, 128, 0.4)",
+                height: "100%",
+                marginLeft: "-10px",
+                marginRight: "10px",
+              }}
+            ></div>
+            <HolidayList />
+          </Grid>
+          <Grid item xs={12} sm={12} md={12} lg={12}>
+            <LeaveHistory
+              setDisableSave={setDisableSave}
+              setLeaveReqstData={setLeaveReqstData}
+              setCurrentPage={setCurrentPage}
+              historyData={leaveHistoryData}
+              onDeleteLeave={handleDeleteLeave}
+              currentPage={currentPage}
+              clearErrorOnEdit={clearErrorOnEdit}
+            />
+          </Grid>
         </Grid>
-      </Grid>
-    </Box>
+      </Box>
+    </>
   );
 };
 
