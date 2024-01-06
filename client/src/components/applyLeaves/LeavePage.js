@@ -79,9 +79,33 @@ const LeavePage = () => {
       numberDays: item[leaveMasterId],
     };
   });
+  const leaveRequestType = useSelector(
+    (state) => state.persistData.masterData?.leaveTypes
+  );
+
+  const findLeaveMasterId = (leaveType) => {
+    const foundLeave = leaveRequestType.find(
+      (leave) => leave.leaveType === leaveType
+    );
+
+    if (foundLeave) {
+      return foundLeave.leaveMasterId;
+    } else {
+      // Handle the case when leave type is not found
+      console.error(`Leave type "${leaveType}" not found`);
+      return null; // or any default value
+    }
+  };
+
+  const CompLeaveId = findLeaveMasterId("Compensatory Leave");
+  const sickLeaveId = findLeaveMasterId("Sick Leave");
+  const privilegeLeaveId = findLeaveMasterId("Privilege Leave");
 
   const hasNumberDaysGreaterThanZero = result.some(
-    (leave) => [3, 4, 6].includes(leave.leaveMasterId) && leave.numberDays > 0
+    (leave) =>
+      [CompLeaveId, sickLeaveId, privilegeLeaveId].includes(
+        leave.leaveMasterId
+      ) && leave.numberDays > 0
   );
 
   useEffect(() => {
