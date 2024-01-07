@@ -141,6 +141,13 @@ input::-webkit-inner-spin-button {
   width: 100% !important;
   justify-content: space-around;
 }
+.css-1l5jhko{
+  line-height: 1 !important;
+  font-size: 12px !important;
+}
+.css-1tdbie5 {
+  font-size: 12px !important;
+}
 
 /* For screens less than for tab */
 @media (min-width: 375px) and (max-width: 869px) {

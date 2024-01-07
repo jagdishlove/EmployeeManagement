@@ -245,6 +245,7 @@ const HistoryCalendar = ({
             textAlign: "center",
             wordWrap: "wrap",
             whiteSpace: "break-spaces",
+            overflow: 'auto'
           }}
         >
           {event.type === "HOLIDAY" ? (
