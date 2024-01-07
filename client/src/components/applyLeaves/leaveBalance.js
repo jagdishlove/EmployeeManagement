@@ -1,7 +1,7 @@
 import { Grid, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
-import {useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 const LeaveBalance = () => {
   const leaveBalance = useSelector(
@@ -11,7 +11,6 @@ const LeaveBalance = () => {
   const leaveTypeMasterData = useSelector(
     (state) => state.persistData.masterData?.leaveTypes
   );
-
 
   const result = leaveBalance.map((item) => {
     const leaveMasterId = parseInt(Object.keys(item)[0]);
