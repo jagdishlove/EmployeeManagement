@@ -135,7 +135,11 @@ const TimesheetRow = ({
     data ? editedSelectedValues : initialSelectedValues
   );
 
-
+  useEffect(() => {
+    if (updatedProjectNameList.length >= 1) {
+      setSelectedValues({ ...selectedValues, projectName: "" });
+    }
+  }, [updatedProjectNameList]);
 
   const handleEditClick = () => {
     editButtonHandler(id);

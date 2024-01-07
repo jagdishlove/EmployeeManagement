@@ -22,14 +22,7 @@ const Dropdown = ({
       <InputLabel id="demo-simple-select-label">{title}</InputLabel>
       <Select
         labelId="demo-simple-select-label"
-        value={
-          options?.length === 1
-            ? options[0].id ||
-              options[0].value ||
-              options[0].projectName ||
-              options[0].activityId
-            : value
-        }
+        value={value}
         name={name}
         placeholder={title}
         onChange={handleDropdownChange}
