@@ -1,6 +1,7 @@
+import CloseIcon from "@mui/icons-material/Close";
 import { Box, Button, Grid, Modal, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
 import dayjs from "dayjs";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteLeave,
@@ -14,7 +15,6 @@ import LeaveHeader from "./LeaveHeader";
 import LeaveHistory from "./LeaveHistory";
 import LeaveBalance from "./leaveBalance";
 import LeaveRequestForm from "./leaveRequestForm";
-import CloseIcon from "@mui/icons-material/Close";
 
 const LeavePage = () => {
   const managerData = useSelector(
@@ -141,7 +141,7 @@ const LeavePage = () => {
   };
 
   const onChangeFormDataHandler = (e, values, type) => {
-    if (e.target.value === 12 && hasNumberDaysGreaterThanZero) {
+    if (e.target?.value === 12 && hasNumberDaysGreaterThanZero) {
       setShowModal(true);
     }
     if (type === "fromDate" || type === "toDate") {

@@ -60,6 +60,25 @@ const HiddenDataCard = ({
         </Typography>
       </div>
 
+      <div
+        style={{
+          position: "absolute",
+          top: "-1rem",
+          right: "1rem",
+          backgroundColor: "white",
+          padding: "0.25rem 0.50rem",
+        }}
+      >
+        <Typography
+          style={{
+            fontWeight: "bold",
+            color: "#000000",
+          }}
+        >
+          {cardData?.submittedDate}
+        </Typography>
+      </div>
+
       <Grid
         item
         container

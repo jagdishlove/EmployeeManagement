@@ -80,9 +80,6 @@ const ApprovalLeavesPage = () => {
   };
 
   useEffect(() => {
-    if(dateData == "CALENDER"){
-      return ;
-    }
     const fetchDataWithDelay = async () => {
       await fetchData();
     };
