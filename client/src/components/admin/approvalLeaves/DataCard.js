@@ -83,6 +83,24 @@ const DataCard = ({
                   {cardData?.employeeFirstName} {cardData?.employeeLastName}
                 </Typography>
               </div>
+              <div
+                style={{
+                  position: "absolute",
+                  top: "-1rem",
+                  right: "1rem",
+                  backgroundColor: "white",
+                  padding: "0.25rem 0.50rem",
+                }}
+              >
+                <Typography
+                  style={{
+                    fontWeight: "bold",
+                    color: "#000000",
+                  }}
+                >
+                  {cardData?.submittedDate}
+                </Typography>
+              </div>
               <Grid item xs={12} sm={12} md={6} lg={6} display={"flex"}>
                 <TextField
                   label="From"
