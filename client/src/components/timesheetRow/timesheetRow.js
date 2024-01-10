@@ -50,6 +50,7 @@ const TimesheetRow = ({
   rowIndex,
   isHistory,
   setDisabledWhileEditing,
+  timesheetForm,
 }) => {
   const theme = useTheme();
 
@@ -94,6 +95,12 @@ const TimesheetRow = ({
   });
 
   useEffect(() => {
+    if (updatedProjectNameList.length >= 1 && timesheetForm) {
+      setSelectedValues({ ...selectedValues, projectName: "" });
+    }
+  }, [updatedProjectNameList]);
+
+  useEffect(() => {
     const managerStatusData = data?.timesheetApproval?.approverList.filter(
       (entry) => entry.status === "APPROVED" || entry.status === "REJECTED"
     )[0];
@@ -134,7 +141,6 @@ const TimesheetRow = ({
   const [selectedValues, setSelectedValues] = useState(
     data ? editedSelectedValues : initialSelectedValues
   );
-
 
   const handleEditClick = () => {
     editButtonHandler(id);
