@@ -94,9 +94,13 @@ const TimesheetRow = ({
     toTime: "",
   });
 
+
   useEffect(() => {
     if (updatedProjectNameList.length >= 1 && timesheetForm) {
-      setSelectedValues({ ...selectedValues, projectName: "" });
+      setSelectedValues({
+        ...selectedValues,
+        projectName: "",
+      });
     }
   }, [updatedProjectNameList]);
 
@@ -141,6 +145,18 @@ const TimesheetRow = ({
   const [selectedValues, setSelectedValues] = useState(
     data ? editedSelectedValues : initialSelectedValues
   );
+
+
+  useEffect(() => {
+    if (updatedActivityameList.length > 1 && timesheetForm) {
+      setSelectedValues({
+        ...selectedValues,
+        activity: "",
+      });
+    }
+  }, [updatedActivityameList.length]);
+
+
 
   const handleEditClick = () => {
     editButtonHandler(id);
@@ -213,7 +229,7 @@ const TimesheetRow = ({
         activity:
           updatedActivityameList[0].id ||
           updatedActivityameList[0].value ||
-          updatedActivityameList[0].activityName,
+          updatedActivityameList[0].activity,
       }));
       setErrors((prevErrors) => ({
         ...prevErrors,
