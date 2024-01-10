@@ -69,8 +69,6 @@ const HistoryCalendar = ({
     return transformedData.find((data) => data.type === event).type;
   };
 
-  console.log("transformedData", historyData.timesheetUtilizationEntryList);
-
   const getHistoryData = (month, year) => {
     const paramas = {
       month: parseInt(month) + 1,
@@ -99,7 +97,7 @@ const HistoryCalendar = ({
     if (currentMonth < 11) {
       // If current month is before December, include months from the current month to December of the previous year
       startMonth = 0; // Start from the current month
-      endMonth = currentMonth; // December
+      endMonth = selectedMonth || currentMonth; // December
     } else {
       // If current month is December, include months from January to the current month of the current year
       startMonth = currentMonth; // January
@@ -173,7 +171,7 @@ const HistoryCalendar = ({
     const { value } = e.target;
     getHistoryData(value, selectedYear);
 
-    setSelectedMonth(value);
+    setSelectedMonth(parseInt(value));
   };
 
   const eventRenderer = ({ event }) => {
@@ -201,7 +199,7 @@ const HistoryCalendar = ({
 
     // Check if the event type is "WEEKEND" and all event data is 0
     if (
-      (event.type === "WEEKEND" ) &&
+      event.type === "WEEKEND" &&
       event.tasks === 0 &&
       event.meetings === 0 &&
       event.breaks === 0 &&
@@ -245,7 +243,7 @@ const HistoryCalendar = ({
             textAlign: "center",
             wordWrap: "wrap",
             whiteSpace: "break-spaces",
-            fontSize:'12px'
+            fontSize: "12px",
           }}
         >
           {event.type === "HOLIDAY" ? (
