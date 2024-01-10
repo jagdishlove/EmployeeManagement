@@ -1,5 +1,5 @@
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
-import { Box, Button,  Grid, Tab, Tabs, Typography, } from "@mui/material";
+import { Box, Button, Grid, Tab, Tabs, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { format } from "date-fns";
 import moment from "moment";
@@ -16,7 +16,7 @@ import {
 import { dateOptions, formatDateForApi } from "../../utils/dateOptions";
 import SavedTimesheetEntry from "./savedTimesheetEntry";
 import { useNavigate } from "react-router-dom";
-import '../records/Records.css'
+import "../records/Records.css";
 const Timesheet = () => {
   const theme = useTheme();
   const style = TimesheetStyle(theme);
@@ -32,16 +32,9 @@ const Timesheet = () => {
 
   const [disableWhileEditing, setDisabledWhileEditing] = useState(false);
 
-
-
   const navigate = useNavigate();
 
-      const [value, setValue] = useState(0);
-
-
-  
-
-
+  const [value, setValue] = useState(0);
 
   const getTimesheetData = useSelector(
     (state) => state?.nonPersist?.timesheetData?.timeSheetData?.timesheetEntryId
@@ -95,8 +88,6 @@ const Timesheet = () => {
 
     setSelectedDate(value);
 
-
-
     // Handle date change logic here // Selected date value
   };
 
@@ -111,22 +102,29 @@ const Timesheet = () => {
 
   return (
     <Box>
-        <Typography
+      <Typography
         style={{
-          fontSize: '24px', 
-          fontFamily: 'Nunito sans', 
-          fontWeight: 'bold', 
-          marginBottom: '10px', 
-          textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3)', 
+          fontSize: "24px",
+          fontFamily: "Nunito sans",
+          fontWeight: "bold",
+          marginBottom: "10px",
+          textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
         }}
         variant="h4"
         align="center"
         mt={2}
-      >        
-       TIMESHEET
-        </Typography>
-      <div style={{ width: "100%", margin: "auto", marginBottom: "18px",border:'1px solid #008080' }} />
-     
+      >
+        TIMESHEET
+      </Typography>
+      <div
+        style={{
+          width: "100%",
+          margin: "auto",
+          marginBottom: "18px",
+          border: "1px solid #008080",
+        }}
+      />
+
       <Tabs
         value={value}
         onChange={handleTabChange}
@@ -134,37 +132,35 @@ const Timesheet = () => {
         textColor="primary"
         centered
         className="tablist" // Use the CSS class for the container
-        TabIndicatorProps={{ style: { display: 'none' } }} // Hide the indicator
+        TabIndicatorProps={{ style: { display: "none" } }} // Hide the indicator
       >
         <Tab
           label="current"
-          className="currentTab" 
+          className="currentTab"
           style={{
-            backgroundColor:'#008080',
-            width:'20%',
-            color:'white',
-            borderBottomRightRadius: '10px',
-            borderBottomLeftRadius:'10px'
+            backgroundColor: "#008080",
+            width: "20%",
+            color: "white",
+            borderBottomRightRadius: "10px",
+            borderBottomLeftRadius: "10px",
           }}
-          selected={value === 0} 
+          selected={value === 0}
         />
         <Tab
           label="History"
-          className="HistoryTab" 
+          className="HistoryTab"
           style={{
-            width: '20%',
-            border: '2px solid #008080',
-            borderBottomRightRadius: '10px',
-            borderBottomLeftRadius:'10px'
+            width: "20%",
+            border: "2px solid #008080",
+            borderBottomRightRadius: "10px",
+            borderBottomLeftRadius: "10px",
           }}
-          selected={value === 1} 
+          selected={value === 1}
         />
       </Tabs>
 
       <SubHeader>
         <Grid container>
-        
-        
           <Grid item xs={7} sm={4} md={3}>
             <Dropdown
               options={dateOptions()} // Pass any additional options if needed
@@ -178,65 +174,67 @@ const Timesheet = () => {
       </SubHeader>
       {/* Render all the rows in the timesheetRows list */}
 
+      <TimesheetRow
+        selectedDate={selectedDate}
+        disableSubmit={disableSubmit}
+        timesheetForm={true}
+      />
 
-        <TimesheetRow selectedDate={selectedDate} disableSubmit={disableSubmit} />
-
-     
-        <Grid container paddingTop="30px">
-          <Grid item xs={6} sm={6} md={6}>
-            <Button
-              sx={style.GreenButton}
-              variant="contained"
-              type="submit"
-              onClick={() => {
-                dispatch(
-                  submitTimeSheetApprovalAction(formatDateForApi(selectedDate))
-                );
-              }}
-              disabled={disableTimeSheetEntryForm || disableWhileEditing}
-            >
-              <SaveOutlinedIcon sx={style.AddIconStyle} />
-              <Typography
-                variant="h6"
-                sx={{
-                  color: theme.palette.secondary.main,
-                  marginLeft: "15px", // Add space to the left of the text
-                }}
-              >
-                Submit for Approval
-              </Typography>
-            </Button>
-          </Grid>
-          <Grid
-            item
-            xs={6}
-            sm={6}
-            md={6}
-            sx={{ display: "flex", justifyContent: "flex-end" }}
+      <Grid container paddingTop="30px">
+        <Grid item xs={6} sm={6} md={6}>
+          <Button
+            sx={style.GreenButton}
+            variant="contained"
+            type="submit"
+            onClick={() => {
+              dispatch(
+                submitTimeSheetApprovalAction(formatDateForApi(selectedDate))
+              );
+            }}
+            disabled={disableTimeSheetEntryForm || disableWhileEditing}
           >
-            <Button>
-              <Typography
-                variant="h8"
-                style={{
-                  backgroundColor: "transparent",
-                  color: "#008080",
-                  paddingRight: "15px",
-                }}
-                sx={{ color: theme.palette.secondary.main }}
-              >
-                <b>TOTAL HOURS</b>
-              </Typography>
-            </Button>
-            <Button sx={style.GreenButton} variant="contained">
-              <Typography
-                variant="h6"
-                sx={{ color: theme.palette.secondary.main, px: "10px " }}
-              >
-                {totalHours || "0"}
-              </Typography>
-            </Button>
-          </Grid>
+            <SaveOutlinedIcon sx={style.AddIconStyle} />
+            <Typography
+              variant="h6"
+              sx={{
+                color: theme.palette.secondary.main,
+                marginLeft: "15px", // Add space to the left of the text
+              }}
+            >
+              Submit for Approval
+            </Typography>
+          </Button>
         </Grid>
+        <Grid
+          item
+          xs={6}
+          sm={6}
+          md={6}
+          sx={{ display: "flex", justifyContent: "flex-end" }}
+        >
+          <Button>
+            <Typography
+              variant="h8"
+              style={{
+                backgroundColor: "transparent",
+                color: "#008080",
+                paddingRight: "15px",
+              }}
+              sx={{ color: theme.palette.secondary.main }}
+            >
+              <b>TOTAL HOURS</b>
+            </Typography>
+          </Button>
+          <Button sx={style.GreenButton} variant="contained">
+            <Typography
+              variant="h6"
+              sx={{ color: theme.palette.secondary.main, px: "10px " }}
+            >
+              {totalHours || "0"}
+            </Typography>
+          </Button>
+        </Grid>
+      </Grid>
       <SavedTimesheetEntry
         selectedDate={selectedDate}
         setDisableSubmit={setDisableSubmit}
@@ -248,5 +246,3 @@ const Timesheet = () => {
 };
 
 export default Timesheet;
-
-
