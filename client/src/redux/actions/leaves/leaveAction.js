@@ -169,7 +169,7 @@ export const getSearchEmailAction = (payload) => {
   };
 };
 
-export const saveLeaveFormAction = (data, param, disableSave) => {
+export const saveLeaveFormAction = (data, param, disableSave, setLeaveBalance) => {
   return async (dispatch) => {
     console.log("disableSave", disableSave);
     let formData = new FormData();
@@ -195,10 +195,12 @@ export const saveLeaveFormAction = (data, param, disableSave) => {
         toast.success("Your leaves are saved successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
+        setLeaveBalance(true)
       } else if (param.action === "Submit") {
         toast.success("Your leaves have been submitted successfully for approval ", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
+        setLeaveBalance(true)
       }
       dispatch({ type: "NUMBERS_OF_DAYS", payload: { numberOfDays: "" } });
       return response;

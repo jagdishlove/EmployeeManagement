@@ -7,8 +7,6 @@ const self = this;
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-    
-
       return cache.addAll(urlsToCache);
     })
   );
@@ -16,24 +14,31 @@ self.addEventListener("install", (event) => {
 
 // listen for request
 self.addEventListener("fetch", (event) => {
+  if (event.request.url.includes("/api/")) {
+    return;
+  }
   event.respondWith(
-    caches.match(event.request).then((res) => {
-      return fetch(event.request).catch(() => caches.match("offline.html"));
+    caches.match(event.request).then(async () => {
+      return await fetch(event.request).catch(() =>
+        caches.match("offline.html")
+      );
     })
   );
 });
 
 // actitivate the service worker
 self.addEventListener("activate", (event) => {
-    const cacheWhitelist = [];
-    cacheWhitelist.push(CACHE_NAME);
-    event.waitUntil(
-        caches.keys().then((cacheNames) => Promise.all(
-            cacheNames.map((cacheName) => {
-                if(!cacheWhitelist.includes(cacheName)){
-                    return caches.delete(cacheName);
-                }
-            })
-        ))
+  const cacheWhitelist = [];
+  cacheWhitelist.push(CACHE_NAME);
+  event.waitUntil(
+    caches.keys().then((cacheNames) =>
+      Promise.all(
+        cacheNames.map((cacheName) => {
+          if (!cacheWhitelist.includes(cacheName)) {
+            return caches.delete(cacheName);
+          }
+        })
+      )
     )
+  );
 });

@@ -133,6 +133,7 @@ const LeaveHistory = ({
       comments: data.comments,
       manager: managerData.managerName || "",
       cc: JSON.parse(data.cc) || "",
+      file: data.fileStorageFileName,
     });
 
     setDisableSave(data.status);

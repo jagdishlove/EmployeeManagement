@@ -26,11 +26,12 @@ const addApi = axios.create({
 
 mainApi.interceptors.response.use(
   async (response) => {
+    console.log("response", response);
     return response;
   },
   async (error) => {
     console.log("error", error);
-    if (error.response?.status === 403 || error.code === "ERR_NETWORK") {
+    if (error.response?.status === 403 || error.code === 'ERR_NETWORK') {
       localStorage.removeItem("selectedItem");
       persistor.purge(["login"]);
       window.location.href = "/";

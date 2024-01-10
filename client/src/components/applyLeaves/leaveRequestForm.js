@@ -262,8 +262,6 @@ const LeaveRequestForm = ({
                     border: "1px solid #8897ad87",
                     borderRadius: "5px",
                     textAlign: "center",
-                    height: "29.8%",
-                    top: "-0.5px",
                   }}
                 />
                 {errors.fromSession && (
@@ -290,9 +288,7 @@ const LeaveRequestForm = ({
                     ...style.TimesheetTextField,
                     border: "1px solid #8897ad87",
                     borderRadius: "5px",
-                    height: "29.6%",
                     textAlign: "center",
-                    top: "3.8px",
                   }}
                 />
                 {errors.toSession && (
@@ -452,7 +448,7 @@ const LeaveRequestForm = ({
                 <Box sx={{ margin: "auto" }}>
                   <InputFileUpload
                     onChange={inputFileChangeHandler}
-                    file={file}
+                    file={file || leaveRqstData.file}
                   />
                   {errors.attachment && (
                     <Box>
