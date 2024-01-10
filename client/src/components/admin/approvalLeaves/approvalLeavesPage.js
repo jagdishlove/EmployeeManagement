@@ -85,7 +85,7 @@ const ApprovalLeavesPage = () => {
     };
 
     fetchDataWithDelay();
-  }, [TeamMemberData, dateData, selectedDate]);
+  }, [TeamMemberData, dateData]);
 
   const teamMemberSelectHandler = (e) => {
     setTeamMemberData(e.target.value);

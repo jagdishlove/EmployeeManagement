@@ -41,7 +41,7 @@ const LeavePage = () => {
     comments: "",
     manager: managerData.managerName || "",
     cc: [] || "",
-    file: file || " ",
+    file: " ",
   };
 
   const [disableSave, setDisableSave] = useState("");
@@ -136,7 +136,6 @@ const LeavePage = () => {
         return { ...prevData, content: newArray };
       });
       setLeaveBalance(true);
-      setLeaveBalance(true);
     });
   };
 
@@ -173,6 +172,7 @@ const LeavePage = () => {
       leaveRqstData.leaveMasterId
     ) {
       const payload = {
+        leaveRequestId: leaveRqstData.leaveRequestId || "",
         fromDate: leaveRqstData.fromDate,
         fromSession: leaveRqstData.fromSession,
         toDate: leaveRqstData.toDate,
@@ -205,15 +205,11 @@ const LeavePage = () => {
 
     if (type === "Save") {
       payload.cc = JSON.stringify(payload.cc);
-      dispatch(saveLeaveFormAction(payload, param, disableSave));
-      setLeaveBalance(true);
-      setLeaveBalance(true);
+      dispatch(saveLeaveFormAction(payload, param, disableSave,setLeaveBalance));
     } else if (type === "Submit") {
       setDisableSave("");
       payload.cc = JSON.stringify(payload.cc);
-      dispatch(saveLeaveFormAction(payload, param, disableSave));
-      setLeaveBalance(true);
-      setLeaveBalance(true);
+      dispatch(saveLeaveFormAction(payload, param, disableSave,setLeaveBalance));
     }
   };
 
@@ -221,7 +217,7 @@ const LeavePage = () => {
     if (!formDataLoading && !leaveFormError) {
       // If form data loading is complete and there's no error, reset the form
       setLeaveReqstData(initialData);
-      setFile(null);
+      setFile("");
     }
   }, [formDataLoading, leaveFormError]);
 
@@ -246,8 +242,8 @@ const LeavePage = () => {
             transform: "translate(-50%, -50%)",
             background: "white",
             p: 4,
-            border: "5px solid #008080",
-            overflow: "auto",
+            borderRadius: "8px",
+            boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)", // Adding a subtle shadow
           }}
         >
           <CloseIcon
@@ -255,14 +251,26 @@ const LeavePage = () => {
               setShowModal(false);
               setLeaveReqstData({ ...leaveRqstData, leaveMasterId: "" });
             }}
-            sx={{ position: "absolute", top: 0, left: 0 }}
+            sx={{ position: "absolute", top: 8, right: 8, cursor: "pointer" }}
           />
-          <Typography>
-            Are you sure you want to apply leave without pay
+          <Typography sx={{ marginTop: 2, textAlign: "center" }}>
+            You currently have leave balance
+          </Typography>
+          <Typography sx={{ marginBottom: 2 }}>
+            Are you sure you want to apply for leave without pay?
           </Typography>
           <Box sx={{ textAlign: "center" }}>
-            <Button onClick={() => setShowModal(false)}>Okay</Button>
             <Button
+              variant="contained"
+              color="primary"
+              sx={{ marginLeft: 10 }}
+              onClick={() => setShowModal(false)}
+            >
+              Okay
+            </Button>
+            <Button
+              variant="outlined"
+              color="secondary"
               onClick={() => {
                 setLeaveReqstData({ ...leaveRqstData, leaveMasterId: "" });
                 setShowModal(false);
@@ -273,6 +281,7 @@ const LeavePage = () => {
           </Box>
         </Box>
       </Modal>
+
       <Box>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={12} md={12} lg={12}>
