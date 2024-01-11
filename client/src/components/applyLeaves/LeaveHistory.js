@@ -132,7 +132,7 @@ const LeaveHistory = ({
       leaveMasterId: data.leaveMasterId,
       comments: data.comments,
       manager: managerData.managerName || "",
-      cc: JSON.parse(data.cc) || "",
+      cc: data.cc || "",      
       file: data.fileStorageFileName,
     });
 

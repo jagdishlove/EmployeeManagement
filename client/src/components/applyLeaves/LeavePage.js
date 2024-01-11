@@ -1,5 +1,5 @@
 import CloseIcon from "@mui/icons-material/Close";
-import { Box, Button, Grid, Modal, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Grid, Modal, Typography } from "@mui/material";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -28,6 +28,7 @@ const LeavePage = () => {
   const [historyData, setHistoryData] = useState([]);
   const [leaveHistoryData, setLeaveHistoryData] = useState([]);
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const [file, setFile] = useState(null);
 
@@ -202,14 +203,19 @@ const LeavePage = () => {
     if (file) {
       payload.file = file;
     }
-
-    if (type === "Save") {
+    if (Array.isArray(payload.cc)) {
       payload.cc = payload.cc.join(',');
-      dispatch(saveLeaveFormAction(payload, param, disableSave,setLeaveBalance));
-    } else if (type === "Submit") {
-      setDisableSave("");
-      payload.cc = payload.cc.join(',');
-      dispatch(saveLeaveFormAction(payload, param, disableSave,setLeaveBalance));
+    }
+    setLoading(true);
+    try {
+      if (type === "Save") {
+        await dispatch(saveLeaveFormAction(payload, param, disableSave, setLeaveBalance));
+      } else if (type === "Submit") {
+        setDisableSave("");
+        await dispatch(saveLeaveFormAction(payload, param, disableSave, setLeaveBalance));
+      }
+    }finally{
+      setLoading(false);
     }
   };
 
@@ -327,6 +333,21 @@ const LeavePage = () => {
             />
           </Grid>
         </Grid>
+        {loading && (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          position="fixed"
+          top="0"
+          left="0"
+          width="100%"
+          height="100%"
+          bgcolor="rgba(255, 255, 255, 0.7)"
+        >
+          <CircularProgress/>
+        </Box>
+      )}
       </Box>
     </>
   );
