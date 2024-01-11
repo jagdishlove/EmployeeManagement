@@ -1,6 +1,6 @@
 import { Box, Grid, Typography } from "@mui/material";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,6 +21,8 @@ const HistoryCalendar = ({
 
   const [years, setYears] = useState([]);
   const [months, setMonths] = useState([]);
+
+  const monthRef = useRef(null);
 
   const customDayNames = [
     "SUNDAY",
@@ -97,7 +99,7 @@ const HistoryCalendar = ({
     if (currentMonth < 11) {
       // If current month is before December, include months from the current month to December of the previous year
       startMonth = 0; // Start from the current month
-      endMonth = selectedMonth || currentMonth; // December
+      endMonth = currentMonth; // December
     } else {
       // If current month is December, include months from January to the current month of the current year
       startMonth = currentMonth; // January
@@ -120,8 +122,11 @@ const HistoryCalendar = ({
     changeMonthAccordingly();
   }, []);
 
-  const handleYearChange = (e) => {
+  console.log("monthRef", monthRef);
+
+  const handleYearMonth = (e) => {
     const { value } = e.target;
+
     setSelectedYear(value);
     if (e.target.value !== moment().year().toString()) {
       const monthList = [];
@@ -167,11 +172,29 @@ const HistoryCalendar = ({
     }
   };
 
+  useEffect(() => {
+    console.log("selectedYear", selectedYear);
+    const e = {
+      target: {
+        value: selectedYear
+          ? selectedYear.toString()
+          : moment().year().toString(),
+      },
+    };
+    handleYearMonth(e, true);
+  }, []);
+
+  const handleYearChange = (e) => {
+    handleYearMonth(e);
+  };
+
   const handleMonthChange = (e) => {
     const { value } = e.target;
     getHistoryData(value, selectedYear);
 
     setSelectedMonth(parseInt(value));
+    alert("asdasd");
+    monthRef.current = parseInt(value);
   };
 
   const eventRenderer = ({ event }) => {
@@ -348,6 +371,7 @@ const HistoryCalendar = ({
               <select
                 value={selectedMonth}
                 onChange={handleMonthChange}
+                ref={monthRef}
                 style={{
                   flex: "1",
                   padding: " 10px",

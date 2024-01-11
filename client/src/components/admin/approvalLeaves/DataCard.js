@@ -173,7 +173,7 @@ const DataCard = ({
                     handleApproval("APPROVED", cardData.leaveRequestId)
                   }
                 >
-                  APPROVE
+                  APPROVED
                 </Button>
                 <Button
                   sx={{
@@ -190,7 +190,7 @@ const DataCard = ({
                     handleApproval("REJECTED", cardData.leaveRequestId)
                   }
                 >
-                  REJECT
+                  REJECTED
                 </Button>
               </Grid>
               {approval && (

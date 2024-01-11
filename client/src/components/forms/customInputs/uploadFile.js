@@ -22,7 +22,7 @@ export default function InputFileUpload({ onChange, file }) {
       variant="contained"
       startIcon={<CloudUploadIcon />}
     >
-      {file ? `File: ${file?.name || file}` : "Upload file"}
+      {file ? `Attach: ${file?.name || file}` : "Upload file"}
       <VisuallyHiddenInput
         type="file"
         accept=".doc, .docx, .zip, .jpg, .jpeg, .png, .xlsx, .xls,.pdf"
