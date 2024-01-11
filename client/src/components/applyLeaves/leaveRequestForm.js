@@ -445,7 +445,7 @@ const LeaveRequestForm = ({
             </Grid>
             <Grid item xs={12}>
               <Box sx={{ display: "flex", gap: "10px", justifyContent: "end" }}>
-                <Box sx={{ margin: "auto" }}>
+                <Box sx={{ }}>
                   <InputFileUpload
                     onChange={inputFileChangeHandler}
                     file={file || leaveRqstData.file}

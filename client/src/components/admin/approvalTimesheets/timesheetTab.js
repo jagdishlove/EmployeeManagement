@@ -9,7 +9,7 @@ import {
 } from "../../../redux/actions/timeSheet/timeSheetAction";
 import { formatDateForApi } from "../../../utils/dateOptions";
 
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import TimesheetRow from "../../timesheetRow/timesheetRow";
 import AdminSubHeader from "./adminSubHeader";
 
@@ -118,7 +118,9 @@ const TimesheetTab = () => {
       />
 
       {approvalData?.content?.length === 0 ? (
-        <p>No available data</p>
+        <Box mt={5} sx={{ display: "flex", justifyContent: "center" }}>
+          <Typography> No TimeSheet requests found.</Typography>
+        </Box>
       ) : (
         <InfiniteScroll
           dataLength={approvalData?.content?.length || 0}

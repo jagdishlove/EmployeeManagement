@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  CircularProgress,
   Dialog,
   Typography,
 } from "@mui/material";
@@ -192,9 +191,9 @@ const ApprovalLeavesPage = () => {
         handleCalendarClick={handleCalendarClick} // Pass the callback function
       />
 
-      {(getLeaveData?.content?.length ?? 0) === 0 ? (
+      {(getLeaveData?.content?.length) === 0 ? (
         <Box mt={5} sx={{ display: "flex", justifyContent: "center" }}>
-          <Typography>Oops! No leave requests found.</Typography>
+          <Typography> No leave requests found.</Typography>
         </Box>
       ) : (
         <InfiniteScroll
@@ -216,9 +215,9 @@ const ApprovalLeavesPage = () => {
               </Box>
             ))
           ) : (
-            <Box mt={5} sx={{ display: "flex", justifyContent: "center" }}>
-              <CircularProgress />
-            </Box>
+            <h1 style={{ textAlign: "center", marginTop: "10px" }}>
+              Loading..
+            </h1>
           )}
         </InfiniteScroll>
       )}

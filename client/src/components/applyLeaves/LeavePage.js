@@ -204,11 +204,11 @@ const LeavePage = () => {
     }
 
     if (type === "Save") {
-      payload.cc = JSON.stringify(payload.cc);
+      payload.cc = payload.cc.join(',');
       dispatch(saveLeaveFormAction(payload, param, disableSave,setLeaveBalance));
     } else if (type === "Submit") {
       setDisableSave("");
-      payload.cc = JSON.stringify(payload.cc);
+      payload.cc = payload.cc.join(',');
       dispatch(saveLeaveFormAction(payload, param, disableSave,setLeaveBalance));
     }
   };

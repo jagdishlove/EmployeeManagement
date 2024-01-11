@@ -10,8 +10,6 @@ const TimesheetReadOnly = ({ selectedDate, setShowHistoryTimesheet }) => {
     (state) => state?.nonPersist?.timesheetData?.timeSheetData?.timesheetEntryId
   );
 
-
-
   useEffect(() => {
     dispatch(masterDataAction());
   }, []);
@@ -22,7 +20,6 @@ const TimesheetReadOnly = ({ selectedDate, setShowHistoryTimesheet }) => {
   return (
     <Container>
       <Button
-        to="/"
         variant="contained"
         color="primary"
         size="large"

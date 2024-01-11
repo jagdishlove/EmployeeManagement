@@ -1,8 +1,8 @@
+import { CloudDownload } from "@mui/icons-material";
 import { Button, Grid, IconButton, TextField, Typography } from "@mui/material";
+import dayjs from "dayjs";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import dayjs from "dayjs";
-import { CloudDownload } from "@mui/icons-material";
 import { downloadFileAction } from "../../../redux/actions/leaves/approvalLeaveAction";
 
 const HiddenDataCard = ({
@@ -37,8 +37,8 @@ const HiddenDataCard = ({
   };
 
   const handleDownload = (file) => {
-    dispatch(downloadFileAction(file, cardData.fileName))
-  }
+    dispatch(downloadFileAction(file, cardData.fileName));
+  };
   return (
     <Grid container spacing={2} style={{ padding: "10px" }}>
       <div
@@ -195,23 +195,36 @@ const HiddenDataCard = ({
           </Typography>
         </Grid>
         {cardData.fileName && (
-            <Grid style={{ marginRight: "50%", marginLeft: "-80%" }}>
-              <IconButton
-                style={{ marginRight: "50%", marginLeft: "-100%" }}
-                onClick={() => handleDownload(cardData?.fileDownloadLink)}
-              >
-                <CloudDownload />
-              </IconButton>
-              <Grid style={{ marginLeft: "-14%", marginTop: "-3%", position: "absolute" }}>
-                <Typography>{cardData.fileName}</Typography>
-              </Grid>
+          <Grid style={{ marginRight: "50%", marginLeft: "-80%" }}>
+            <IconButton
+              style={{ marginRight: "50%", marginLeft: "-100%" }}
+              onClick={() => handleDownload(cardData?.fileDownloadLink)}
+            >
+              <CloudDownload />
+            </IconButton>
+            <Grid
+              style={{
+                marginLeft: "-14%",
+                marginTop: "-3%",
+                position: "absolute",
+              }}
+            >
+              <Typography>{cardData.fileName}</Typography>
             </Grid>
-          )}
-          {cardData.fileName && (
-            <Typography style={{ position: 'absolute', marginLeft: '-34%', fontSize: '10px', marginTop: '-1%' }}>
-              please click on the icon to download the file
-            </Typography>
-          )}
+          </Grid>
+        )}
+        {cardData.fileName && (
+          <Typography
+            style={{
+              position: "absolute",
+              marginLeft: "-34%",
+              fontSize: "10px",
+              marginTop: "-1%",
+            }}
+          >
+            please click on the icon to download the file
+          </Typography>
+        )}
       </Grid>
       <Grid
         item
@@ -274,7 +287,7 @@ const HiddenDataCard = ({
             }}
             onClick={() => handleApproval("APPROVED", cardData.leaveRequestId)}
           >
-            APPROVE
+            APPROVED
           </Button>
         </Grid>
         <Grid
@@ -308,7 +321,7 @@ const HiddenDataCard = ({
             }}
             onClick={() => handleApproval("REJECTED", cardData.leaveRequestId)}
           >
-            REJECT
+            REJECTED
           </Button>
         </Grid>
       </Grid>

@@ -110,7 +110,7 @@ const HolidayList = () => {
                 fontWeight="bold"
                 sx={{ textDecoration: "underline" }}
               >
-                Holidays
+                Holidays & Leave Policy
               </Typography>
             </Box>
 
