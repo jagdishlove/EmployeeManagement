@@ -9,7 +9,7 @@ import {
 } from "../../../redux/actions/timeSheet/timeSheetAction";
 import { formatDateForApi } from "../../../utils/dateOptions";
 
-import { Box, Typography } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import TimesheetRow from "../../timesheetRow/timesheetRow";
 import AdminSubHeader from "./adminSubHeader";
 
@@ -25,7 +25,7 @@ const TimesheetTab = () => {
   const [projects, setProjects] = useState("All"); // Set default value to "All"
   const [teamMember, setTeamMember] = useState("All");
   const [newDateDashboard, setNewDateDashboard] = useState("All");
-
+  const [loading, setLoading] = useState(false);
   const [setPayloadData] = useState(null);
   const newSize = 10 * counter;
   const masterData = useSelector((state) => state.persistData.masterData);
@@ -63,19 +63,23 @@ const TimesheetTab = () => {
     return newErrors;
   };
 
-  const approveSubmitHandler = (data, rating, comment) => {
+  const approveSubmitHandler = async (data, rating, comment) => {
     const newErrors = validationForm(rating, comment, data);
     if (Object.keys(newErrors).length === 0) {
-      const payload = {
-        timesheetEntryId: data.timesheetEntryId,
-        comment: comment,
-        rating: rating,
-        approvalStatus: "APPROVED",
-      };
-      dispatch(approveTimesheet(payload, newPayload));
-
-      // Clear errors for the current entry
-      setErrorValidation({});
+      setLoading(true);
+      try {
+        const payload = {
+          timesheetEntryId: data.timesheetEntryId,
+          comment: comment,
+          rating: rating,
+          approvalStatus: "APPROVED", 
+        };
+  
+        await dispatch(approveTimesheet(payload, newPayload));
+        setErrorValidation({});
+      } finally {
+        setLoading(false);
+      }
     } else {
       setErrorValidation({
         [data.timesheetEntryId]: newErrors,
@@ -83,26 +87,32 @@ const TimesheetTab = () => {
     }
   };
 
-  const rejectButtonHandler = (data, rating, comment) => {
+  const rejectButtonHandler = async (data, rating, comment) => {
     const newErrors = validationForm(rating, comment, data);
-
+  
     if (Object.keys(newErrors).length === 0) {
-      const payload = {
-        timesheetEntryId: data.timesheetEntryId,
-        comment: comment,
-        rating: rating,
-        approvalStatus: "REJECTED",
-      };
-      dispatch(rejectTimesheet(payload, newPayload));
-
-      // Clear errors for the current entry
-      setErrorValidation({});
+      setLoading(true);
+  
+      try {
+        const payload = {
+          timesheetEntryId: data.timesheetEntryId,
+          comment: comment,
+          rating: rating,
+          approvalStatus: "REJECTED",
+        };
+  
+        await dispatch(rejectTimesheet(payload, newPayload));
+        setErrorValidation({});
+      } finally {
+        setLoading(false); 
+      }
     } else {
       setErrorValidation({
         [data.timesheetEntryId]: newErrors,
       });
     }
   };
+  
 
   return (
     <Box>
@@ -118,9 +128,7 @@ const TimesheetTab = () => {
       />
 
       {approvalData?.content?.length === 0 ? (
-        <Box mt={5} sx={{ display: "flex", justifyContent: "center" }}>
-          <Typography> No TimeSheet requests found.</Typography>
-        </Box>
+        <p>No available data</p>
       ) : (
         <InfiniteScroll
           dataLength={approvalData?.content?.length || 0}
@@ -146,6 +154,22 @@ const TimesheetTab = () => {
             </h1>
           )}
         </InfiniteScroll>
+      )}
+      {loading && (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          position="fixed"
+          top="0"
+          left="0"
+          width="100%"
+          height="100%"
+          bgcolor="rgba(255, 255, 255, 0.7)"
+        >
+          {/* <h3 style={{ color: '#008080' }}>Updating Records...</h3> */}
+          <CircularProgress/>
+        </Box>
       )}
     </Box>
   );

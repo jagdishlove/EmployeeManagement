@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  CircularProgress,
   Dialog,
   Typography,
 } from "@mui/material";
@@ -31,7 +32,8 @@ const ApprovalLeavesPage = () => {
   const [error, setError] = useState({});
   const [pageCounter, setPageCounter] = useState(2);
 
-  // const [errorValidation, setErrorValidation] = useState({});
+  const [loading, setLoading] = useState(false);
+
 
   const [leaveRequestId, setLeaveRequestId] = useState();
 
@@ -112,7 +114,7 @@ const ApprovalLeavesPage = () => {
     );
   };
 
-  const approveRejectLeavesHandler = (id, status, approverComment) => {
+  const approveRejectLeavesHandler = async (id, status, approverComment) => {
     const newErrors = validationForm(approverComment);
     const getDataPayload = {
       empId: TeamMemberData === "All" ? "" : TeamMemberData || "",
@@ -123,14 +125,19 @@ const ApprovalLeavesPage = () => {
       size: 5 * 2,
     };
     if (Object.keys(newErrors).length === 0) {
+      setLoading(true);
+      try {
       const payload = {
         leaveRequestId: id,
         approverComment,
         status,
       };
       setLeaveRequestId(id);
-      dispatch(approveRejectLeavesAction(payload, getDataPayload));
+      await dispatch(approveRejectLeavesAction(payload, getDataPayload));
       setError({});
+    }finally {
+      setLoading(false);
+    }
     } else {
       setError(() => ({ [id]: newErrors }));
     }
@@ -220,6 +227,21 @@ const ApprovalLeavesPage = () => {
             </h1>
           )}
         </InfiniteScroll>
+      )}
+      {loading && (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          position="fixed"
+          top="0"
+          left="0"
+          width="100%"
+          height="100%"
+          bgcolor="rgba(255, 255, 255, 0.7)"
+        >
+          <CircularProgress/>
+        </Box>
       )}
     </Box>
   );

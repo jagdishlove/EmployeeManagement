@@ -65,7 +65,7 @@ const TimesheetRow = ({
   );
   const [managerCommentProvided, setManagerCommentProvided] = useState(false);
   const [timeError, setTimeError] = useState("");
-  const [starRating, setStarRating] = useState();
+  const [starRating, setStarRating] = useState("5");
   const [updatedProjectNameList, setUpdatedProjectNameList] = useState([]);
   const [updatedActivityameList, setUpdatedActivityNameList] = useState([]);
   const [managerStatusData, setManagerStatusData] = useState(null);
@@ -107,7 +107,6 @@ const TimesheetRow = ({
     const managerStatusData = data?.timesheetApproval?.approverList.filter(
       (entry) => entry.status === "APPROVED" || entry.status === "REJECTED"
     )[0];
-
     setManagerStatusData(managerStatusData);
   }, [data]);
 
@@ -126,7 +125,7 @@ const TimesheetRow = ({
     projectName: "",
     activity: "",
     comments: "",
-    adminComment: "",
+    adminComment: "Approved",
     fromTime: "",
     toTime: "",
     rating: "",
@@ -676,6 +675,33 @@ const TimesheetRow = ({
               direction="row"
               alignItems="center"
             >
+              {data ||
+              role === "user" ||
+              role === "manager" ||
+              role === "employee" ||
+              role === "supervisor" ||
+              role === "admin" ? (
+                <Grid
+                  container
+                  item
+                  xs={12}
+                  sm={6}
+                  md={5}
+                  lg={5}
+                  direction="row"
+                  sx={style.timesheetManagerCol}
+                >
+                  <Star
+                    onClick={starHandler}
+                    approval={approval}
+                    value={managerStatusData?.rating}
+                  />
+                </Grid>
+              ) : (
+                <Grid item xs={12} sm={6} md={7} lg={7} sx={style.starSec}>
+                  {/* Empty content */}
+                </Grid>
+              )}
               {data ? (
                 <Grid item xs={12} sm={6} md={7} lg={7} sx={style.starSec}>
                   {!approval ? (
@@ -685,6 +711,7 @@ const TimesheetRow = ({
                         variant="contained"
                         type="submit"
                         disabled={true}
+                        style={{ marginLeft: 50 }}
                       >
                         <Typography
                           variant="h6"
@@ -799,34 +826,6 @@ const TimesheetRow = ({
                       </Button>
                     </>
                   )}
-                </Grid>
-              ) : (
-                <Grid item xs={12} sm={6} md={7} lg={7} sx={style.starSec}>
-                  {/* Empty content */}
-                </Grid>
-              )}
-
-              {data ||
-              role === "user" ||
-              role === "manager" ||
-              role === "employee" ||
-              role === "supervisor" ||
-              role === "admin" ? (
-                <Grid
-                  container
-                  item
-                  xs={12}
-                  sm={6}
-                  md={5}
-                  lg={5}
-                  direction="row"
-                  sx={style.timesheetManagerCol}
-                >
-                  <Star
-                    onClick={starHandler}
-                    approval={approval}
-                    value={managerStatusData?.rating}
-                  />
                 </Grid>
               ) : (
                 <Grid item xs={12} sm={6} md={7} lg={7} sx={style.starSec}>

@@ -66,10 +66,10 @@ const LeaveRequestForm = ({
     dispatch(getSearchEmailAction(leaveRqstData?.cc));
   }, [dispatch]);
 
-  const autoCompleteHandler = (_, value) => {
-    onChangeFormDataHandler(_, value, "cc");
-  };
-
+  const ccValues = leaveRqstData.cc && typeof leaveRqstData.cc === 'string'
+  ? leaveRqstData.cc.split(",")
+  : [];
+  
   const textFieldChangeHandler = (e) => {
     const value = e.target.value;
     dispatch(getSearchEmailAction(value));
@@ -427,11 +427,11 @@ const LeaveRequestForm = ({
                 </Grid>
                 <Grid item xs={12} sm={9}>
                   <Autocomplete
-                    value={leaveRqstData?.cc}
+                    value={ccValues} 
                     options={searchEmailType}
                     multiple
                     freeSolo
-                    onChange={autoCompleteHandler}
+                    onChange={textFieldChangeHandler}
                     renderInput={(params) => (
                       <TextField
                         {...params}

@@ -61,6 +61,7 @@ const AdminHeader = () => {
                       backgroundColor: "#008080",
                       color: "#ffffff",
                     }),
+                    marginLeft:'33%'
                   }}
                   onClick={() => setSelectedTab(0)}
                 >

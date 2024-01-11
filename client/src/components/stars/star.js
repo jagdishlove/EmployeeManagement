@@ -7,7 +7,7 @@ const Star = ({ onClick, approval, value }) => {
       <Rating
         size = '33'
         transition
-        initialValue={approval ? 0 : value ? value : 0}
+        initialValue={approval ? 5 : value ? value : 0}
         readonly={approval ? false : true}
         onClick={onClick}
         allowFraction
