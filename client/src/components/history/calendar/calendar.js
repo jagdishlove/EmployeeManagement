@@ -1,26 +1,24 @@
 import { Box, Grid, Typography } from "@mui/material";
 import moment from "moment";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useDispatch, useSelector } from "react-redux";
-import { historyDataActionCreator } from "../../../redux/actions/historyData/historyDataAction";
 import { getTimesheetEntryAction } from "../../../redux/actions/timeSheet/timeSheetAction";
 import VerticalBarGraph from "../VerticalBarGraph";
 import "./calenderStyle.css";
 
 const HistoryCalendar = ({
   setShowHistoryTimesheet,
-  setSelectedMonth,
   selectedMonth,
-  setSelectedYear,
   selectedYear,
+  handleMonthChange,
+  months,
+  handleYearChange,
+  years,
 }) => {
   const localizer = momentLocalizer(moment);
   const dispatch = useDispatch();
-
-  const [years, setYears] = useState([]);
-  const [months, setMonths] = useState([]);
 
   const monthRef = useRef(null);
 
@@ -69,132 +67,6 @@ const HistoryCalendar = ({
 
   const getDataType = (event) => {
     return transformedData.find((data) => data.type === event).type;
-  };
-
-  const getHistoryData = (month, year) => {
-    const paramas = {
-      month: parseInt(month) + 1,
-      year: year,
-    };
-    dispatch(historyDataActionCreator(paramas));
-  };
-
-  const changeMonthAccordingly = () => {
-    const currentYear = moment().year();
-    const yearList = [];
-
-    if (selectedMonth < 12) {
-      yearList.push(currentYear - 1, currentYear);
-    } else {
-      yearList.push(currentYear);
-    }
-
-    setYears(yearList);
-
-    const monthList = [];
-    const currentMonth = moment().month();
-    let startMonth;
-    let endMonth;
-
-    if (currentMonth < 11) {
-      // If current month is before December, include months from the current month to December of the previous year
-      startMonth = 0; // Start from the current month
-      endMonth = currentMonth; // December
-    } else {
-      // If current month is December, include months from January to the current month of the current year
-      startMonth = currentMonth; // January
-      endMonth = 11; // Current month
-    }
-
-    for (let month = startMonth; month <= endMonth; month++) {
-      const date = moment().year(selectedYear).month(month).startOf("month");
-      monthList.push({
-        value: month,
-        label: date.format("MMMM"),
-      });
-    }
-
-    setMonths(monthList);
-  };
-
-  useEffect(() => {
-    getHistoryData(selectedMonth, selectedYear);
-    changeMonthAccordingly();
-  }, []);
-
-  console.log("monthRef", monthRef);
-
-  const handleYearMonth = (e) => {
-    const { value } = e.target;
-
-    setSelectedYear(value);
-    if (e.target.value !== moment().year().toString()) {
-      const monthList = [];
-      const currentMonth = moment().month();
-      let startMonth;
-      let endMonth;
-
-      // If current month is December, include months from January to the current month of the current year
-      startMonth = currentMonth + 1; // January
-      endMonth = 12; // Current month
-
-      for (let month = startMonth; month < endMonth; month++) {
-        const date = moment().year(selectedYear).month(month).startOf("month");
-        monthList.push({
-          value: month,
-          label: date.format("MMMM"),
-        });
-      }
-      setMonths(monthList);
-      setSelectedMonth(monthList[0].value);
-      getHistoryData(startMonth, value);
-    } else {
-      const monthList = [];
-      const currentMonth = moment().month();
-      let startMonth;
-      let endMonth;
-
-      // If current month is December, include months from January to the current month of the current year
-      startMonth = 0; // January
-      endMonth = currentMonth; // Current month
-
-      getHistoryData(endMonth, value);
-
-      for (let month = startMonth; month <= endMonth; month++) {
-        const date = moment().year(selectedYear).month(month).startOf("month");
-        monthList.push({
-          value: month,
-          label: date.format("MMMM"),
-        });
-      }
-      setMonths(monthList);
-      setSelectedMonth(currentMonth);
-    }
-  };
-
-  useEffect(() => {
-    console.log("selectedYear", selectedYear);
-    const e = {
-      target: {
-        value: selectedYear
-          ? selectedYear.toString()
-          : moment().year().toString(),
-      },
-    };
-    handleYearMonth(e, true);
-  }, []);
-
-  const handleYearChange = (e) => {
-    handleYearMonth(e);
-  };
-
-  const handleMonthChange = (e) => {
-    const { value } = e.target;
-    getHistoryData(value, selectedYear);
-
-    setSelectedMonth(parseInt(value));
-    alert("asdasd");
-    monthRef.current = parseInt(value);
   };
 
   const eventRenderer = ({ event }) => {

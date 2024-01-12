@@ -84,7 +84,7 @@ const TimesheetRow = ({
     if (!data) {
       setSelectedValues(initialSelectedValues);
     }
-    if (managerStatusData?.comment) {
+    if (managerStatusData?.adminComment) {
       setManagerCommentProvided(true);
     }
   }, [selectedDate, managerStatusData]);
@@ -135,7 +135,8 @@ const TimesheetRow = ({
     jobType: data?.jobTypeId || "",
     projectName: data?.projectId || "",
     activity: data?.activityId || "",
-    comments: data?.comments || "",
+    comments: data?.comments || "Approved",
+    adminComment: "Approved",
     fromTime: data?.startTime || "",
     toTime: data?.endTime || "",
   };
@@ -143,6 +144,7 @@ const TimesheetRow = ({
   const [selectedValues, setSelectedValues] = useState(
     data ? editedSelectedValues : initialSelectedValues
   );
+  console.log("selectedValues", selectedValues);
 
   useEffect(() => {
     if (updatedActivityameList?.length > 1 && timesheetForm) {
@@ -642,7 +644,10 @@ const TimesheetRow = ({
                   rows={4}
                   variant="outlined"
                   fullWidth
-                  value={managerStatusData?.comment}
+                  value={
+                    managerStatusData?.adminComment ||
+                    selectedValues.adminComment
+                  }
                   sx={style.TimesheetManagerTextField}
                   inputProps={{ maxLength: 250 }}
                   onChange={(e) => onChangeHandler(e, "adminComment")}
