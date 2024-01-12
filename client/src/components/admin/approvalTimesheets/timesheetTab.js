@@ -41,7 +41,7 @@ const TimesheetTab = () => {
     dispatch(getTimesheetEntryApprovalAction(newPayload));
     setCounter(counter + 1);
   };
-  const validationForm = (rating, comment, data) => {
+  const validationForm = (rating, comment, data, status) => {
     const newErrors = {};
 
     let activity = {};
@@ -56,7 +56,11 @@ const TimesheetTab = () => {
       newErrors.adminCommentError =
         "Please add details in the comments section.";
     }
-    if (activity.approvalCommentRequired === true && comment === "Approved") {
+    if (
+      status === "reject" &&
+      activity.approvalCommentRequired === true &&
+      comment === "Approved"
+    ) {
       newErrors.adminCommentError =
         "Please add details in the comments section.";
     }
@@ -68,7 +72,7 @@ const TimesheetTab = () => {
   };
 
   const approveSubmitHandler = async (data, rating, comment) => {
-    const newErrors = validationForm(rating, comment, data);
+    const newErrors = validationForm(rating, comment, data, "approved");
     if (Object.keys(newErrors).length === 0) {
       setLoading(true);
       try {
@@ -76,9 +80,9 @@ const TimesheetTab = () => {
           timesheetEntryId: data.timesheetEntryId,
           comment: comment,
           rating: rating,
-          approvalStatus: "APPROVED", 
+          approvalStatus: "APPROVED",
         };
-  
+
         await dispatch(approveTimesheet(payload, newPayload));
         setErrorValidation({});
       } finally {
@@ -92,11 +96,11 @@ const TimesheetTab = () => {
   };
 
   const rejectButtonHandler = async (data, rating, comment) => {
-    const newErrors = validationForm(rating, comment, data);
-  
+    const newErrors = validationForm(rating, comment, data, "reject");
+
     if (Object.keys(newErrors).length === 0) {
       setLoading(true);
-  
+
       try {
         const payload = {
           timesheetEntryId: data.timesheetEntryId,
@@ -104,11 +108,11 @@ const TimesheetTab = () => {
           rating: rating,
           approvalStatus: "REJECTED",
         };
-  
+
         await dispatch(rejectTimesheet(payload, newPayload));
         setErrorValidation({});
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     } else {
       setErrorValidation({
@@ -116,7 +120,6 @@ const TimesheetTab = () => {
       });
     }
   };
-  
 
   return (
     <Box>
@@ -172,7 +175,7 @@ const TimesheetTab = () => {
           bgcolor="rgba(255, 255, 255, 0.7)"
         >
           {/* <h3 style={{ color: '#008080' }}>Updating Records...</h3> */}
-          <CircularProgress/>
+          <CircularProgress />
         </Box>
       )}
     </Box>
