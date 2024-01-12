@@ -56,6 +56,10 @@ const TimesheetTab = () => {
       newErrors.adminCommentError =
         "Please add details in the comments section.";
     }
+    if (activity.approvalCommentRequired === true && comment === "Approved") {
+      newErrors.adminCommentError =
+        "Please add details in the comments section.";
+    }
     if (activity.approvalRatingRequired === true && !rating) {
       newErrors.ratingError = "Please add a rating";
     }
