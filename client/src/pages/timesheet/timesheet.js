@@ -1,5 +1,5 @@
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
-import { Box, Button, Grid, Tab, Tabs, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Grid, Tab, Tabs, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { format } from "date-fns";
 import moment from "moment";
@@ -31,6 +31,7 @@ const Timesheet = () => {
     useState(false);
 
   const [disableWhileEditing, setDisabledWhileEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -99,6 +100,16 @@ const Timesheet = () => {
       navigate("/history");
     }
   };
+  const handleApprovalClick = async () => {
+    setLoading(true);
+    try {
+      await dispatch(
+        submitTimeSheetApprovalAction(formatDateForApi(selectedDate))
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Box>
@@ -139,7 +150,9 @@ const Timesheet = () => {
           className="currentTab"
           style={{
             backgroundColor: "#008080",
-            width: "20%",
+            width: "200px",
+          height:'70px',
+
             color: "white",
             borderBottomRightRadius: "10px",
             borderBottomLeftRadius: "10px",
@@ -150,7 +163,9 @@ const Timesheet = () => {
           label="History"
           className="HistoryTab"
           style={{
-            width: "20%",
+            width: "200px",
+          height:'70px',
+
             border: "2px solid #008080",
             borderBottomRightRadius: "10px",
             borderBottomLeftRadius: "10px",
@@ -186,11 +201,7 @@ const Timesheet = () => {
             sx={style.GreenButton}
             variant="contained"
             type="submit"
-            onClick={() => {
-              dispatch(
-                submitTimeSheetApprovalAction(formatDateForApi(selectedDate))
-              );
-            }}
+            onClick={handleApprovalClick}
             disabled={disableTimeSheetEntryForm || disableWhileEditing}
           >
             <SaveOutlinedIcon sx={style.AddIconStyle} />
@@ -241,6 +252,21 @@ const Timesheet = () => {
         setDisableTimeSheetEntryForm={setDisableTimeSheetEntryForm}
         setDisabledWhileEditing={setDisabledWhileEditing}
       />
+      {loading && (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          position="fixed"
+          top="0"
+          left="0"
+          width="100%"
+          height="100%"
+          bgcolor="rgba(255, 255, 255, 0.7)"
+        >
+          <CircularProgress/>
+        </Box>
+      )}
     </Box>
   );
 };

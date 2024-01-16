@@ -41,7 +41,7 @@ const LeavePage = () => {
     leaveMasterId: "",
     comments: "",
     manager: managerData.managerName || "",
-    cc: [] || "",
+    cc: [] ,
     file: " ",
   };
 
@@ -203,9 +203,7 @@ const LeavePage = () => {
     if (file) {
       payload.file = file;
     }
-    if (Array.isArray(payload.cc)) {
-      payload.cc = payload.cc.join(',');
-    }
+    // payload.cc = JSON.stringify(payload.cc);
     setLoading(true);
     try {
       if (type === "Save") {

@@ -9,7 +9,7 @@ const LeaveBalance = () => {
   );
 
   const leaveTypeMasterData = useSelector(
-    (state) => state.persistData.masterData?.leaveTypes
+    (state) => state.persistData.masterData?.leaveTypesForView
   );
 
   const result = leaveBalance.map((item) => {
