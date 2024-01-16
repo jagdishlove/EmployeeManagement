@@ -31,6 +31,7 @@ const LeaveRequestForm = ({
   const style = {};
 
   const dispatch = useDispatch();
+  
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -66,10 +67,15 @@ const LeaveRequestForm = ({
     dispatch(getSearchEmailAction(leaveRqstData?.cc));
   }, [dispatch]);
 
-  const ccValues = leaveRqstData.cc && typeof leaveRqstData.cc === 'string'
-  ? leaveRqstData.cc.split(",")
-  : [];
+  const autoCompleteHandler = (_, value) => {
+    // Ensure that value is an array
+    const ccValue = Array.isArray(value) ? value : [value];
   
+    // Assuming you want to join the array back to a string for the Autocomplete component
+    const ccString = ccValue.join(',');
+  
+    onChangeFormDataHandler(_, ccString, "cc");
+  };
   const textFieldChangeHandler = (e) => {
     const value = e.target.value;
     dispatch(getSearchEmailAction(value));
@@ -112,9 +118,7 @@ const LeaveRequestForm = ({
     };
 
     // Usage example
-    const privilegeLeaveId = findLeaveMasterId("Privilege Leave");
     const paternityLeaveId = findLeaveMasterId("Paternity Leave");
-    const compensatoryLeaveId = findLeaveMasterId("Compensatory Leave");
     const maternityLeaveId = findLeaveMasterId("Maternity Leave");
     const maternityIllnessLeaveId = findLeaveMasterId(
       "Maternity Illness Leave"
@@ -147,19 +151,7 @@ const LeaveRequestForm = ({
     }
 
     // Additional validation for "PL, PaL, COL, ML  Leave"
-    if (
-      leaveRqstData.leaveMasterId === `${privilegeLeaveId}` ||
-      leaveRqstData.leaveMasterId === `${paternityLeaveId}` ||
-      leaveRqstData.leaveMasterId === `${compensatoryLeaveId}` ||
-      leaveRqstData.leaveMasterId === `${maternityLeaveId}`
-    ) {
-      const currentDate = dayjs();
-      const selectedFromDate = dayjs(leaveRqstData.fromDate);
 
-      if (selectedFromDate.isBefore(currentDate)) {
-        errors.fromDate = "Please choose a future date";
-      }
-    }
 
     // Check for mandatory attachment for specific leave types (11, 5, or 8)
     if (
@@ -345,9 +337,14 @@ const LeaveRequestForm = ({
                 <Grid item xs={12} sm={9}>
                   <Dropdown
                     name="leaveMasterId"
-                    options={leaveRequestType}
+                    options={leaveRequestType.map(option =>
+                      option.leaveType === "Adoption Leave For Male" || option.leaveType === "Adoption Leave For Female"
+                        ? { ...option, leaveType: "Adoption Leave" }
+                        : option
+                    )}
                     value={leaveRqstData.leaveMasterId}
                     onChange={onChangeFormDataHandler}
+                    
                     style={{
                       ...style.TimesheetTextField,
                       border: "1px solid #8897ad87",
@@ -426,20 +423,20 @@ const LeaveRequestForm = ({
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={9}>
-                  <Autocomplete
-                    value={ccValues} 
-                    options={searchEmailType}
-                    multiple
-                    freeSolo
-                    onChange={textFieldChangeHandler}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        fullWidth
-                        onChange={textFieldChangeHandler}
-                      />
-                    )}
-                  />
+                <Autocomplete
+                  value={leaveRqstData?.cc && typeof leaveRqstData.cc === 'string' ? leaveRqstData.cc.split(',').map(email => email.trim()) : []}
+                  options={searchEmailType}
+                  multiple
+                  freeSolo
+                  onChange={autoCompleteHandler}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      fullWidth
+                      onChange={textFieldChangeHandler}
+                    />
+                  )}
+                />
                 </Grid>
               </Grid>
             </Grid>

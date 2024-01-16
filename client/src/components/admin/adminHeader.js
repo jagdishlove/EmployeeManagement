@@ -61,11 +61,15 @@ const AdminHeader = () => {
                       backgroundColor: "#008080",
                       color: "#ffffff",
                     }),
-                    marginLeft:'33%'
+                    
+                    marginLeft:'360px',
+                    width:'200px',
+                    height:'70px',
+                    textAlign:'center'
                   }}
                   onClick={() => setSelectedTab(0)}
                 >
-                  Timesheets
+                  <p style={{marginTop:'13px'}}>Timesheet</p> 
                 </Tab>
                 {/* Render the "Leaves" tab only for users with "LEAVEAPPROVER" role */}
                 {isLeaveApprover && (
@@ -78,10 +82,15 @@ const AdminHeader = () => {
                         backgroundColor: "#008080",
                         color: "#ffffff",
                       }),
+                      width:'200px',
+                      height:'70px',
+                      textAlign:'center',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}
                     onClick={() => setSelectedTab(1)}
                   >
-                    Leaves
+                   <p style={{marginTop:'13px'}}>Leaves</p> 
                   </Tab>
                 )}
               </TabList>

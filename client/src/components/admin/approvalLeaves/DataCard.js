@@ -35,7 +35,7 @@ const DataCard = ({
     setExpanded(!expanded);
   };
   const getLeaveType = (leaveMasterId) => {
-    const leaveTypeObject = masterData?.leaveTypes?.find(
+    const leaveTypeObject = masterData?.leaveTypesForView?.find(
       (data) => data.leaveMasterId === leaveMasterId
     );
     return leaveTypeObject ? leaveTypeObject.leaveType : "";
@@ -173,7 +173,7 @@ const DataCard = ({
                     handleApproval("APPROVED", cardData.leaveRequestId)
                   }
                 >
-                  APPROVED
+                  APPROVE
                 </Button>
                 <Button
                   sx={{
@@ -190,7 +190,7 @@ const DataCard = ({
                     handleApproval("REJECTED", cardData.leaveRequestId)
                   }
                 >
-                  REJECTED
+                  REJECT
                 </Button>
               </Grid>
               {approval && (

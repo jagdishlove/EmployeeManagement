@@ -7,6 +7,7 @@ import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import {
   Box,
   Button,
+  CircularProgress,
   Grid,
   IconButton,
   TextField,
@@ -54,6 +55,8 @@ const TimesheetRow = ({
 }) => {
   const theme = useTheme();
 
+  console.log("approvalapproval", approval);
+
   const dispatch = useDispatch();
   const masterData = useSelector((state) => state.persistData.masterData);
 
@@ -69,6 +72,7 @@ const TimesheetRow = ({
   const [updatedProjectNameList, setUpdatedProjectNameList] = useState([]);
   const [updatedActivityameList, setUpdatedActivityNameList] = useState([]);
   const [managerStatusData, setManagerStatusData] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const isSuccessSaveTimesheet = useSelector(
     (state) => state?.nonPersist?.timesheetData.isSuccess
@@ -125,7 +129,8 @@ const TimesheetRow = ({
     projectName: "",
     activity: "",
     comments: "",
-    adminComment: "Approved",
+    adminComment:
+      role.length === 1 && role[0].includes("USER") ? "" : "Approved",
     fromTime: "",
     toTime: "",
     rating: "",
@@ -135,8 +140,9 @@ const TimesheetRow = ({
     jobType: data?.jobTypeId || "",
     projectName: data?.projectId || "",
     activity: data?.activityId || "",
-    comments: data?.comments || "Approved",
-    adminComment: "Approved",
+    comments: data?.comments,
+    adminComment:
+      role.length === 1 && role[0].includes("USER") ? "" : "Approved",
     fromTime: data?.startTime || "",
     toTime: data?.endTime || "",
   };
@@ -289,22 +295,27 @@ const TimesheetRow = ({
     }
   });
 
-  const handleSaveData = () => {
-    const newErrors = validationForm();
-    const timeError = timeValidation(getTimesheetData, newEnteryTime);
+  const handleSaveData = async () => {
+    setLoading(true);
+    try {
+      const newErrors = validationForm();
+      const timeError = timeValidation(getTimesheetData, newEnteryTime);
 
-    setErrors(newErrors);
-    setTimeError(timeError);
+      setErrors(newErrors);
+      setTimeError(timeError);
 
-    if (
-      Object.keys(newErrors).length === 0 &&
-      Object.keys(timeError).length === 0
-    ) {
-      const payload = createPayload();
-      dispatch(
-        saveTimeSheetEntryAction(payload, formatDateForApi(selectedDate))
-      );
-      getProjectName(selectedValues.jobType);
+      if (
+        Object.keys(newErrors).length === 0 &&
+        Object.keys(timeError).length === 0
+      ) {
+        const payload = createPayload();
+        await dispatch(
+          saveTimeSheetEntryAction(payload, formatDateForApi(selectedDate))
+        );
+        getProjectName(selectedValues.jobType);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -413,6 +424,8 @@ const TimesheetRow = ({
       [fieldName]: time,
     }));
   };
+
+  console.log("role", role);
 
   const handleRefreshClick = () => {
     // Implement the refresh functionality here.
@@ -951,6 +964,21 @@ const TimesheetRow = ({
         <p className="error-message">
           {errorValidation[data.timesheetEntryId]}
         </p>
+      )}
+      {loading && (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          position="fixed"
+          top="0"
+          left="0"
+          width="100%"
+          height="100%"
+          bgcolor="rgba(255, 255, 255, 0.7)"
+        >
+          <CircularProgress />
+        </Box>
       )}
     </Box>
   );

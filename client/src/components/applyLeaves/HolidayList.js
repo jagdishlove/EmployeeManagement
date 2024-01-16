@@ -1,10 +1,10 @@
+import CloseIcon from '@mui/icons-material/Close';
 import InfoIcon from "@mui/icons-material/Info";
 import { Box, IconButton, Modal, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import prakat_favicon_list from "../../assets/prakat_favicon_list.png";
 import { getHolidayListAction } from "../../redux/actions/leaves/leaveAction";
-import CloseIcon from '@mui/icons-material/Close';
 
 const formatDateString = (inputDate) => {
   const options = { weekday: "short", day: "numeric", month: "short" };

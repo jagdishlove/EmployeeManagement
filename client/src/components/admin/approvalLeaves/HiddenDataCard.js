@@ -23,7 +23,7 @@ const HiddenDataCard = ({
   const dispatch = useDispatch();
 
   const getLeaveType = (leaveMasterId) => {
-    const leaveTypeObject = masterData?.leaveTypes?.find(
+    const leaveTypeObject = masterData?.leaveTypesForView?.find(
       (data) => data.leaveMasterId === leaveMasterId
     );
     return leaveTypeObject ? leaveTypeObject.leaveType : "";
@@ -287,7 +287,7 @@ const HiddenDataCard = ({
             }}
             onClick={() => handleApproval("APPROVED", cardData.leaveRequestId)}
           >
-            APPROVED
+            APPROVE
           </Button>
         </Grid>
         <Grid
@@ -321,7 +321,7 @@ const HiddenDataCard = ({
             }}
             onClick={() => handleApproval("REJECTED", cardData.leaveRequestId)}
           >
-            REJECTED
+            REJECT
           </Button>
         </Grid>
       </Grid>
