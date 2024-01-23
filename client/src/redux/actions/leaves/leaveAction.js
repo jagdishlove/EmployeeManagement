@@ -4,6 +4,9 @@ import makeRequest, { addRequest } from "../../../api/api";
 import { errorMessage } from "../errors/errorsAction";
 import { getRefreshToken } from "../login/loginAction";
 import {
+  ALL_EMPLOYEES_LEAVE_FAIL,
+  ALL_EMPLOYEES_LEAVE_REQUEST,
+  ALL_EMPLOYEES_LEAVE_SUCCESS,
   DELETE_LEAVE_FAILURE,
   DELETE_LEAVE_REQUEST,
   DELETE_LEAVE_SUCCESS,
@@ -115,6 +118,24 @@ const deleteLeaveSuccess = () => {
 const deleteLeaveFailure = () => {
   return {
     type: DELETE_LEAVE_FAILURE,
+  };
+};
+
+const getAllLeaveRequestsOfEmployeesRequest = () => {
+  return {
+    type: ALL_EMPLOYEES_LEAVE_REQUEST,
+  };
+};
+
+const getAllLeaveRequestsOfEmployeesSuccess = (data) => {
+  return {
+    type: ALL_EMPLOYEES_LEAVE_SUCCESS,
+    payload: data,
+  };
+};
+const getAllLeaveRequestsOfEmployeesFail = () => {
+  return {
+    type: ALL_EMPLOYEES_LEAVE_FAIL,
   };
 };
 
@@ -257,3 +278,20 @@ export const deleteLeave = (leaveRequestId) => {
     }
   };
 };
+
+export const getAllLeaveRequestsOfEmployeesAction = () => {
+  return async (dispatch) => {
+    try {
+      dispatch(getAllLeaveRequestsOfEmployeesRequest());
+      const response = await makeRequest("GET", `/api/leave/getAllLeaveRequestsOfEmployees`,null,{dateBand:"THIS_MONTH",page:0,size:11});
+      dispatch(getAllLeaveRequestsOfEmployeesSuccess(response));
+    } catch (err) {
+      if (err.response.data.errorCode === 403) {
+        dispatch(getRefreshToken());
+      }
+      dispatch(getAllLeaveRequestsOfEmployeesFail());
+      dispatch(errorMessage(err.response.data.errorMessage));
+    }
+  };
+};
+console.log("getAllLeaveRequestsOfEmployeesAction", getAllLeaveRequestsOfEmployeesAction)

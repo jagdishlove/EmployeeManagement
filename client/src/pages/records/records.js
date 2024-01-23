@@ -193,7 +193,7 @@ const Records = () => {
           label="Current"
           className="currentTab"
           style={{
-            width: "20%",
+            width: "100px",
             border: "2px solid #008080",
             borderBottomRightRadius: "10px",
             borderBottomLeftRadius: "10px",
@@ -206,7 +206,7 @@ const Records = () => {
           className="HistoryTab"
           style={{
             backgroundColor: "#008080",
-            width: "20%",
+            width: "100px",
             color: "white",
             borderBottomRightRadius: "10px",
             borderBottomLeftRadius: "10px",

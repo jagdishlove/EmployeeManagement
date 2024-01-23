@@ -1,6 +1,6 @@
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
-import { Container, Grid, Typography, useMediaQuery } from "@mui/material";
+import { Grid, Typography, useMediaQuery } from "@mui/material";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -19,27 +19,22 @@ const Header = ({ anchorEl, open, handleMenuOpen, handleMenuClose }) => {
   const isLG = useMediaQuery(theme.breakpoints.up("lg"));
   return (
     <>
-      <Container
-        sx={{
-          ...style.header_style,
-          zIndex: 2,
-        }}
-      >
+     
         <Grid container>
-          <Grid item xs={12} sm={6} md={3} lg={6}>
-            <img
-              src={prakat_logo_black}
-              alt="Logo"
-              style={{
-                width: { xs: "30%", sm: "50%", md: "20%", lg: "20%" },
-                maxWidth: "100%",
-                height: "auto",
-                maxHeight: "45px",
-                float: isLG ? "right" : "right",
-                clear: isLG ? "both" : "none",
-              }}
-            />
-          </Grid>
+        <Grid item xs={12} sm={6} md={3} lg={6} style={{ textAlign:'end' }}>
+          <img
+            src={prakat_logo_black}
+            alt="Logo"
+            style={{
+              width: { xs: "30%", sm: "50%", md: "20%", lg: "20%" },
+              maxWidth: "100%",
+              height: "auto",
+              maxHeight: "45px",
+              float: isLG ? "right" : "right",
+              clear: isLG ? "both" : "none",
+            }}
+          />
+        </Grid>
           <Grid
             item
             xs={12}
@@ -113,7 +108,6 @@ const Header = ({ anchorEl, open, handleMenuOpen, handleMenuClose }) => {
             </Menu>
           </Grid>
         </Grid>
-      </Container>
     </>
   );
 };

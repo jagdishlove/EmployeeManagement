@@ -49,48 +49,52 @@ const AdminHeader = () => {
                   padding: 0,
                   margin: "0px !important",
                   marginLeft: "0px",
+                  marginTop:'-2.5px'
                 }}
               >
                 {/* No border-bottom for the sub-tabs */}
                 <Tab
                   style={{
                     borderRadius: "0px 0px 5px 5px",
-                    backgroundColor: "#D4D7E3",
-                    color: "#000000",
                     ...(selectedTab === 0 && {
                       backgroundColor: "#008080",
                       color: "#ffffff",
                     }),
-                    
-                    marginLeft:'360px',
-                    width:'200px',
-                    height:'70px',
-                    textAlign:'center'
+                    marginLeft: isLeaveApprover ? '390px' : '454px',
+                    borderBottomRightRadius: "10px",
+                    borderBottomLeftRadius: "10px",
+                    height:'40px',
+                    width:'130px',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    border:"2px solid #008080",
                   }}
                   onClick={() => setSelectedTab(0)}
                 >
-                  <p style={{marginTop:'13px'}}>Timesheet</p> 
+                 <p style={{marginLeft:'-10px'}}>Timesheet </p> 
                 </Tab>
                 {/* Render the "Leaves" tab only for users with "LEAVEAPPROVER" role */}
                 {isLeaveApprover && (
                   <Tab
                     style={{
                       borderRadius: "0px 0px 5px 5px",
-                      backgroundColor: "#D4D7E3",
-                      color: "#000000",
                       ...(selectedTab === 1 && {
                         backgroundColor: "#008080",
                         color: "#ffffff",
                       }),
-                      width:'200px',
-                      height:'70px',
-                      textAlign:'center',
+                      borderBottomRightRadius: "10px",
+                      borderBottomLeftRadius: "10px",
+                      height:'40px',
+                      width:'130px',
                       alignItems: 'center',
                       justifyContent: 'center',
+                      cursor: 'pointer',
+                      border:"2px solid #008080",
                     }}
                     onClick={() => setSelectedTab(1)}
                   >
-                   <p style={{marginTop:'13px'}}>Leaves</p> 
+                  Leaves
                   </Tab>
                 )}
               </TabList>

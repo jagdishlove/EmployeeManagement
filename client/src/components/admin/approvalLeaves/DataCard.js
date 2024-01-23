@@ -23,7 +23,7 @@ const DataCard = ({
   index,
 }) => {
   const [expanded, setExpanded] = useState(false);
-  const [comments, setComments] = useState();
+  const [comments, setComments] = useState('');
 
   const handleApproval = (status, leaveRequestId) => {
     approveRejectLeavesHandler(leaveRequestId, status, comments);
@@ -154,8 +154,13 @@ const DataCard = ({
               <Grid item xs={12} sm={12} md={6} lg={6} display={"flex"}>
                 <TextField
                   label="Comments"
+                  placeholder="APPROVED"
                   variant="outlined"
                   value={comments}
+                  InputLabelProps={{
+                    shrink: true,
+                    htmlFor: "comments",
+                  }}
                   onChange={(e) => setComments(e.target.value)}
                   sx={{ width: "70%" }}
                 />

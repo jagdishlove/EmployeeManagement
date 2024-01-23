@@ -127,7 +127,7 @@ const AdminSubHeader = ({
     <div>
       <Box style={{ ...style.adminSubHeader }}>
         <Grid container gap={{ sm: 0, md: 0, lg: 2, xs: 2 }}>
-          <Grid item xs={12} sm={4} md={2} lg={4}>
+          <Grid item xs={12} sm={4} md={2} lg={3}>
             <Dropdown
               options={[{ id: "All", value: "All" }, ...dateOptions()]} // Add "All" option to the date dropdown
               value={newDateDashboard} // Pass the current selected value
@@ -160,7 +160,7 @@ const AdminSubHeader = ({
               approve={true}
             />
           </Grid>
-          <Grid item xs={12} sm={12} md={4} lg={3} margin={"auto"}>
+          <Grid item xs={12} sm={12} md={4} lg={4} margin={"auto"}>
             <Typography
               variant="h6"
               color={"secondary"}

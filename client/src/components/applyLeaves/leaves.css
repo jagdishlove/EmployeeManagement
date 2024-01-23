@@ -1,12 +1,12 @@
  .dashedBorderStyle{
     border: 2px dashed rgba(0, 128, 128, 0.4) !important;
     padding:20px;
-    border-radius: 20px;
+    border-radius: 10px;
   }
 
    .holidayListStyle{
     background-color: #D4D7E3;
-    border-radius: 20px;
+    border-radius: 10px;
     padding:20px;
     
    } 
@@ -16,7 +16,7 @@
     border: 2px dashed rgba(0, 128, 128, 0.4) !important;
     padding:20px;
     margin-bottom: 40px !important;
-    border-radius: 20px;  
+    border-radius: 10px;  
   }
 .leaveRequestForm{
   color:  rgba(0, 128, 128, 128);

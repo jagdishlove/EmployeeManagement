@@ -55,8 +55,6 @@ const TimesheetRow = ({
 }) => {
   const theme = useTheme();
 
-  console.log("approvalapproval", approval);
-
   const dispatch = useDispatch();
   const masterData = useSelector((state) => state.persistData.masterData);
 
@@ -129,8 +127,7 @@ const TimesheetRow = ({
     projectName: "",
     activity: "",
     comments: "",
-    adminComment:
-      role.length === 1 && role[0].includes("USER") ? "" : "Approved",
+    adminComment: "",
     fromTime: "",
     toTime: "",
     rating: "",
@@ -140,9 +137,8 @@ const TimesheetRow = ({
     jobType: data?.jobTypeId || "",
     projectName: data?.projectId || "",
     activity: data?.activityId || "",
-    comments: data?.comments,
-    adminComment:
-      role.length === 1 && role[0].includes("USER") ? "" : "Approved",
+    comments: data?.comments || "",
+    adminComment: "",
     fromTime: data?.startTime || "",
     toTime: data?.endTime || "",
   };
@@ -425,8 +421,6 @@ const TimesheetRow = ({
     }));
   };
 
-  console.log("role", role);
-
   const handleRefreshClick = () => {
     // Implement the refresh functionality here.
     // For example, you might want to reset the selected values to their initial state.
@@ -582,7 +576,7 @@ const TimesheetRow = ({
                 style={{
                   ...style.TimesheetTextField,
                   border: "1px solid #8897ad87",
-                  borderRadius: "20px",
+                  borderRadius: "10px",
                 }}
                 disabled={disabled || approval}
               />
@@ -597,7 +591,7 @@ const TimesheetRow = ({
                 style={{
                   ...style.TimesheetTextField,
                   border: "1px solid #8897ad87",
-                  borderRadius: "20px",
+                  borderRadius: "10px",
                 }}
                 disabled={disabled || approval}
               />
@@ -612,7 +606,7 @@ const TimesheetRow = ({
                 style={{
                   ...style.TimesheetTextField,
                   border: "1px solid #8897ad87",
-                  borderRadius: "20px",
+                  borderRadius: "10px",
                 }}
                 disabled={disabled || approval}
               />
@@ -653,18 +647,17 @@ const TimesheetRow = ({
               <Grid item xs={12} sm={12} md={12} lg={12}>
                 <TextField
                   label={managerCommentProvided ? "" : "Manager's Comments"}
+                  placeholder={approval ? "APPROVED" : ""}
                   multiline
                   rows={4}
                   variant="outlined"
                   fullWidth
-                  value={
-                    managerStatusData?.adminComment ||
-                    selectedValues.adminComment
-                  }
+                  value={managerStatusData?.comment}
                   sx={style.TimesheetManagerTextField}
                   inputProps={{ maxLength: 250 }}
                   onChange={(e) => onChangeHandler(e, "adminComment")}
                   disabled={!approval}
+                  InputLabelProps={approval ? { shrink: true, htmlFor: "manager-comments" } : {}}
                 />
               </Grid>
             ) : (
@@ -704,7 +697,7 @@ const TimesheetRow = ({
                   item
                   xs={12}
                   sm={6}
-                  md={5}
+                  md={6}
                   lg={5}
                   direction="row"
                   sx={style.timesheetManagerCol}
@@ -716,12 +709,12 @@ const TimesheetRow = ({
                   />
                 </Grid>
               ) : (
-                <Grid item xs={12} sm={6} md={7} lg={7} sx={style.starSec}>
+                <Grid item xs={12} sm={6} md={6} lg={7} sx={style.starSec}>
                   {/* Empty content */}
                 </Grid>
               )}
               {data ? (
-                <Grid item xs={12} sm={6} md={7} lg={7} sx={style.starSec}>
+                <Grid item xs={12} sm={6} md={7} lg={7}  display={"flex"} sx={style.starSec}>
                   {!approval ? (
                     <>
                       <Button

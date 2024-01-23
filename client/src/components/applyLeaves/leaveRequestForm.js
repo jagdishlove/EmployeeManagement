@@ -11,6 +11,7 @@ import { masterDataAction } from "../../redux/actions/masterData/masterDataActio
 import InputFileUpload from "../forms/customInputs/uploadFile";
 import Dropdown from "../forms/dropdown/dropdown";
 import "./leaves.css";
+import UsersAppliedLeave from "./usersAppliedLeave";
 
 const LeaveRequestForm = ({
   addHistoryEntry,
@@ -31,7 +32,6 @@ const LeaveRequestForm = ({
   const style = {};
 
   const dispatch = useDispatch();
-  
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -70,10 +70,10 @@ const LeaveRequestForm = ({
   const autoCompleteHandler = (_, value) => {
     // Ensure that value is an array
     const ccValue = Array.isArray(value) ? value : [value];
-  
+
     // Assuming you want to join the array back to a string for the Autocomplete component
-    const ccString = ccValue.join(',');
-  
+    const ccString = ccValue.join(",");
+
     onChangeFormDataHandler(_, ccString, "cc");
   };
   const textFieldChangeHandler = (e) => {
@@ -123,7 +123,8 @@ const LeaveRequestForm = ({
     const maternityIllnessLeaveId = findLeaveMasterId(
       "Maternity Illness Leave"
     );
-    const adoptionLeaveId = findLeaveMasterId("Adoption Leave");
+    const adoptionLeaveForMaleId = findLeaveMasterId("Adoption Leave For Male");
+    const adoptionLeaveForFemaleId = findLeaveMasterId("Adoption Leave For Female");
     const sickLeaveId = findLeaveMasterId("Sick Leave");
 
     const errors = {};
@@ -152,13 +153,13 @@ const LeaveRequestForm = ({
 
     // Additional validation for "PL, PaL, COL, ML  Leave"
 
-
     // Check for mandatory attachment for specific leave types (11, 5, or 8)
     if (
       (leaveRqstData.leaveMasterId === `${maternityIllnessLeaveId}` ||
         leaveRqstData.leaveMasterId === `${paternityLeaveId}` ||
         leaveRqstData.leaveMasterId === `${maternityLeaveId}` ||
-        leaveRqstData.leaveMasterId === `${adoptionLeaveId}` ||
+        leaveRqstData.leaveMasterId === `${adoptionLeaveForMaleId}` ||
+        leaveRqstData.leaveMasterId === `${adoptionLeaveForFemaleId}` ||
         (leaveRqstData.leaveMasterId === `${sickLeaveId}` &&
           numberOfDays >= 3 &&
           !leaveRqstData.attachment)) &&
@@ -337,14 +338,14 @@ const LeaveRequestForm = ({
                 <Grid item xs={12} sm={9}>
                   <Dropdown
                     name="leaveMasterId"
-                    options={leaveRequestType.map(option =>
-                      option.leaveType === "Adoption Leave For Male" || option.leaveType === "Adoption Leave For Female"
+                    options={leaveRequestType.map((option) =>
+                      option.leaveType === "Adoption Leave For Male" ||
+                      option.leaveType === "Adoption Leave For Female"
                         ? { ...option, leaveType: "Adoption Leave" }
                         : option
                     )}
                     value={leaveRqstData.leaveMasterId}
                     onChange={onChangeFormDataHandler}
-                    
                     style={{
                       ...style.TimesheetTextField,
                       border: "1px solid #8897ad87",
@@ -423,26 +424,34 @@ const LeaveRequestForm = ({
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={9}>
-                <Autocomplete
-                  value={leaveRqstData?.cc && typeof leaveRqstData.cc === 'string' ? leaveRqstData.cc.split(',').map(email => email.trim()) : []}
-                  options={searchEmailType}
-                  multiple
-                  freeSolo
-                  onChange={autoCompleteHandler}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      fullWidth
-                      onChange={textFieldChangeHandler}
-                    />
-                  )}
-                />
+                  <Autocomplete
+                    value={
+                      leaveRqstData?.cc && typeof leaveRqstData.cc === "string"
+                        ? leaveRqstData.cc
+                            .split(",")
+                            .map((email) => email.trim())
+                        : []
+                    }
+                    options={searchEmailType}
+                    multiple
+                    freeSolo
+                    onChange={autoCompleteHandler}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        fullWidth
+                        onChange={textFieldChangeHandler}
+                      />
+                    )}
+                  />
                 </Grid>
               </Grid>
             </Grid>
             <Grid item xs={12}>
               <Box sx={{ display: "flex", gap: "10px", justifyContent: "end" }}>
-                <Box sx={{ }}>
+              <UsersAppliedLeave />
+                
+                <Box sx={{}}>
                   <InputFileUpload
                     onChange={inputFileChangeHandler}
                     file={file || leaveRqstData.file}

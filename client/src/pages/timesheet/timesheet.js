@@ -150,9 +150,7 @@ const Timesheet = () => {
           className="currentTab"
           style={{
             backgroundColor: "#008080",
-            width: "200px",
-          height:'70px',
-
+            width: "100px",
             color: "white",
             borderBottomRightRadius: "10px",
             borderBottomLeftRadius: "10px",
@@ -163,9 +161,7 @@ const Timesheet = () => {
           label="History"
           className="HistoryTab"
           style={{
-            width: "200px",
-          height:'70px',
-
+            width: "100px",
             border: "2px solid #008080",
             borderBottomRightRadius: "10px",
             borderBottomLeftRadius: "10px",

@@ -125,9 +125,11 @@ const LeavePage = () => {
     setHistoryData([...historyData, entry]);
   };
 
-  const handleDeleteLeave = (leaveId) => {
-    dispatch(deleteLeave(leaveId)).then(() => {
-      setLeaveHistoryData((prevData) => {
+  const handleDeleteLeave = async (leaveId) => {
+    setLoading(true);
+    try {
+      await dispatch(deleteLeave(leaveId));
+        setLeaveHistoryData((prevData) => {
         const contentArray = Array.isArray(prevData.content)
           ? prevData.content
           : [];
@@ -136,9 +138,14 @@ const LeavePage = () => {
         );
         return { ...prevData, content: newArray };
       });
+  
       setLeaveBalance(true);
-    });
+    } finally{
+      setLoading(false);
+
+    }
   };
+  
 
   const onChangeFormDataHandler = (e, values, type) => {
     if (e.target?.value === 12 && hasNumberDaysGreaterThanZero) {

@@ -12,6 +12,7 @@ import ErrorPage from "../pages/error/errorPage";
 import History from "../pages/records/records";
 import Timesheet from "../pages/timesheet/timesheet";
 import LeavePage from "../components/applyLeaves/LeavePage";
+import User from "../components/AdminPages/users/userPage";
 
 const Router = () => {
   const isAuthenticated = useSelector(
@@ -82,6 +83,21 @@ const Router = () => {
         element={
           isAuthenticated ? (
             <ConditionalSidebar>{<LeavePage />}</ConditionalSidebar>
+          ) : (
+            <>
+              <Navigate to="/" />
+              <Login />
+            </>
+          )
+        }
+      />
+      <Route
+        path="/users"
+        element={
+          isAuthenticated ? (
+            <ConditionalSidebar>
+              <User/>
+            </ConditionalSidebar>
           ) : (
             <>
               <Navigate to="/" />

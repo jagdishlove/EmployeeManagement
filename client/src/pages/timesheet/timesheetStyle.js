@@ -1,7 +1,7 @@
 export const TimesheetStyle = (theme, approval, data) => ({
   TimesheetTextField: {
     "& .MuiOutlinedInput-root": {
-      borderRadius: "20px",
+      borderRadius: "10px",
       background: { xs: theme.palette.secondary.main, md: "white" },
       fontSize: "15px",
     },
@@ -30,7 +30,7 @@ export const TimesheetStyle = (theme, approval, data) => ({
   },
   TimesheetTextFieldToTime: {
     "& .MuiOutlinedInput-root": {
-      borderRadius: "20px",
+      borderRadius: "10px",
       background: { xs: theme.palette.secondary.main, md: "white" },
       fontSize: "15px",
       marginTop: "2px",
@@ -50,7 +50,7 @@ export const TimesheetStyle = (theme, approval, data) => ({
   },
   TimesheetTextField1: {
     "& .MuiOutlinedInput-root": {
-      borderRadius: "20px",
+      borderRadius: "10px",
       background: { xs: theme.palette.secondary.main, md: "#DEE1E5" },
       color: "#000000",
     },
@@ -68,7 +68,7 @@ export const TimesheetStyle = (theme, approval, data) => ({
   },
   TimesheetManagerTextField: {
     "& .MuiOutlinedInput-root": {
-      borderRadius: "20px",
+      borderRadius: "10px",
       background: { xs: theme.palette.secondary.main, md: "#DEE1E5" },
       color: "#000000",
       marginTop: { xs: "15px", sm: "15px", md: "0px", lg: "0px" },
