@@ -89,6 +89,7 @@ const HistoryCalendar = ({
       "MATERNITYILLNESSLEAVE",
       "HALFDAYCASUALLEAVE",
       "HALFDAYLEAVEWITHOUTPAY",
+      "CLIENTHOLIDAY",
       "UNKNOWN",
     ];
 

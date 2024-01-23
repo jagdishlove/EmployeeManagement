@@ -92,12 +92,11 @@ const ApprovalLeavesPage = () => {
     setTeamMemberData(e.target.value);
   };
 
-  const validationForm = (approverComment) => {
+  const validationForm = (approverComment,status) => {
     let newErrors = "";
-    if (!approverComment) {
+    if (!approverComment && status === 'REJECTED') {
       newErrors = "Please add details in the comments section.";
     }
-
     return newErrors;
   };
 
@@ -115,33 +114,41 @@ const ApprovalLeavesPage = () => {
   };
 
   const approveRejectLeavesHandler = async (id, status, approverComment) => {
-    const newErrors = validationForm(approverComment);
+    const newErrors = validationForm(approverComment, status);
+  
+    if (approverComment == '') {
+      approverComment = 'APPROVED';
+    }
+  
     const getDataPayload = {
-      empId: TeamMemberData === "All" ? "" : TeamMemberData || "",
-      fromDate:
-        dateData === "CALENDER" ? selectedDate.format("YYYY-MM-DD") : "",
-      toDate: dateData === "CALENDER" ? dayjs().format("YYYY-MM-DD") : "",
+      empId: TeamMemberData === 'All' ? '' : TeamMemberData || '',
+      fromDate: dateData === 'CALENDER' ? selectedDate.format('YYYY-MM-DD') : '',
+      toDate: dateData === 'CALENDER' ? dayjs().format('YYYY-MM-DD') : '',
       dateBand: dateData,
       size: 5 * 2,
     };
+  
     if (Object.keys(newErrors).length === 0) {
       setLoading(true);
+  
       try {
-      const payload = {
-        leaveRequestId: id,
-        approverComment,
-        status,
-      };
-      setLeaveRequestId(id);
-      await dispatch(approveRejectLeavesAction(payload, getDataPayload));
-      setError({});
-    }finally {
-      setLoading(false);
-    }
+        const payload = {
+          leaveRequestId: id,
+          approverComment,
+          status,
+        };
+  
+        setLeaveRequestId(id);
+        await dispatch(approveRejectLeavesAction(payload, getDataPayload));
+        setError({});
+      } finally {
+        setLoading(false);
+      }
     } else {
-      setError(() => ({ [id]: newErrors }));
+      setError({ ...newErrors, [id]: newErrors });
     }
   };
+  
 
   const shouldDisableDate = (date) => {
     return dayjs(date).isAfter(dayjs(), "day"); // Disable future dates

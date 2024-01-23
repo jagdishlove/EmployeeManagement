@@ -191,7 +191,7 @@ const HiddenDataCard = ({
               justifyContent: "center",
             }}
           >
-            {getLeaveType(cardData.leaveMasterId)}
+            { getLeaveType(cardData.leaveMasterId) === "Adoption Leave For Female" || getLeaveType(cardData.leaveMasterId) === "Adoption Leave For Male" ? "Adoption Leave" : getLeaveType(cardData.leaveMasterId)}
           </Typography>
         </Grid>
         {cardData.fileName && (
@@ -239,7 +239,12 @@ const HiddenDataCard = ({
         <TextField
           fullWidth
           label="Comments"
+          placeholder="APPROVED"
           variant="outlined"
+          InputLabelProps={{
+            shrink: true,
+            htmlFor: "comments",
+          }}
           value={comments}
           onChange={(e) => setComments(e.target.value)}
           multiline

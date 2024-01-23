@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 function Toast() {
   return (
     <div>
-      <ToastContainer />
+      <ToastContainer autoClose={2000} />
     </div>
   );
 }

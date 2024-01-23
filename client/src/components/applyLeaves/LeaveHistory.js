@@ -251,7 +251,7 @@ const LeaveHistory = ({
                         className="leaveHistorycolumn"
                         style={{ textAlign: "center" }}
                       >
-                        {entry?.leaveTransaction?.leaveMaster?.leaveTypes}
+                        {entry?.leaveTransaction?.leaveMaster?.leaveTypes === "Adoption Leave For Female" || entry?.leaveTransaction?.leaveMaster?.leaveTypes === "Adoption Leave For Male" ? 'Adoption Leave' : entry?.leaveTransaction?.leaveMaster?.leaveTypes}
                       </TableCell>
                       <TableCell
                         className="leaveHistorycolumn"
@@ -348,7 +348,7 @@ const LeaveHistory = ({
           style: {
             backgroundColor: "#D4D7E3",
             border: "1px solid #008080",
-            borderRadius: "20px",
+            borderRadius: "10px",
             width: "35%",
             padding: "10px",
           },

@@ -125,6 +125,10 @@ input::-webkit-inner-spin-button {
   display:none;
 }
 
+.css-1ryge8s-MuiInputBase-root-MuiOutlinedInput-root{
+  border-radius: 10px !important;
+}
+
 @media (max-width: 375px) {
   .your-div {
     height:12vh !important;

@@ -6,7 +6,7 @@ export const adminHeaderStyle = () => ({
   },
   adminSubHeader: {
     backgroundColor: "#008080",
-    padding: "20px 10px 10px 10px",
+    padding: "25px 10px 10px 10px",
     marginTop: "25px",
   },
   LeaveHeader: {
@@ -17,10 +17,10 @@ export const adminHeaderStyle = () => ({
   TimesheetDateTextField: {
     backgroundColor: "#ffffff",
     borderRadius: "5px",
-    marginLeft: { lg: "-50px" },
+    // marginLeft: { lg: "-50px" },
     border: "1px solid #008080",
     "& .MuiInputLabel-shrink": {
-      marginTop: "-10px !important",
+      marginTop: "-12px !important",
       marginLeft: "-10px",
       color: "#ffffff",
       fontSize: "20px",
@@ -33,11 +33,10 @@ export const adminHeaderStyle = () => ({
   DateTimesheetDateTextField: {
     backgroundColor: "#ffffff",
     borderRadius: "5px",
-    width: { lg: "85%" },
 
     border: "1px solid #008080",
     "& .MuiInputLabel-shrink": {
-      marginTop: "-10px !important",
+      marginTop: "-12px !important",
       marginLeft: "-10px",
       color: "#ffffff",
       fontSize: "20px",
