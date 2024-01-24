@@ -17,7 +17,7 @@ const ModalCust = ({ children, ...props }) => {
           left: "50%",
           transform: "translate(-50%, -50%)",
           overflowY: "auto",
-          maxHeight: "90vh", // Set the maximum height for the modal
+          height: "90vh", // Set the maximum height for the modal
         }}
       >
         <IconButton
