@@ -1,4 +1,5 @@
 // import { toast } from "react-toastify";
+import dayjs from "dayjs";
 import { toast } from "react-toastify";
 import makeRequest, { addRequest } from "../../../api/api";
 import { errorMessage } from "../errors/errorsAction";
@@ -190,25 +191,31 @@ export const getSearchEmailAction = (payload) => {
   };
 };
 
-export const saveLeaveFormAction = (data, param, disableSave, setLeaveBalance) => {
+export const saveLeaveFormAction = (
+  data,
+  param,
+  disableSave,
+  setLeaveBalance
+) => {
   return async (dispatch) => {
     console.log("disableSave", disableSave);
     let formData = new FormData();
 
-    formData.append('fromDate', formatDate(data.fromDate));
-    formData.append('toDate', formatDate(data.toDate));
-    formData.append('file', data.file);  // Assuming 'file' is the key expected by the server
+    formData.append("fromDate", formatDate(data.fromDate));
+    formData.append("toDate", formatDate(data.toDate));
+    formData.append("file", data.file); // Assuming 'file' is the key expected by the server
 
     for (const key in data) {
-      if (key !== 'file') {
+      if (key !== "file") {
         formData.append(key, data[key]);
-      }    }
+      }
+    }
     try {
       dispatch(saveLeaveFormRequest());
       const response = await addRequest(
         "POST",
         "/api/leave/apply",
-        formData, 
+        formData,
         param
       );
       dispatch(saveLeaveFormSuccess(response));
@@ -216,19 +223,30 @@ export const saveLeaveFormAction = (data, param, disableSave, setLeaveBalance) =
         toast.success("Your leaves are saved successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
-        setLeaveBalance(true)
+        setLeaveBalance(true);
       } else if (param.action === "Submit") {
-        toast.success("Your leaves have been submitted successfully for approval ", {
-          position: toast.POSITION.BOTTOM_CENTER,
-        });
-        setLeaveBalance(true)
+        toast.success(
+          "Your leaves have been submitted successfully for approval ",
+          {
+            position: toast.POSITION.BOTTOM_CENTER,
+          }
+        );
+        setLeaveBalance(true);
       }
       dispatch({ type: "NUMBERS_OF_DAYS", payload: { numberOfDays: "" } });
       return response;
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.errorCode === 403) {
+      if (
+        err.response &&
+        err.response.data &&
+        err.response.data.errorCode === 403
+      ) {
         dispatch(getRefreshToken());
-      } else if (err.response && err.response.data && err.response.data.errorCode === 500) {
+      } else if (
+        err.response &&
+        err.response.data &&
+        err.response.data.errorCode === 500
+      ) {
         dispatch(saveLeaveFormFail(err.response.data.errorMessage));
         toast.error(err.response.data.errorMessage, {
           position: toast.POSITION.BOTTOM_CENTER,
@@ -239,9 +257,8 @@ export const saveLeaveFormAction = (data, param, disableSave, setLeaveBalance) =
 };
 
 function formatDate(date) {
-  return new Date(date).toISOString().split('T')[0];
+  return new Date(date).toISOString().split("T")[0];
 }
-
 
 export const getNumbersOfDaysAction = (data) => {
   return async (dispatch) => {
@@ -279,11 +296,19 @@ export const deleteLeave = (leaveRequestId) => {
   };
 };
 
-export const getAllLeaveRequestsOfEmployeesAction = () => {
+export const getAllLeaveRequestsOfEmployeesAction = (counter = 15) => {
   return async (dispatch) => {
     try {
       dispatch(getAllLeaveRequestsOfEmployeesRequest());
-      const response = await makeRequest("GET", `/api/leave/getAllLeaveRequestsOfEmployees`,null,{dateBand:"THIS_MONTH",page:0,size:11});
+      // Use dayjs or another library to format dates as YYYY-MM-DD
+      const fromDate = dayjs().startOf("month").format("YYYY-MM-DD");
+      const toDate = dayjs().endOf("month").format("YYYY-MM-DD");
+      const response = await makeRequest(
+        "GET",
+        `/api/leave/getAllLeaveRequestsOfEmployees`,
+        null,
+        { dateBand: "CALENDER", page: 0, size: counter, fromDate, toDate }
+      );
       dispatch(getAllLeaveRequestsOfEmployeesSuccess(response));
     } catch (err) {
       if (err.response.data.errorCode === 403) {
@@ -294,4 +319,3 @@ export const getAllLeaveRequestsOfEmployeesAction = () => {
     }
   };
 };
-console.log("getAllLeaveRequestsOfEmployeesAction", getAllLeaveRequestsOfEmployeesAction)

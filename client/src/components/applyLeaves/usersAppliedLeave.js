@@ -3,12 +3,14 @@ import SearchIcon from "@mui/icons-material/Search";
 import {
   Autocomplete,
   Box,
+  CircularProgress,
   Grid,
   IconButton,
   InputAdornment,
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
   TextField,
@@ -19,6 +21,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllLeaveRequestsOfEmployeesAction } from "../../redux/actions/leaves/leaveAction";
 import { masterDataAction } from "../../redux/actions/masterData/masterDataAction";
@@ -29,12 +32,15 @@ const UsersAppliedLeave = ({ color }) => {
   const allemployeesleave = useSelector(
     (state) => state?.nonPersist?.leavesData.allEmployeesLeaveData.content
   );
+  console.log("allemployeesleave", allemployeesleave);
   const leaveTypesData = useSelector(
     (state) => state.persistData.masterData?.leaveTypes
   );
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [filtered, setFilteredData] = useState();
+  const [loading, setLoading] = useState(false);
+  const [counter, setCounter] = useState(5);
 
   useEffect(() => {
     dispatch(masterDataAction());
@@ -59,10 +65,16 @@ const UsersAppliedLeave = ({ color }) => {
       setFilteredData(modifiedData);
     }
   }, [allemployeesleave]);
-  console.log("filtered", filtered);
 
+  const fetchMoreData = () => {
+    alert("asdasd");
+    setLoading(true);
+    setCounter(counter * 1);
+    dispatch(getAllLeaveRequestsOfEmployeesAction(counter));
+    setLoading(false);
+  };
 
-  // const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState("");
   const dispatch = useDispatch();
 
   const handleIconClick = () => {
@@ -92,6 +104,8 @@ const UsersAppliedLeave = ({ color }) => {
   const toDateHandler = () => {
     // onChangeFormDataHandler(date, null, "fromDate");
   };
+
+  const tableHead = { backgroundColor: "#008080" };
 
   const modalStyle = {
     top: "50%",
@@ -129,7 +143,7 @@ const UsersAppliedLeave = ({ color }) => {
           spacing={2}
           justifyContent="center"
           alignItems="center"
-          pt={4}
+          pt={1}
         >
           <Grid item xs={6} sm={4} md={4} lg={4}>
             <Autocomplete
@@ -192,46 +206,103 @@ const UsersAppliedLeave = ({ color }) => {
             border: "1px solid #008080",
           }}
         >
-          <Table>
-            <TableHead
-              sx={{
-                backgroundColor: "#008080",
-                color: "#ffffff",
-                textAlign: "center",
-              }}
+          <TableContainer sx={{ maxHeight: 300 }}>
+            <InfiniteScroll next={fetchMoreData} hasMore={true}>
+              <Table stickyHeader>
+                <TableHead
+                  sx={{
+                    backgroundColor: "red",
+                  }}
+                >
+                  <TableRow>
+                    <TableCell
+                      style={{
+                        ...tableHead,
+                        color: "white",
+                        textAlign: "center",
+                      }}
+                    >
+                      Name
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        ...tableHead,
+                        color: "white",
+                        textAlign: "center",
+                      }}
+                    >
+                      Date
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        ...tableHead,
+                        color: "white",
+                        textAlign: "center",
+                      }}
+                    >
+                      No. of Days
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        ...tableHead,
+                        color: "white",
+                        textAlign: "center",
+                      }}
+                    >
+                      Leave Type
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        ...tableHead,
+                        color: "white",
+                        textAlign: "center",
+                      }}
+                    >
+                      Status
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+
+                <TableBody>
+                  {filtered?.map((row, index) => (
+                    <TableRow key={index}>
+                      <TableCell sx={{ textAlign: "center" }}>
+                        {row.name}
+                      </TableCell>
+                      <TableCell sx={{ textAlign: "center" }}>
+                        {row.date}
+                      </TableCell>
+                      <TableCell sx={{ textAlign: "center" }}>
+                        {row.days}
+                      </TableCell>
+                      <TableCell sx={{ textAlign: "center" }}>
+                        {row.type}
+                      </TableCell>
+                      <TableCell sx={{ textAlign: "center" }}>
+                        {row.status}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </InfiniteScroll>
+          </TableContainer>
+
+          {loading && (
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              position="fixed"
+              top="0"
+              left="0"
+              width="100%"
+              height="100%"
+              bgcolor="rgba(255, 255, 255, 0.7)"
             >
-              <TableRow>
-                <TableCell style={{ color: "white", textAlign: "center" }}>
-                  Name
-                </TableCell>
-                <TableCell style={{ color: "white", textAlign: "center" }}>
-                  Date
-                </TableCell>
-                <TableCell style={{ color: "white", textAlign: "center" }}>
-                  No. of Days
-                </TableCell>
-                <TableCell style={{ color: "white", textAlign: "center" }}>
-                  Leave Type
-                </TableCell>
-                <TableCell style={{ color: "white", textAlign: "center" }}>
-                  Status
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filtered?.map((row, index) => (
-                <TableRow key={index}>
-                  <TableCell sx={{ textAlign: "center" }}>{row.name}</TableCell>
-                  <TableCell sx={{ textAlign: "center" }}>{row.date}</TableCell>
-                  <TableCell sx={{ textAlign: "center" }}>{row.days}</TableCell>
-                  <TableCell sx={{ textAlign: "center" }}>{row.type}</TableCell>
-                  <TableCell sx={{ textAlign: "center" }}>
-                    {row.status}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              <CircularProgress />
+            </Box>
+          )}
         </Box>
       </ModalCust>
     </Box>
