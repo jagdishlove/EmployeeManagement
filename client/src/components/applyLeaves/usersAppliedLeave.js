@@ -43,10 +43,9 @@ const UsersAppliedLeave = ({ color }) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [filtered, setFilteredData] = useState();
   const [loading, setLoading] = useState(false);
-  // const [counter, setCounter] = useState(5);
   const [hasMore, setHasMore] = useState(true);
   const tableRef = useRef(null);
-  console.log("loading", loading);
+  
 
   useEffect(() => {
     dispatch(masterDataAction());

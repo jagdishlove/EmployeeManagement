@@ -9,7 +9,7 @@ import {
 } from "../../../redux/actions/timeSheet/timeSheetAction";
 import { formatDateForApi } from "../../../utils/dateOptions";
 
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import TimesheetRow from "../../timesheetRow/timesheetRow";
 import AdminSubHeader from "./adminSubHeader";
 
@@ -41,7 +41,7 @@ const TimesheetTab = () => {
     dispatch(getTimesheetEntryApprovalAction(newPayload));
     setCounter(counter + 1);
   };
-  const validationForm = (rating, comment, data, status) => {
+  const validationForm = (rating, data) => {
     const newErrors = {};
 
     let activity = {};
@@ -52,18 +52,6 @@ const TimesheetTab = () => {
       }
     }
 
-    if (activity.approvalCommentRequired === true && !comment) {
-      newErrors.adminCommentError =
-        "Please add details in the comments section.";
-    }
-    if (
-      status === "reject" &&
-      activity.approvalCommentRequired === true &&
-      comment === "Approved"
-    ) {
-      newErrors.adminCommentError =
-        "Please add details in the comments section.";
-    }
     if (activity.approvalRatingRequired === true && !rating) {
       newErrors.ratingError = "Please add a rating";
     }
@@ -78,7 +66,7 @@ const TimesheetTab = () => {
       try {
         const payload = {
           timesheetEntryId: data.timesheetEntryId,
-          comment: comment,
+          comment: comment || 'APPROVED',
           rating: rating,
           approvalStatus: "APPROVED",
         };
@@ -96,31 +84,34 @@ const TimesheetTab = () => {
   };
 
   const rejectButtonHandler = async (data, rating, comment) => {
-    const newErrors = validationForm(rating, comment, data, "reject");
+    setLoading(true);
+    try {
+      const activity = masterData.activity.find(
+        (activity) => activity.activityId === data.activityId
+      );
 
-    if (Object.keys(newErrors).length === 0) {
-      setLoading(true);
-
-      try {
-        const payload = {
-          timesheetEntryId: data.timesheetEntryId,
-          comment: comment,
-          rating: rating,
-          approvalStatus: "REJECTED",
-        };
-
-        await dispatch(rejectTimesheet(payload, newPayload));
-        setErrorValidation({});
-      } finally {
-        setLoading(false);
+      if (activity && activity.approvalCommentRequired && !comment) {
+        setErrorValidation({
+          [data.timesheetEntryId]: {
+            adminCommentError: "Please add details in the comments section.",
+          },
+        });
+        return;
       }
-    } else {
-      setErrorValidation({
-        [data.timesheetEntryId]: newErrors,
-      });
+
+      const payload = {
+        timesheetEntryId: data.timesheetEntryId,
+        comment: comment || '',
+        rating: rating,
+        approvalStatus: "REJECTED",
+      };
+
+      await dispatch(rejectTimesheet(payload, newPayload));
+      setErrorValidation({});
+    } finally {
+      setLoading(false);
     }
   };
-
   return (
     <Box>
       <AdminSubHeader
@@ -135,7 +126,9 @@ const TimesheetTab = () => {
       />
 
       {approvalData?.content?.length === 0 ? (
-        <p>No available data</p>
+        <Box mt={5} sx={{ display: "flex", justifyContent: "center" }}>
+          <Typography> No TimeSheet requests found.</Typography>
+        </Box>
       ) : (
         <InfiniteScroll
           dataLength={approvalData?.content?.length || 0}
