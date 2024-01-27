@@ -1,7 +1,6 @@
 import InfoIcon from "@mui/icons-material/Info";
 import SearchIcon from "@mui/icons-material/Search";
 import {
-  Autocomplete,
   Box,
   CircularProgress,
   Grid,
@@ -16,17 +15,16 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { createFilterOptions } from "@mui/material/Autocomplete";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllLeaveRequestsOfEmployeesAction } from "../../redux/actions/leaves/leaveAction";
 import { masterDataAction } from "../../redux/actions/masterData/masterDataAction";
 import { getLeaveType } from "../../utils/getLeaveTypeFromId";
 import ModalCust from "../modal/ModalCust";
+import debounce from "lodash/debounce";
 
 const UsersAppliedLeave = ({ color }) => {
   const allemployeesleave = useSelector(
@@ -43,9 +41,16 @@ const UsersAppliedLeave = ({ color }) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [filtered, setFilteredData] = useState();
   const [loading, setLoading] = useState(false);
+  const [searchloading, setSearchLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const tableRef = useRef(null);
-  
+  const [filterData, setFilterData] = useState({
+    searchName: "",
+    fromDate: dayjs().format("YYYY-MM-DD"),
+    toDate: dayjs().add(7, "day").format("YYYY-MM-DD"),
+  });
+
+  console.log("searchloading", searchloading);
 
   useEffect(() => {
     dispatch(masterDataAction());
@@ -74,7 +79,7 @@ const UsersAppliedLeave = ({ color }) => {
   const dispatch = useDispatch();
 
   const handleIconClick = () => {
-    dispatch(getAllLeaveRequestsOfEmployeesAction());
+    dispatch(getAllLeaveRequestsOfEmployeesAction(15, filterData));
     setModalOpen(true);
   };
 
@@ -82,24 +87,38 @@ const UsersAppliedLeave = ({ color }) => {
     setModalOpen(false);
   };
 
-  // const handleSearchChange = (event, value) => {
-  //   setSearchValue(value);
-  // };
-
-  // const filterOptions = createFilterOptions({
-  //   matchFrom: "start",
-  //   stringify: (option) => option,
-  // });
-
   const iconColor = color ? "#FFFFFF" : "#008080";
 
-  const fromDateHandler = () => {
-    // onChangeFormDataHandler(date, null, "fromDate");
+  const debouncedOnChangeHandler = debounce((event) => {
+    const { name, value } = event.target || {};
+    setFilterData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    callCommonApi();
+  }, 100);
+
+  const handleInputChange = (event) => {
+    debouncedOnChangeHandler(event);
   };
 
-  const toDateHandler = () => {
-    // onChangeFormDataHandler(date, null, "fromDate");
+  const callCommonApi = () => {
+    dispatch(
+      getAllLeaveRequestsOfEmployeesAction(15, filterData, "searchFilter")
+    );
   };
+
+  const onChangeHandler = (newValue, name) => {
+    setFilterData((prev) => ({
+      ...prev,
+      [name]: newValue.format("YYYY-MM-DD"),
+    }));
+  };
+
+  useEffect(() => {
+    console.log("filterData", filterData);
+    dispatch(getAllLeaveRequestsOfEmployeesAction(15, filterData));
+  }, [filterData.fromDate, filterData.toDate]);
 
   const tableHead = { backgroundColor: "#008080" };
 
@@ -169,30 +188,24 @@ const UsersAppliedLeave = ({ color }) => {
           pt={1}
         >
           <Grid item xs={6} sm={4} md={4} lg={4}>
-            {/* <Autocomplete
-              filterOptions={filterOptions}
-              options={allemployeesleave?.content?.map((row) => row.name)}
-              onInputChange={handleSearchChange}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  placeholder="Search by name, leave type"
-                  variant="outlined"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon color="action" />
-                      </InputAdornment>
-                    ),
-                    sx: {
-                      // width: "300px",
-                      marginTop: "20px",
-                      borderRadius: "50px",
-                    },
-                  }}
-                />
-              )}
-            /> */}
+            <TextField
+              name="searchName"
+              onChange={(events) => handleInputChange(events)}
+              placeholder="Search by name, leave type"
+              variant="outlined"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon color="action" />
+                  </InputAdornment>
+                ),
+                sx: {
+                  width: "300px",
+                  marginTop: "20px",
+                  borderRadius: "50px",
+                },
+              }}
+            />
           </Grid>
           <Grid item xs={3} sm={4} md={4} lg={3} align="center">
             <Typography variant="body1" align="center" fontWeight="bold">
@@ -202,8 +215,8 @@ const UsersAppliedLeave = ({ color }) => {
               <DatePicker
                 name="fromDate"
                 format="ddd, MMM DD,YYYY"
-                value={dayjs()}
-                onChange={fromDateHandler}
+                value={dayjs(filterData?.fromDate)}
+                onChange={(value) => onChangeHandler(value, "fromDate")}
                 renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>
@@ -214,10 +227,10 @@ const UsersAppliedLeave = ({ color }) => {
             </Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
-                name="fromDate"
+                name="toDate"
                 format="ddd, MMM DD,YYYY"
-                value={dayjs()}
-                onChange={toDateHandler}
+                value={dayjs(filterData?.toDate)}
+                onChange={(value) => onChangeHandler(value, "toDate")}
                 renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>
@@ -234,13 +247,6 @@ const UsersAppliedLeave = ({ color }) => {
             onScroll={handleScroll}
             ref={tableRef}
           >
-            {/* <InfiniteScroll
-              dataLength={filtered?.length}
-              next={fetchMoreData}
-              hasMore={filtered?.length > 0}
-              loader={<h4>Loading...</h4>}
-              endMessage={<p>No more data</p>}
-            > */}
             <Table stickyHeader>
               <TableHead
                 sx={{
@@ -295,27 +301,30 @@ const UsersAppliedLeave = ({ color }) => {
                   </TableCell>
                 </TableRow>
               </TableHead>
-
               <TableBody>
-                {filtered?.map((row, index) => (
-                  <TableRow key={index}>
-                    <TableCell sx={{ textAlign: "center" }}>
-                      {row.name}
-                    </TableCell>
-                    <TableCell sx={{ textAlign: "center" }}>
-                      {row.date}
-                    </TableCell>
-                    <TableCell sx={{ textAlign: "center" }}>
-                      {row.days}
-                    </TableCell>
-                    <TableCell sx={{ textAlign: "center" }}>
-                      {row.type}
-                    </TableCell>
-                    <TableCell sx={{ textAlign: "center" }}>
-                      {row.status}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {searchloading ? (
+                  <h1>loading...</h1>
+                ) : (
+                  filtered?.map((row, index) => (
+                    <TableRow key={index}>
+                      <TableCell sx={{ textAlign: "center" }}>
+                        {row.name}
+                      </TableCell>
+                      <TableCell sx={{ textAlign: "center" }}>
+                        {row.date}
+                      </TableCell>
+                      <TableCell sx={{ textAlign: "center" }}>
+                        {row.days}
+                      </TableCell>
+                      <TableCell sx={{ textAlign: "center" }}>
+                        {row.type}
+                      </TableCell>
+                      <TableCell sx={{ textAlign: "center" }}>
+                        {row.status}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
               <Box>
                 {loading && (
@@ -325,7 +334,6 @@ const UsersAppliedLeave = ({ color }) => {
                 )}
               </Box>
             </Table>
-            {/* </InfiniteScroll> */}
           </TableContainer>
 
           {/* {loading && (

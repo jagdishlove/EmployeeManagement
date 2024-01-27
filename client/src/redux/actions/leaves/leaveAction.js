@@ -1,5 +1,4 @@
 // import { toast } from "react-toastify";
-import dayjs from "dayjs";
 import { toast } from "react-toastify";
 import makeRequest, { addRequest } from "../../../api/api";
 import { errorMessage } from "../errors/errorsAction";
@@ -296,18 +295,28 @@ export const deleteLeave = (leaveRequestId) => {
   };
 };
 
-export const getAllLeaveRequestsOfEmployeesAction = (counter = 15) => {
+export const getAllLeaveRequestsOfEmployeesAction = (
+  counter = 15,
+  data,
+  type
+) => {
   return async (dispatch) => {
+    const { fromDate, toDate, searchName } = data;
+    console.log("searchName", data);
     try {
       dispatch(getAllLeaveRequestsOfEmployeesRequest());
       // Use dayjs or another library to format dates as YYYY-MM-DD
-      const fromDate = dayjs().startOf("month").format("YYYY-MM-DD");
-      const toDate = dayjs().endOf("month").format("YYYY-MM-DD");
+
+      if (type === "searchFilter") {
+        await makeRequest("GET", `/api/leave/SearchByNameOrLeaveType`, null, {
+          byName: searchName,
+        });
+      }
       const response = await makeRequest(
         "GET",
         `/api/leave/getAllLeaveRequestsOfEmployees`,
         null,
-        { dateBand: "CALENDER", page: 0, size: counter, fromDate, toDate }
+        { page: 0, size: counter, fromDate: fromDate, toDate: toDate }
       );
       dispatch(getAllLeaveRequestsOfEmployeesSuccess(response));
     } catch (err) {
