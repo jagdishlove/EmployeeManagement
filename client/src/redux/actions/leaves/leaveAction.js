@@ -309,7 +309,7 @@ export const getAllLeaveRequestsOfEmployeesAction = (
 
       if (type === "searchFilter") {
         await makeRequest("GET", `/api/leave/SearchByNameOrLeaveType`, null, {
-          byName: searchName,
+          query: searchName,
         });
       }
       const response = await makeRequest(
