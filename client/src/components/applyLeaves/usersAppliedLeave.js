@@ -18,15 +18,16 @@ import {
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+import debounce from "lodash/debounce";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllLeaveRequestsOfEmployeesAction } from "../../redux/actions/leaves/leaveAction";
 import { masterDataAction } from "../../redux/actions/masterData/masterDataAction";
 import { getLeaveType } from "../../utils/getLeaveTypeFromId";
 import ModalCust from "../modal/ModalCust";
-import debounce from "lodash/debounce";
 
 const UsersAppliedLeave = ({ color }) => {
+  const dispatch = useDispatch();
   const allemployeesleave = useSelector(
     (state) => state?.nonPersist?.leavesData.allEmployeesLeaveData.content
   );
@@ -76,8 +77,6 @@ const UsersAppliedLeave = ({ color }) => {
     }
   }, [allemployeesleave]);
 
-  const dispatch = useDispatch();
-
   const handleIconClick = () => {
     dispatch(getAllLeaveRequestsOfEmployeesAction(15, filterData));
     setModalOpen(true);
@@ -116,8 +115,13 @@ const UsersAppliedLeave = ({ color }) => {
   };
 
   useEffect(() => {
-    console.log("filterData", filterData);
-    dispatch(getAllLeaveRequestsOfEmployeesAction(15, filterData));
+    const payload = {
+      name: "jagdish",
+    };
+
+    dispatch(
+      getAllLeaveRequestsOfEmployeesAction(15, filterData, null, payload)
+    );
   }, [filterData.fromDate, filterData.toDate]);
 
   const tableHead = { backgroundColor: "#008080" };
