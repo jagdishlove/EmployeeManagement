@@ -302,7 +302,7 @@ export const getAllLeaveRequestsOfEmployeesAction = (
   payload
 ) => {
   return async (dispatch) => {
-    const { fromDate, toDate, searchName } = data;
+    const { fromDate, toDate } = data;
     console.log("payload", payload);
     try {
       dispatch(getAllLeaveRequestsOfEmployeesRequest());
@@ -314,7 +314,7 @@ export const getAllLeaveRequestsOfEmployeesAction = (
           `/api/leave/searchByNameOrLeaveType`,
           null,
           {
-            query: searchName,
+            query: data,
           }
         );
         dispatch(getAllLeaveRequestsOfEmployeesSuccess(response));
