@@ -308,25 +308,27 @@ export const getAllLeaveRequestsOfEmployeesAction = (
       dispatch(getAllLeaveRequestsOfEmployeesRequest());
       // Use dayjs or another library to format dates as YYYY-MM-DD
 
-      // if (type === "searchFilter") {
-      //   const response = await makeRequest(
-      //     "GET",
-      //     `/api/leave/SearchByNameOrLeaveType`,
-      //     null,
-      //     {
-      //       query: searchName,
-      //     }
-      //   );
-      //   dispatch(getAllLeaveRequestsOfEmployeesSuccess(response));
-      // } else {
-      const response = await makeRequest(
-        "POST",
-        `/api/leave/getAllLeaveRequestsOfEmployees`,
-        payload,
-        { page: 0, size: counter, fromDate: fromDate, toDate: toDate }
-      );
-      dispatch(getAllLeaveRequestsOfEmployeesSuccess(response));
-      // }
+      if (type === "searchFilter") {
+        const response = await makeRequest(
+          "GET",
+          `/api/leave/searchByNameOrLeaveType`,
+          null,
+          {
+            query: searchName,
+          }
+        );
+        dispatch(getAllLeaveRequestsOfEmployeesSuccess(response));
+      } else {
+        const response = await makeRequest(
+          "GET",
+          `/api/leave/getAllLeaveRequestsOfEmployees`,
+          {
+            filters: [],
+          },
+          { page: 0, size: counter, fromDate: fromDate, toDate: toDate }
+        );
+        dispatch(getAllLeaveRequestsOfEmployeesSuccess(response));
+      }
     } catch (err) {
       if (err.response.data.errorCode === 403) {
         dispatch(getRefreshToken());
