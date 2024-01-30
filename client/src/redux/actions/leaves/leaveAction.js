@@ -298,27 +298,35 @@ export const deleteLeave = (leaveRequestId) => {
 export const getAllLeaveRequestsOfEmployeesAction = (
   counter = 15,
   data,
-  type
+  type,
+  payload
 ) => {
   return async (dispatch) => {
     const { fromDate, toDate, searchName } = data;
-    console.log("searchName", data);
+    console.log("payload", payload);
     try {
       dispatch(getAllLeaveRequestsOfEmployeesRequest());
       // Use dayjs or another library to format dates as YYYY-MM-DD
 
-      if (type === "searchFilter") {
-        await makeRequest("GET", `/api/leave/SearchByNameOrLeaveType`, null, {
-          query: searchName,
-        });
-      }
+      // if (type === "searchFilter") {
+      //   const response = await makeRequest(
+      //     "GET",
+      //     `/api/leave/SearchByNameOrLeaveType`,
+      //     null,
+      //     {
+      //       query: searchName,
+      //     }
+      //   );
+      //   dispatch(getAllLeaveRequestsOfEmployeesSuccess(response));
+      // } else {
       const response = await makeRequest(
-        "GET",
+        "POST",
         `/api/leave/getAllLeaveRequestsOfEmployees`,
-        null,
+        payload,
         { page: 0, size: counter, fromDate: fromDate, toDate: toDate }
       );
       dispatch(getAllLeaveRequestsOfEmployeesSuccess(response));
+      // }
     } catch (err) {
       if (err.response.data.errorCode === 403) {
         dispatch(getRefreshToken());
