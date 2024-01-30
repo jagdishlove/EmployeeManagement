@@ -18,13 +18,13 @@ import {
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import debounce from "lodash/debounce";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllLeaveRequestsOfEmployeesAction } from "../../redux/actions/leaves/leaveAction";
 import { masterDataAction } from "../../redux/actions/masterData/masterDataAction";
 import { getLeaveType } from "../../utils/getLeaveTypeFromId";
 import ModalCust from "../modal/ModalCust";
+import useDebounce from "../../utils/useDebounce";
 
 const UsersAppliedLeave = ({ color }) => {
   const dispatch = useDispatch();
@@ -51,7 +51,7 @@ const UsersAppliedLeave = ({ color }) => {
     toDate: dayjs().add(7, "day").format("YYYY-MM-DD"),
   });
 
-  console.log("searchloading", searchloading);
+  const debouncedValue = useDebounce(filterData.searchName);
 
   useEffect(() => {
     dispatch(masterDataAction());
@@ -88,24 +88,19 @@ const UsersAppliedLeave = ({ color }) => {
 
   const iconColor = color ? "#FFFFFF" : "#008080";
 
-  const debouncedOnChangeHandler = debounce((event) => {
+  const handleInputChange = (event) => {
     const { name, value } = event.target || {};
     setFilterData((prev) => ({
       ...prev,
       [name]: value,
     }));
-    callCommonApi();
-  }, 100);
-
-  const handleInputChange = (event) => {
-    debouncedOnChangeHandler(event);
   };
 
-  const callCommonApi = () => {
+  useEffect(() => {
     dispatch(
-      getAllLeaveRequestsOfEmployeesAction(15, filterData, "searchFilter")
+      getAllLeaveRequestsOfEmployeesAction(15, debouncedValue, "searchFilter")
     );
-  };
+  }, [debouncedValue, dispatch]);
 
   const onChangeHandler = (newValue, name) => {
     setFilterData((prev) => ({
@@ -115,13 +110,7 @@ const UsersAppliedLeave = ({ color }) => {
   };
 
   useEffect(() => {
-    const payload = {
-      name: "jagdish",
-    };
-
-    dispatch(
-      getAllLeaveRequestsOfEmployeesAction(15, filterData, null, payload)
-    );
+    dispatch(getAllLeaveRequestsOfEmployeesAction(15, filterData, null));
   }, [filterData.fromDate, filterData.toDate]);
 
   const tableHead = { backgroundColor: "#008080" };
