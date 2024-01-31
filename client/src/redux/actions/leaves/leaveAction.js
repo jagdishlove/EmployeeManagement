@@ -197,7 +197,6 @@ export const saveLeaveFormAction = (
   setLeaveBalance
 ) => {
   return async (dispatch) => {
-    console.log("disableSave", disableSave);
     let formData = new FormData();
 
     formData.append("fromDate", formatDate(data.fromDate));
@@ -303,7 +302,6 @@ export const getAllLeaveRequestsOfEmployeesAction = (
 ) => {
   return async (dispatch) => {
     const { fromDate, toDate } = data;
-    console.log("payload", payload);
     try {
       dispatch(getAllLeaveRequestsOfEmployeesRequest());
       // Use dayjs or another library to format dates as YYYY-MM-DD

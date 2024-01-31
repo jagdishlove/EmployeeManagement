@@ -70,7 +70,6 @@ const HistoryCalendar = ({
   };
 
   const eventRenderer = ({ event }) => {
-    console.log("getData", getDataType(event.type));
     const DATETYPES = [
       "LEAVE",
       "SICKLEAVE",
