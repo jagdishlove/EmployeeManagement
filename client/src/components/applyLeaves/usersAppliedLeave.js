@@ -34,7 +34,6 @@ const UsersAppliedLeave = ({ color }) => {
   const allemployeesleavesData = useSelector(
     (state) => state?.nonPersist?.leavesData.allEmployeesLeaveData
   );
-  console.log("allemployeesleave", allemployeesleave);
   const leaveTypesData = useSelector(
     (state) => state.persistData.masterData?.leaveTypes
   );
@@ -139,8 +138,6 @@ const UsersAppliedLeave = ({ color }) => {
 
   const handleScroll = () => {
     const table = tableRef.current;
-    console.log("innerHeight", table.clientHeight + table.scrollTop + 1);
-    console.log("scrollTop", table.scrollHeight);
     const isNearBottom =
       table.clientHeight + table.scrollTop + 1 >= table.scrollHeight;
 
