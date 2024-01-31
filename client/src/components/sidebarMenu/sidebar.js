@@ -25,6 +25,7 @@ import { SidebarStyle } from "./sidebarStyle";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import { useSelector } from "react-redux";
 
 const drawerWidth = 240;
 
@@ -101,6 +102,12 @@ const Sidebar = ({ children }) => {
   const [selectedItem, setSelectedItem] = useState(
     localStorage.getItem("selectedItem") || "Timesheet"
   );
+
+  const role = useSelector((state) => state?.persistData.data.role);
+
+  const superAdmin = role?.includes("SUPERADMIN");
+  const admin = role?.includes("ADMIN");
+
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -273,93 +280,95 @@ const Sidebar = ({ children }) => {
               </Link>
             </ListItem>
           ))}
-          <ListItem
-            key="Admin Menu"
-            disablePadding
-            sx={{ display: "block" }}
-          >
-            <ListItemButton
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? "initial" : "center",
-                px: 2.5,
-              }}
-              onClick={handleAdminMenuClick}
+          {(superAdmin || admin)  && (
+            <ListItem
+              key="Admin Menu"
+              disablePadding
+              sx={{ display: "block" }}
             >
-              <ListItemIcon
+              <ListItemButton
                 sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : "auto",
-                  justifyContent: "center",
-                  color: "white",
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
                 }}
+                onClick={handleAdminMenuClick}
               >
-                <AdminPanelSettingsIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary={
-                  <Typography
-                    variant="body1"
-                    fontWeight="bold"
-                    sx={style.sidebarItem}
-                  >
-                    Admin Menu
-                  </Typography>
-                }
-                sx={{ opacity: open ? 1 : 0 }}
-              />
-            </ListItemButton>
-            {/* Submenu items for the Admin Menu */}
-            <Collapse in={adminMenuOpen} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
-              {[
-            { text: "Projects", url: "/dashboard" },
-            { text: "Users", url: "/timesheet" },
-            { text: "Timesheet", url: "/leaves"},
-            { text: "Leaves", url: "/leaves"},
-          ].map((item) => (
-            <ListItem key={item.text} disablePadding sx={{ display: "block" }}>
-              <Link
-                to={item.url}
-                style={{ textDecoration: "none", color: "#ffffff" }}
-              >
-                <ListItemButton
+                <ListItemIcon
                   sx={{
-                    minHeight: 48,
-                    justifyContent: open ? "initial" : "center",
-                    px: 2.5,
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                    color: "white",
                   }}
-                  onClick={() => handleItemClick(item.text)}
-                  selected={selectedItem === item.text}
                 >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : "auto",
-                      justifyContent: "center",
-                      color: "white",
-                    }}
-                  >
-                    {item.icon}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary=<Typography
+                  <AdminPanelSettingsIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography
                       variant="body1"
                       fontWeight="bold"
                       sx={style.sidebarItem}
-                      style={{textAlign:'end'}}
                     >
-                      {item.text}
+                      Admin Menu
                     </Typography>
-                    sx={{ opacity: open ? 1 : 0 }}
-                  />
-                </ListItemButton>
-              </Link>
+                  }
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
+              </ListItemButton>
+              {/* Submenu items for the Admin Menu */}
+              <Collapse in={adminMenuOpen} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                {[
+              { text: "Projects", url: "/projects" },
+              { text: "Users", url: "/users" },
+              { text: "Timesheet", url: "/timesheet"},
+              { text: "Leaves", url: "/leaves"},
+            ].map((item) => (
+              <ListItem key={item.text} disablePadding sx={{ display: "block" }}>
+                <Link
+                  to={item.url}
+                  style={{ textDecoration: "none", color: "#ffffff" }}
+                >
+                  <ListItemButton
+                    sx={{
+                      minHeight: 48,
+                      justifyContent: open ? "initial" : "center",
+                      px: 2.5,
+                    }}
+                    onClick={() => handleItemClick(item.text)}
+                    selected={selectedItem === item.text}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 3 : "auto",
+                        justifyContent: "center",
+                        color: "white",
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary=<Typography
+                        variant="body1"
+                        fontWeight="bold"
+                        sx={style.sidebarItem}
+                        style={{textAlign:'end'}}
+                      >
+                        {item.text}
+                      </Typography>
+                      sx={{ opacity: open ? 1 : 0 }}
+                    />
+                  </ListItemButton>
+                </Link>
+              </ListItem>
+            ))}
+                </List>
+              </Collapse>
             </ListItem>
-          ))}
-              </List>
-            </Collapse>
-          </ListItem>
+          )}
         </List>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
@@ -371,3 +380,4 @@ const Sidebar = ({ children }) => {
 };
 
 export default Sidebar;
+

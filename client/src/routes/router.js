@@ -12,7 +12,8 @@ import ErrorPage from "../pages/error/errorPage";
 import History from "../pages/records/records";
 import Timesheet from "../pages/timesheet/timesheet";
 import LeavePage from "../components/applyLeaves/LeavePage";
-import User from "../components/AdminPages/users/userPage";
+import User from "../components/AdminPages/usersPage/userPage";
+import ProjectPage from "../components/AdminPages/projectsPage/projectPage";
 
 const Router = () => {
   const isAuthenticated = useSelector(
@@ -106,6 +107,21 @@ const Router = () => {
           )
         }
       />
+      <Route
+        path="/projects"
+        element={
+          isAuthenticated ? (
+            <ConditionalSidebar>
+              <ProjectPage/>
+            </ConditionalSidebar>
+          ) : (
+            <>
+              <Navigate to="/" />
+              <Login />
+            </>
+          )
+        }
+      />
 
       <Route path="/*" element={<ErrorPage />} />
     </Routes>
@@ -113,3 +129,4 @@ const Router = () => {
 };
 
 export default Router;
+
