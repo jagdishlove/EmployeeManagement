@@ -320,7 +320,7 @@ export const getAllLeaveRequestsOfEmployeesAction = (
         dispatch(getAllLeaveRequestsOfEmployeesSuccess(response));
       } else {
         const response = await makeRequest(
-          "GET",
+          "POST",
           `/api/leave/getAllLeaveRequestsOfEmployees`,
           {
             filters: [],
