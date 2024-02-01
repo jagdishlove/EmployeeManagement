@@ -25,6 +25,7 @@ import { masterDataAction } from "../../redux/actions/masterData/masterDataActio
 import { getLeaveType } from "../../utils/getLeaveTypeFromId";
 import ModalCust from "../modal/ModalCust";
 import useDebounce from "../../utils/useDebounce";
+import Select from "react-select";
 
 const UsersAppliedLeave = ({ color }) => {
   const dispatch = useDispatch();
@@ -34,7 +35,10 @@ const UsersAppliedLeave = ({ color }) => {
   const allemployeesleavesData = useSelector(
     (state) => state?.nonPersist?.leavesData.allEmployeesLeaveData
   );
-  console.log("allemployeesleave", allemployeesleave);
+  const searchAPIData = useSelector(
+    (state) => state?.nonPersist?.leavesData?.allEmployeesSearchData
+  );
+
   const leaveTypesData = useSelector(
     (state) => state.persistData.masterData?.leaveTypes
   );
@@ -43,6 +47,10 @@ const UsersAppliedLeave = ({ color }) => {
   const [filtered, setFilteredData] = useState();
   const [loading, setLoading] = useState(false);
   const [searchloading, setSearchLoading] = useState(false);
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [formatedSearchDataOptions, setFormatedSearchDataOptions] = useState(
+    []
+  );
   const [hasMore, setHasMore] = useState(true);
   const tableRef = useRef(null);
   const [filterData, setFilterData] = useState({
@@ -88,13 +96,26 @@ const UsersAppliedLeave = ({ color }) => {
 
   const iconColor = color ? "#FFFFFF" : "#008080";
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target || {};
-    setFilterData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const handleInputChange = (data) => {
+    console.log("allEmployeesSearchData", searchAPIData);
+    dispatch(
+      getAllLeaveRequestsOfEmployeesAction(
+        15,
+        filterData,
+        null,
+        searchAPIData.employee
+      )
+    );
+    setSelectedOptions(data);
   };
+
+  useEffect(() => {
+    const formatedSearchApiData = searchAPIData?.employee?.map((item) => ({
+      label: item.name,
+      value: item.id,
+    }));
+    setFormatedSearchDataOptions(formatedSearchApiData);
+  }, [searchAPIData]);
 
   useEffect(() => {
     dispatch(
@@ -109,9 +130,9 @@ const UsersAppliedLeave = ({ color }) => {
     }));
   };
 
-  useEffect(() => {
-    dispatch(getAllLeaveRequestsOfEmployeesAction(15, filterData, null));
-  }, [filterData.fromDate, filterData.toDate]);
+  // useEffect(() => {
+  //   dispatch(getAllLeaveRequestsOfEmployeesAction(15, filterData, null));
+  // }, [filterData.fromDate, filterData.toDate]);
 
   const tableHead = { backgroundColor: "#008080" };
 
@@ -127,7 +148,8 @@ const UsersAppliedLeave = ({ color }) => {
   const fetchMoreData = async () => {
     dispatch(
       getAllLeaveRequestsOfEmployeesAction(
-        allemployeesleavesData?.numberOfElements + 15
+        allemployeesleavesData?.numberOfElements + 15,
+        filterData
       )
     );
     setLoading(false);
@@ -139,8 +161,6 @@ const UsersAppliedLeave = ({ color }) => {
 
   const handleScroll = () => {
     const table = tableRef.current;
-    console.log("innerHeight", table.clientHeight + table.scrollTop + 1);
-    console.log("scrollTop", table.scrollHeight);
     const isNearBottom =
       table.clientHeight + table.scrollTop + 1 >= table.scrollHeight;
 
@@ -181,7 +201,7 @@ const UsersAppliedLeave = ({ color }) => {
           pt={1}
         >
           <Grid item xs={6} sm={4} md={4} lg={4}>
-            <TextField
+            {/* <TextField
               name="searchName"
               onChange={(events) => handleInputChange(events)}
               placeholder="Search by name, leave type"
@@ -198,6 +218,16 @@ const UsersAppliedLeave = ({ color }) => {
                   borderRadius: "50px",
                 },
               }}
+            /> */}
+            <Select
+              isMulti
+              value={selectedOptions}
+              onChange={handleInputChange}
+              onInputChange={(value) =>
+                setFilterData({ ...filterData, searchName: value })
+              }
+              options={formatedSearchDataOptions}
+              isLoading={searchAPIData?.length === 0}
             />
           </Grid>
           <Grid item xs={3} sm={4} md={4} lg={3} align="center">
@@ -319,14 +349,22 @@ const UsersAppliedLeave = ({ color }) => {
                   ))
                 )}
               </TableBody>
-              <Box>
-                {loading && (
-                  <Box>
-                    <CircularProgress />
-                  </Box>
-                )}
-              </Box>
             </Table>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                zIndex: 1,
+              }}
+            >
+              {loading && (
+                <Box>
+                  <CircularProgress />
+                </Box>
+              )}
+            </Box>
           </TableContainer>
 
           {/* {loading && (
