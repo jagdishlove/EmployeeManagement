@@ -7,6 +7,7 @@ import {
   ALL_EMPLOYEES_LEAVE_FAIL,
   ALL_EMPLOYEES_LEAVE_REQUEST,
   ALL_EMPLOYEES_LEAVE_SUCCESS,
+  ALL_EMPLOYEES_SEARCH_DATA,
   HOLIDAY_LIST_FAIL,
   HOLIDAY_LIST_REQUEST,
   HOLIDAY_LIST_SUCCESS,
@@ -18,7 +19,7 @@ import {
   SAVE_LEAVE_FORM_SUCCESS,
   SEARCH_EMAIL_FAIL,
   SEARCH_EMAIL_REQUEST,
-  SEARCH_EMAIL_SUCCESS
+  SEARCH_EMAIL_SUCCESS,
 } from "../actions/leaves/leavesActionType";
 
 // Initial state
@@ -36,8 +37,9 @@ const initialState = {
   searchEmailLaoding: false,
   savedLeaveData: {},
   formDataLoading: false,
-  allEmployeesLeaveData:[],
-  allemployeesleaveloading:false,
+  allEmployeesLeaveData: [],
+  allemployeesleaveloading: false,
+  allEmployeesSearchData: [],
 };
 
 // Reducer function
@@ -148,6 +150,11 @@ const LeavesReducer = (state = initialState, action) => {
         ...state,
         allEmployeesLeaveData: action.payload,
         allemployeesleaveloading: false,
+      };
+    case ALL_EMPLOYEES_SEARCH_DATA:
+      return {
+        ...state,
+        allEmployeesSearchData: action.payload,
       };
     case ALL_EMPLOYEES_LEAVE_FAIL: {
       return {

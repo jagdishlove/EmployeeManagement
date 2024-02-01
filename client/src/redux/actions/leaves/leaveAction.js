@@ -7,6 +7,7 @@ import {
   ALL_EMPLOYEES_LEAVE_FAIL,
   ALL_EMPLOYEES_LEAVE_REQUEST,
   ALL_EMPLOYEES_LEAVE_SUCCESS,
+  ALL_EMPLOYEES_SEARCH_DATA,
   DELETE_LEAVE_FAILURE,
   DELETE_LEAVE_REQUEST,
   DELETE_LEAVE_SUCCESS,
@@ -136,6 +137,12 @@ const getAllLeaveRequestsOfEmployeesSuccess = (data) => {
 const getAllLeaveRequestsOfEmployeesFail = () => {
   return {
     type: ALL_EMPLOYEES_LEAVE_FAIL,
+  };
+};
+const getEmployeeSearchData = (data) => {
+  return {
+    type: ALL_EMPLOYEES_SEARCH_DATA,
+    payload: data,
   };
 };
 
@@ -301,10 +308,10 @@ export const getAllLeaveRequestsOfEmployeesAction = (
   payload
 ) => {
   return async (dispatch) => {
+    console.log("this is dataaa", data);
     const { fromDate, toDate } = data;
     try {
       dispatch(getAllLeaveRequestsOfEmployeesRequest());
-      // Use dayjs or another library to format dates as YYYY-MM-DD
 
       if (type === "searchFilter") {
         const response = await makeRequest(
@@ -315,13 +322,13 @@ export const getAllLeaveRequestsOfEmployeesAction = (
             query: data,
           }
         );
-        dispatch(getAllLeaveRequestsOfEmployeesSuccess(response));
+        dispatch(getEmployeeSearchData(response));
       } else {
         const response = await makeRequest(
-          "GET",
+          "POST",
           `/api/leave/getAllLeaveRequestsOfEmployees`,
           {
-            filters: [],
+            filters: payload ? payload : [],
           },
           { page: 0, size: counter, fromDate: fromDate, toDate: toDate }
         );
