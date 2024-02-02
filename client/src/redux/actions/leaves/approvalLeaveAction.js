@@ -17,9 +17,10 @@ import {
   GET_LEAVE_SUCCESS,
   DOWNLOAD_FILE_REQUEST,
   DOWNLOAD_FILE_SUCCESS,
-  DOWNLOAD_FILE_FAIL,
+  DOWNLOAD_FILE_FAIL
 } from "./approvalLeaveActionType";
 // import { saveAs } from "file-saver";
+
 
 const getApprovalLeaveDatesRequest = () => {
   return {
@@ -193,12 +194,14 @@ export const approveRejectLeavesAction = (data, getDataPayload) => {
   };
 };
 
+
 export const downloadFileAction = (file, fileName) => {
   return async (dispatch) => {
     try {
       dispatch(downloadFileRequest());
       const response = await downloadApi("GET", `${file}`);
-      console.log("Response:", response);
+      console.log('Response:', response); 
+
 
       const url = window.URL.createObjectURL(new Blob([response]));
       const link = document.createElement("a");
@@ -206,10 +209,16 @@ export const downloadFileAction = (file, fileName) => {
       link.setAttribute("download", fileName);
       document.body.appendChild(link);
       link.click();
+
+      console.log('url',url)
+      console.log('link',link)
+
       dispatch(downloadFileSuccess(response));
-      dispatch(downloadFileFail());
+      dispatch(downloadFileFail())
     } catch (err) {
       // Handle errors
     }
   };
 };
+
+

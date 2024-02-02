@@ -148,7 +148,6 @@ const TimesheetRow = ({
     data ? editedSelectedValues : initialSelectedValues
   );
 
-
   useEffect(() => {
     if (updatedActivityameList?.length > 1 && timesheetForm) {
       setSelectedValues({
@@ -306,7 +305,7 @@ const TimesheetRow = ({
         Object.keys(newErrors).length === 0 &&
         Object.keys(timeError).length === 0
       ) {
-        setEditDataDisabled(true)
+        setEditDataDisabled(true);
         const payload = createPayload();
         await dispatch(
           saveTimeSheetEntryAction(payload, formatDateForApi(selectedDate))
@@ -929,11 +928,7 @@ const TimesheetRow = ({
                   onClick={() => handleEditData(id)}
                 >
                   <SaveOutlinedIcon
-                    sx={
-                      editDataDisabled
-                        ? style.IconStyleDisable
-                        : style.IconStyle
-                    }
+                    sx={editDataDisabled ? style.IconStyleDisable : style.IconStyle}
                   />
                 </IconButton>
               ) : (

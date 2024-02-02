@@ -46,6 +46,7 @@ const Records = () => {
   };
 
   useEffect(() => {
+    console.log("selectedYear", selectedYear);
     const e = {
       target: {
         value: selectedYear
