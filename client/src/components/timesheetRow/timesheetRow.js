@@ -306,6 +306,7 @@ const TimesheetRow = ({
         Object.keys(newErrors).length === 0 &&
         Object.keys(timeError).length === 0
       ) {
+        setEditDataDisabled(true)
         const payload = createPayload();
         await dispatch(
           saveTimeSheetEntryAction(payload, formatDateForApi(selectedDate))
