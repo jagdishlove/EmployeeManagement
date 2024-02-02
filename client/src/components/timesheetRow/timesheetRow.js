@@ -324,9 +324,14 @@ const TimesheetRow = ({
 
   const handleEditData = async (id) => {
     const newErrors = validationForm();
+    const timeError = timeValidation(getTimesheetData, newEnteryTime);
     editButtonHandler();
     setErrors(newErrors);
-    if (Object.keys(newErrors).length === 0) {
+    setTimeError(timeError);
+    if (
+      Object.keys(newErrors).length === 0 &&
+      Object.keys(timeError).length === 0
+    ) {
       const payload = createPayload(id);
 
       dispatch(
@@ -657,7 +662,11 @@ const TimesheetRow = ({
                   inputProps={{ maxLength: 250 }}
                   onChange={(e) => onChangeHandler(e, "adminComment")}
                   disabled={!approval}
-                  InputLabelProps={approval ? { shrink: true, htmlFor: "manager-comments" } : {}}
+                  InputLabelProps={
+                    approval
+                      ? { shrink: true, htmlFor: "manager-comments" }
+                      : {}
+                  }
                 />
               </Grid>
             ) : (
@@ -714,7 +723,15 @@ const TimesheetRow = ({
                 </Grid>
               )}
               {data ? (
-                <Grid item xs={12} sm={6} md={7} lg={7}  display={"flex"} sx={style.starSec}>
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                  md={7}
+                  lg={7}
+                  display={"flex"}
+                  sx={style.starSec}
+                >
                   {!approval ? (
                     <>
                       <Button
