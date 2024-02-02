@@ -148,6 +148,8 @@ const TimesheetRow = ({
     data ? editedSelectedValues : initialSelectedValues
   );
 
+  console.log("selectedValues", selectedValues);
+
   useEffect(() => {
     if (updatedActivityameList?.length > 1 && timesheetForm) {
       setSelectedValues({
@@ -325,8 +327,8 @@ const TimesheetRow = ({
 
   const handleEditData = async (id) => {
     const editFormTime = {
-      fromTime: selectedValues.fromTime,
-      toTime: selectedValues.toTime,
+      fromTime: selectedValues.fromTime.substring(0, 5),
+      toTime: selectedValues.toTime.substring(0, 5),
     };
     const filteredData = getTimesheetData.filter(
       (entry) => entry.timesheetEntryId !== id
