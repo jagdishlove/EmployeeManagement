@@ -1,13 +1,5 @@
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Grid,
-  Tab,
-  Tabs,
-  Typography,
-} from "@mui/material";
+import { Box, Button, CircularProgress, Grid, Tab, Tabs, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { format } from "date-fns";
 import moment from "moment";
@@ -268,7 +260,7 @@ const Timesheet = () => {
           height="100%"
           bgcolor="rgba(255, 255, 255, 0.7)"
         >
-          <CircularProgress />
+          <CircularProgress/>
         </Box>
       )}
     </Box>

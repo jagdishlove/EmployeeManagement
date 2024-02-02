@@ -1,12 +1,5 @@
 import CloseIcon from "@mui/icons-material/Close";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Grid,
-  Modal,
-  Typography,
-} from "@mui/material";
+import { Box, Button, CircularProgress, Grid, Modal, Typography } from "@mui/material";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -48,7 +41,7 @@ const LeavePage = () => {
     leaveMasterId: "",
     comments: "",
     manager: managerData.managerName || "",
-    cc: [],
+    cc: [] ,
     file: " ",
   };
 
@@ -136,7 +129,7 @@ const LeavePage = () => {
     setLoading(true);
     try {
       await dispatch(deleteLeave(leaveId));
-      setLeaveHistoryData((prevData) => {
+        setLeaveHistoryData((prevData) => {
         const contentArray = Array.isArray(prevData.content)
           ? prevData.content
           : [];
@@ -145,12 +138,14 @@ const LeavePage = () => {
         );
         return { ...prevData, content: newArray };
       });
-
+  
       setLeaveBalance(true);
-    } finally {
+    } finally{
       setLoading(false);
+
     }
   };
+  
 
   const onChangeFormDataHandler = (e, values, type) => {
     if (e.target?.value === 12 && hasNumberDaysGreaterThanZero) {
@@ -219,16 +214,12 @@ const LeavePage = () => {
     setLoading(true);
     try {
       if (type === "Save") {
-        await dispatch(
-          saveLeaveFormAction(payload, param, disableSave, setLeaveBalance)
-        );
+        await dispatch(saveLeaveFormAction(payload, param, disableSave, setLeaveBalance));
       } else if (type === "Submit") {
         setDisableSave("");
-        await dispatch(
-          saveLeaveFormAction(payload, param, disableSave, setLeaveBalance)
-        );
+        await dispatch(saveLeaveFormAction(payload, param, disableSave, setLeaveBalance));
       }
-    } finally {
+    }finally{
       setLoading(false);
     }
   };
@@ -348,20 +339,20 @@ const LeavePage = () => {
           </Grid>
         </Grid>
         {loading && (
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            position="fixed"
-            top="0"
-            left="0"
-            width="100%"
-            height="100%"
-            bgcolor="rgba(255, 255, 255, 0.7)"
-          >
-            <CircularProgress />
-          </Box>
-        )}
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          position="fixed"
+          top="0"
+          left="0"
+          width="100%"
+          height="100%"
+          bgcolor="rgba(255, 255, 255, 0.7)"
+        >
+          <CircularProgress/>
+        </Box>
+      )}
       </Box>
     </>
   );

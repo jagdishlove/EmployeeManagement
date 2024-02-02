@@ -11,7 +11,6 @@ import { masterDataAction } from "../../redux/actions/masterData/masterDataActio
 import InputFileUpload from "../forms/customInputs/uploadFile";
 import Dropdown from "../forms/dropdown/dropdown";
 import "./leaves.css";
-import UsersAppliedLeave from "./usersAppliedLeave";
 
 const LeaveRequestForm = ({
   addHistoryEntry,
@@ -449,7 +448,7 @@ const LeaveRequestForm = ({
             </Grid>
             <Grid item xs={12}>
               <Box sx={{ display: "flex", gap: "10px", justifyContent: "end" }}>
-              <UsersAppliedLeave />
+            
                 
                 <Box sx={{}}>
                   <InputFileUpload
