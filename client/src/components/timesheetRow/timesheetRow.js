@@ -305,7 +305,6 @@ const TimesheetRow = ({
         Object.keys(newErrors).length === 0 &&
         Object.keys(timeError).length === 0
       ) {
-        setEditDataDisabled(true);
         const payload = createPayload();
         await dispatch(
           saveTimeSheetEntryAction(payload, formatDateForApi(selectedDate))
@@ -329,8 +328,11 @@ const TimesheetRow = ({
       fromTime: selectedValues.fromTime,
       toTime: selectedValues.toTime,
     };
+    const filteredData = getTimesheetData.filter(
+      (entry) => entry.timesheetEntryId !== id
+    );
     const newErrors = validationForm();
-    const timeError = timeValidation(getTimesheetData, editFormTime);
+    const timeError = timeValidation(filteredData, editFormTime);
     editButtonHandler();
     setErrors(newErrors);
     setTimeError(timeError);
@@ -339,13 +341,13 @@ const TimesheetRow = ({
       Object.keys(timeError).length === 0
     ) {
       const payload = createPayload(id);
-
       dispatch(
         updateTimeSheetEntryAction(payload, formatDateForApi(selectedDate))
       );
-      setDisabledWhileEditing(false);
+      setEditDataDisabled(true);
+    } else {
+      setEditDataDisabled(false);
     }
-    setEditDataDisabled(false);
   };
 
   const createPayload = (id) => {
@@ -924,11 +926,15 @@ const TimesheetRow = ({
 
               {data ? (
                 <IconButton
-                  disabled={disabled}
+                  disabled={editDataDisabled}
                   onClick={() => handleEditData(id)}
                 >
                   <SaveOutlinedIcon
-                    sx={editDataDisabled ? style.IconStyleDisable : style.IconStyle}
+                    sx={
+                      editDataDisabled
+                        ? style.IconStyleDisable
+                        : style.IconStyle
+                    }
                   />
                 </IconButton>
               ) : (
