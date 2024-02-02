@@ -345,6 +345,7 @@ const TimesheetRow = ({
         updateTimeSheetEntryAction(payload, formatDateForApi(selectedDate))
       );
       setEditDataDisabled(true);
+      setDisabledWhileEditing(false);
     } else {
       setEditDataDisabled(false);
     }
