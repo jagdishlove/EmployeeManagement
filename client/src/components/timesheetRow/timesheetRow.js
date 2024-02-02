@@ -147,7 +147,7 @@ const TimesheetRow = ({
   const [selectedValues, setSelectedValues] = useState(
     data ? editedSelectedValues : initialSelectedValues
   );
-  console.log("selectedValues", selectedValues);
+
 
   useEffect(() => {
     if (updatedActivityameList?.length > 1 && timesheetForm) {
@@ -326,8 +326,6 @@ const TimesheetRow = ({
   }, [errorTimesheetEdit]);
 
   const handleEditData = async (id) => {
-    console.log("getTimesheetData", getTimesheetData);
-    console.log("newEnteryTime", selectedValues);
     const editFormTime = {
       fromTime: selectedValues.fromTime,
       toTime: selectedValues.toTime,
