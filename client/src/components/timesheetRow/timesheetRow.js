@@ -71,6 +71,7 @@ const TimesheetRow = ({
   const [updatedActivityameList, setUpdatedActivityNameList] = useState([]);
   const [managerStatusData, setManagerStatusData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [editDataDisabled, setEditDataDisabled] = useState(disabled);
 
   const isSuccessSaveTimesheet = useSelector(
     (state) => state?.nonPersist?.timesheetData.isSuccess
@@ -160,6 +161,7 @@ const TimesheetRow = ({
   const handleEditClick = () => {
     editButtonHandler(id);
     setDisabledWhileEditing(true);
+    setEditDataDisabled(false);
   };
 
   const getProjectName = (value) => {
@@ -323,8 +325,14 @@ const TimesheetRow = ({
   }, [errorTimesheetEdit]);
 
   const handleEditData = async (id) => {
+    console.log("getTimesheetData", getTimesheetData);
+    console.log("newEnteryTime", selectedValues);
+    const editFormTime = {
+      fromTime: selectedValues.fromTime,
+      toTime: selectedValues.toTime,
+    };
     const newErrors = validationForm();
-    const timeError = timeValidation(getTimesheetData, newEnteryTime);
+    const timeError = timeValidation(getTimesheetData, editFormTime);
     editButtonHandler();
     setErrors(newErrors);
     setTimeError(timeError);
@@ -339,6 +347,7 @@ const TimesheetRow = ({
       );
       setDisabledWhileEditing(false);
     }
+    setEditDataDisabled(false);
   };
 
   const createPayload = (id) => {
@@ -545,7 +554,7 @@ const TimesheetRow = ({
                     : selectedValues.fromTime
                 }
                 onChangeHandler={(e) => onChangeTimeHandler(e, "fromTime")}
-                disabled={disabled || approval || isHistory}
+                disabled={editDataDisabled || approval || isHistory}
               />
             </DemoItem>
             <DemoItem>
@@ -556,7 +565,7 @@ const TimesheetRow = ({
                   selectedValues.toTime === "" ? null : selectedValues.toTime
                 }
                 onChangeHandler={(e) => onChangeTimeHandler(e, "toTime")}
-                disabled={disabled || approval}
+                disabled={editDataDisabled || approval}
               />
             </DemoItem>
           </Grid>
@@ -583,7 +592,7 @@ const TimesheetRow = ({
                   border: "1px solid #8897ad87",
                   borderRadius: "10px",
                 }}
-                disabled={disabled || approval}
+                disabled={editDataDisabled || approval}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={6} lg={6}>
@@ -598,7 +607,7 @@ const TimesheetRow = ({
                   border: "1px solid #8897ad87",
                   borderRadius: "10px",
                 }}
-                disabled={disabled || approval}
+                disabled={editDataDisabled || approval}
               />
             </Grid>
             <Grid item xs={12} sm={12} md={12} lg={12}>
@@ -613,7 +622,7 @@ const TimesheetRow = ({
                   border: "1px solid #8897ad87",
                   borderRadius: "10px",
                 }}
-                disabled={disabled || approval}
+                disabled={editDataDisabled || approval}
               />
             </Grid>
           </Grid>
@@ -639,7 +648,7 @@ const TimesheetRow = ({
                 sx={style.TimesheetTextField1}
                 inputProps={{ maxLength: 250 }}
                 onChange={(e) => onChangeHandler(e, "comments")}
-                disabled={disabled || approval || disableSubmit}
+                disabled={editDataDisabled || approval || disableSubmit}
               />
             </Grid>
           ) : null}
@@ -680,7 +689,7 @@ const TimesheetRow = ({
                 sx={style.TimesheetTextField1}
                 inputProps={{ maxLength: 250 }}
                 onChange={(e) => onChangeHandler(e, "comments")}
-                disabled={disabled}
+                disabled={editDataDisabled}
               />
             )}
 
@@ -921,7 +930,11 @@ const TimesheetRow = ({
                   onClick={() => handleEditData(id)}
                 >
                   <SaveOutlinedIcon
-                    sx={disabled ? style.IconStyleDisable : style.IconStyle}
+                    sx={
+                      editDataDisabled
+                        ? style.IconStyleDisable
+                        : style.IconStyle
+                    }
                   />
                 </IconButton>
               ) : (
