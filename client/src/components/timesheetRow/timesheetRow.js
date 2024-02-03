@@ -148,8 +148,6 @@ const TimesheetRow = ({
     data ? editedSelectedValues : initialSelectedValues
   );
 
-  console.log("selectedValues", selectedValues);
-
   useEffect(() => {
     if (updatedActivityameList?.length > 1 && timesheetForm) {
       setSelectedValues({
@@ -486,7 +484,10 @@ const TimesheetRow = ({
     padding: "8px", // Adjust padding as needed
   };
   return (
-    <Box sx={style.timesheetEntryUI}>
+      <Box sx={{
+        ...style.timesheetEntryUI,
+        border: data?.dayType === "HOLIDAY" || data?.dayType === "WEEKEND" ? "2px solid #800000" : "2px solid #008080",
+      }}>
       {approval && data ? (
         <div
           style={{
@@ -527,8 +528,9 @@ const TimesheetRow = ({
               color: "#000000",
             }}
           >
-            {`${data?.timesheet?.timesheetId.date || null}
-            `}
+            {`${data?.timesheet?.timesheetId.date || null} 
+                ${data?.dayType || ''
+              }`}
           </Typography>
         </div>
       ) : null}
@@ -674,11 +676,7 @@ const TimesheetRow = ({
                   inputProps={{ maxLength: 250 }}
                   onChange={(e) => onChangeHandler(e, "adminComment")}
                   disabled={!approval}
-                  InputLabelProps={
-                    approval
-                      ? { shrink: true, htmlFor: "manager-comments" }
-                      : {}
-                  }
+                  InputLabelProps={approval ? { shrink: true, htmlFor: "manager-comments", style: { backgroundColor: data?.dayType === "HOLIDAY" || data?.dayType === "WEEKEND" ? '#800000' : "#008080" } }  : {}}
                 />
               </Grid>
             ) : (

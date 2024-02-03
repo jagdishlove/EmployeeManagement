@@ -13,6 +13,7 @@ import { getApprovalLeaveDatesAction } from "../../../redux/actions/leaves/appro
 
 import Dropdown from "../../forms/dropdown/dropdown";
 import { adminHeaderStyle } from "../approvalTimesheets/adminHeaderStyle";
+import UsersAppliedLeave from "../../applyLeaves/usersAppliedLeave";
 
 const ApprovalLeaveHeader = ({
   dateChangeHandler,
@@ -58,6 +59,8 @@ const ApprovalLeaveHeader = ({
   useEffect(() => {
     dispatch(getApprovalLeaveDatesAction());
   }, [dispatch]);
+
+  const color = useState(true)
 
   return (
     <div>
@@ -112,8 +115,12 @@ const ApprovalLeaveHeader = ({
               approve={true}
             />
           </Grid>
-         
-          <Grid item xs={12} sm={12} md={4} lg={5} margin={"auto"}>
+          <Grid item xs={12} sm={12} md={1} lg={2} sx={{ marginTop: "30px" }}>
+            <UsersAppliedLeave
+            color={color}
+            />
+          </Grid>
+          <Grid item xs={12} sm={12} md={4} lg={3} margin={"auto"}>
           <Typography
             variant="h6"
             color={"secondary"}

@@ -4,6 +4,10 @@ import makeRequest, { addRequest } from "../../../api/api";
 import { errorMessage } from "../errors/errorsAction";
 import { getRefreshToken } from "../login/loginAction";
 import {
+  ALL_EMPLOYEES_LEAVE_FAIL,
+  ALL_EMPLOYEES_LEAVE_REQUEST,
+  ALL_EMPLOYEES_LEAVE_SUCCESS,
+  ALL_EMPLOYEES_SEARCH_DATA,
   DELETE_LEAVE_FAILURE,
   DELETE_LEAVE_REQUEST,
   DELETE_LEAVE_SUCCESS,
@@ -118,6 +122,30 @@ const deleteLeaveFailure = () => {
   };
 };
 
+const getAllLeaveRequestsOfEmployeesRequest = () => {
+  return {
+    type: ALL_EMPLOYEES_LEAVE_REQUEST,
+  };
+};
+
+const getAllLeaveRequestsOfEmployeesSuccess = (data) => {
+  return {
+    type: ALL_EMPLOYEES_LEAVE_SUCCESS,
+    payload: data,
+  };
+};
+const getAllLeaveRequestsOfEmployeesFail = () => {
+  return {
+    type: ALL_EMPLOYEES_LEAVE_FAIL,
+  };
+};
+const getEmployeeSearchData = (data) => {
+  return {
+    type: ALL_EMPLOYEES_SEARCH_DATA,
+    payload: data,
+  };
+};
+
 export const getLeaveBalanceAction = () => {
   return async (dispatch) => {
     try {
@@ -169,25 +197,30 @@ export const getSearchEmailAction = (payload) => {
   };
 };
 
-export const saveLeaveFormAction = (data, param, disableSave, setLeaveBalance) => {
+export const saveLeaveFormAction = (
+  data,
+  param,
+  disableSave,
+  setLeaveBalance
+) => {
   return async (dispatch) => {
-    console.log("disableSave", disableSave);
     let formData = new FormData();
 
-    formData.append('fromDate', formatDate(data.fromDate));
-    formData.append('toDate', formatDate(data.toDate));
-    formData.append('file', data.file);  // Assuming 'file' is the key expected by the server
+    formData.append("fromDate", formatDate(data.fromDate));
+    formData.append("toDate", formatDate(data.toDate));
+    formData.append("file", data.file); // Assuming 'file' is the key expected by the server
 
     for (const key in data) {
-      if (key !== 'file') {
+      if (key !== "file") {
         formData.append(key, data[key]);
-      }    }
+      }
+    }
     try {
       dispatch(saveLeaveFormRequest());
       const response = await addRequest(
         "POST",
         "/api/leave/apply",
-        formData, 
+        formData,
         param
       );
       dispatch(saveLeaveFormSuccess(response));
@@ -195,19 +228,30 @@ export const saveLeaveFormAction = (data, param, disableSave, setLeaveBalance) =
         toast.success("Your leaves are saved successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
-        setLeaveBalance(true)
+        setLeaveBalance(true);
       } else if (param.action === "Submit") {
-        toast.success("Your leaves have been submitted successfully for approval ", {
-          position: toast.POSITION.BOTTOM_CENTER,
-        });
-        setLeaveBalance(true)
+        toast.success(
+          "Your leaves have been submitted successfully for approval ",
+          {
+            position: toast.POSITION.BOTTOM_CENTER,
+          }
+        );
+        setLeaveBalance(true);
       }
       dispatch({ type: "NUMBERS_OF_DAYS", payload: { numberOfDays: "" } });
       return response;
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.errorCode === 403) {
+      if (
+        err.response &&
+        err.response.data &&
+        err.response.data.errorCode === 403
+      ) {
         dispatch(getRefreshToken());
-      } else if (err.response && err.response.data && err.response.data.errorCode === 500) {
+      } else if (
+        err.response &&
+        err.response.data &&
+        err.response.data.errorCode === 500
+      ) {
         dispatch(saveLeaveFormFail(err.response.data.errorMessage));
         toast.error(err.response.data.errorMessage, {
           position: toast.POSITION.BOTTOM_CENTER,
@@ -218,9 +262,8 @@ export const saveLeaveFormAction = (data, param, disableSave, setLeaveBalance) =
 };
 
 function formatDate(date) {
-  return new Date(date).toISOString().split('T')[0];
+  return new Date(date).toISOString().split("T")[0];
 }
-
 
 export const getNumbersOfDaysAction = (data) => {
   return async (dispatch) => {
@@ -254,6 +297,49 @@ export const deleteLeave = (leaveRequestId) => {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
+    }
+  };
+};
+
+export const getAllLeaveRequestsOfEmployeesAction = (
+  counter = 15,
+  data,
+  type,
+  payload
+) => {
+  return async (dispatch) => {
+    console.log("this is dataaa", data);
+    const { fromDate, toDate } = data;
+    try {
+      dispatch(getAllLeaveRequestsOfEmployeesRequest());
+
+      if (type === "searchFilter") {
+        const response = await makeRequest(
+          "GET",
+          `/api/leave/searchByNameOrLeaveType`,
+          null,
+          {
+            query: data,
+          }
+        );
+        dispatch(getEmployeeSearchData(response));
+      } else {
+        const response = await makeRequest(
+          "POST",
+          `/api/leave/getAllLeaveRequestsOfEmployees`,
+          {
+            filters: payload ? payload : [],
+          },
+          { page: 0, size: counter, fromDate: fromDate, toDate: toDate }
+        );
+        dispatch(getAllLeaveRequestsOfEmployeesSuccess(response));
+      }
+    } catch (err) {
+      if (err.response.data.errorCode === 403) {
+        dispatch(getRefreshToken());
+      }
+      dispatch(getAllLeaveRequestsOfEmployeesFail());
+      dispatch(errorMessage(err.response.data.errorMessage));
     }
   };
 };

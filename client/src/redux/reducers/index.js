@@ -8,6 +8,7 @@ import historyDataReducer from "./historyDataReducer";
 import LeavesReducer from "./leavesReducer";
 import ApprovalLeavesReducer from "./approvalLeavesReducer";
 import leaveHistoryReducer from "./leaveHiistoryReducer";
+import usersReducer from "./usersReducer";
 
 const rootReducer = combineReducers({
   forgotPassword: forgotPasswordReducer,
@@ -19,6 +20,8 @@ const rootReducer = combineReducers({
   leavesData :LeavesReducer,
   approvalLeavesData : ApprovalLeavesReducer,
   leaveHistoryData:leaveHistoryReducer,
+  userDetails: usersReducer,
 });
 
 export default rootReducer;
+ 

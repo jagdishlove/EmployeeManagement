@@ -1,10 +1,9 @@
 import React from 'react'
 
-
-export default function ProjectPage() {
+export default function UserDetailsPage() {
   return (
     <div>
-      Projects
+      userDetailPage
     </div>
   )
 }

@@ -5,11 +5,15 @@ import { adminHeaderStyle } from '../../admin/approvalTimesheets/adminHeaderStyl
 import SearchIcon from '@mui/icons-material/Search';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
-export default function UserHerders() {
+export default function UserHerders({userData}) {
   const theme = useTheme();
   const style = adminHeaderStyle(theme);
 
+  const Navigate = useNavigate();
+
+  console.log('object',userData)
 
   const handleChange = () => {
     console.log('Handle Change');
@@ -17,9 +21,12 @@ export default function UserHerders() {
   const skills = useSelector(
     (state) => state.persistData.masterData?.skill
   );
+  const handleAddUser = () => {
+    Navigate('/userForm')
+  }
   return (
     <div>
-      <Grid container gap={{ sm: 0, md: 0, lg: 2, xs: 2 }}>
+      <Grid container justifyContent="space-between">
         <Grid item xs={12} sm={12} md={4} lg={5}>
         <TextField
           fullWidth
@@ -44,7 +51,13 @@ export default function UserHerders() {
         />
         </Grid>
         <Grid item xs={12} sm={12} md={4} lg={6.5} display="flex" justifyContent="flex-end">
-          <Button variant="contained" color="primary" startIcon={<PersonAddIcon />} style={{borderRadius:'10px'}}>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            startIcon={<PersonAddIcon />} 
+            style={{borderRadius:'10px'}}
+            onClick={handleAddUser}
+          >
             Add New Users
           </Button>
         </Grid>
@@ -61,18 +74,6 @@ export default function UserHerders() {
               style={style.DateTimesheetDateTextField} // Pass any additional style
             />
           </Grid>
-          <Grid item xs={12} sm={4} md={3} lg={2}>
-            <Dropdown
-              options={[{ id: "All", value: "All" }]} 
-            //   value={projects}
-            //   onChange={handleProjectChange} 
-              title="Role"
-              dropdownName="Role" // Pass the dropdown name
-              style={style.TimesheetDateTextField} // Pass any additional style
-            //   approve={true}
-            />
-          </Grid>
-
           <Grid item xs={12} sm={4} md={3} lg={2}>
             <Typography sx={{ color: "#ffffff", fontSize: '14px', marginTop: "-20px" }}>Skills</Typography>
             <FormControl fullWidth style={{ borderRadius: "5px" }}>
@@ -99,6 +100,7 @@ export default function UserHerders() {
                     <TextField
                       {...params}
                       onChange={handleChange}
+                      placeholder='SKILLS'
                       InputProps={{
                         ...params.InputProps,
                         style: {
@@ -112,6 +114,27 @@ export default function UserHerders() {
                 )}
               />
             </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={12} md={4} lg={5}>
+          </Grid>
+          <Grid item  margin={"auto"} alignItems='flex-end'>
+          <Typography
+            variant="h7"
+            color={"secondary"}
+            textAlign={"right"}
+            sx={{ textWrap: "nowrap" }}
+            marginTop={4}
+            >
+              <b>
+                {" "}
+                Total Entries{" "}
+                {userData?.numberOfElements
+                  ? userData.numberOfElements
+                  : "0"}
+                /
+                {userData?.totalElements ? userData.totalElements : "0"}
+              </b>
+            </Typography>
           </Grid>
         </Grid>
       </Box>

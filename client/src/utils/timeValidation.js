@@ -12,9 +12,8 @@ export const timeValidation = (data, selectedValue) => {
   if (data && data.length > 0) {
     for (const entry of data) {
       const fromExistingTime = entry.startTime.slice(0, -3);
-      
+
       const toExistingTime = entry.endTime.slice(0, -3);
-    
 
       if (
         (selectedValue.fromTime >= fromExistingTime &&
