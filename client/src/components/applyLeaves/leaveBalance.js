@@ -52,7 +52,7 @@ const LeaveBalance = () => {
                     textWrap: "wrap",
                   }}
                 >
-                  {data.leaveType}
+                  {data.result}
                   <Typography sx={{ fontSize: "20px", fontWeight: "bold" }}>
                     {data.numberDays}
                   </Typography>

@@ -2,7 +2,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Typography } from "@mui/material";
+import { Collapse, Typography } from "@mui/material";
 import MuiAppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -24,6 +24,8 @@ import { SidebarStyle } from "./sidebarStyle";
 // import useMobileScreen from "../../customHooks/useMobileScreen";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import { useSelector } from "react-redux";
 
 const drawerWidth = 240;
 
@@ -100,7 +102,15 @@ const Sidebar = ({ children }) => {
   const [selectedItem, setSelectedItem] = useState(
     localStorage.getItem("selectedItem") || "Timesheet"
   );
-  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const role = useSelector((state) => state?.persistData.data.role);
+
+  const superAdmin = role?.includes("SUPERADMIN");
+  const admin = role?.includes("ADMIN");
+
+  const [adminMenuOpen, setAdminMenuOpen] = useState(false);
+
+  const [anchorEl, setAnchorEl] = useState(null);
   const theme = useTheme();
   const style = SidebarStyle(theme);
   // const mobile = useMobileScreen();
@@ -149,6 +159,11 @@ const Sidebar = ({ children }) => {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
+  const handleAdminMenuClick = () => {
+    setAdminMenuOpen(!adminMenuOpen);
+  };
+
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -265,6 +280,95 @@ const Sidebar = ({ children }) => {
               </Link>
             </ListItem>
           ))}
+          {(superAdmin || admin)  && (
+            <ListItem
+              key="Admin Menu"
+              disablePadding
+              sx={{ display: "block" }}
+            >
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                }}
+                onClick={handleAdminMenuClick}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                    color: "white",
+                  }}
+                >
+                  <AdminPanelSettingsIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography
+                      variant="body1"
+                      fontWeight="bold"
+                      sx={style.sidebarItem}
+                    >
+                      Admin Menu
+                    </Typography>
+                  }
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
+              </ListItemButton>
+              {/* Submenu items for the Admin Menu */}
+              <Collapse in={adminMenuOpen} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                {[
+              { text: "Projects", url: "/projects" },
+              { text: "Users", url: "/users" },
+              { text: "Timesheet", url: "/timesheet"},
+              { text: "Leaves", url: "/leaves"},
+            ].map((item) => (
+              <ListItem key={item.text} disablePadding sx={{ display: "block" }}>
+                <Link
+                  to={item.url}
+                  style={{ textDecoration: "none", color: "#ffffff" }}
+                >
+                  <ListItemButton
+                    sx={{
+                      minHeight: 48,
+                      justifyContent: open ? "initial" : "center",
+                      px: 2.5,
+                    }}
+                    onClick={() => handleItemClick(item.text)}
+                    selected={selectedItem === item.text}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 3 : "auto",
+                        justifyContent: "center",
+                        color: "white",
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary=<Typography
+                        variant="body1"
+                        fontWeight="bold"
+                        sx={style.sidebarItem}
+                        style={{textAlign:'end'}}
+                      >
+                        {item.text}
+                      </Typography>
+                      sx={{ opacity: open ? 1 : 0 }}
+                    />
+                  </ListItemButton>
+                </Link>
+              </ListItem>
+            ))}
+                </List>
+              </Collapse>
+            </ListItem>
+          )}
         </List>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
@@ -276,3 +380,4 @@ const Sidebar = ({ children }) => {
 };
 
 export default Sidebar;
+

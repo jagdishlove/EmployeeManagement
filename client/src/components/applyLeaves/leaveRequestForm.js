@@ -11,6 +11,7 @@ import { masterDataAction } from "../../redux/actions/masterData/masterDataActio
 import InputFileUpload from "../forms/customInputs/uploadFile";
 import Dropdown from "../forms/dropdown/dropdown";
 import "./leaves.css";
+import UsersAppliedLeave from "./usersAppliedLeave";
 
 const LeaveRequestForm = ({
   addHistoryEntry,
@@ -140,7 +141,7 @@ const LeaveRequestForm = ({
     // Example validation for leaveMasterId
     if (!leaveRqstData.leaveMasterId) {
       errors.leaveMasterId = "Leave Type is required";
-    }
+    } 
     if (!leaveRqstData.comments) {
       errors.comments = "Comment is required";
     }
@@ -448,7 +449,7 @@ const LeaveRequestForm = ({
             </Grid>
             <Grid item xs={12}>
               <Box sx={{ display: "flex", gap: "10px", justifyContent: "end" }}>
-            
+              <UsersAppliedLeave />
                 
                 <Box sx={{}}>
                   <InputFileUpload

@@ -15,7 +15,7 @@ const Dropdown = ({
 }) => {
   const handleDropdownChange = (event) => {
     onChange(event, dropdownName);
-  };
+ };
 
   return (
     <FormControl sx={style} fullWidth>
@@ -47,14 +47,24 @@ const Dropdown = ({
               option.value ||
               option.jobId ||
               option.sessionName ||
-              option.leaveMasterId
+              option.leaveMasterId ||
+              option.skillName ||
+              option.gender ||
+              option.bandName ||
+              option.employmentType ||
+              option.managerName
             }
             value={
               option.id ||
               option.value ||
               option.projectName ||
               option.sessionName ||
-              option.leaveMasterId
+              option.leaveMasterId ||
+              option.skillName ||
+              option.gender ||
+              option.bandName ||
+              option.employmentType ||
+              option.managerName
             }
             sx={{
               "&.Mui-selected": {
@@ -67,7 +77,13 @@ const Dropdown = ({
               option.firstName ||
               option.activityType ||
               option.sessionValue ||
-              option.leaveType}
+              option.leaveType ||
+              option.skillName ||
+              option.gender ||
+              option.bandName ||
+              option.employmentType ||
+              option.managerName
+              }
           </MenuItem>
         ))}
       </Select>
