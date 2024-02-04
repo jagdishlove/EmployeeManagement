@@ -2,7 +2,6 @@ import InfoIcon from "@mui/icons-material/Info";
 import {
   Box,
   CircularProgress,
-  Grid,
   IconButton,
   Table,
   TableBody,
@@ -18,12 +17,13 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Select from "react-select";
+import Select, { components } from "react-select";
 import { getAllLeaveRequestsOfEmployeesAction } from "../../redux/actions/leaves/leaveAction";
 import { masterDataAction } from "../../redux/actions/masterData/masterDataAction";
 import { getLeaveType } from "../../utils/getLeaveTypeFromId";
 import useDebounce from "../../utils/useDebounce";
 import ModalCust from "../modal/ModalCust";
+import SearchIcon from "@mui/icons-material/Search";
 
 const UsersAppliedLeave = ({ color }) => {
   const dispatch = useDispatch();
@@ -44,11 +44,9 @@ const UsersAppliedLeave = ({ color }) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [filtered, setFilteredData] = useState();
   const [loading, setLoading] = useState(false);
-  const [searchloading, setSearchLoading] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
-  const [formatedSearchDataOptions, setFormatedSearchDataOptions] = useState(
-    []
-  );
+  const [selectedSearchOption, setSelectedSearchOption] = useState();
+
   const [hasMore, setHasMore] = useState(true);
   const tableRef = useRef(null);
   const [filterData, setFilterData] = useState({
@@ -58,6 +56,7 @@ const UsersAppliedLeave = ({ color }) => {
   });
 
   const debouncedValue = useDebounce(filterData.searchName);
+
 
   useEffect(() => {
     dispatch(masterDataAction());
@@ -96,31 +95,27 @@ const UsersAppliedLeave = ({ color }) => {
   const iconColor = color ? "#FFFFFF" : "#008080";
 
   const handleInputChange = (data) => {
-    console.log("allEmployeesSearchData", searchAPIData);
-    dispatch(
-      getAllLeaveRequestsOfEmployeesAction(
-        15,
-        filterData,
-        null,
-        searchAPIData.employee
-      )
-    );
+    setSelectedSearchOption(data);
+    dispatch(getAllLeaveRequestsOfEmployeesAction(15, filterData, null, data));
     setSelectedOptions(data);
   };
-
-  useEffect(() => {
-    const formatedSearchApiData = searchAPIData?.employee?.map((item) => ({
-      label: item.name,
-      value: item.id,
-    }));
-    setFormatedSearchDataOptions(formatedSearchApiData);
-  }, [searchAPIData]);
 
   useEffect(() => {
     dispatch(
       getAllLeaveRequestsOfEmployeesAction(15, debouncedValue, "searchFilter")
     );
   }, [debouncedValue, dispatch]);
+  useEffect(() => {
+    dispatch(
+      getAllLeaveRequestsOfEmployeesAction(
+        15,
+        filterData,
+        null,
+        selectedOptions
+      )
+    );
+  }, [filterData]);
+
 
   const onChangeHandler = (newValue, name) => {
     setFilterData((prev) => ({
@@ -148,7 +143,9 @@ const UsersAppliedLeave = ({ color }) => {
     dispatch(
       getAllLeaveRequestsOfEmployeesAction(
         allemployeesleavesData?.numberOfElements + 15,
-        filterData
+        filterData,
+        null,
+        selectedSearchOption
       )
     );
     setLoading(false);
@@ -167,6 +164,32 @@ const UsersAppliedLeave = ({ color }) => {
       fetchMoreData();
       setLoading(true);
     }
+  };
+
+  const CustomSelectControl = (props) => (
+    <components.Control {...props}>
+      <div
+        style={{
+          display: "flex",
+
+          alignItems: "center",
+          width: "100%",
+        }}
+      >
+        <SearchIcon sx={{ marginLeft: "10px" }} />
+        {props.children}
+      </div>
+    </components.Control>
+  );
+
+  const selectProps = {
+    isMulti: true,
+    // ... other props
+
+    components: {
+      Control: CustomSelectControl,
+      // Other custom components if needed
+    },
   };
 
   return (
@@ -192,44 +215,39 @@ const UsersAppliedLeave = ({ color }) => {
             All Employees Leave Request
           </Typography>
         </Box>
-        <Grid
-          container
-          spacing={2}
-          justifyContent="center"
+
+        <Box
+          display={"flex"}
           alignItems="center"
-          pt={1}
+          justifyContent={"center"}
+          gap={"30px"}
         >
-          <Grid item xs={6} sm={4} md={4} lg={4}>
-            {/* <TextField
-              name="searchName"
-              onChange={(events) => handleInputChange(events)}
-              placeholder="Search by name, leave type"
-              variant="outlined"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon color="action" />
-                  </InputAdornment>
-                ),
-                sx: {
-                  width: "300px",
-                  marginTop: "20px",
-                  borderRadius: "50px",
-                },
-              }}
-            /> */}
+          <Box>
             <Select
-              isMulti
+              styles={{
+                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                control: (baseStyles) => ({
+                  ...baseStyles,
+                  borderRadius: "50px",
+                  height: "50px",
+                  maxWidth: "800px",
+                  width: "400px",
+                }),
+              }}
+              menuPortalTarget={document.body}
               value={selectedOptions}
               onChange={handleInputChange}
+              getOptionValue={(option) => option.id}
+              getOptionLabel={(option) => option.name}
               onInputChange={(value) =>
                 setFilterData({ ...filterData, searchName: value })
               }
-              options={formatedSearchDataOptions}
+              options={searchAPIData?.result}
               isLoading={searchAPIData?.length === 0}
+              {...selectProps}
             />
-          </Grid>
-          <Grid item xs={3} sm={4} md={4} lg={3} align="center">
+          </Box>
+          <Box>
             <Typography variant="body1" align="center" fontWeight="bold">
               From
             </Typography>
@@ -242,8 +260,8 @@ const UsersAppliedLeave = ({ color }) => {
                 renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>
-          </Grid>
-          <Grid item xs={3} sm={4} md={4} lg={3} align="center">
+          </Box>
+          <Box>
             <Typography variant="body1" align="center" fontWeight="bold">
               To
             </Typography>
@@ -256,8 +274,9 @@ const UsersAppliedLeave = ({ color }) => {
                 renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
+
         <Box
           sx={{
             marginTop: "20px",
@@ -266,8 +285,7 @@ const UsersAppliedLeave = ({ color }) => {
           }}
         >
           <TableContainer
-            sx={{ maxHeight: 350 ,  overflowY: "auto",}}
-            
+            sx={{ maxHeight: 350, overflowY: "auto" }}
             onScroll={handleScroll}
             ref={tableRef}
           >
@@ -326,29 +344,25 @@ const UsersAppliedLeave = ({ color }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {searchloading ? (
-                  <h1>loading...</h1>
-                ) : (
-                  filtered?.map((row, index) => (
-                    <TableRow key={index}>
-                      <TableCell sx={{ textAlign: "center" }}>
-                        {row.name}
-                      </TableCell>
-                      <TableCell sx={{ textAlign: "center" }}>
-                        {row.date}
-                      </TableCell>
-                      <TableCell sx={{ textAlign: "center" }}>
-                        {row.days}
-                      </TableCell>
-                      <TableCell sx={{ textAlign: "center" }}>
-                        {row.type}
-                      </TableCell>
-                      <TableCell sx={{ textAlign: "center" }}>
-                        {row.status}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
+                {filtered?.map((row, index) => (
+                  <TableRow key={index}>
+                    <TableCell sx={{ textAlign: "center" }}>
+                      {row.name}
+                    </TableCell>
+                    <TableCell sx={{ textAlign: "center" }}>
+                      {row.date}
+                    </TableCell>
+                    <TableCell sx={{ textAlign: "center" }}>
+                      {row.days}
+                    </TableCell>
+                    <TableCell sx={{ textAlign: "center" }}>
+                      {row.type}
+                    </TableCell>
+                    <TableCell sx={{ textAlign: "center" }}>
+                      {row.status}
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
             <Box
