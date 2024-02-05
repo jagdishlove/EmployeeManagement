@@ -9,13 +9,12 @@ const VerticalBarGraph = ({ value, color, border }) => {
   // Ensure the value for the progress bar does not exceed the maximum
   const scaledValue = value > maxValue ? 100 : (value / maxValue) * 100;
 
+  const formattedTime = (value) => {
+    return `Hours ${value}`;
+  };
+
   return (
-    <Tooltip
-      title={`Hours: ${Math.floor(value)}:${String(
-        Math.round((value % 1) * 60)
-      ).padStart(2, "0")}`}
-      placement="top"
-    >
+    <Tooltip title={formattedTime(value)} placement="top">
       <Container
         maxWidth={false}
         disableGutters
