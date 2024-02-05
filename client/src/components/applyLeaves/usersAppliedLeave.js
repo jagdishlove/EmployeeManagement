@@ -164,30 +164,24 @@ const UsersAppliedLeave = ({ color }) => {
     }
   };
 
-  const CustomSelectControl = (props) => (
-    <components.Control {...props}>
-      <div
-        style={{
-          display: "flex",
+  const ValueContainer = ({ children, ...props }) => {
+    return (
+      components.MultiValueContainer && (
+        <components.ValueContainer {...props}>
+          <div
+            style={{
+              display: "flex",
 
-          alignItems: "center",
-          width: "100%",
-        }}
-      >
-        <SearchIcon sx={{ marginLeft: "10px" }} />
-        {props.children}
-      </div>
-    </components.Control>
-  );
-
-  const selectProps = {
-    isMulti: true,
-    // ... other props
-
-    components: {
-      Control: CustomSelectControl,
-      // Other custom components if needed
-    },
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            <SearchIcon sx={{ marginLeft: "5px" }} />
+            {children}
+          </div>
+        </components.ValueContainer>
+      )
+    );
   };
 
   return (
@@ -222,6 +216,7 @@ const UsersAppliedLeave = ({ color }) => {
         >
           <Box>
             <Select
+              isMulti
               styles={{
                 menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                 control: (baseStyles) => ({
@@ -232,17 +227,15 @@ const UsersAppliedLeave = ({ color }) => {
                   width: "400px",
                 }),
               }}
+              isSearchable={true}
               menuPortalTarget={document.body}
               value={selectedOptions}
+              components={{ ValueContainer }}
               onChange={handleInputChange}
               getOptionValue={(option) => option.id}
               getOptionLabel={(option) => option.name}
-              onInputChange={(value) =>
-                setFilterData({ ...filterData, searchName: value })
-              }
               options={searchAPIData?.result}
               isLoading={searchAPIData?.length === 0}
-              {...selectProps}
             />
           </Box>
           <Box>
