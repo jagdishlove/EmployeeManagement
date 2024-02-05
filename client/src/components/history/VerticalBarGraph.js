@@ -10,7 +10,9 @@ const VerticalBarGraph = ({ value, color, border }) => {
   const scaledValue = value > maxValue ? 100 : (value / maxValue) * 100;
 
   const formattedTime = (value) => {
-    return `Hours ${value}`;
+    const hour = value?.toString().split(".")[0];
+    const minutes = Number(value)?.toFixed(2).split(".")[1];
+    return `Hour ${hour}:${minutes}`;
   };
 
   return (
