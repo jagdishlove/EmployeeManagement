@@ -302,7 +302,7 @@ export const deleteLeave = (leaveRequestId) => {
 };
 
 export const getAllLeaveRequestsOfEmployeesAction = (
-  counter = 15,
+  counter = 10,
   data,
   type,
   payload

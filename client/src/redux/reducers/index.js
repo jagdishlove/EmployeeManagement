@@ -9,6 +9,7 @@ import LeavesReducer from "./leavesReducer";
 import ApprovalLeavesReducer from "./approvalLeavesReducer";
 import leaveHistoryReducer from "./leaveHiistoryReducer";
 import usersReducer from "./usersReducer";
+import projectsReducer from "./projectsReducer";
 
 const rootReducer = combineReducers({
   forgotPassword: forgotPasswordReducer,
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
   approvalLeavesData : ApprovalLeavesReducer,
   leaveHistoryData:leaveHistoryReducer,
   userDetails: usersReducer,
+  projectDetails:projectsReducer,
 });
 
 export default rootReducer;

@@ -1,4 +1,5 @@
 import InfoIcon from "@mui/icons-material/Info";
+import SearchIcon from "@mui/icons-material/Search";
 import {
   Box,
   CircularProgress,
@@ -23,7 +24,6 @@ import { masterDataAction } from "../../redux/actions/masterData/masterDataActio
 import { getLeaveType } from "../../utils/getLeaveTypeFromId";
 import useDebounce from "../../utils/useDebounce";
 import ModalCust from "../modal/ModalCust";
-import SearchIcon from "@mui/icons-material/Search";
 
 const UsersAppliedLeave = ({ color }) => {
   const dispatch = useDispatch();
@@ -56,7 +56,6 @@ const UsersAppliedLeave = ({ color }) => {
   });
 
   const debouncedValue = useDebounce(filterData.searchName);
-
 
   useEffect(() => {
     dispatch(masterDataAction());
@@ -116,7 +115,6 @@ const UsersAppliedLeave = ({ color }) => {
     );
   }, [filterData]);
 
-
   const onChangeHandler = (newValue, name) => {
     setFilterData((prev) => ({
       ...prev,
@@ -135,7 +133,7 @@ const UsersAppliedLeave = ({ color }) => {
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: "80%",
-    height: "auto",
+    height: "95vh",
     border: "5px solid #008080",
   };
 
@@ -285,7 +283,7 @@ const UsersAppliedLeave = ({ color }) => {
           }}
         >
           <TableContainer
-            sx={{ maxHeight: 350, overflowY: "auto" }}
+            sx={{ maxHeight: "calc(92vh - 200px)", overflowY: "auto" }}
             onScroll={handleScroll}
             ref={tableRef}
           >

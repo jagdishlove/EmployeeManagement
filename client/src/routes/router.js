@@ -12,10 +12,10 @@ import ErrorPage from "../pages/error/errorPage";
 import History from "../pages/records/records";
 import Timesheet from "../pages/timesheet/timesheet";
 import LeavePage from "../components/applyLeaves/LeavePage";
-import User from "../components/AdminPages/usersPage/userPage";
-import ProjectPage from "../components/AdminPages/projectsPage/projectPage";
-import CreateUser from "../components/AdminPages/usersPage/CreateUser";
-import UserDetailsPage from "../components/AdminPages/usersPage/userDetailsPage";
+import User from "../components/AdminConsole/usersPage/userPage";
+import ProjectPage from "../components/AdminConsole/projectsPage/projectPage";
+import CreateUser from "../components/AdminConsole/usersPage/CreateUser";
+import UserDetailsPage from "../components/AdminConsole/usersPage/userDetailsPage";
 
 const Router = () => {
   const isAuthenticated = useSelector(
