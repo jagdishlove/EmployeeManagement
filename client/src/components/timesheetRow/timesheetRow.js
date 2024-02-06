@@ -72,7 +72,6 @@ const TimesheetRow = ({
   const [managerStatusData, setManagerStatusData] = useState(null);
   const [loading, setLoading] = useState(false);
 
-
   const isSuccessSaveTimesheet = useSelector(
     (state) => state?.nonPersist?.timesheetData.isSuccess
   );
@@ -160,7 +159,6 @@ const TimesheetRow = ({
   const handleEditClick = () => {
     editButtonHandler(id);
     setDisabledWhileEditing(true);
-
   };
 
   const getProjectName = (value) => {
@@ -346,8 +344,6 @@ const TimesheetRow = ({
       );
 
       setDisabledWhileEditing(false);
-    } else {
-
     }
   };
 
