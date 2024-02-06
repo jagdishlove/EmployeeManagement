@@ -164,23 +164,14 @@ const UsersAppliedLeave = ({ color }) => {
     }
   };
 
-  const ValueContainer = ({ children, ...props }) => {
+  const CustomSelectControl = (props) => {
     return (
-      components.MultiValueContainer && (
-        <components.ValueContainer {...props}>
-          <div
-            style={{
-              display: "flex",
-
-              alignItems: "center",
-              width: "100%",
-            }}
-          >
-            <SearchIcon sx={{ marginLeft: "5px" }} />
-            {children}
-          </div>
-        </components.ValueContainer>
-      )
+      <components.Control {...props}>
+        <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
+          <SearchIcon sx={{ marginLeft: "10px" }} />
+          {props.children}
+        </div>
+      </components.Control>
     );
   };
 
@@ -210,7 +201,7 @@ const UsersAppliedLeave = ({ color }) => {
 
         <Box
           display={"flex"}
-          alignItems="center"
+          alignItems="flex-end"
           justifyContent={"center"}
           gap={"30px"}
         >
@@ -221,8 +212,8 @@ const UsersAppliedLeave = ({ color }) => {
                 menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                 control: (baseStyles) => ({
                   ...baseStyles,
-                  borderRadius: "50px",
-                  height: "50px",
+                  borderRadius: "20px",
+                  height: "55px",
                   maxWidth: "800px",
                   width: "400px",
                 }),
@@ -230,7 +221,7 @@ const UsersAppliedLeave = ({ color }) => {
               isSearchable={true}
               menuPortalTarget={document.body}
               value={selectedOptions}
-              components={{ ValueContainer }}
+              components={{ Control: CustomSelectControl }}
               onChange={handleInputChange}
               getOptionValue={(option) => option.id}
               getOptionLabel={(option) => option.name}
