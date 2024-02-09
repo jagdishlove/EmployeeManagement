@@ -6,16 +6,18 @@ import CreateNewPassword from "../pages/createNewPassword/createNewPassword";
 import ForgotPassword from "../pages/forgotPassword/forgotPassword";
 
 import { useSelector } from "react-redux";
+import MasterDataPage from "../components/AdminConsole/masterDataPage/masterDataPage";
+import ProjectPage from "../components/AdminConsole/projectsPage/projectPage";
+import CreateUser from "../components/AdminConsole/usersPage/CreateUser";
+import UserDetailsPage from "../components/AdminConsole/usersPage/userDetailsPage";
+import User from "../components/AdminConsole/usersPage/userPage";
+import LeavePage from "../components/applyLeaves/LeavePage";
 import ConditionalSidebar from "../components/bottomNavigation/conditionalSidebar";
 import Dashboard from "../pages/dashboard/dashboard";
 import ErrorPage from "../pages/error/errorPage";
 import History from "../pages/records/records";
 import Timesheet from "../pages/timesheet/timesheet";
-import LeavePage from "../components/applyLeaves/LeavePage";
-import User from "../components/AdminConsole/usersPage/userPage";
-import ProjectPage from "../components/AdminConsole/projectsPage/projectPage";
-import CreateUser from "../components/AdminConsole/usersPage/CreateUser";
-import UserDetailsPage from "../components/AdminConsole/usersPage/userDetailsPage";
+import CreateProject from "../components/AdminConsole/projectsPage/createProject";
 
 const Router = () => {
   const isAuthenticated = useSelector(
@@ -99,7 +101,7 @@ const Router = () => {
         element={
           isAuthenticated ? (
             <ConditionalSidebar>
-              <User/>
+              <User />
             </ConditionalSidebar>
           ) : (
             <>
@@ -114,7 +116,7 @@ const Router = () => {
         element={
           isAuthenticated ? (
             <ConditionalSidebar>
-              <CreateUser/>
+              <CreateUser />
             </ConditionalSidebar>
           ) : (
             <>
@@ -125,11 +127,11 @@ const Router = () => {
         }
       />
       <Route
-        path="/userDetailPage"
+        path="/userDetailPage/:id"
         element={
           isAuthenticated ? (
             <ConditionalSidebar>
-              <UserDetailsPage/>
+              <UserDetailsPage />
             </ConditionalSidebar>
           ) : (
             <>
@@ -144,7 +146,7 @@ const Router = () => {
         element={
           isAuthenticated ? (
             <ConditionalSidebar>
-              <ProjectPage/>
+              <ProjectPage />
             </ConditionalSidebar>
           ) : (
             <>
@@ -154,11 +156,40 @@ const Router = () => {
           )
         }
       />
-
+        <Route
+        path="/projectForm"
+        element={
+          isAuthenticated ? (
+            <ConditionalSidebar>
+              <CreateProject />
+            </ConditionalSidebar>
+          ) : (
+            <>
+              <Navigate to="/" />
+              <Login />
+            </>
+          )
+        }
+      />
+      
+      <Route
+        path="/masterData"
+        element={
+          isAuthenticated ? (
+            <ConditionalSidebar>
+              <MasterDataPage />
+            </ConditionalSidebar>
+          ) : (
+            <>
+              <Navigate to="/" />
+              <Login />
+            </>
+          )
+        }
+      />
       <Route path="/*" element={<ErrorPage />} />
     </Routes>
   );
 };
 
 export default Router;
-

@@ -21,7 +21,6 @@ import kairos_logo from "../../assets/kairos_logo.png";
 import HolidayVillageIcon from '@mui/icons-material/HolidayVillage';
 import Header from "../header/header";
 import { SidebarStyle } from "./sidebarStyle";
-// import useMobileScreen from "../../customHooks/useMobileScreen";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
@@ -282,7 +281,7 @@ const Sidebar = ({ children }) => {
           ))}
           {(superAdmin || admin)  && (
             <ListItem
-              key="Admin Menu"
+              key="Admin Console"
               disablePadding
               sx={{ display: "block" }}
             >
@@ -311,7 +310,7 @@ const Sidebar = ({ children }) => {
                       fontWeight="bold"
                       sx={style.sidebarItem}
                     >
-                      Admin Menu
+                      Admin Console
                     </Typography>
                   }
                   sx={{ opacity: open ? 1 : 0 }}
@@ -325,6 +324,7 @@ const Sidebar = ({ children }) => {
               { text: "Users", url: "/users" },
               { text: "Timesheet", url: "/timesheet"},
               { text: "Leaves", url: "/leaves"},
+              { text: "MasterData", url: "/masterData"},
             ].map((item) => (
               <ListItem key={item.text} disablePadding sx={{ display: "block" }}>
                 <Link

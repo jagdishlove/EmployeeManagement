@@ -1,4 +1,4 @@
-// import { toast } from "react-toastify";
+
 import { toast } from "react-toastify";
 import makeRequest, { addRequest } from "../../../api/api";
 import { errorMessage } from "../errors/errorsAction";
@@ -308,7 +308,7 @@ export const getAllLeaveRequestsOfEmployeesAction = (
   payload
 ) => {
   return async (dispatch) => {
-    console.log("this is dataaa", data);
+    
     const { fromDate, toDate } = data;
     try {
       dispatch(getAllLeaveRequestsOfEmployeesRequest());

@@ -55,7 +55,7 @@ const HistoryCalendar = ({
           const propertyName = legendItem.name.toLowerCase();
           const valueInHours = Math.floor(legendItem.value / 60); // Whole hours
           const remainderMinutes = legendItem.value % 60; // Remaining minutes
-          newObj[propertyName] = `${String(valueInHours)}.${String(
+          newObj[propertyName] = `${valueInHours}.${String(
             remainderMinutes
           ).padStart(2, "0")}`;
         });
@@ -70,7 +70,6 @@ const HistoryCalendar = ({
   };
 
   const eventRenderer = ({ event }) => {
-    console.log("getData", getDataType(event.type));
     const DATETYPES = [
       "LEAVE",
       "SICKLEAVE",

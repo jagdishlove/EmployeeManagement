@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import makeRequest from "../../../api/api";
 import { errorMessage } from "../errors/errorsAction";
 import { getRefreshToken } from "../login/loginAction";
@@ -25,7 +26,6 @@ const masterDataFail = () => {
     type: MASTER_DATA_FAIL,
   };
 };
-
 export const masterDataAction = () => {
   return async (dispatch) => {
     try {
@@ -45,3 +45,42 @@ export const masterDataAction = () => {
     }
   };
 };
+
+
+export const CreateSkillData = (data) => {
+  return async () => {
+    try{
+        await  makeRequest(
+          "POST",
+          "api/skill/create",
+          data
+        );
+      toast.success("Skill Is been added  ", {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    } catch (err){
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  }
+}
+
+export const CreateBandlData = (data) => {
+  return async () => {
+    try{
+        await  makeRequest(
+          "POST",
+          "api/band/create",
+          data
+        );
+      toast.success("band Is been added  ", {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    } catch (err){
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  }
+}

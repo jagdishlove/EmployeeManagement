@@ -12,7 +12,7 @@ export default function CreateUser() {
     const style = TimesheetStyle(theme);
 
 
-    // const MyForm = () => {
+    
     const [address, setAddress] = useState('');
     const [state, setState] = useState('');
     const [country, setCountry] = useState('');
@@ -50,7 +50,6 @@ export default function CreateUser() {
     const masterdata = useSelector(
         (state) => state.persistData.masterData?.skill
     );
-    console.log("Master Data", masterdata)
     const masterdata1 = useSelector(
         (state) => state.persistData.masterData?.gender
     );
@@ -63,7 +62,6 @@ export default function CreateUser() {
     const masterdata4 = useSelector(
         (state) => state.persistData.masterData?.manager
     );
-    console.log("Master Data 3", masterdata3);
 
 
     const [validationErrors, setValidationErrors] = useState({});
@@ -519,11 +517,7 @@ export default function CreateUser() {
                     /><br />
                     <p>Selected City: {city}</p>
                 </div>
-                {/* </div> */}
-
-
-
-                {/* <div style={{margin:'20px'}}> */}
+               
                 <Typography variant="h6" onClick={() => handleBackClick()}>
                     <b> Professional Data </b>
                 </Typography>

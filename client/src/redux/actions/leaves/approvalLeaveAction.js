@@ -19,7 +19,7 @@ import {
   DOWNLOAD_FILE_SUCCESS,
   DOWNLOAD_FILE_FAIL,
 } from "./approvalLeaveActionType";
-// import { saveAs } from "file-saver";
+
 
 const getApprovalLeaveDatesRequest = () => {
   return {
@@ -198,7 +198,7 @@ export const downloadFileAction = (file, fileName) => {
     try {
       dispatch(downloadFileRequest());
       const response = await downloadApi("GET", `${file}`);
-      console.log("Response:", response);
+    
 
       const url = window.URL.createObjectURL(new Blob([response]));
       const link = document.createElement("a");

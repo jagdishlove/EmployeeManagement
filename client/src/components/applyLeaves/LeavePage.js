@@ -59,7 +59,7 @@ const LeavePage = () => {
   const [showModal, setShowModal] = useState(false);
 
   const [saveSubmitStatus, setSaveSubmitStatus] = useState(false);
-
+  console.log(saveSubmitStatus);
 
   const dispatch = useDispatch();
 
@@ -100,7 +100,7 @@ const LeavePage = () => {
       return foundLeave.leaveMasterId;
     } else {
       // Handle the case when leave type is not found
-
+      console.error(`Leave type "${leaveType}" not found`);
       return null; // or any default value
     }
   };
@@ -175,7 +175,6 @@ const LeavePage = () => {
       }));
     }
   };
-
 
   useEffect(() => {
     if (
