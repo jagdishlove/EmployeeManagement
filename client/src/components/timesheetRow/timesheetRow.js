@@ -71,7 +71,6 @@ const TimesheetRow = ({
   const [updatedActivityameList, setUpdatedActivityNameList] = useState([]);
   const [managerStatusData, setManagerStatusData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [editDataDisabled, setEditDataDisabled] = useState(disabled);
 
   const isSuccessSaveTimesheet = useSelector(
     (state) => state?.nonPersist?.timesheetData.isSuccess
@@ -160,7 +159,6 @@ const TimesheetRow = ({
   const handleEditClick = () => {
     editButtonHandler(id);
     setDisabledWhileEditing(true);
-    setEditDataDisabled(false);
   };
 
   const getProjectName = (value) => {
@@ -344,10 +342,8 @@ const TimesheetRow = ({
       dispatch(
         updateTimeSheetEntryAction(payload, formatDateForApi(selectedDate))
       );
-      setEditDataDisabled(true);
+
       setDisabledWhileEditing(false);
-    } else {
-      setEditDataDisabled(false);
     }
   };
 
@@ -484,10 +480,15 @@ const TimesheetRow = ({
     padding: "8px", // Adjust padding as needed
   };
   return (
-      <Box sx={{
+    <Box
+      sx={{
         ...style.timesheetEntryUI,
-        border: data?.dayType === "HOLIDAY" || data?.dayType === "WEEKEND" ? "2px solid #800000" : "2px solid #008080",
-      }}>
+        border:
+          data?.dayType === "HOLIDAY" || data?.dayType === "WEEKEND"
+            ? "2px solid #800000"
+            : "2px solid #008080",
+      }}
+    >
       {approval && data ? (
         <div
           style={{
@@ -529,8 +530,7 @@ const TimesheetRow = ({
             }}
           >
             {`${data?.timesheet?.timesheetId.date || null} 
-                ${data?.dayType || ''
-              }`}
+                ${data?.dayType || ""}`}
           </Typography>
         </div>
       ) : null}
@@ -559,7 +559,7 @@ const TimesheetRow = ({
                     : selectedValues.fromTime
                 }
                 onChangeHandler={(e) => onChangeTimeHandler(e, "fromTime")}
-                disabled={editDataDisabled || approval || isHistory}
+                disabled={disabled || approval || isHistory}
               />
             </DemoItem>
             <DemoItem>
@@ -570,7 +570,7 @@ const TimesheetRow = ({
                   selectedValues.toTime === "" ? null : selectedValues.toTime
                 }
                 onChangeHandler={(e) => onChangeTimeHandler(e, "toTime")}
-                disabled={editDataDisabled || approval}
+                disabled={disabled || approval}
               />
             </DemoItem>
           </Grid>
@@ -597,7 +597,7 @@ const TimesheetRow = ({
                   border: "1px solid #8897ad87",
                   borderRadius: "10px",
                 }}
-                disabled={editDataDisabled || approval}
+                disabled={disabled || approval}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={6} lg={6}>
@@ -612,7 +612,7 @@ const TimesheetRow = ({
                   border: "1px solid #8897ad87",
                   borderRadius: "10px",
                 }}
-                disabled={editDataDisabled || approval}
+                disabled={disabled || approval}
               />
             </Grid>
             <Grid item xs={12} sm={12} md={12} lg={12}>
@@ -627,7 +627,7 @@ const TimesheetRow = ({
                   border: "1px solid #8897ad87",
                   borderRadius: "10px",
                 }}
-                disabled={editDataDisabled || approval}
+                disabled={disabled || approval}
               />
             </Grid>
           </Grid>
@@ -653,7 +653,7 @@ const TimesheetRow = ({
                 sx={style.TimesheetTextField1}
                 inputProps={{ maxLength: 250 }}
                 onChange={(e) => onChangeHandler(e, "comments")}
-                disabled={editDataDisabled || approval || disableSubmit}
+                disabled={disabled || approval || disableSubmit}
               />
             </Grid>
           ) : null}
@@ -676,7 +676,21 @@ const TimesheetRow = ({
                   inputProps={{ maxLength: 250 }}
                   onChange={(e) => onChangeHandler(e, "adminComment")}
                   disabled={!approval}
-                  InputLabelProps={approval ? { shrink: true, htmlFor: "manager-comments", style: { backgroundColor: data?.dayType === "HOLIDAY" || data?.dayType === "WEEKEND" ? '#800000' : "#008080" } }  : {}}
+                  InputLabelProps={
+                    approval
+                      ? {
+                          shrink: true,
+                          htmlFor: "manager-comments",
+                          style: {
+                            backgroundColor:
+                              data?.dayType === "HOLIDAY" ||
+                              data?.dayType === "WEEKEND"
+                                ? "#800000"
+                                : "#008080",
+                          },
+                        }
+                      : {}
+                  }
                 />
               </Grid>
             ) : (
@@ -690,7 +704,7 @@ const TimesheetRow = ({
                 sx={style.TimesheetTextField1}
                 inputProps={{ maxLength: 250 }}
                 onChange={(e) => onChangeHandler(e, "comments")}
-                disabled={editDataDisabled}
+                disabled={disabled}
               />
             )}
 
@@ -877,14 +891,17 @@ const TimesheetRow = ({
               {data ? (
                 <IconButton
                   disabled={
-                    ["SUBMITTED", "APPROVED"].includes(data.status) || isHistory
+                    ["SUBMITTED", "APPROVED"].includes(data.status) ||
+                    isHistory ||
+                    !disabled
                   }
                   onClick={() => handleEditClick()}
                 >
                   <ModeEditOutlineOutlinedIcon
                     sx={
                       ["SUBMITTED", "APPROVED"].includes(data.status) ||
-                      isHistory
+                      isHistory ||
+                      !disabled
                         ? style.IconStyleDisable
                         : style.IconStyle
                     }
@@ -927,15 +944,11 @@ const TimesheetRow = ({
 
               {data ? (
                 <IconButton
-                  disabled={editDataDisabled}
+                  disabled={disabled}
                   onClick={() => handleEditData(id)}
                 >
                   <SaveOutlinedIcon
-                    sx={
-                      editDataDisabled
-                        ? style.IconStyleDisable
-                        : style.IconStyle
-                    }
+                    sx={disabled ? style.IconStyleDisable : style.IconStyle}
                   />
                 </IconButton>
               ) : (
@@ -968,6 +981,21 @@ const TimesheetRow = ({
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12} sx={style.timesheetCol4}>
           <span style={{ color: "red" }}>{timeError}</span>
+          {data && timeError && (
+            <span style={{ color: "red" }}>
+              Please edit again data is not saved or{" "}
+              <span
+                style={{ color: "blue", cursor: "pointer", fontWeight: "bold" }}
+                onClick={() => {
+                  setSelectedValues(editedSelectedValues);
+                  setTimeError();
+                  setDisabledWhileEditing(false);
+                }}
+              >
+                reset
+              </span>
+            </span>
+          )}
         </Grid>
         {approval && (
           <>
