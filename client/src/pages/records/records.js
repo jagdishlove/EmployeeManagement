@@ -12,7 +12,6 @@ import "./Records.css";
 import { useDispatch } from "react-redux";
 import { historyDataActionCreator } from "../../redux/actions/historyData/historyDataAction";
 
-// import Rechart from "../../components/history/Consistency Meter/reChart";
 
 const Records = () => {
   const [showHistoryTimesheet, setShowHistoryTimesheet] = useState(false);

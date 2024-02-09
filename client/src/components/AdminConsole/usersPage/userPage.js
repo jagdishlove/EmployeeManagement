@@ -3,7 +3,7 @@ import { Box, Grid, Typography } from '@mui/material';
 import UserHerders from './userHeaders';
 import UserListPage from './userListPage';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllUsers } from '../../../redux/actions/users/usersAction';
+import { getAllUsers } from '../../../redux/actions/AdminConsoleAction/users/usersAction';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 export default function User() {
@@ -26,7 +26,6 @@ export default function User() {
 
   const fetchMore = () => {
     // Fetch more data only if there is more data available
-    // dispatch(getLeaveRequestData(payload));
     const nextPage = 10 * pageCounter;
     const nextPagePayload = {
       size: nextPage,

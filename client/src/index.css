@@ -129,6 +129,11 @@ input::-webkit-inner-spin-button {
   border-radius: 10px !important;
 }
 
+.css-z7uhs0-MuiStepConnector-line {
+
+  margin-top: 8px;
+}
+
 @media (max-width: 375px) {
   .your-div {
     height:12vh !important;
