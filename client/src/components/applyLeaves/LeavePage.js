@@ -58,12 +58,9 @@ const LeavePage = () => {
   const [leaveBalance, setLeaveBalance] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-<<<<<<< Updated upstream
-  const [saveSubmitStatus, setSaveSubmitStatus] = useState(false);
-  console.log(saveSubmitStatus);
-=======
+
   // const [saveSubmitStatus, setSaveSubmitStatus] = useState(false);
->>>>>>> Stashed changes
+
 
   const dispatch = useDispatch();
 
