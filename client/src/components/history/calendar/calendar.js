@@ -55,7 +55,7 @@ const HistoryCalendar = ({
           const propertyName = legendItem.name.toLowerCase();
           const valueInHours = Math.floor(legendItem.value / 60); // Whole hours
           const remainderMinutes = legendItem.value % 60; // Remaining minutes
-          newObj[propertyName] = `${valueInHours}.${String(
+          newObj[propertyName] = `${String(valueInHours)}.${String(
             remainderMinutes
           ).padStart(2, "0")}`;
         });

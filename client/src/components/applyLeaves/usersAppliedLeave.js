@@ -227,6 +227,7 @@ const UsersAppliedLeave = ({ color }) => {
               getOptionLabel={(option) => option.name}
               options={searchAPIData?.result}
               isLoading={searchAPIData?.length === 0}
+              placeholder="Search by Name or Leave Type"
             />
           </Box>
           <Box>

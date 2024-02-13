@@ -7,7 +7,9 @@ import ForgotPassword from "../pages/forgotPassword/forgotPassword";
 
 import { useSelector } from "react-redux";
 import MasterDataPage from "../components/AdminConsole/masterDataPage/masterDataPage";
+import CreateProjectStepperOne from "../components/AdminConsole/projectsPage/createProjectStepper/createProjectStepperOne";
 import ProjectPage from "../components/AdminConsole/projectsPage/projectPage";
+import ResourceAllocationStepperTwo from "../components/AdminConsole/projectsPage/createProjectStepper/resourceAllocationStepperTwo";
 import CreateUser from "../components/AdminConsole/usersPage/CreateUser";
 import UserDetailsPage from "../components/AdminConsole/usersPage/userDetailsPage";
 import User from "../components/AdminConsole/usersPage/userPage";
@@ -17,7 +19,7 @@ import Dashboard from "../pages/dashboard/dashboard";
 import ErrorPage from "../pages/error/errorPage";
 import History from "../pages/records/records";
 import Timesheet from "../pages/timesheet/timesheet";
-import CreateProject from "../components/AdminConsole/projectsPage/createProject";
+import CostAllocationStepperFinal from "../components/AdminConsole/projectsPage/createProjectStepper/costAllocationStepperFinal";
 
 const Router = () => {
   const isAuthenticated = useSelector(
@@ -156,12 +158,12 @@ const Router = () => {
           )
         }
       />
-        <Route
+      <Route
         path="/projectForm"
         element={
           isAuthenticated ? (
             <ConditionalSidebar>
-              <CreateProject />
+              <CreateProjectStepperOne />
             </ConditionalSidebar>
           ) : (
             <>
@@ -171,7 +173,38 @@ const Router = () => {
           )
         }
       />
-      
+      <Route
+        path="/resourceallocation"
+        element={
+          isAuthenticated ? (
+            <ConditionalSidebar>
+              <ResourceAllocationStepperTwo />
+            </ConditionalSidebar>
+          ) : (
+            <>
+              <Navigate to="/" />
+              <Login />
+            </>
+          )
+        }
+      />
+
+<Route
+        path="/costallocation"
+        element={
+          isAuthenticated ? (
+            <ConditionalSidebar>
+              <CostAllocationStepperFinal />
+            </ConditionalSidebar>
+          ) : (
+            <>
+              <Navigate to="/" />
+              <Login />
+            </>
+          )
+        }
+      />
+
       <Route
         path="/masterData"
         element={

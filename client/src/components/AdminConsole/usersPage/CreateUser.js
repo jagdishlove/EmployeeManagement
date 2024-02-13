@@ -1,55 +1,157 @@
 import React, { useState, useEffect } from 'react';
-import { IconButton, Button, Typography, Grid, Box, TextField, Autocomplete } from '@mui/material';
+import { Autocomplete, Box, Button, Grid, IconButton, TextField, Typography, RadioGroup, FormControl, FormControlLabel, Radio, Avatar } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
+import AccountCircleTwoToneIcon from '@mui/icons-material/AccountCircleTwoTone';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Dropdown from '../../forms/dropdown/dropdown';
 import { useTheme } from "@mui/material/styles";
 import { TimesheetStyle } from "../../../pages/timesheet/timesheetStyle";
+import { postcodeValidator } from 'postcode-validator';
 import { useSelector } from 'react-redux';
-
+import { Country, State, City } from 'country-state-city';
 export default function CreateUser() {
     const theme = useTheme();
     const style = TimesheetStyle(theme);
 
 
-    
-    const [address, setAddress] = useState('');
-    const [state, setState] = useState('');
-    const [country, setCountry] = useState('');
-    const [city, setCity] = useState('');
-    const [zip, setZip] = useState('');
+    const [countryvalue, setCountryValue] = useState('')
+    const [isSameAsPermanent, setIsSameAsPermanent] = useState(false);
+    const [selectedImage, setSelectedImage] = useState('');
+
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                setSelectedImage(e.target.result);
+            };
+
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleButtonClick = () => {
+        // Trigger click on the hidden input element
+        document.getElementById('uploadInput').click();
+    };
+
+    const [permanentAddress, setPermanentAddress] = useState({
+        address: '',
+        country: '',
+        state: '',
+        city: '',
+        zip: '',
+    });
+
+    const [currentAddress, setCurrentAddress] = useState({
+        address: '',
+        country: '',
+        state: '',
+        city: '',
+        zip: '',
+    });
+
+
+    const handleCheckboxChange = () => {
+        setIsSameAsPermanent((prev) => !prev);
+        if (!isSameAsPermanent) {
+            // Copy values from Permanent Address to Current Address
+            setCurrentAddress({
+                address: permanentAddress.address,
+                country: permanentAddress.country,
+                state: permanentAddress.state,
+                city: permanentAddress.city,
+                zip: permanentAddress.zip
+            });
+            setZip(zip);
+            setStates(states);
+            setCities();
+            setCountries();
+
+        } else {
+            // Reset Current Address fields if the checkbox is unchecked
+            setCurrentAddress({
+                address: '',
+                country: '',
+                state: '',
+                city: '',
+                zip: '',
+            });
+        }
+    };
 
     const [countries, setCountries] = useState([]);
     const [states, setStates] = useState([]);
     const [cities, setCities] = useState([]);
+    const [zip, setZip] = useState([]);
+    
+    const [selectedCountry, setSelectedCountry] = useState(null);
+    // 
 
     useEffect(() => {
-        // Fetch list of countries
-        fetch('https://restcountries.com/v3.1/all')
-            .then(response => response.json())
-            .then(data => setCountries(data));
+        setCountries(Country.getAllCountries());
+    }, []);
 
-        // Fetch list of states based on the selected country
-        if (country) {
-            fetch(`https://api.example.com/states?country=${country}`)
-                .then(response => response.json())
-                .then(data => setStates(data));
+
+    const handleCountryChange = (_, value) => {
+        setCountryValue(value?.id)
+        if (value) {
+            const countryStates = State.getStatesOfCountry(value.id || '');
+            setStates(countryStates);
+            setSelectedCountry(value);
+            setCities([]);
         }
-    }, [country]);
+    };
 
-    useEffect(() => {
-        // Fetch list of cities based on the selected state
-        if (state) {
-            fetch(`https://api.example.com/cities?state=${state}`)
-                .then(response => response.json())
-                .then(data => setCities(data));
+    console.log('state', states)
+
+
+    const [productType, setProductType] = useState('');
+    const [workMode, setWorkMode] = useState('');
+
+    const handleProductTypeChange = (event) => {
+        setProductType(event.target.value);
+        // Reset workMode when product type changes
+        setWorkMode('');
+    };
+
+    const handleWorkModeChange = (event) => {
+        setWorkMode(event.target.value);
+    };
+
+
+    const handleStateChange = (event, value) => {
+        console.log('value', value)
+        if (value) {
+            const stateCities = City.getCitiesOfState(countryvalue, value.id || '');
+            setCities(stateCities);
+
+            setZip([]);
         }
-    }, [state]);
+    };
 
-    // }
-    const masterdata = useSelector(
-        (state) => state.persistData.masterData?.skill
-    );
+    const isZipCodeValid = () => {
+        if (selectedCountry && zip) {
+
+            return postcodeValidator(zip, selectedCountry?.id);
+        }
+        return false;
+    };
+
+    const handleZipChange = (e) => {
+        const newZip = e.target.value;
+        setZip(newZip);
+    };
+    console.log("zip:");
+
+    const isValid = postcodeValidator('12345', 'US'); // Example usage
+    console.log("pincode:", isValid);//Example
+
+
+
+
     const masterdata1 = useSelector(
         (state) => state.persistData.masterData?.gender
     );
@@ -62,6 +164,10 @@ export default function CreateUser() {
     const masterdata4 = useSelector(
         (state) => state.persistData.masterData?.manager
     );
+    const masterdata5 = useSelector(
+        (state) => state.persistData.masterData?.workLocation
+    );
+    console.log("Master Data 3", masterdata4);
 
 
     const [validationErrors, setValidationErrors] = useState({});
@@ -75,33 +181,62 @@ export default function CreateUser() {
         DOJ: "",
         CTC: "",
         Status: "",
+        skills: "",
+        AadhaarNo: "",
         employeeType: "",
         employeeID: "",
+
     });
+
+    const handleClearAll = () => {
+        setFormData({
+            firstName: '',
+            email: '',
+            number: '',
+            gender: '',
+            lastName: '',
+            DOB: "",
+            DOJ: "",
+            CTC: "",
+            skills: "",
+            Status: "",
+            AadhaarNo: "",
+            employeeType: "",
+            employeeID: "",
+        });
+
+        setValidationErrors({});
+    };
+
+
+    const handleCurrentAddressChange = (field, value) => {
+        setCurrentAddress((prevAddress) => ({
+            ...prevAddress,
+            [field]: value,
+        }));
+    };
+
 
     const handleBackClick = () => {
         console.log('Handle back clicked!');
     };
 
-    const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
+    const handleChange = () => {
+        console.log('Handle Change');
     };
-
-    const handleSkillChange = (selectedOption) => {
-        setFormData({
-            ...formData,
-            skill: selectedOption.target.value
-        });
-    };
+    const skills = useSelector(
+        (state) => state.persistData.masterData?.skill
+    );
     console.log("Skills", formData.skill);
     const handleGenderChange = (selectedOption) => {
         setFormData({ ...formData, gender: selectedOption.target.value });
     };
     console.log("Gender", formData.gender);
+
+    const handleWorkLocationChange = (selectedOption) => {
+        setFormData({ ...formData, Work_loc: selectedOption.target.value });
+    };
+    console.log("Work_Location", formData.Work_loc);
 
     const handleManagerChange = (selectedOption) => {
         setFormData({ ...formData, ManagerName: selectedOption.target.value });
@@ -121,11 +256,22 @@ export default function CreateUser() {
     };
     console.log("employeeType", formData.employeeType);
 
+    const handleInputChange = (event) => {
+        const { name, value } = event.target;
+        setFormData({
+            ...formData,
+            [name]: value
+        });
+        setValidationErrors({
+            ...validationErrors,
+            [name]: ''
+        });
 
+    };
     const handleSave = () => {
         const { firstName, email, number, gender, lastName, DOB, DOJ, CTC, employeeID,
             employeeType, Status, band, Location, OfficeLocation, Designation, skill,
-            ManagerName, ACNo, Bank, IFSCCode, AadhaarNo } = formData;
+            ManagerName, ACNo, Bank, IFSCCode, AadhaarNo, WorkMode } = formData;
         let errors = {};
 
         if (!firstName?.trim()) {
@@ -205,7 +351,9 @@ export default function CreateUser() {
             errors.IFSCCode = '*Your Bank IFSC COde is required';
         }
 
-
+        if (!WorkMode?.trim()) {
+            errors.WorkMode = '*Select your Work Mode..it is required';
+        }
         if (!Status || !Status?.trim()) {
             errors.Status = '*Status is required';
         }
@@ -213,18 +361,12 @@ export default function CreateUser() {
         if (!employeeType || !employeeType?.trim()) {
             errors.employeeType = '*Employee Type is required';
         }
-
         if (!employeeID || !employeeID?.trim()) {
             errors.employeeID = '*Employee ID is required';
         } else if (!/^[a-zA-Z0-9]+$/.test(employeeID)) {
             errors.employeeID = 'Please enter a valid Employee ID without special characters';
         }
-
         setValidationErrors(errors);
-
-        if (Object.keys(errors).length === 0) {
-            // Proceed with saving data
-        }
     };
     return (
         <div>
@@ -245,14 +387,42 @@ export default function CreateUser() {
                     border: "1px solid #008080",
                 }}
             />
-            <div style={{ textAlign: "right" }}>
-                <Button style={{ border: "1px solid #008080" }}>
-                    <BorderColorOutlinedIcon /> Edit
+            <div style={{ textAlign: "Left", marginLeft: "8px" }}>
+                <Button style={{
+                    width: '100px',
+                    height: '99px',
+                    border: '2px solid white',
+                    borderRadius: '50%',
+                    position: 'relative',
+                    overflow: 'hidden',
+                }}
+                    onClick={handleButtonClick}
+                >
+                    {selectedImage ? (
+                        <Avatar
+                            src={selectedImage}
+                            alt="Selected"
+                            sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                    ) : (
+                        <AccountCircleTwoToneIcon style={{ width: '70px', height: '70px', color: '#545454' }} >
+                            <AddCircleOutlineIcon style={{ width: '20px', height: '20px', color: '#545454' }} /> </AccountCircleTwoToneIcon>
+
+                    )}
                 </Button>
+                <input
+                    type="file"
+                    id="uploadInput"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={handleFileChange}
+                />
+                {/* <Stack/>    */}
             </div>
 
             {/* User Details */}
-            <div style={{ margin: '20px' }}>
+            < div style={{ margin: '20px' }
+            }>
                 <Typography variant="h6">
                     <b> Basics details</b>
                 </Typography>
@@ -264,12 +434,15 @@ export default function CreateUser() {
                         border: "1px solid silver",
                     }}
                 />
-                <div className="UserDetails" style={{ display: 'flex', marginTop: '20px' }}>
+                <div className="UserDetails" style={{ display: 'flex', marginTop: '20px', marginLeft: "12px" }}>
                     <Grid container spacing={2} style={{ margin: "" }}>
                         {/* Left Side */}
                         <Grid item xs={6}>
                             <TextField
-                                label="Enter User First Name"
+                                label={<Typography>
+                                    <span style={{ color: 'red' }}>*</span>
+                                    Enter User First Name
+                                </Typography>}
                                 name="firstName"
                                 value={formData.firstName}
                                 onChange={handleInputChange}
@@ -288,7 +461,10 @@ export default function CreateUser() {
                                 </Box>
                             )}
                             <TextField
-                                label="Enter Email Address"
+                                label={<Typography>
+                                    <span style={{ color: 'red' }}>*</span>
+                                    Enter Email Address
+                                </Typography>}
                                 name="email"
                                 value={formData.email}
                                 onChange={handleInputChange}
@@ -307,7 +483,10 @@ export default function CreateUser() {
                                 </Box>
                             )}
                             <TextField
-                                label="Enter Mobile Number"
+                                label={<Typography>
+                                    <span style={{ color: 'red' }}>*</span>
+                                    Enter Mobile Number
+                                </Typography>}
                                 name="number"
                                 value={formData.number}
                                 onChange={handleInputChange}
@@ -353,7 +532,7 @@ export default function CreateUser() {
 
                             <TextField
                                 label="Enter UAN No."
-                                name="Enter UAN No."
+                                name="UAN_No."
                                 value={formData.UANNo}
                                 onChange={handleInputChange}
                                 style={{
@@ -368,7 +547,10 @@ export default function CreateUser() {
                         {/* Right Side */}
                         <Grid item xs={6}>
                             <TextField
-                                label="Last Name"
+                                label={<Typography>
+                                    <span style={{ color: 'red' }}>*</span>
+                                    Enter User Last Name
+                                </Typography>}
                                 name="lastName"
                                 value={formData.lastName}
                                 onChange={handleInputChange}
@@ -389,7 +571,10 @@ export default function CreateUser() {
                             )}
                             <Grid>
                                 <TextField
-                                    label="DOB(DD/MM/YYYY)"
+                                    label={<Typography>
+                                        <span style={{ color: 'red' }}>*</span>
+                                        DOB(DD/MM/YYYY)
+                                    </Typography>}
                                     type="date"
                                     id='DOB'
                                     name='DOB'
@@ -415,7 +600,10 @@ export default function CreateUser() {
                             </Grid>
                             <Grid>
                                 <TextField
-                                    label="Date of Joining"
+                                    label={<Typography>
+                                        <span style={{ color: 'red' }}>*</span>
+                                        Date Of Joining
+                                    </Typography>}
                                     type="date"
                                     id='DOJ'
                                     name='DOJ'
@@ -439,363 +627,621 @@ export default function CreateUser() {
                                     </Box>
                                 )}
                             </Grid>
-                            <TextField
-                                label="Enter Aadhaar No."
-                                name="Enter Aadhaar No."
-                                value={formData.AadhaarNo}
-                                onChange={handleInputChange}
-                                style={{
-                                    ...style.TimesheetTextField,
-                                    borderRadius: "10px",
-                                }}
-                                fullWidth
-                                margin="normal"
-                                InputProps={{ classes: { focused: 'green-border' } }}
-                            />
-                            {validationErrors.AadhaarNo && (
-                                <Box>
-                                    <Typography
-                                        color="error">{validationErrors.AadhaarNo}</Typography>
-                                </Box>
-                            )}
-                        </Grid>
-                    </Grid>
-                </div>
-
-                <Typography variant="h6" onClick={() => handleBackClick()}>
-                    <b> Address</b>
-                </Typography>
-                <div
-                    style={{
-                        width: "100%",
-                        margin: "auto",
-                        marginBottom: "18px",
-                        border: "1px solid silver",
-                    }}
-                />
-                <div style={{ float: 'left', marginRight: '20px' }}>
-                    <TextField
-                        label="Address"
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                    />
-                    <br />
-                    <Autocomplete
-                        id="country"
-                        options={countries}
-                        getOptionLabel={(option) => option.name.common}
-                        style={{ width: 200 }}
-                        onChange={(e, value) => setCountry(value?.name.common || '')}
-                        renderInput={(params) => <TextField {...params} label="Country" />}
-                    />
-                    <br />
-                    <Autocomplete
-                        id="state"
-                        options={states}
-                        getOptionLabel={(option) => option.name}
-                        style={{ width: 200 }}
-                        onChange={(e, value) => setState(value?.name || '')}
-                        renderInput={(params) => <TextField {...params} label="State" />}
-                    />
-                </div>
-
-                <div style={{ float: 'left' }}>
-                    <Autocomplete
-                        id="city"
-                        options={cities}
-                        getOptionLabel={(option) => option.name}
-                        style={{ width: 200 }}
-                        onChange={(e, value) => setCity(value?.name || "")}
-                        renderInput={(params) => <TextField {...params} label="City" />}
-                    />
-
-                    <br />
-                    <TextField
-                        label="ZIP"
-                        value={zip}
-                        onChange={(e) => setZip(e.target.value)}
-                    /><br />
-                    <p>Selected City: {city}</p>
-                </div>
-               
-                <Typography variant="h6" onClick={() => handleBackClick()}>
-                    <b> Professional Data </b>
-                </Typography>
-                <div
-                    style={{
-                        width: "100%",
-                        margin: "auto",
-                        marginBottom: "18px",
-                        border: "1px solid silver",
-                    }}
-                />
-                <div className="UserDetails" style={{ display: 'flex', marginTop: '20px' }}>
-                    <Grid container spacing={2}>
-                        {/* Left Side */}
-                        <Grid item xs={12} lg={6} md={2} >
-                            <Grid style={{ marginTop: '8px', marginBottom: '20px' }} sx={{ width: 587 }}>
-                                <Autocomplete
-                                    freeSolo
-                                    label="Manager Name"
-                                    name="Manager Name"
-                                    value={formData.ManagerName}
-                                    onChange={handleManagerChange}
-                                    options={masterdata4}
+                            <Grid style={{ marginTop: "-6px" }}>
+                                <TextField
+                                    label={<Typography>
+                                        <span style={{ color: 'red' }}>*</span>
+                                        Enter Aadhaar Number
+                                    </Typography>}
+                                    name="AadhaarNo"
+                                    value={formData.AadhaarNo}
+                                    onChange={handleInputChange}
                                     style={{
                                         ...style.TimesheetTextField,
                                         borderRadius: "10px",
                                     }}
                                     fullWidth
                                     margin="normal"
-                                    renderInput={(params) => <TextField
-                                        {...params}
-                                        label="Manager Name"
-                                        InputProps={{
-                                            ...params.InputProps,
-                                            type: 'search',
-                                        }} />}
-
+                                    InputProps={{ classes: { focused: 'green-border' } }}
                                 />
-                                {validationErrors.ManagerName && (
+                                {validationErrors.AadhaarNo && (
                                     <Box>
                                         <Typography
-                                            color="error"
-                                            style={{}}
-                                        >
-                                            {" "}
-                                            {validationErrors.ManagerName}
-                                        </Typography>
-                                    </Box>
-                                )}
-                            </Grid>
-
-                            <Grid style={{ marginTop: '20px', marginBottom: '20px' }}>
-                                <Dropdown
-                                    value={formData.employeeType}
-                                    onChange={handleEmptypeChange}
-                                    title="Employee Type"
-                                    dropdownName="Employee Type"
-                                    options={masterdata3 || []}
-                                    style={{
-                                        ...style.TimesheetTextField,
-                                        border: "1px solid silver",
-                                        borderRadius: "5px",
-                                        marginBottom: "10px",
-                                        marginTop: "10px"
-                                    }}
-                                />
-                                {validationErrors.employeeType && (
-                                    <Box>
-                                        <Typography
-                                            color="error"
-                                            style={{}}
-                                        >
-                                            {" "}
-                                            {validationErrors.employeeType}
-                                        </Typography>
-                                    </Box>
-                                )}
-
-                            </Grid>
-                            <Grid style={{ marginTop: '20px', marginBottom: '20px' }}>
-                                <Dropdown
-                                    value=""
-                                    onChange=""
-                                    title="Office Location"
-                                    dropdownName="Office Location"
-                                    style={{
-                                        ...style.TimesheetTextField,
-                                        border: "1px solid silver",
-                                        borderRadius: "5px",
-                                    }}
-                                    options={[
-                                        { value: '', label: '' }
-                                    ]}
-                                />
-                                {validationErrors.OfficeLocation && (
-                                    <Box>
-                                        <Typography
-                                            color="error"
-                                            style={{}}
-                                        >
-                                            {" "}
-                                            {validationErrors.OfficeLocation}
-                                        </Typography>
-                                    </Box>
-                                )}
-                            </Grid>
-                            <Grid style={{ marginTop: '20px', marginBottom: '20px' }}>
-                                <Dropdown
-                                    value={formData.band}
-                                    onChange={handleBandChange}
-                                    title="Band"
-                                    dropdownName="Band"
-                                    style={{
-                                        ...style.TimesheetTextField,
-                                        border: "1px solid silver",
-                                        borderRadius: "5px",
-                                    }}
-                                    options={masterdata2}
-                                />
-                                {validationErrors.band && (
-                                    <Box>
-                                        <Typography
-                                            color="error"
-                                            style={{}}
-                                        >
-                                            {" "}
-                                            {validationErrors.band}
-                                        </Typography>
-                                    </Box>
-                                )}
-                            </Grid>
-                            <Grid style={{ marginTop: '20px', marginBottom: '20px' }}>
-                                <Dropdown
-                                    value={formData.Status}
-                                    onChange={(selectedOption) => setFormData({ ...formData, Status: selectedOption.value })}
-                                    title="Status"
-                                    dropdownName="Status"
-                                    style={{
-                                        ...style.TimesheetTextField,
-                                        border: "1px solid silver",
-                                        borderRadius: "5px",
-                                        marginBottom: "10px",
-                                        marginTop: "10px"
-                                    }}
-                                />
-                                {validationErrors.Status && (
-                                    <Box>
-                                        <Typography
-                                            color="error"
-                                            style={{}}
-                                        >
-                                            {" "}
-                                            {validationErrors.Status}
-                                        </Typography>
-                                    </Box>
-                                )}
-                            </Grid>
-                        </Grid>
-                        {/* Right Side */}
-                        <Grid item xs={6}>
-                            <Grid style={{ marginTop: '10px', marginBottom: '20px' }}>
-                                <Dropdown
-                                    value=""
-                                    onChange=""
-                                    title="Designation"
-                                    dropdownName="Designation"
-                                    style={{
-                                        ...style.TimesheetTextField,
-                                        border: "1px solid silver",
-                                        borderRadius: "5px",
-                                    }}
-                                    options={[
-                                        { value: '', label: '' }
-                                    ]}
-                                />
-                                {validationErrors.Designation && (
-                                    <Box>
-                                        <Typography
-                                            color="error"
-                                            style={{}}
-                                        >
-                                            {" "}
-                                            {validationErrors.Designation}
-                                        </Typography>
-                                    </Box>
-                                )}
-                            </Grid>
-                            <Grid style={{ marginTop: '20px', marginBottom: '20px' }}>
-                                <Dropdown
-                                    value={formData.handleSkillChange}
-                                    onChange={handleSkillChange}
-                                    title="Skill"
-                                    dropdownName="Skill"
-                                    style={{
-                                        ...style.TimesheetTextField,
-                                        border: "1px solid silver",
-                                        borderRadius: "5px",
-                                    }}
-                                    options={masterdata}
-                                />
-                                {validationErrors.skill && (
-                                    <Box>
-                                        <Typography
-                                            color="error"
-                                            style={{}}
-                                        >
-                                            {" "}
-                                            {validationErrors.skill}
-                                        </Typography>
-                                    </Box>
-                                )}
-                            </Grid>
-                            <Grid style={{ marginTop: '20px', marginBottom: '20px' }}>
-                                <Dropdown
-                                    value=""
-                                    onChange=""
-                                    title="Work Locaton"
-                                    dropdownName="Work Location"
-                                    style={{
-                                        ...style.TimesheetTextField,
-                                        border: "1px solid silver",
-                                        borderRadius: "5px",
-                                    }}
-                                    options={[
-                                        { value: '', label: '' }
-                                    ]}
-                                />
-                                {validationErrors.Location && (
-                                    <Box>
-                                        <Typography
-                                            color="error"
-                                            style={{}}
-                                        >
-                                            {" "}
-                                            {validationErrors.Location}
-                                        </Typography>
-                                    </Box>
-                                )}
-                            </Grid>
-                            <Grid style={{ marginTop: '18px', marginBottom: '20px' }}>
-                                <TextField
-                                    label="Employe ID"
-                                    placeholder="Employe ID"
-                                    onChange={handleInputChange}
-                                    fullWidth
-                                    margin="normal"
-                                    style={{
-                                        borderRadius: "5px",
-                                    }}
-
-                                />
-                                {validationErrors.employeeID && (
-                                    <Box>
-                                        <Typography
-                                            color="error">{validationErrors.employeeID}</Typography>
+                                            color="error">{validationErrors.AadhaarNo}</Typography>
                                     </Box>
                                 )}
                             </Grid>
                         </Grid>
                     </Grid>
                 </div>
+            </div > {/* <div> */}
+            < br />
+            <div className='permanent_Address'>
+                <Typography variant="h6" onClick={() => handleBackClick()} style={{ fontSize: '16px' }}>
+                    <b>Permanent Address</b>
+                </Typography>
+                <div
+                    style={{
+                        width: "100%",
+                        margin: "auto",
+                        border: "1px solid silver",
+                    }}
+                />
+                <Grid container spacing={2} style={{ marginLeft: "12px", display: 'flex', flexWrap: 'wrap', marginTop: "3%" }}>
+                    <div style={{ width: '48%', marginRight: "1%" }}>
+                        <TextField
+                            label="Address"
+                            name='Address'
+                            value={permanentAddress.address}
+                            style={{
+                                fontSize: '16px',
+                                marginBottom: "20px",
+                                width: "100%"
+                            }}
+                            onChange={(e) => setPermanentAddress({ ...permanentAddress, address: e.target.value })}
+                        />
+                    </div>
+                    <div style={{ width: '48%' }}>
+                        <Autocomplete
+                            freeSolo
+                            id="country"
+                            options={countries.map(country => ({ label: country.name, id: country.isoCode }))}
+                            getOptionLabel={(option) => option.label}
+                            getOptionValue={(option) => option.id}
+                            style={{
+                                fontSize: '16px',
+                                borderRadius: "10px",
+                            }}
+                            onChange={handleCountryChange}
+                            renderInput={(params) => <TextField {...params} label="Country" />}
+                        />
+                    </div>
+                    <div style={{ width: '48%', marginRight: '1%' }}>
+                        <Autocomplete
+                            freeSolo
+                            id="state"
+                            options={states.map(states => ({ label: states.name, id: states.isoCode }))}
+                            getOptionLabel={(option) => option.label}
+                            getOptionValue={(option) => option.id}
+                            style={{
+                                fontSize: '16px',
+                                borderRadius: "10px",
+                            }}
+                            onChange={handleStateChange}
+                            renderInput={(params) => <TextField {...params} label="State" />}
+                        />
+                    </div>
+                    <div style={{ width: '48%' }}>
+                        <Autocomplete
+                            freeSolo
+                            id="city"
+                            options={cities}
+                            style={{
+                                fontSize: '16px',
+                                borderRadius: "10px",
+                            }}
+                            getOptionLabel={(option) => option.name}
+                            renderInput={(params) => <TextField {...params} label="City" />}
+                        />
+                    </div>
+                    <div style={{ width: '48%', marginRight: '1%' }}>
+                        <TextField
+                            label="ZIP"
+                            value={zip}
+                            style={{
+                                fontSize: '16px',
+                                borderRadius: "10px",
+                                marginTop: "20px",
+                                width: '100%'
+                            }}
+                            onChange={handleZipChange}
+                            error={!isZipCodeValid()}
+                            helperText={!isZipCodeValid() && 'Invalid ZIP code for the selected country'}
+                        />
+                    </div>
+                </Grid>
+            </div>
 
+
+            <div style={{ display: 'flex', marginLeft: '80%', marginBottom: "-3px" }}>
+                <input
+                    type="checkbox"
+                    checked={isSameAsPermanent}
+                    onChange={handleCheckboxChange}
+                />
+                <Typography variant="body2" style={{ marginLeft: '2%' }}>
+                    <b>Same as Permanent Address</b>
+                </Typography>
+            </div >
+            <div className='Current_Address'>
+                <Typography variant="h6" onClick={() => handleBackClick()} style={{ fontSize: '16px' }}>
+                    <b>Current Address</b>
+                </Typography>
+                <div
+                    style={{
+                        width: "100%",
+                        margin: "auto",
+                        marginBottom: "18px",
+                        border: "1px solid silver",
+                    }}
+                />
+                <Grid container spacing={2} style={{ marginLeft: "12px", display: 'flex', flexWrap: 'wrap', marginTop: "3%" }}>
+                    <div style={{ width: '48%', marginRight: '1%' }}>
+                        <TextField
+                            label="Address"
+                            name='Address'
+                            value={currentAddress.address}
+                            style={{
+                                fontSize: '16px',
+                                borderRadius: "10px",
+                                width: "100%",
+                                marginBottom: "20px"
+                            }}
+                            onChange={(e) => handleCurrentAddressChange('address', e.target.value)}
+                        />
+                    </div>
+                    <div style={{ width: '48%' }}>
+                        <Autocomplete
+                            freeSolo
+                            id="country1"
+                            options={countries.map(country => ({ label: country.name, id: country.isoCode }))}
+                            getOptionLabel={(option) => option.label}
+                            getOptionValue={(option) => option.id}
+                            style={{
+                                fontSize: '16px',
+                                borderRadius: "10px",
+                                width: "100%"
+                            }}
+                            onChange={handleCountryChange}
+                            renderInput={(params) => <TextField {...params} label="Country" />}
+                        />
+                    </div>
+                    <div style={{ width: '48%', marginRight: '1%' }}>
+                        <Autocomplete
+                            freeSolo
+                            id="state1"
+                            options={states.map(states => ({ label: states.name, id: states.isoCode }))}
+                            getOptionLabel={(option) => option.label}
+                            getOptionValue={(option) => option.id}
+                            style={{
+                                fontSize: '16px',
+                                borderRadius: "10px",
+                                width: "100%"
+                            }}
+                            onChange={handleStateChange}
+                            renderInput={(params) => <TextField {...params} label="State" />}
+                        />
+                    </div>
+                    <div style={{ width: '48%' }}>
+                        <Autocomplete
+                            freeSolo
+                            id="city"
+                            options={cities}
+                            style={{
+                                fontSize: '16px',
+                                borderRadius: "10px",
+                                width: "100%"
+                            }}
+                            getOptionLabel={(option) => option.name}
+                            renderInput={(params) => <TextField {...params} label="City" />}
+                        />
+                    </div>
+                    <div style={{ width: '48%', marginRight: '1%' }}>
+                        <TextField
+                            label="ZIP"
+                            value={zip}
+                            style={{
+                                fontSize: '16px',
+                                borderRadius: "10px",
+                                marginTop: "20px",
+                                width: '100%'
+                            }}
+                            onChange={handleZipChange}
+                        />
+                    </div>
+                </Grid>
+            </div>
+
+            <div style={{ width: "100%" }}>
+                <Typography variant="h6">
+                    <b>Employee Coordinates</b>
+                </Typography>
+                <div
+                    style={{
+                        width: "100%",
+                        marginBottom: "8px",
+                        border: "1px solid silver",
+                    }}
+                />
                 <Grid container spacing={2}>
-                    <Typography variant="h6"
-                        onClick={() => handleBackClick()}>
-                        <b> Pay Roll</b>
-                    </Typography>
-                    <div
-                        style={{
-                            width: "100%",
-                            margin: "auto",
-                            marginBottom: "18px",
-                            border: "1px solid silver",
-                        }}
-                    />
-                    <Grid item xs={6}>
-                        {/* Left side */}
-                        <Grid style={{ marginTop: '3px', marginBottom: '3px' }}>
+                    <Grid item xs={12} md={6}>
+                        <FormControl>
+                            <RadioGroup
+                                name="productType"
+                                value={productType}
+                                onChange={handleProductTypeChange}
+                            >
+                                <FormControlLabel value="Prakat Product" control={<Radio />} label="Prakat Product" />
+                            </RadioGroup>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <FormControl style={{ textAlign: 'right', marginLeft: "25px" }}>
+                            <RadioGroup
+                                name="productType"
+                                value={productType}
+                                onChange={handleProductTypeChange}
+                            >
+                                <FormControlLabel value="client Product" control={<Radio />} label="Client Product" />
+                            </RadioGroup>
+                        </FormControl>
+                    </Grid>
+
+                    <Grid item xs={12} style={{ marginTop: '20px' }}>
+                        <Dropdown
+                            value={workMode}
+                            onChange={handleWorkModeChange}
+                            title={<Typography><span style={{ color: "red" }}>*</span>Work Mode</Typography>}
+                            dropdownName="WorkMode"
+                            name='workMode'
+                            options={[
+                                { label: 'On-site', value: 'On-site' },
+                                { label: 'Remote', value: 'Remote' },
+                                { label: 'Hybrid', value: 'Hybrid' },
+                            ]}
+                            style={{
+                                border: "1px solid #008080",
+                                borderRadius: "5px",
+                                width: "600px", // Set the width to 100%
+                                marginBottom: "2px",
+                                marginTop: "3px"
+                            }}
+                        />
+                        {validationErrors.WorkMode && (
+                            <Box>
+                                <Typography color="error">
+                                    {validationErrors.WorkMode}
+                                </Typography>
+                            </Box>
+                        )}
+                    </Grid>
+                </Grid>
+            </div>
+            <div style={{ width: "100%", margin: "20px" }}>
+                <Typography variant="h6">
+                    <b>Professional Data</b>
+                </Typography>
+                <div style={{ width: "100%", margin: "auto", marginBottom: "18px", border: "1px solid silver" }} />
+
+                <div className="UserDetails" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <Grid container spacing={2}>
+                        {/* Left Side */}
+                        <Grid item xs={12} lg={6} md={6} sm={12} sx={{ marginTop: '8px', marginBottom: '20px', width: { xs: '100%', lg: '50%' } }}>
+                            <Grid style={{ marginTop: '8px', marginBottom: '20px' }} sx={{ width: "100%" }}>
+                                <Autocomplete
+                                    freeSolo
+                                    id="Manager_Name"
+                                    options={masterdata4}
+
+                                    getOptionLabel={(option) => option.name.common}
+                                    style={{
+                                        ...style.TimesheetTextField,
+
+                                        borderRadius: "10px",
+                                        width: "100%",
+                                    }}
+                                    onChange={handleManagerChange}
+                                    renderInput={(params) => <TextField {...params} label={
+                                        <Typography>
+                                            <span style={{ color: "red" }}>*</span>Manager Name
+                                        </Typography>
+                                    } />}
+                                />
+                                {validationErrors.ManagerName && (
+                                    <Box>
+                                        <Typography
+                                            color="error">{validationErrors.ManagerName}
+                                        </Typography>
+                                    </Box>
+                                )}
+                            </Grid>
+
+                            <Dropdown
+                                value={formData.employeeType}
+                                onChange={handleEmptypeChange}
+                                title={<Typography>
+                                    <span style={{ color: "red", width: "100%" }}>*</span>employee Type
+                                </Typography>
+                                }
+                                dropdownName="Employee Type"
+                                name='EMPType'
+                                options={masterdata3 || []}
+                                style={{
+                                    ...style.TimesheetTextField,
+                                    border: "1px solid silver",
+                                    borderRadius: "5px",
+                                    marginBottom: "10px",
+                                    marginTop: "10px",
+                                    width: "100%"
+                                }}
+                            />
+                            {validationErrors.employeeType && (
+                                <Box>
+                                    <Typography
+                                        color="error"
+                                        style={{}}
+                                    >
+                                        {" "}
+                                        {validationErrors.employeeType}
+                                    </Typography>
+                                </Box>
+                            )}
+
+                            <Dropdown
+                                value={""}
+                                onChange={""}
+                                title={<Typography>
+                                    <span style={{ color: "red", width: "100%" }}>*</span>Employeed By
+                                </Typography>
+                                }
+                                dropdownName="Employee by"
+                                name='EMPType'
+                                options={masterdata3 || []}
+                                style={{
+                                    ...style.TimesheetTextField,
+                                    border: "1px solid silver",
+                                    borderRadius: "5px",
+                                    marginBottom: "10px",
+                                    marginTop: "10px",
+                                    width: "100%",
+                                }}
+                            />
+                            {validationErrors.employeeType && (
+                                <Box>
+                                    <Typography
+                                        color="error"
+                                        style={{}}
+                                    >
+                                        {" "}
+                                        {validationErrors.employeeType}
+                                    </Typography>
+                                </Box>
+                            )}
+
+                            <Dropdown
+                                value=""
+                                onChange=""
+                                title={<Typography>
+                                    <span style={{ color: "red", width: "100%" }}>*</span>Office Location
+                                </Typography>
+                                }
+                                dropdownName="Office Location"
+                                name='Office_Loc'
+                                style={{
+                                    ...style.TimesheetTextField,
+                                    border: "1px solid silver",
+                                    borderRadius: "5px",
+                                    marginBottom:"20px"
+                                }}
+                                options={[
+                                    { value: '', label: '' }
+                                ]}
+                            />
+                            {validationErrors.OfficeLocation && (
+                                <Box>
+                                    <Typography
+                                        color="error"
+                                        style={{}}
+                                    >
+                                        {" "}
+                                        {validationErrors.OfficeLocation}
+                                    </Typography>
+                                </Box>
+                            )}
+                            <Dropdown
+                                value={formData.band}
+                                onChange={handleBandChange}
+                                title={<Typography>
+                                    <span style={{ color: "red", width: "100%" }}>*</span>Band
+                                </Typography>
+                                }
+                                dropdownName="Band"
+                                name='Band'
+                                style={{
+                                    ...style.TimesheetTextField,
+                                    border: "1px solid silver",
+                                    borderRadius: "5px",
+                                }}
+                                options={masterdata2}
+                            />
+                            {validationErrors.band && (
+                                <Box>
+                                    <Typography
+                                        color="error"
+                                        style={{}}
+                                    >
+                                        {" "}
+                                        {validationErrors.band}
+                                    </Typography>
+                                </Box>
+                            )}
+                            <Dropdown
+                                value={formData.Status}
+                                onChange={(selectedOption) => setFormData({ ...formData, Status: selectedOption.value })}
+                                title={<Typography>
+                                    <span style={{ color: "red", width: "100%" }}>*</span>Status
+                                </Typography>
+                                }
+                                dropdownName="Status"
+                                name='Status'
+                                style={{
+                                    ...style.TimesheetTextField,
+                                    border: "1px solid silver",
+                                    borderRadius: "5px",
+                                    marginBottom: "10px",
+                                    marginTop: "10px",
+                                }}
+                            />
+                            {validationErrors.Status && (
+                                <Box>
+                                    <Typography
+                                        color="error"
+                                        style={{}}
+                                    >
+                                        {" "}
+                                        {validationErrors.Status}
+                                    </Typography>
+                                </Box>
+                            )}
+                        </Grid>
+                        {/* Right Side */}
+                        <Grid item xs={12} lg={6} md={6} sm={12} sx={{ marginTop: '17px', marginBottom: '28px' }}>
+                            <Dropdown
+                                value=""
+                                onChange=""
+                                title={<Typography>
+                                    <span style={{ color: "red", width: "100%" }}>*</span>Designation
+                                </Typography>
+                                }
+                                dropdownName="Designation"
+                                name='Designation'
+                                style={{
+                                    ...style.TimesheetTextField,
+                                    border: "1px solid silver",
+                                    borderRadius: "5px",
+                                }}
+                                options={[
+                                    { value: '', label: '' }
+                                ]}
+                            />
+                            {validationErrors.Designation && (
+                                <Box>
+                                    <Typography
+                                        color="error"
+                                        style={{}}
+                                    >
+                                        {" "}
+                                        {validationErrors.Designation}
+                                    </Typography>
+                                </Box>
+                            )}
+                            <Autocomplete
+                                multiple
+                                id='skill'
+                                options={skills}
+                                style={{ marginTop: "25px" }}
+                                // sx={{
+                                //     ...style.TimesheetTextField,
+                                //     backgroundColor: '#fff',
+                                //     borderRadius: "5px"
+                                // }}
+                                disableCloseOnSelect
+                                filterSelectedOptions
+                                getOptionLabel={(option) => option.skillName}
+                                renderOption={(props, option, { selected }) => (
+                                    <li {...props}>
+                                        {selected}
+                                        {option.skillName}
+                                    </li>
+                                )}
+                                renderInput={(params) => (
+                                    <>
+                                        <TextField
+                                            {...params}
+                                            onChange={handleChange}
+                                            label={<Typography><span style={{ color: "red", width: "100%" }}>*</span>Skills</Typography>}
+                                            InputProps={{
+                                                ...params.InputProps
+                                            }}
+                                            style={{
+                                                ...style.TimesheetTextField,
+                                                border: "1px solid silver",
+                                                borderRadius: "5px",
+                                                marginBottom:'20px',
+                                            }}
+                                        />
+                                    </>
+                                )}
+                            />
+                            {validationErrors.skill && (
+                                <Box>
+                                    <Typography
+                                        color="error"
+                                        style={{}}
+                                    >
+                                        {" "}
+                                        {validationErrors.skill}
+                                    </Typography>
+                                </Box>
+                            )}
+                            <Dropdown
+                                value={formData.Work_loc}
+                                onChange={handleWorkLocationChange}
+                                title={<Typography>
+                                    <span style={{ color: "red", width: "100%" }}>*</span>Work Location
+                                </Typography>
+                                }
+                                dropdownName="Work Location"
+                                name='Work_loc'
+                                style={{
+                                    ...style.TimesheetTextField,
+                                    border: "1px solid silver",
+                                    borderRadius: "5px",
+                                }}
+                                options={masterdata5}
+                            />
+                            {validationErrors.Location && (
+                                <Box>
+                                    <Typography
+                                        color="error"
+                                        style={{}}
+                                    >
+                                        {" "}
+                                        {validationErrors.Location}
+                                    </Typography>
+                                </Box>
+                            )}
+                            <TextField
+                                label={<Typography>
+                                    <span style={{ color: "red", width: "100%" }}>*</span>Employee ID
+                                </Typography>
+                                }
+                                placeholder="Employe ID"
+                                onChange={handleInputChange}
+                                fullWidth
+                                margin="normal"
+                                style={{
+                                    borderRadius: "5px",
+                                }}
+
+                            />
+                            {validationErrors.employeeID && (
+                                <Box>
+                                    <Typography
+                                        color="error">{validationErrors.employeeID}</Typography>
+                                </Box>
+                            )}
+                        </Grid>
+                    </Grid>
+                </div>
+            </div>
+
+            <Grid container spacing={2} style={{ marginLeft: "5px", marginTop: "3px" }}>
+                <Typography variant="h6" onClick={() => handleBackClick()}>
+                    <b>Pay Roll</b>
+                </Typography>
+                <div
+                    style={{
+                        width: "100%",
+                        margin: "auto",
+                        marginBottom: "12px",
+                        border: "1px solid silver",
+                    }}
+                />
+                <Grid item xs={12} sm={6}>
+                    {/* Left side */}
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
                             <TextField
                                 label="Employee CTC"
                                 placeholder="Employee CTC"
@@ -804,9 +1250,8 @@ export default function CreateUser() {
                                 onChange={handleInputChange}
                                 style={{
                                     ...style.TimesheetTextField,
-
                                     borderRadius: "10px",
-
+                                    width: "100%",
                                 }}
                                 fullWidth
                                 margin="normal"
@@ -821,18 +1266,17 @@ export default function CreateUser() {
                                 </Box>
                             )}
                         </Grid>
-                        <Grid style={{ marginTop: '3px', marginBottom: '3px' }}>
+                        <Grid item xs={12}>
                             <TextField
                                 label="A/C No."
                                 placeholder="A/C No."
-                                id='CTC'
-                                name='CTC'
+                                id='ACNo'
+                                name='ACNo'
                                 onChange={handleInputChange}
                                 style={{
                                     ...style.TimesheetTextField,
-
                                     borderRadius: "10px",
-
+                                    width: "100%",
                                 }}
                                 fullWidth
                                 margin="normal"
@@ -848,21 +1292,21 @@ export default function CreateUser() {
                             )}
                         </Grid>
                     </Grid>
-                    {/* //Right Side */}
-                    <Grid style={{ width: "603", marginLeft: "20px", marginTop: "18px" }}>
-                        <Grid style={{ marginRight: "200px" }}>
+                </Grid>
+                {/* Right Side */}
+                <Grid item xs={12} sm={6} >
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
                             <TextField
                                 label="Name as per Bank"
                                 placeholder="Name as per Bank"
-                                id='CTC'
-                                name='CTC'
+                                id='Bank'
+                                name='Bank'
                                 onChange={handleInputChange}
                                 style={{
                                     ...style.TimesheetTextField,
-
                                     borderRadius: "10px",
-                                    width: "270%"
-
+                                    width: "100%",
                                 }}
                                 fullWidth
                                 margin="normal"
@@ -877,20 +1321,17 @@ export default function CreateUser() {
                                 </Box>
                             )}
                         </Grid>
-
-                        <Grid style={{ marginTop: '3px', marginBottom: '3px' }}>
+                        <Grid item xs={12}>
                             <TextField
                                 label="IFSC Code"
                                 placeholder="IFSC Code"
-                                id='CTC'
-                                name='CTC'
+                                id='IFSCCode'
+                                name='IFSCCode'
                                 onChange={handleInputChange}
                                 style={{
                                     ...style.TimesheetTextField,
-
                                     borderRadius: "10px",
-                                    width: "140%"
-
+                                    width: "100%",
                                 }}
                                 fullWidth
                                 margin="normal"
@@ -907,19 +1348,23 @@ export default function CreateUser() {
                         </Grid>
                     </Grid>
                 </Grid>
-
-                <div style={{ textAlign: "right", marginTop: "30px" }}>
-                    <Button variant="contained" color="primary" style={{ marginRight: "10px", width: '200px' }}>
-                        Clear All
-                    </Button>
-                    <Button variant="contained"
-                        color="primary"
-                        style={{ width: '200px' }}
-                        onClick={handleSave}>
-                        Save
-                    </Button>
-                </div>
+            </Grid>
+            <div style={{ textAlign: "right", marginTop: "30px" }}>
+                <Button variant="contained"
+                    color="primary"
+                    style={{ marginRight: "10px", width: '200px' }}
+                    onClick={handleClearAll}>
+                    Clear All
+                </Button>
+                <Button variant="contained"
+                    color="primary"
+                    style={{ width: '200px' }}
+                    onClick={handleSave}>
+                    Save
+                </Button>
             </div>
         </div >
+
+
     )
 }

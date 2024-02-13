@@ -14,7 +14,6 @@ export default function UserHerders({userData}) {
   const Navigate = useNavigate();
 
 
-
   const handleChange = () => {
     console.log('Handle Change');
   };
@@ -67,7 +66,8 @@ export default function UserHerders({userData}) {
           <Grid item xs={12} sm={4} md={2} lg={3}>
             <Dropdown
               options={[{ id: "All", value: "All" }]} 
-         
+            //   value={newDateDashboard} 
+            //   onChange={handleDateChange} 
               dropdownName="Designation" // Pass the dropdown name
               title="Designation"
               style={style.DateTimesheetDateTextField} // Pass any additional style
@@ -114,7 +114,7 @@ export default function UserHerders({userData}) {
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={12} md={4} lg={5}>
+          <Grid item xs={12} sm={12} md={4} lg={4}>
           </Grid>
           <Grid item  margin={"auto"} alignItems='flex-end'>
           <Typography

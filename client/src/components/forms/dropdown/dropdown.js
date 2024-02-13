@@ -12,10 +12,12 @@ const Dropdown = ({
   dropdownName,
   style,
   name = "",
+  valueKey,
+  labelKey,
 }) => {
   const handleDropdownChange = (event) => {
     onChange(event, dropdownName);
- };
+  };
 
   return (
     <FormControl sx={style} fullWidth>
@@ -28,9 +30,8 @@ const Dropdown = ({
               options[0].value ||
               options[0].projectName ||
               options[0].activityId
-            :
-          value
-        }   
+            : value
+        }
         name={name}
         placeholder={title}
         onChange={handleDropdownChange}
@@ -40,20 +41,9 @@ const Dropdown = ({
           ".MuiOutlinedInput-notchedOutline": { border: "none" },
         }}
       >
-        {options?.map((option) => (
+        {options?.map((option, index) => (
           <MenuItem
-            key={
-              option.id ||
-              option.value ||
-              option.jobId ||
-              option.sessionName ||
-              option.leaveMasterId ||
-              option.skillName ||
-              option.gender ||
-              option.bandName ||
-              option.employmentType ||
-              option.managerName
-            }
+            key={index}
             value={
               option.id ||
               option.value ||
@@ -64,7 +54,10 @@ const Dropdown = ({
               option.gender ||
               option.bandName ||
               option.employmentType ||
-              option.managerName
+              option.managerName ||
+              option.complexityName ||
+              option.projectType  ||
+              option[valueKey]
             }
             sx={{
               "&.Mui-selected": {
@@ -82,8 +75,11 @@ const Dropdown = ({
               option.gender ||
               option.bandName ||
               option.employmentType ||
-              option.managerName
-              }
+              option.managerName ||
+              option.complexityName ||
+              option.projectType ||
+            
+              option[labelKey]}
           </MenuItem>
         ))}
       </Select>
