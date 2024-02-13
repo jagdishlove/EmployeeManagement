@@ -64,8 +64,6 @@ input::-webkit-inner-spin-button {
   font-weight: bold;
 }
 
-
-
 .rbc-toolbar .rbc-toolbar-label {
   display: none;
 }
@@ -148,7 +146,6 @@ input::-webkit-inner-spin-button {
 
 .MuiAccordionSummary-content {
   width: 100% !important;
-  justify-content: space-around;
 }
 .css-1l5jhko{
   line-height: 1 !important;

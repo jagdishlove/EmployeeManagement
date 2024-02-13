@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import makeRequest from "../../../../api/api";
+import makeRequest, { addRequest } from "../../../../api/api";
 import {
   FETCH_ALL_USERS_FAILURE,
   FETCH_ALL_USERS_REQUEST,
@@ -7,7 +7,11 @@ import {
   GET_USER_BY_ID_FAILURE,
   GET_USER_BY_ID_REQUEST,
   GET_USER_BY_ID_SUCCESS,
+  CREATE_USER_FAIL,
+  CREATE_USER_REQUEST,
+  CREATE_USER_SUCCESS,
 } from "./usersActionTypes";
+import { getRefreshToken } from "../../login/loginAction";
 
 const getAllUsersRequest = () => {
   return {
@@ -47,6 +51,25 @@ const getUserByIdFailure = () => {
   };
 };
 
+const createUserRequest = () => {
+  return {
+    type: CREATE_USER_REQUEST,
+  };
+};
+const createUserSuccess = (data) => {
+  return {
+    type: CREATE_USER_SUCCESS,
+    payload: data,
+  };
+};
+export const createUserFail = (error) => {
+  return {
+    type: CREATE_USER_FAIL,
+    payload: error,
+  };
+};
+
+
 export const getAllUsers = (data) => {
   return async (dispatch) => {
     dispatch(getAllUsersRequest());
@@ -73,6 +96,40 @@ export const getUserById = (data) => {
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
+    }
+  };
+};
+
+
+export const CreateUserForm = (data) => {
+  return async (dispatch) => {
+    let formData = new FormData();
+    formData.append('file', data.file);
+
+    for (const key in data) {
+      if (key !== 'file') {
+        formData.append(key, data[key]);
+      }
+    }
+
+    try {
+      dispatch(createUserRequest());
+      const response = await addRequest(
+        "POST",
+        "/employee/create",
+        formData
+      );
+      dispatch(createUserSuccess(response));
+      return response;
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.errorCode === 403) {
+        dispatch(getRefreshToken());
+      } else if (err.response && err.response.data && err.response.data.errorCode === 500) {
+        dispatch(createUserFail(err.response.data.errorMessage));
+        toast.error(err.response.data.errorMessage, {
+          position: toast.POSITION.BOTTOM_CENTER,
+        });
+      }
     }
   };
 };

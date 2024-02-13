@@ -461,7 +461,7 @@ const TimesheetRow = ({
       const approversName = findApprovalData?.data
         .map(
           (users) =>
-            `${users.approverEmployee.firstName} ${users.approverEmployee.lastName}`
+            `${users?.approverEmployee?.firstName} ${users?.approverEmployee?.lastName}`
         )
         .join(" and ");
 

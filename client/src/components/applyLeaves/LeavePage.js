@@ -58,9 +58,8 @@ const LeavePage = () => {
   const [leaveBalance, setLeaveBalance] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-
-  // const [saveSubmitStatus, setSaveSubmitStatus] = useState(false);
-
+  const [saveSubmitStatus, setSaveSubmitStatus] = useState(false);
+  console.log(saveSubmitStatus);
 
   const dispatch = useDispatch();
 
@@ -204,7 +203,7 @@ const LeavePage = () => {
   ]);
 
   const handleSaveLeaveApplyData = async (type) => {
-    // setSaveSubmitStatus((prev) => !prev);
+    setSaveSubmitStatus((prev) => !prev);
     const payload = {
       ...leaveRqstData,
       manager: undefined,
