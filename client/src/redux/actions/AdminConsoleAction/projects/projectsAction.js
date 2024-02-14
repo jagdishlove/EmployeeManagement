@@ -9,7 +9,7 @@ import {
   FETCH_EMPLOYEE_SEARCH_SUCCESS,
   FETCH_ALL_DOMAIN_REQUEST,
   FETCH_ALL_DOMAIN_SUCCESS,
-  FETCH_ALL_DOMAIN_FAILURE
+  FETCH_ALL_DOMAIN_FAILURE,
 } from "./projectsActionTypes.js";
 
 const getAllProjectsRequest = () => {
@@ -98,7 +98,7 @@ export const getEmployeeSearchAction = (data) => {
         "/api/projects/employees/search",
         null,
         {
-          query: data,
+          empSearch: data || "",
         }
       );
       dispatch(getEmployeeSearchSuccess(response));
