@@ -11,8 +11,12 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { TimesheetStyle } from "../../../../pages/timesheet/timesheetStyle";
-import { getAllDomainAction } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
+import {
+  getAllDomainAction,
+  getEmployeeSearchAction,
+} from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import Dropdown from "../../../forms/dropdown/dropdown";
+import Select from "react-select";
 
 const CreateProjectFormDetails = () => {
   const theme = useTheme();
@@ -31,7 +35,22 @@ const CreateProjectFormDetails = () => {
     projectName: "",
     description: "",
   });
+  const [searchFormData, setSearchFormData] = useState([]);
 
+  const { employeeSearchData } = useSelector(
+    (state) => state.nonPersist?.projectDetails
+  );
+
+  useEffect(() => {
+    dispatch(getEmployeeSearchAction());
+  }, []);
+
+  const handleInputChangeSearch = (data) => {
+    setSearchFormData(data);
+    // setSelectedSearchOption(data);
+    // dispatch(getAllLeaveRequestsOfEmployeesAction(15, filterData, null, data));
+    // setSelectedOptions(data);
+  };
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData({
@@ -341,6 +360,29 @@ const CreateProjectFormDetails = () => {
               marginTop: "10px",
             }}
           /> */}
+          <Box>
+            <Select
+              isMulti={false}
+              styles={{
+                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                control: (baseStyles) => ({
+                  ...baseStyles,
+
+                  height: "55px",
+                }),
+              }}
+              isSearchable={true}
+              menuPortalTarget={document.body}
+              value={searchFormData}
+              // components={{ Control: CustomSelectControl }}
+              onChange={handleInputChangeSearch}
+              getOptionValue={(option) => option.id}
+              getOptionLabel={(option) => option.name}
+              options={employeeSearchData?.result}
+              isLoading={employeeSearchData?.length === 0}
+              placeholder="Search by Manager Name"
+            />
+          </Box>
           <Typography variant="body1" style={{ marginTop: "15px" }}>
             Project Lead
           </Typography>
