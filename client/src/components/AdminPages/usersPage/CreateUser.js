@@ -50,7 +50,6 @@ export default function CreateUser() {
     const masterdata = useSelector(
         (state) => state.persistData.masterData?.skill
     );
-    console.log("Master Data", masterdata)
     const masterdata1 = useSelector(
         (state) => state.persistData.masterData?.gender
     );
@@ -63,7 +62,6 @@ export default function CreateUser() {
     const masterdata4 = useSelector(
         (state) => state.persistData.masterData?.manager
     );
-    console.log("Master Data 3", masterdata3);
 
 
     const [validationErrors, setValidationErrors] = useState({});
@@ -99,29 +97,24 @@ export default function CreateUser() {
             skill: selectedOption.target.value
         });
     };
-    console.log("Skills", formData.skill);
     const handleGenderChange = (selectedOption) => {
         setFormData({ ...formData, gender: selectedOption.target.value });
     };
-    console.log("Gender", formData.gender);
 
     const handleManagerChange = (selectedOption) => {
         setFormData({ ...formData, ManagerName: selectedOption.target.value });
     };
-    console.log("formData", formData);
 
 
     const handleBandChange = (selectedOption) => {
         setFormData({ ...formData, band: selectedOption.target.value });
     };
-    console.log("band", formData.band);
     const handleEmptypeChange = (selectedOption) => {
         setFormData({
             ...formData,
             employeeType: selectedOption.target.value
         });
     };
-    console.log("employeeType", formData.employeeType);
 
 
     const handleSave = () => {

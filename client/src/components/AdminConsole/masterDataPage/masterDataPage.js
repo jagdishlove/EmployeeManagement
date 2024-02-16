@@ -1,4 +1,4 @@
-import {  Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, TextField, Typography } from '@mui/material'
+import {  Accordion, AccordionDetails, AccordionSummary, Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, TextField, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { useNavigate } from 'react-router-dom';
@@ -6,14 +6,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import icon from '../../../assets/Featured icon.svg'
-import { CreateBandlData, CreateDesignationData, CreateOfficeLocationnData, CreateSkillData, GetAllBandData, GetAllDesignationData, GetAllOfficeLocationData, GetAllSkillData, GetOfficeLocation, masterDataAction } from '../../../redux/actions/masterData/masterDataAction';
+import { CreateBandlData, CreateDesignationData, CreateDomine, CreateManageHoliday, CreateOfficeLocationnData, CreateSkillData, GetAllBandData, GetAllDesignationData, GetAllDomines, GetAllHolidays, GetAllOfficeLocationData, GetAllSkillData, GetBand, GetHoliday, GetOfficeLocation, UpdateBandlData, UpdateDesignationData, UpdateDomine, UpdateManageHoliday, UpdateOfficeLocationnData, UpdateSkillData,GetAllJobTypeData, CreateJobTypeData, UpdateJobType } from '../../../redux/actions/masterData/masterDataAction';
 import { Country, State, City } from 'country-state-city';
 import { postcodeValidator } from 'postcode-validator';
 import dayjs from 'dayjs';
 import { LocalizationProvider, StaticDatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 
 export default function MasterDataPage() {
     const designations = [
@@ -37,12 +38,21 @@ export default function MasterDataPage() {
   const [chnageDataType, setChangeDataType] = useState('')
   const [chnageDataId, setChnageDataId] = useState('')
   const [value, setValue] = useState('')
-  const [render, setRender] = useState(false)
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedState, setSelectedState] = useState(null);
   const [countryCode, setCountryCode] = useState('');
   const [selectedDate, setSelectedDate] = useState(dayjs());
+  const [designationExpand, setDesignatonExpand] = useState(true)
+  const [skillExpand, setSkillExpand] = useState(false)
+  const [officeLocationExpand, setOfiiceLocationExpand] = useState(false)
+  const [bandExpand, setBandExpand] = useState(false)
+  const [clientOfficeLocationExpand, setClientOfficeLocationExpand] = useState(false);
+  const [jobTypeExpand, setJobTypeExpand] = useState(false);
+  const [manageHolidayExpand, setManageHolidayExpand] = useState(false);
+  const [clientDetailsExpand, setClientDetailsExpand] = useState(false);
+  const [domineExpand, setDomineExpand] = useState(false);
   const [errors, setErrors]  = useState({})
+  const [edit, setEdit] = useState(false)
   const dispatch = useDispatch();
   const [officeData, setOfficeData] = useState({
     officeAddress: '',
@@ -55,8 +65,8 @@ export default function MasterDataPage() {
 
   const [bandFormData, setBandFormData] = useState({
     bandName:'',
-    minimum:'',
-    maximum:''
+    minimumCtc:'',
+    maximumCtc:''
 
   })
 
@@ -65,13 +75,19 @@ export default function MasterDataPage() {
     holidayName :'',
   })
 
-  console.log(setBandFormData)
+
+
   const masterData = useSelector(
     (state) => state.persistData.masterData
   );
   const skillData = useSelector(
     (state) => state?.nonPersist?.userDetails?.skillData
   );
+  const jobTypeData = useSelector(
+    (state) => state?.nonPersist?.userDetails?.jobTypeData
+  );
+
+
   const designationData = useSelector(
     (state) => state?.nonPersist?.userDetails?.designationData
   )
@@ -86,6 +102,24 @@ export default function MasterDataPage() {
   const officeLocation = useSelector(
     (state) => state?.nonPersist?.userDetails?.officeLocation
   )
+
+  const bandByID = useSelector(
+    (state) => state?.nonPersist?.userDetails.bandValue
+  )
+
+  const holidayData = useSelector(
+    (state) =>  state?.nonPersist?.userDetails?.holidayData
+  )
+
+  const holiday = useSelector(
+    (state) => state?.nonPersist?.userDetails?.holiday
+  )
+
+  const domineData = useSelector(
+    (state) =>  state?.nonPersist?.userDetails?.domineData
+  )
+
+
   const handleBack = () => {
     navigate(-1)
   }
@@ -93,6 +127,32 @@ export default function MasterDataPage() {
   const cancleHandler = () => {
     setIsOpenCalender(false);
   };
+
+  const handleExpand = (type) => {
+    if(type === 'designation'){
+        setDesignatonExpand(!designationExpand)
+    }  if (type === 'skill'){
+        setSkillExpand(!skillExpand)
+
+    }  if (type === 'officeLocation'){
+        setOfiiceLocationExpand(!officeLocationExpand)
+    }  if (type === 'band'){
+        setBandExpand(!bandExpand)
+    }  if (type ==='clientOfficeLocation'){
+        setClientOfficeLocationExpand(!clientOfficeLocationExpand)
+    }  if ( type === 'manageHoliday'){
+        setManageHolidayExpand(!manageHolidayExpand)
+    } if (type === 'clientDetails'){
+        setClientDetailsExpand(!clientDetailsExpand)
+    } 
+    
+    if (type === 'domine'){
+        setDomineExpand(!domineExpand)
+    }
+    if(type === 'jobType')
+    setJobTypeExpand(!jobTypeExpand)
+    
+  }
 
   const ActionList = () => {
     return (
@@ -112,38 +172,71 @@ export default function MasterDataPage() {
         city: officeLocation.city || '',
         postalCode: officeLocation.postalCode || '',
       });
+    } if(bandByID){
+        setBandFormData({
+            bandName:bandByID.bandName || '',
+            maximumCtc:bandByID.maximumCtc || '',
+            minimumCtc:bandByID.minimumCtc || '',
+        })
     }
-  }, [officeLocation,dispatch]);
+    if(holiday) {
+        setHolidayFormData({
+            holidayName:holiday.name || '',
+            holidayType:holiday.holidayType || '',
+        })
+        setSelectedDate(dayjs(holiday.date))
+    }
+  }, [officeLocation,dispatch,bandByID,holiday]);
 
   const handlechange = (e) => {
     setValue(e.target.value)
   }
   const handleDesignation = (type , data , id , status) => {
-
-    if (status === "INACTIVE" || status === null){
+    if (status === "INACTIVE"){
+        if(type === 'band'){
+            dispatch(GetBand(id))
+        }
+        if(type === 'holiday'){
+            dispatch(GetHoliday(id))
+        }
+        if(type === 'officeLocation'){
+            dispatch(GetOfficeLocation(id))
+        }
         setEnable(true)
-    }
+        setChnageDataId(id)
+        setChangeDataType(type)
+        setValue(data)  
+    } else{
     setOpenDialog(true);
     setDesugnationEdit(false)
     setDesignationDisable(false)
     setChnageDataId(id)
     setChnageData(data)
     setChangeDataType(type)
-    setValue(data)    
-  }
+    setValue(data)  
+    }  
+}
+
   const handleEditDesignation = (type) => {
 
     if(type === "officeLocation"){
         setOpen(true)
         dispatch(GetOfficeLocation(chnageDataId))
+        setChangeDataType(type)
+        setEdit(true)
     } else if(type === "band") {
         setBandDialog(true)
-
+        setChangeDataType(type)
+        setEdit(true)
+        dispatch(GetBand(chnageDataId))
     }else if (type ==="holiday") {
         setHolidayDialog(true)
+        dispatch(GetHoliday(chnageDataId))
+        setEdit(true)
     }else{
         setDesugnationEdit(true)
     }
+    
     
   };
   const handleCloseDialog = () => {
@@ -167,26 +260,59 @@ export default function MasterDataPage() {
         minimum:'',
         maximum:''
       })
+      setHolidayFormData({
+        holidayName:'',
+        holidayType:'',
+      })
       setSelectedDate(dayjs())
       setErrors({})
   }
-  const handleDisable = () => {
+
+
+  const handleDisable = (type) => {
     setDesignationDisable(true)
-    dispatch(GetOfficeLocation(chnageDataId))
-    
+    if(type === 'officeLocation'){
+        dispatch(GetOfficeLocation(chnageDataId))
+    }
+    if(type === 'band'){
+        dispatch(GetBand(chnageDataId))
+    }
+    if (type === 'holiday'){
+        dispatch(GetHoliday(chnageDataId))
+    }
   };
+
   const handleAddDesignationCancle = () => {
     setDesugnationEdit(false)
     setDesignationDisable(false)
   }
 
   useEffect(() => {
-    dispatch(masterDataAction());
-    dispatch(GetAllSkillData())
-    dispatch(GetAllDesignationData());
-    dispatch(GetAllBandData())
-    dispatch(GetAllOfficeLocationData());
-  },[render])
+    if(skillExpand){
+        dispatch(GetAllSkillData());
+    }
+    if(jobTypeExpand){
+        dispatch(GetAllJobTypeData());
+    }
+    if (designationExpand) {
+      dispatch(GetAllDesignationData());
+    }  
+    if (bandExpand){
+        dispatch(GetAllBandData());
+    } 
+    if (officeLocationExpand) {
+        dispatch(GetAllOfficeLocationData());
+    }
+    if(manageHolidayExpand){
+        dispatch(GetAllHolidays());
+    }
+    if(domineExpand){
+        dispatch(GetAllDomines())
+    }
+
+    
+  }, [designationExpand, officeLocationExpand,bandExpand,skillExpand,manageHolidayExpand,domineExpand,jobTypeExpand]);
+  
 
 
   const handleAdd = (type) => {
@@ -195,8 +321,11 @@ export default function MasterDataPage() {
         setOpen(true)
     } else if (type === 'band') {
         setBandDialog(true)
+        setChangeDataType(type)
     }else if (type === 'holiday') {
-    setHolidayDialog(true)
+        setHolidayDialog(true)
+        setEdit(false)
+        setChangeDataType(type)
     }else{
         setDialog(true);
     }
@@ -239,6 +368,19 @@ export default function MasterDataPage() {
         ...prevFormData,
         [field]: data,
       }));
+
+      if (field === "holidayType") {
+        setBandFormData((prevFormData) => ({
+            ...prevFormData,
+            holidayType: data,
+        }));
+    }
+        if (field === "holidayName") {
+            setBandFormData((prevFormData) => ({
+                ...prevFormData,
+                holidayName: data,
+        }));
+    }
   }
 
   const handleHolidayChnage = (field, data) => {
@@ -246,8 +388,11 @@ export default function MasterDataPage() {
         ...prevFormData,
         [field]: data,
       }));
-  }  
+    } 
+
+
 const handleSubmit = async (type, id, status) => {
+
   const validationErrors = validateForm(type);
   if (Object.keys(validationErrors).length == 0) {
     setErrors({});
@@ -256,31 +401,46 @@ const handleSubmit = async (type, id, status) => {
         const payload = {
           skillId: id ? id : "",
           skillName: value,
-          status:status ? status : ''
         };
+        if (status) {
+            payload.status = status;
+        }
         await dispatch(CreateSkillData(payload));
+        await dispatch(GetAllSkillData());
         setValue('');
-        setRender(true);
-      } else if (type === 'band') {
+      } else if (type === 'jobType') {
         const payload = {
-          bandId: id ? id : "",
-          bandName: bandFormData.bandName,
-          minimum: bandFormData.minimum,
-          maximum: bandFormData.maximum,
-          status:status ? status : ''
+            jobId: id ? id : "",
+            jobType: value,
         };
-        await dispatch(CreateBandlData(payload));
+        if (status) {
+            payload.status = status; 
+        }
+        await dispatch(CreateJobTypeData(payload));
+        await dispatch(GetAllJobTypeData());
         setValue('');
-        setRender(true);
+      }else if (type === 'band') {
+        const payload = {
+            bandId: id ? id : "",
+            bandName: bandFormData.bandName,
+            minimumCtc: bandFormData.minimumCtc,
+            maximumCtc: bandFormData.maximumCtc,
+          };
+          if (status) {
+            payload.status = status;
+          }
+        await dispatch(CreateBandlData(payload));
+        await dispatch(GetAllBandData());
       } else if (type === 'designation') {
         const payload = {
           designationId: id ? id : "",
           designationName: value,
-          status:status ? status : ''
         };
+        if (status) {
+            payload.status = status;
+          }
         await dispatch(CreateDesignationData(payload));
-        setValue('');
-        setRender(true);
+        await dispatch(GetAllDesignationData());
       } else if (type === 'officeLocation') {
         const payload = {
           locationId: id ? id : "",
@@ -290,23 +450,44 @@ const handleSubmit = async (type, id, status) => {
           state: officeData.state,
           city: officeData.city,
           postalCode: officeData.postalCode,
-          status:status ? status : ''
         };
+        if (status) {
+            payload.status = status;
+          }
         await dispatch(CreateOfficeLocationnData(payload));
+        await dispatch(GetAllOfficeLocationData());
       } else if(type === "holiday") {
         const payload ={
+            id: id ? id : "",
             date : selectedDate,
             holidayType:holidayFormData.holidayType,
-            holidayName:holidayFormData.holidayName
+            name:holidayFormData.holidayName
         }
-        console.log(payload)
+        if (status) {
+            payload.status = status;
+          }
+        await dispatch(CreateManageHoliday(payload));
+        await dispatch(GetAllHolidays())
+      } else if (type === 'domine') {
+        const payload = {
+            domainId: id ? id : "",
+            domainName: value,
+          };
+          if (status) {
+              payload.status = status;
+          }
+          await dispatch(CreateDomine(payload))
+          await dispatch(GetAllDomines())
       }
     }finally {
-      setDialog(false);
+      setDialog(false); 
       setOpenDialog(false);
-      setRender(true);
       setOpen(false);
+      setBandDialog(false)
+      setHolidayDialog(false)
       setValue('');
+      setChangeDataType('');
+      setChnageDataId('');
       setOfficeData({
         officeAddress: '',
         phoneNumber: '',
@@ -315,6 +496,140 @@ const handleSubmit = async (type, id, status) => {
         city: '',
         postalCode: '',
       });
+      setBandFormData({
+        bandName:'',
+        minimum:'',
+        maximum:'',
+      })
+      setHolidayFormData({
+        holidayName:'',
+        holidayType:'',
+      })
+      setSelectedDate(dayjs())
+      setEnable(false)
+    }
+
+  } else {
+    setErrors(validationErrors);
+  }
+};
+
+const handleUpdate = async (type, id, status) => {
+
+
+  const validationErrors = validateForm(type);
+  if (Object.keys(validationErrors).length == 0) {
+    setErrors({});
+    try {
+      if (type === 'skill') {
+        const payload = {
+          skillId: id ? id : "",
+          skillName: value,
+        };
+        if (status) {
+            payload.status = status;
+        }
+        await dispatch(UpdateSkillData(payload));
+        await dispatch(GetAllSkillData());
+        setValue('');
+      } else if (type === 'band') {
+        const payload = {
+            bandId: id ? id : "",
+            bandName: bandFormData.bandName,
+            minimumCtc: bandFormData.minimumCtc,
+            maximumCtc: bandFormData.maximumCtc,
+          };
+          if (status) {
+            payload.status = status;
+          }
+        await dispatch(UpdateBandlData(payload));
+        await dispatch(GetAllBandData());
+      } else if (type === 'designation') {
+        const payload = {
+          designationId: id ? id : "",
+          designationName: value,
+        };
+        if (status) {
+            payload.status = status;
+          }
+        await dispatch(UpdateDesignationData(payload));
+        await dispatch(GetAllDesignationData());
+      } else if (type === 'officeLocation') {
+        const payload = {
+          locationId: id ? id : "",
+          officeAddress: officeData.officeAddress,
+          phoneNumber: officeData.phoneNumber,
+          country: officeData.country,
+          state: officeData.state,
+          city: officeData.city,
+          postalCode: officeData.postalCode,
+        };
+        if (status) {
+            payload.status = status;
+          }
+        await dispatch(UpdateOfficeLocationnData(payload));
+        await dispatch(GetAllOfficeLocationData());
+      } else if(type === "holiday") {
+        const payload ={
+            id: id ? id : "",
+            date : selectedDate,
+            holidayType:holidayFormData.holidayType,
+            name:holidayFormData.holidayName
+        }
+        if (status) {
+            payload.status = status;
+          }
+        await dispatch(UpdateManageHoliday(payload));
+        await dispatch(GetAllHolidays())
+      } else if (type === 'domine') {
+        const payload = {
+            domainId: id ? id : "",
+            domainName: value,
+          };
+          if (status) {
+              payload.status = status;
+          }
+          await dispatch(UpdateDomine(payload))
+          await dispatch(GetAllDomines())
+      } else if (type === 'jobType') {
+        const payload = {
+            jobId: id ? id : "",
+            jobType: value,
+        };
+        if (status) {
+            payload.status = status; 
+        }
+        await dispatch(UpdateJobType(payload));
+        await dispatch(GetAllJobTypeData());
+        setValue('');
+      }
+    }finally {
+      setDialog(false); 
+      setOpenDialog(false);
+      setOpen(false);
+      setBandDialog(false)
+      setHolidayDialog(false)
+      setValue('');
+      setChangeDataType('');
+      setChnageDataId('');
+      setOfficeData({
+        officeAddress: '',
+        phoneNumber: '',
+        country: '',
+        state:'',
+        city: '',
+        postalCode: '',
+      });
+      setBandFormData({
+        bandName:'',
+        minimum:'',
+        maximum:'',
+      })
+      setHolidayFormData({
+        holidayName:'',
+        holidayType:'',
+      })
+      setSelectedDate(dayjs())
       setEnable(false)
     }
 
@@ -368,9 +683,33 @@ const handleSubmit = async (type, id, status) => {
           errors.postalCode = "Error validating postal code";
         }
       }
-    }  else if (type === 'skill' || type === 'designation' || type === 'band') {
+    }  else if (type === 'skill' || type === 'designation') {
         if(!value){
             errors.value= `${type} are required`
+        }
+    }
+    if (type === 'band'){
+        if(!bandFormData.bandName) {
+            errors.bandName = "please enter BandName"
+        }
+        if(!bandFormData.minimumCtc) {
+            errors.minimum = "please enter mainimum Ctc"
+        }
+        if (!bandFormData.maximumCtc) {
+            errors.maximum = "Please enter maximum Ctc";
+          } else if (bandFormData.maximum <= bandFormData.minimum) {
+            errors.maximum = "Maximum Ctc should be greater than minimum Ctc";
+        }
+    }
+    if (type === 'holiday'){
+        if(!holidayFormData.holidayName){
+            errors.holidayName = "please enter holidayName"
+        }
+        if(!holidayFormData.holidayType){
+            errors.holidayType = "please enter holidayType"
+        }
+        if(!selectedDate){
+            errors.holidayDate = "Please Select date"
         }
     }
   
@@ -398,364 +737,705 @@ const handleSubmit = async (type, id, status) => {
         }}
       />
     <Grid sx={{paddingLeft:'15px'}} >
-    <Grid container spacing={2} sx={{border:"2px solid #008080",padding:'10px'}} mt={2}>
-        <Grid item sm={12}>
-            <Grid container>
-            <Grid item xs={12} md={10}>
-                <Typography sx={{fontSize:'28px'}}>
-                    Designation
-                </Typography>
+        <Accordion
+            sx={{
+              border: "1px solid #898989",
+              width: "100%",
+              marginBottom:'2px'
+            }}
+            onChange={() => handleExpand('designation')}
+            expanded={designationExpand}
+            >
+            <AccordionSummary
+                sx={{
+                flexDirection: "row",
+                "&.Mui-focusVisible": {
+                    background: "none",
+                },
+                width: "100%",
+                backgroundColor: '#008080',
+                justifyContent: 'space-between',
+                }}
+            >
+            <Grid container alignItems="center">
+            <Grid item xs={11.5}>
+                <Typography variant='h6' ml={3}>Designation</Typography>
             </Grid>
-            <Grid item xs={12} md={2}>
-                <Button 
-                    variant="contained" 
-                    color="primary"
-                    onClick={() => handleAdd('designation')}
-                    sx={{
-                        width:'100px',
-                        height:'46px',
-                        fontSize:'20px'
-                    }}
-                >
-                    ADD
-                </Button>
-                </Grid>
+            <Grid item xs={0.5}>
+                {designationExpand ? <RemoveIcon /> : <AddIcon />}
+            </Grid>
+            </Grid>
+            </AccordionSummary>
 
-            <Grid container sx={{ border: "1px solid #AEAEAE",height: designationData ?'156px' : '0px',overflow:'auto',padding:'10px' }} mt={2}>
-                {designationData?.map((designation, index) => (
-                    <Grid item key={index} sx={{ border:designation.status === "ACTIVE" ?  "1.5px solid #008080" : "1.5px solid #AEAEAE", borderRadius: '15px', padding: '6px', margin: '5px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-                    <Typography
-                        onClick={() => handleDesignation('designation',designation.designationName,designation.designationId,designation.status)}
-                        sx={{
-                        cursor: 'pointer'
-                        }}
-                    >
-                        {designation.designationName}
-                    </Typography>
-                    </Grid>
-                ))}
-                </Grid>
-            </Grid>
-        </Grid>
-    </Grid>
-    <Grid container spacing={2} sx={{border:"2px solid #008080",padding:'10px'}} mt={2}>
-        <Grid item sm={12}>
-            <Grid container>
-            <Grid item xs={12} md={10}>
-                <Typography sx={{fontSize:'28px'}}>
-                    Skills
-                </Typography>
-            </Grid>
-            <Grid item xs={12} md={2}>
-                <Button 
-                    variant="contained" 
-                    color="primary"
-                    onClick={() => handleAdd('skill')}
+              {!designationExpand ? (
+                <>
+                </>
+              ) : (
+                <>
+                <AccordionDetails
                     sx={{
-                        width:'100px',
-                        height:'46px',
-                        fontSize:'20px'
+                      padding: '20px 20px 20px 20px',                    
                     }}
                 >
-                    ADD
-                </Button>
-                </Grid>
-                <Grid container sx={{ border: "1px solid #AEAEAE", height: skillData ? '156px' : 'auto', overflow: 'auto', padding: '10px' }} mt={2}>
-                    {skillData?.map((skill, index) => (
-                        <Grid item key={index} sx={{ border: "1.5px solid #008080", borderRadius: '15px', padding: '6px', margin: '5px', height: '40px' }}>
-                            <Typography
-                                onClick={() => handleDesignation('skill', skill.skillName, skill.skillId)}
+                    <Grid item sm={12}>
+                        <Grid container>
+                            <Grid>
+                                <Button 
+                                variant="contained" 
+                                color="primary"
+                                onClick={() => handleAdd('designation')}
                                 sx={{
-                                    cursor: 'pointer'
+                                    width:'100px',
+                                    height:'46px',
+                                    fontSize:'20px'
                                 }}
                             >
-                                {skill.skillName}
-                            </Typography>
+                                ADD
+                            </Button>
                         </Grid>
-                    ))}
-                </Grid>
-            </Grid>
-        </Grid>
-    </Grid>
-    <Grid container spacing={2} sx={{border:"2px solid #008080",padding:'10px'}} mt={2}>
-        <Grid item sm={12}>
-            <Grid container>
-            <Grid item xs={12} md={10}>
-                <Typography sx={{fontSize:'28px'}}>
-                    Office Location
-                </Typography>
-            </Grid>
-            <Grid item xs={12} md={2}>
-                <Button 
-                    variant="contained" 
-                    onClick={() => handleAdd('officeLocation')}
-                    color="primary"
+                        {designationData && designationData.length > 0 && (
+                            <Grid container sx={{ border: "1px solid #AEAEAE", height: '156px', overflow: 'auto', padding: '10px' }} mt={2}>
+                                {designationData.map((designation, index) => (
+                                <Grid item key={index} sx={{ border: designation.status === "ACTIVE" ? "1.5px solid #008080" : "1.5px solid #AEAEAE", borderRadius: '15px', padding: '6px', margin: '5px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', color: designation.status === "ACTIVE" ? "black" : "#AEAEAE" }}>
+                                    <Typography
+                                    onClick={() => handleDesignation('designation', designation.designationName, designation.designationId, designation.status)}
+                                    sx={{
+                                        cursor: 'pointer'
+                                    }}
+                                    >
+                                    {designation.designationName}
+                                    </Typography>
+                                </Grid>
+                                ))}
+                            </Grid>
+                            )}
+                        </Grid>
+                    </Grid>
+                </AccordionDetails>
+                </>
+              )}
+        </Accordion>
+        <Accordion
+            sx={{
+              border: "1px solid #898989",
+              width: "100%",
+              marginBottom:'2px'
+            }}
+
+            onChange={() => handleExpand('skill')}
+            >
+            <AccordionSummary
                     sx={{
-                        width:'100px',
-                        height:'46px',
-                        fontSize:'20px'
+                      flexDirection: "row",
+                        "&.Mui-focusVisible": {
+                      background: "none",
+                      },
+                      width: "100%",
+                      backgroundColor:'#008080'
+                    }} 
+            >
+            <Grid container alignItems="center">
+            <Grid item xs={11.5}>
+                <Typography variant='h6' ml={3}>Skill</Typography>
+            </Grid>
+            <Grid item xs={0.5}>
+                {skillExpand ? <RemoveIcon /> : <AddIcon />}
+            </Grid>
+            </Grid>
+            </AccordionSummary>
+
+              {!skillExpand ? (
+                <>
+                </>
+              ) : (
+                <>
+                <AccordionDetails
+                    sx={{
+                      padding: '20px 20px 20px 20px',                    
                     }}
                 >
-                    ADD
-                </Button>
-                </Grid>
-            <Grid container sx={{ border: "1px solid #AEAEAE",height:'156px',overflow:'auto',padding:'10px' }} mt={2}>
-                {officeLocationData?.map((officeLocation , index) => (
-                    <Grid item key={index} sx={{ border: officeLocation.status === "ACTIVE" ?"1.5px solid #008080": "1.5px solid #AEAEAE", borderRadius: '15px', padding: '30px', margin: '5px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end',cursor: 'pointer',color : officeLocation.status === "ACTIVE" ? "black" : "#AEAEAE" }}>
-                    <Typography
-                        onClick={() => handleDesignation('officeLocation', officeLocation.officeAddress,officeLocation.locationId,officeLocation.status)} 
-                        sx={{
-                        textAlign:'center',
-                        }}
-                    >
-                        {`${officeLocation.officeAddress} ${officeLocation.city} -${officeLocation.postalCode}, ${officeLocation.country}.`}
-                        <br/>
-                        {`Phone: ${officeLocation.phoneNumber}`}
-                    </Typography>
+                    <Grid item sm={12}>
+                        <Grid container>
+                            <Grid>
+                                <Button 
+                                variant="contained" 
+                                color="primary"
+                                onClick={() => handleAdd('skill')}
+                                sx={{
+                                    width:'100px',
+                                    height:'46px',
+                                    fontSize:'20px'
+                                }}
+                            >
+                                ADD
+                            </Button>
+                        </Grid>
+                        {skillData && skillData.length > 0 && (
+                        <Grid container sx={{ border: "1px solid #AEAEAE", height: skillData ? '156px' : 'auto', overflow: 'auto', padding: '10px' }} mt={2}>
+                            {skillData?.map((skill, index) => (
+                                <Grid item key={index} sx={{ border:skill.status === "ACTIVE" ?  "1.5px solid #008080" : "1.5px solid #AEAEAE", borderRadius: '15px', padding: '6px', margin: '5px', height: '40px',color : skill.status === "ACTIVE" ? "black" : "#AEAEAE" }}>
+                                    <Typography
+                                        onClick={() => handleDesignation('skill', skill.skillName, skill.skillId,skill.status)}
+                                        sx={{
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        {skill.skillName}
+                                    </Typography>
+                                </Grid>
+                            ))}
+                        </Grid>
+                        )}
+                        </Grid>
                     </Grid>
-                ))}
-                </Grid>
-            </Grid>
-        </Grid>
-    </Grid>
-    <Grid container spacing={2} sx={{border:"2px solid #008080",padding:'10px'}} mt={2}>
-        <Grid item sm={12}>
-            <Grid container>
-            <Grid item xs={12} md={10}>
-                <Typography sx={{fontSize:'28px'}}>
-                    Band
-                </Typography>
-            </Grid>
-            <Grid item xs={12} md={2}>
-                <Button 
-                    variant="contained" 
-                    onClick={() => handleAdd('band')}
-                    color="primary"
+                </AccordionDetails>
+                </>
+              )}
+        </Accordion>
+        <Accordion
+            sx={{
+              border: "1px solid #898989",
+              width: "100%",
+              marginBottom:'2px'
+            }}
+
+            onChange={() => handleExpand('officeLocation')}
+            >
+            <AccordionSummary
                     sx={{
-                        width:'100px',
-                        height:'46px',
-                        fontSize:'20px'
+                      flexDirection: "row",
+                        "&.Mui-focusVisible": {
+                      background: "none",
+                      },
+                      width: "100%",
+                      backgroundColor:'#008080'
+                    }} 
+            >
+            <Grid container alignItems="center">
+            <Grid item xs={11.5}>
+                <Typography variant='h6' ml={3}>Office Location</Typography>
+            </Grid>
+            <Grid item xs={0.5}>
+                {officeLocationExpand ? <RemoveIcon /> : <AddIcon />}
+            </Grid>
+            </Grid>
+            </AccordionSummary>
+
+              {!officeLocationExpand ? (
+                <>
+                </>
+              ) : (
+                <>
+                <AccordionDetails
+                    sx={{
+                      padding: '20px 20px 20px 20px',                    
                     }}
                 >
-                    ADD
-                </Button>
-                </Grid>
-            <Grid container sx={{ border: "1px solid #AEAEAE",height:'156px',overflow:'auto',padding:'10px' }} mt={2}>
-            {bandData?.map((band, index) => (
-                <Grid item key={index} sx={{ border: "1.5px solid #008080", borderRadius: '15px', padding: '6px', margin: '5px',height:'40px' }}>
-                        <Typography
-                            onClick={() => handleDesignation('band', band.bandName, band.bandId)} 
-                            sx={{
-                            cursor: 'pointer'
-                            }}
-                        >
-                            {band.bandName}
-                        </Typography>
+                    <Grid item sm={12}>
+                        <Grid container>
+                            <Grid>
+                                <Button 
+                                variant="contained" 
+                                color="primary"
+                                onClick={() => handleAdd('officeLocation')}
+                                sx={{
+                                    width:'100px',
+                                    height:'46px',
+                                    fontSize:'20px'
+                                }}
+                            >
+                                ADD
+                            </Button>
+                        </Grid>
+                        {officeLocationData && officeLocationData.length > 0 && (
+                        <Grid container sx={{ border: "1px solid #AEAEAE",height:'156px',overflow:'auto',padding:'10px' }} mt={2}>
+                            {officeLocationData?.map((officeLocation , index) => (
+                                <Grid item key={index} sx={{ border: officeLocation.status === "ACTIVE" ?"1.5px solid #008080": "1.5px solid #AEAEAE", borderRadius: '15px', padding: '30px', margin: '5px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end',cursor: 'pointer',color : officeLocation.status === "ACTIVE" ? "black" : "#AEAEAE" }}>
+                                <Typography
+                                    onClick={() => handleDesignation('officeLocation', officeLocation.officeAddress,officeLocation.locationId,officeLocation.status)} 
+                                    sx={{
+                                    textAlign:'center',
+                                    }}
+                                >
+                                    {`${officeLocation.officeAddress} ${officeLocation.city} -${officeLocation.postalCode}, ${officeLocation.country}.`}
+                                    <br/>
+                                    {`Phone: ${officeLocation.phoneNumber}`}
+                                </Typography>
+                                </Grid>
+                            ))}
+                            </Grid>
+                        )}
+                        </Grid>
                     </Grid>
-                ))}
-            </Grid>
-            </Grid>
-        </Grid>
-    </Grid>
-    <Grid container spacing={2} sx={{border:"2px solid #008080",padding:'10px'}} mt={2}>
-        <Grid item sm={12}>
-            <Grid container>
-            <Grid item xs={12} md={10}>
-                <Typography sx={{fontSize:'28px'}}>
-                    Client Onsite Office Locations
-                </Typography>
-            </Grid>
-            <Grid item xs={12} md={2}>
-                <Button 
-                    variant="contained" 
-                    color="primary"
-                    onClick={() => handleAdd('clientOfficeLocation')}
+                </AccordionDetails>
+                </>
+              )}
+        </Accordion>
+        <Accordion
+            sx={{
+              border: "1px solid #898989",
+              width: "100%",
+              marginBottom:'2px'
+            }}
+
+            onChange={() => handleExpand('band')}
+            >
+            <AccordionSummary
                     sx={{
-                        width:'100px',
-                        height:'46px',
-                        fontSize:'20px'
+                      flexDirection: "row",
+                        "&.Mui-focusVisible": {
+                      background: "none",
+                      },
+                      width: "100%",
+                      backgroundColor:'#008080'
+                    }} 
+            >
+            <Grid container alignItems="center">
+            <Grid item xs={11.5}>
+                <Typography variant='h6' ml={3}>Band</Typography>
+            </Grid>
+            <Grid item xs={0.5}>
+                {bandExpand ? <RemoveIcon /> : <AddIcon />}
+            </Grid>
+            </Grid>
+            </AccordionSummary>
+
+              {!bandExpand ? (
+                <>
+                </>
+              ) : (
+                <>
+                <AccordionDetails
+                    sx={{
+                      padding: '20px 20px 20px 20px',                    
                     }}
                 >
-                    ADD
-                </Button>
-                </Grid>
-            <Grid container spacing={2} alignItems="center" mt={1}>
-                <Grid item md={4}>
-                </Grid>
-            </Grid>
-            <Grid container sx={{ border: "1px solid #AEAEAE",height:'156px',overflow:'auto',padding:'10px' }} mt={2}>
-                {designations?.map((designation) => (
-                    <Grid item key={designation.id} sx={{ border: "1.5px solid #008080", borderRadius: '15px', padding: '6px', margin: '5px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-                    <Typography
-                        onClick={() => handleDesignation('clientOffice', designation.name)} 
-                        sx={{
-                        cursor: 'pointer'
-                        }}
-                    >
-                        {designation.name}
-                    </Typography>
+                    <Grid item sm={12}>
+                        <Grid container>
+                            <Grid>
+                                <Button 
+                                variant="contained" 
+                                color="primary"
+                                onClick={() => handleAdd('band')}
+                                sx={{
+                                    width:'100px',
+                                    height:'46px',
+                                    fontSize:'20px'
+                                }}
+                            >
+                                ADD
+                            </Button>
+                        </Grid>
+                        {bandData && bandData.length > 0 && (
+                        <Grid container sx={{ border: "1px solid #AEAEAE",height:'156px',overflow:'auto',padding:'10px' }} mt={2}>
+                            {bandData?.map((band, index) => (
+                                <Grid item key={index} sx={{ border:band.status === "ACTIVE" ?  "1.5px solid #008080" : "1.5px solid #AEAEAE", borderRadius: '15px', padding: '6px', margin: '5px',height:'40px',color : band.status === "ACTIVE" ? "black" : "#AEAEAE" }}>
+                                        <Typography
+                                            onClick={() => handleDesignation('band', band.bandName, band.bandId, band.status)} 
+                                            sx={{
+                                            cursor: 'pointer'
+                                            }}
+                                        >
+                                            {`${band.bandName}, CTC - ₹${band.minimumCtc} to${band.maximumCtc}`}
+                                        </Typography>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        )}
+                        </Grid>
                     </Grid>
-                ))}
-                </Grid>
-            </Grid>
-        </Grid>
-    </Grid>
-    <Grid container spacing={2} sx={{border:"2px solid #008080",padding:'10px'}} mt={2}>
-        <Grid item sm={12}>
-            <Grid container>
-            <Grid item xs={12} md={10}>
-                <Typography sx={{fontSize:'28px'}}>
-                    Activities
-                </Typography>
-            </Grid>
-            <Grid item xs={12} md={2}>
-                <Button 
-                    variant="contained" 
-                    color="primary"
-                    onClick={() => handleAdd('activities')}
+                </AccordionDetails>
+                </>
+              )}
+        </Accordion>
+        <Accordion
+            sx={{
+              border: "1px solid #898989",
+              width: "100%",
+              marginBottom:'2px'
+            }}
+
+            onChange={() => handleExpand('clientOfficeLocation')}
+            >
+            <AccordionSummary
                     sx={{
-                        width:'100px',
-                        height:'46px',
-                        fontSize:'20px'
+                      flexDirection: "row",
+                        "&.Mui-focusVisible": {
+                      background: "none",
+                      },
+                      width: "100%",
+                      backgroundColor:'#008080'
+                    }} 
+            >
+            <Grid container alignItems="center">
+            <Grid item xs={11.5}>
+                <Typography variant='h6' ml={3}>Client Onsite Office Location</Typography>
+            </Grid>
+            <Grid item xs={0.5}>
+                {clientOfficeLocationExpand ? <RemoveIcon /> : <AddIcon />}
+            </Grid>
+            </Grid>
+            </AccordionSummary>
+
+              {!clientOfficeLocationExpand ? (
+                <>
+                </>
+              ) : (
+                <>
+                <AccordionDetails
+                    sx={{
+                      padding: '20px 20px 20px 20px',                    
                     }}
                 >
-                    ADD
-                </Button>
-                </Grid>
-            <Grid container sx={{ border: "1px solid #AEAEAE",height:'156px',overflow:'auto',padding:'10px' }} mt={2}>
-            {masterData?.activityForView.map((activity, index) => (
-                <Grid item key={index} sx={{ border: "1.5px solid #008080", borderRadius: '15px', padding: '6px', margin: '5px',height:'40px' }}>
-                        <Typography
-                            onClick={() => handleDesignation('activitys', activity.activityType)} 
-                            sx={{
-                            cursor: 'pointer'
-                            }}
-                        >
-                            {activity.activityType}
-                        </Typography>
+                    <Grid item sm={12}>
+                        <Grid container>
+                            <Grid>
+                                <Button 
+                                variant="contained" 
+                                color="primary"
+                                onClick={() => handleAdd('band')}
+                                sx={{
+                                    width:'100px',
+                                    height:'46px',
+                                    fontSize:'20px'
+                                }}
+                            >
+                                ADD
+                            </Button>
+                        </Grid>
+                        {designations && designations.length > 0 && (
+                        <Grid container sx={{ border: "1px solid #AEAEAE",height:'156px',overflow:'auto',padding:'10px' }} mt={2}>
+                            {designations?.map((designation) => (
+                                <Grid item key={designation.id} sx={{ border:designation.status === "ACTIVE" ?  "1.5px solid #008080" : "1.5px solid #AEAEAE", borderRadius: '15px', padding: '6px', margin: '5px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' ,color : designation.status === "ACTIVE" ? "black" : "#AEAEAE"}}>
+                                <Typography
+                                    onClick={() => handleDesignation('clientOffice', designation.name)} 
+                                    sx={{
+                                    cursor: 'pointer'
+                                    }}
+                                >
+                                    {designation.name}
+                                </Typography>
+                                </Grid>
+                            ))}
+                        </Grid>
+                        )}
+                        </Grid>
                     </Grid>
-                ))}
-            </Grid>
-            </Grid>
-        </Grid>
-    </Grid>
-    <Grid container spacing={2} sx={{border:"2px solid #008080",padding:'10px'}} mt={2}>
-        <Grid item sm={12}>
-            <Grid container>
-            <Grid item xs={12} md={10}>
-                <Typography sx={{fontSize:'28px'}}>
-                    Job Type
-                </Typography>
-            </Grid>
-            <Grid item xs={12} md={2}>
-                <Button 
-                    variant="contained" 
-                    onClick={() => handleAdd('jobType')}
-                    color="primary"
+                </AccordionDetails>
+                </>
+              )}
+        </Accordion>
+        <Accordion
+            sx={{
+              border: "1px solid #898989",
+              width: "100%",
+              marginBottom:'2px'
+            }}
+
+            onChange={() => handleExpand('jobType')}
+            >
+            <AccordionSummary
                     sx={{
-                        width:'100px',
-                        height:'46px',
-                        fontSize:'20px'
+                      flexDirection: "row",
+                        "&.Mui-focusVisible": {
+                      background: "none",
+                      },
+                      width: "100%",
+                      backgroundColor:'#008080'
+                    }} 
+            >
+            <Grid container alignItems="center">
+            <Grid item xs={11.5}>
+                <Typography variant='h6' ml={3}>JobType</Typography>
+            </Grid>
+            <Grid item xs={0.5}>
+                {jobTypeExpand ? <RemoveIcon /> : <AddIcon />}
+            </Grid>
+            </Grid>
+            </AccordionSummary>
+
+              {!jobTypeExpand ? (
+                <>
+                </>
+              ) : (
+                <>
+                <AccordionDetails
+                    sx={{
+                      padding: '20px 20px 20px 20px',                    
                     }}
                 >
-                    ADD
-                </Button>
-                </Grid>
-            <Grid container sx={{ border: "1px solid #AEAEAE",height:'156px',overflow:'auto',padding:'10px' }} mt={2}>
-            {masterData?.jobtype.map((job, index) => (
-                <Grid item key={index} sx={{ border: "1.5px solid #008080", borderRadius: '15px', padding: '6px', margin: '5px',height:'40px' }}>
-                        <Typography
-                            onClick={() => handleDesignation('jobType', job.jobType)} 
-                            sx={{
-                            cursor: 'pointer'
-                            }}
-                        >
-                            {job.jobType}
-                        </Typography>
+                    <Grid item sm={12}>
+                        <Grid container>
+                            <Grid>
+                                <Button 
+                                variant="contained" 
+                                color="primary"
+                                onClick={() => handleAdd('jobType')}
+                                sx={{
+                                    width:'100px',
+                                    height:'46px',
+                                    fontSize:'20px'
+                                }}
+                            >
+                                ADD
+                            </Button>
+                        </Grid>
+                        
+                        <Grid container sx={{ border: "1px solid #AEAEAE",height:'156px',overflow:'auto',padding:'10px' }} mt={2}>
+                            {jobTypeData?.map((job, index) => (
+                                <Grid item key={index} sx={{ border:job.status === "ACTIVE" ?  "1.5px solid #008080" : "1.5px solid #AEAEAE", borderRadius: '15px', padding: '6px', margin: '5px',height:'40px',color : job.status === "ACTIVE" ? "black" : "#AEAEAE" }}>
+                                        <Typography
+                                            onClick={() => handleDesignation('jobType', job.jobType, job.jobId, job.status)} 
+                                            sx={{
+                                            cursor: 'pointer'
+                                            }}
+                                        >
+                                            {job.jobType}
+                                        </Typography>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        
+                        </Grid>
                     </Grid>
-                ))}
-            </Grid>
-            </Grid>
-        </Grid>
-    </Grid>
-        <Grid container spacing={2} sx={{border:"2px solid #008080",padding:'10px'}} mt={2}>
-        <Grid item sm={12}>
-            <Grid container>
-            <Grid item xs={12} md={10}>
-                <Typography sx={{fontSize:'28px'}}>
-                    Manage Holidays
-                </Typography>
-            </Grid>
-            <Grid item xs={12} md={2}>
-                <Button 
-                    variant="contained" 
-                    onClick={() => handleAdd('holiday')}
-                    color="primary"
+                </AccordionDetails>
+                </>
+              )}
+        </Accordion>        
+        <Accordion
+            sx={{
+              border: "1px solid #898989",
+              width: "100%",
+              marginBottom:'2px'
+            }}
+
+            onChange={() => handleExpand('manageHoliday')}
+            >
+            <AccordionSummary
                     sx={{
-                        width:'100px',
-                        height:'46px',
-                        fontSize:'20px'
+                      flexDirection: "row",
+                        "&.Mui-focusVisible": {
+                      background: "none",
+                      },
+                      width: "100%",
+                      backgroundColor:'#008080'
+                    }} 
+            >
+            <Grid container alignItems="center">
+            <Grid item xs={11.5}>
+                <Typography variant='h6' ml={3}>Manage Holiday</Typography>
+            </Grid>
+            <Grid item xs={0.5}>
+                {manageHolidayExpand ? <RemoveIcon /> : <AddIcon />}
+            </Grid>
+            </Grid>
+            </AccordionSummary>
+
+              {!manageHolidayExpand ? (
+                <>
+                </>
+              ) : (
+                <>
+                <AccordionDetails
+                    sx={{
+                      padding: '20px 20px 20px 20px',                    
                     }}
                 >
-                    ADD
-                </Button>
-                </Grid>
-            <Grid container sx={{ border: "1px solid #AEAEAE",height:'156px',overflow:'auto',padding:'10px' }} mt={2}>
-            {masterData?.jobtype.map((job, index) => (
-                <Grid item key={index} sx={{ border: "1.5px solid #008080", borderRadius: '15px', padding: '6px', margin: '5px',height:'40px' }}>
-                        <Typography
-                            onClick={() => handleDesignation('holiday', job.jobType)} 
-                            sx={{
-                            cursor: 'pointer'
-                            }}
-                        >
-                            {job.jobType}
-                        </Typography>
+                    <Grid item sm={12}>
+                        <Grid container>
+                            <Grid>
+                                <Button 
+                                variant="contained" 
+                                color="primary"
+                                onClick={() => handleAdd('holiday')}
+                                sx={{
+                                    width:'100px',
+                                    height:'46px',
+                                    fontSize:'20px'
+                                }}
+                            >
+                                ADD
+                            </Button>
+                        </Grid>
+                        {holidayData && holidayData.length > 0 && (
+                        <Grid container sx={{ border: "1px solid #AEAEAE",height:'156px',overflow:'auto',padding:'10px' }} mt={2}>
+                            {holidayData?.map((holiday, index) => (
+                                <Grid item key={index} sx={{ border: holiday.status === "ACTIVE" ?"1.5px solid #008080": "1.5px solid #AEAEAE", borderRadius: '15px', padding: '30px', margin: '5px', height: '40px', display: 'flex', alignItems: 'center',cursor: 'pointer',color : holiday.status === "ACTIVE" ? "black" : "#AEAEAE" }}>
+                                    <Typography
+                                            onClick={() => handleDesignation('holiday', holiday.holidayType, holiday.id,holiday.status)} 
+                                            sx={{
+                                            cursor: 'pointer',
+                                            textAlign:'center'
+                                            }}
+                                        >
+                                        {`${holiday.holidayType} - ${dayjs(holiday.date).format('DD-MMM-YYYY')}`}
+                                        <br/>
+                                        {`${holiday.name}`}
+                                        </Typography>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        )}
+                        </Grid>
                     </Grid>
-                ))}
-            </Grid>
-            </Grid>
-        </Grid>
-    </Grid>
-        <Grid container spacing={2} sx={{border:"2px solid #008080",padding:'10px'}} mt={2}>
-        <Grid item sm={12}>
-            <Grid container>
-            <Grid item xs={12} md={10}>
-                <Typography sx={{fontSize:'28px'}}>
-                    Gender
-                </Typography>
-            </Grid>
-            <Grid item xs={12} md={2}>
-                <Button 
-                    variant="contained" 
-                    onClick={() => handleAdd('gender')}
-                    color="primary"
+                </AccordionDetails>
+                </>
+              )}
+        </Accordion>
+        <Accordion
+            sx={{
+              border: "1px solid #898989",
+              width: "100%",
+              marginBottom:'2px'
+            }}
+
+            onChange={() => handleExpand('clinetDetails')}
+            >
+            <AccordionSummary
                     sx={{
-                        width:'100px',
-                        height:'46px',
-                        fontSize:'20px'
+                      flexDirection: "row",
+                        "&.Mui-focusVisible": {
+                      background: "none",
+                      },
+                      width: "100%",
+                      backgroundColor:'#008080'
+                    }} 
+            >
+            <Grid container alignItems="center">
+            <Grid item xs={11.5}>
+                <Typography variant='h6' ml={3}>Client Details</Typography>
+            </Grid>
+            <Grid item xs={0.5}>
+                {clientDetailsExpand ? <RemoveIcon /> : <AddIcon />}
+            </Grid>
+            </Grid>
+            </AccordionSummary>
+
+              {!clientDetailsExpand ? (
+                <>
+                </>
+              ) : (
+                <>
+                <AccordionDetails
+                    sx={{
+                      padding: '20px 20px 20px 20px',                    
                     }}
                 >
-                    ADD 
-                </Button>
-                </Grid>
-            <Grid container sx={{ border: "1px solid #AEAEAE",height:'156px',overflow:'auto',padding:'10px' }} mt={2}>
-            {masterData?.gender.map((gender, index) => (
-                <Grid item key={index} sx={{ border: "1.5px solid #008080", borderRadius: '15px', padding: '6px', margin: '5px',height:'40px' }}>
-                        <Typography
-                            onClick={() => handleDesignation('jobType', gender.genderName)} 
-                            sx={{
-                            cursor: 'pointer'
-                            }}
-                        >
-                            {gender.gender}
-                        </Typography>
+                    <Grid item sm={12}>
+                        <Grid container>
+                            <Grid>
+                                <Button 
+                                variant="contained" 
+                                color="primary"
+                                onClick={() => handleAdd('clinetDetails')}
+                                sx={{
+                                    width:'100px',
+                                    height:'46px',
+                                    fontSize:'20px'
+                                }}
+                            >
+                                ADD
+                            </Button>
+                        </Grid>
+                        {masterData && masterData.length > 0 && (
+                        <Grid container sx={{ border: "1px solid #AEAEAE",height:'156px',overflow:'auto',padding:'10px' }} mt={2}>
+                            {masterData?.jobtype.map((job, index) => (
+                                <Grid item key={index} sx={{ border:job.status === "ACTIVE" ?  "1.5px solid #008080" : "1.5px solid #AEAEAE", borderRadius: '15px', padding: '6px', margin: '5px',height:'40px' ,color : job.status === "ACTIVE" ? "black" : "#AEAEAE"}}>
+                                        <Typography
+                                            onClick={() => handleDesignation('clinetDetails', job.jobType)} 
+                                            sx={{
+                                            cursor: 'pointer'
+                                            }}
+                                        >
+                                            {job.jobType}
+                                        </Typography>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        )}
+                        </Grid>
                     </Grid>
-                ))}
+                </AccordionDetails>
+                </>
+              )}
+        </Accordion>
+        <Accordion
+            sx={{
+              border: "1px solid #898989",
+              width: "100%",
+              marginBottom:'2px'
+            }}
+
+            onChange={() => handleExpand('domine')}
+            >
+            <AccordionSummary
+                    sx={{
+                      flexDirection: "row",
+                        "&.Mui-focusVisible": {
+                      background: "none",
+                      },
+                      width: "100%",
+                      backgroundColor:'#008080'
+                    }} 
+            >
+            <Grid container alignItems="center">
+            <Grid item xs={11.5}>
+                <Typography variant='h6' ml={3}>Domine</Typography>
+            </Grid>
+            <Grid item xs={0.5}>
+                {domineExpand ? <RemoveIcon /> : <AddIcon />}
             </Grid>
             </Grid>
-        </Grid>
-    </Grid>
+            </AccordionSummary>
+
+              {!domineExpand ? (
+                <>
+                </>
+              ) : (
+                <>
+                <AccordionDetails
+                    sx={{
+                      padding: '20px 20px 20px 20px',                    
+                    }}
+                >
+                    <Grid item sm={12}>
+                        <Grid container>
+                            <Grid>
+                                <Button 
+                                variant="contained" 
+                                color="primary"
+                                onClick={() => handleAdd('domine')}
+                                sx={{
+                                    width:'100px',
+                                    height:'46px',
+                                    fontSize:'20px'
+                                }}
+                            >
+                                ADD
+                            </Button>
+                        </Grid>
+                        {domineData && domineData.length > 0 && (
+                        <Grid container sx={{ border: "1px solid #AEAEAE",height:'156px',overflow:'auto',padding:'10px' }} mt={2}>
+                            {domineData?.map((domine, index) => (
+                                <Grid item key={index} sx={{ border:domine.status === "ACTIVE" ?  "1.5px solid #008080" : "1.5px solid #AEAEAE", borderRadius: '15px', padding: '6px', margin: '5px',height:'40px' ,color : domine.status === "ACTIVE" ? "black" : "#AEAEAE"}}>
+                                        <Typography
+                                            onClick={() => handleDesignation('domine', domine.domainName,domine.domainId,domine?.status)} 
+                                            sx={{
+                                            cursor: 'pointer'
+                                            }}
+                                        >
+                                            {domine.domainName}
+                                        </Typography>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        )}
+                        </Grid>
+                    </Grid>
+                </AccordionDetails>
+                </>
+              )}
+        </Accordion>
     <Dialog open={openDialog} onClose={handleCloseDialog}>
         <IconButton
             edge="end"
@@ -776,7 +1456,7 @@ const handleSubmit = async (type, id, status) => {
         {desginationEdit ? (
             <Grid sx={{padding:'10px'}}>
                 <TextField 
-                    label="desigantion"
+                    label={chnageDataType}
                     value={value}
                     onChange={(e)=>{setValue(e.target.value)}}
                     sx={{
@@ -816,7 +1496,7 @@ const handleSubmit = async (type, id, status) => {
             {desginationEdit ? (
                 <>
                     <Button 
-                        onClick={() => handleSubmit(chnageDataType,chnageDataId)} 
+                        onClick={() => handleUpdate(chnageDataType,chnageDataId)} 
                         sx={{
                             color: '#fff',
                             borderRadius: '8px',
@@ -854,8 +1534,8 @@ const handleSubmit = async (type, id, status) => {
                         Cancle
                     </Button>
                     <Button 
-                        onClick={() => handleSubmit(chnageDataType,chnageDataId,'INACTIVE')} 
-                        sx={{
+                            onClick={() => handleSubmit(chnageDataType, chnageDataId,'INACTIVE')}
+                            sx={{
                             color:'#fff',
                             backgroundColor:"#B7251B",
                             borderRadius:'8px',
@@ -880,7 +1560,7 @@ const handleSubmit = async (type, id, status) => {
                         Edit
                     </Button>
                     <Button 
-                        onClick={handleDisable} 
+                        onClick={() => handleDisable(chnageDataType,chnageDataId)} 
                         sx={{
                             color:'#fff',
                             backgroundColor:"#B7251B",
@@ -1176,19 +1856,49 @@ const handleSubmit = async (type, id, status) => {
                         marginTop:2
                     }}
                 />
+                {errors.bandName && (
+                    <Box>
+                        <Typography
+                            color="error"
+                        >
+                            {" "}
+                            {errors.bandName}
+                        </Typography>
+                    </Box>
+                )}
                 <Typography>Enter CTC</Typography>
                 <Typography>Minimum</Typography>
                 <TextField 
                     label='Minimum'
-                    value={bandFormData.minimum}
-                    onChange={(e) => hnadleBandChnage('minimum', e.target.value)}
+                    value={bandFormData.minimumCtc}
+                    onChange={(e) => hnadleBandChnage('minimumCtc', e.target.value)}
                 />
+                {errors.minimum && (
+                    <Box>
+                        <Typography
+                            color="error"
+                        >
+                            {" "}
+                            {errors.minimum}
+                        </Typography>
+                    </Box>
+                )}
                 <Typography>Maximum</Typography>
                 <TextField 
                     label='Maximum'
-                    value={bandFormData.maximum}
-                    onChange={(e) => hnadleBandChnage('maximum', e.target.value)}
+                    value={bandFormData.maximumCtc}
+                    onChange={(e) => hnadleBandChnage('maximumCtc', e.target.value)}
                 />
+                {errors.maximum && (
+                    <Box>
+                        <Typography
+                            color="error"
+                        >
+                            {" "}
+                            {errors.maximum}
+                        </Typography>
+                    </Box>
+                )}
 
             </DialogContent>
         <DialogActions>
@@ -1250,18 +1960,48 @@ const handleSubmit = async (type, id, status) => {
                         ),
                     }}
                 />
+                {errors.selectedDate && (
+                <Box>
+                    <Typography
+                        color="error"
+                    >
+                        {" "}
+                        {errors.selectedDate}
+                    </Typography>
+                </Box>
+                )}
                 <Typography>Enter Holiday Type</Typography>
-                <TextField 
+                <TextField
                     placeholder='holiday Type'
                     value={holidayFormData.holidayType}
-                    onChange={(e) => handleHolidayChnage('holidatType', e.target.value)}
+                    onChange={(e) => handleHolidayChnage('holidayType', e.target.value)}
                 />
+                {errors.holidayType && (
+                <Box>
+                    <Typography
+                        color="error"
+                    >
+                        {" "}
+                        {errors.holidayType}
+                    </Typography>
+                </Box>
+                )}
                 <Typography>Enter Holiday Name</Typography>
                 <TextField 
                     placeholder='holiday Name'
                     value={holidayFormData.holidayName}
-                    onChange={(e) => handleHolidayChnage('HolidatName', e.target.value)}
+                    onChange={(e) => handleHolidayChnage('holidayName', e.target.value)}
                 />
+                {errors.holidayName && (
+                <Box>
+                    <Typography
+                        color="error"
+                    >
+                        {" "}
+                        {errors.holidayName}
+                    </Typography>
+                </Box>
+                )}
 
             </DialogContent>
         <DialogActions>
@@ -1277,8 +2017,8 @@ const handleSubmit = async (type, id, status) => {
                 cancle
             </Button>
             <Button 
-                onClick={() => handleSubmit(chnageDataType,chnageDataId)} 
-                sx={{
+                    onClick={() => (edit=== false ? handleSubmit(chnageDataType, chnageDataId) : handleUpdate(chnageDataType, chnageDataId))} 
+                    sx={{
                     backgroundColor:'#008080',
                     color:'#ffff',
                     marginRight:'30px',
@@ -1289,7 +2029,7 @@ const handleSubmit = async (type, id, status) => {
                     },
                 }}
             >
-                Enable
+                Save
             </Button>
       </DialogActions>
     </Dialog>

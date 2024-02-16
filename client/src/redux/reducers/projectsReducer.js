@@ -17,7 +17,6 @@ const projectsReducer = (state = initialState, action) => {
         projectsDataLoading: true,
       };
     case FETCH_ALL_PROJECTS_SUCCESS:
-      console.log("Projects get all Data:", action.payload);
       return {
         ...state,
         projectsData: action.payload,

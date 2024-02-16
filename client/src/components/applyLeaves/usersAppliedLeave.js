@@ -36,6 +36,7 @@ const UsersAppliedLeave = ({ color }) => {
   const searchAPIData = useSelector(
     (state) => state?.nonPersist?.leavesData?.allEmployeesSearchData
   );
+  console.log("searchAPIData", searchAPIData)
 
   const leaveTypesData = useSelector(
     (state) => state.persistData.masterData?.leaveTypes

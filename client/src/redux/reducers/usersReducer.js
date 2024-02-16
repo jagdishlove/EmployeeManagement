@@ -18,7 +18,6 @@ const usersReducer = (state = initialState, action) => {
           usersDataLoading: true,
         };
      case FETCH_ALL_USERS_SUCCESS:
-        console.log("User get all Data:", action.payload);
         return {
             ...state,
             usersData: action.payload,

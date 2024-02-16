@@ -56,8 +56,8 @@ const UserDataListPage = ({ userData }) => {
             </Menu>
           </>
         }
-        title={<Typography variant="body2" sx={{ color: '#1D1B20', fontSize: "16px" }}>{`${userData?.firstName} | ID: ${userData?.empId}`}</Typography>}
-        subheader={<Typography variant="body2" sx={{ color: '#1D1B20', fontSize: '12px' }}>{`${userData?.designation} | ${userData?.role}`}</Typography>}
+        title={<Typography variant="body2" sx={{ color: '#1D1B20', fontSize: "16px" }}>{`${userData?.firstName} ${userData?.lastName} | ID: ${userData?.empId}`}</Typography>}
+        subheader={<Typography variant="body2" sx={{ color: '#1D1B20', fontSize: '12px' }}>{`${userData?.designation?.designationName}`}</Typography>}
       />
       <CardContent>
         <Grid container spacing={2}>

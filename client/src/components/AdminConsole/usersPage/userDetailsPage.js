@@ -18,6 +18,8 @@ export default function UserDetailsPage() {
   const [expanded, setExpanded] = useState(false);
 
   const [payRollExpanded, setPayRollExpanded] = useState(false);
+  const [bankExpand, setBankExpand] = useState(false)
+  const [skillExpanded, setSkillExpanded] = useState(false);
 
   const handleAccordionToggle = (projectId) => {
     setExpanded(expanded === projectId ? null : projectId);
@@ -27,6 +29,14 @@ export default function UserDetailsPage() {
     setPayRollExpanded(!payRollExpanded)
   }
 
+  const handleSkillExpand = () => {
+    setSkillExpanded(!skillExpanded)
+  }
+
+  const handleBankExpand = () => {
+    setBankExpand(!bankExpand)
+  }
+
 useEffect(() => {
   dispatch(getUserById(id))
 },[id])
@@ -34,26 +44,45 @@ useEffect(() => {
 const userData = useSelector(
   (state) => state?.nonPersist?.userDetails?.userByIdData
   )
-  const skillsArray = [
-    'Html & CSS',
-    'Java Script',
-    'Java',
-    'Node Js',
-    'Python',
-    'PHP',
-  ];
+
+  const managerData = useSelector(
+    (state) => state.persistData.masterData
+  );
+
+  const skillIdToName = {};
+  managerData.skill.forEach((skill) => {
+    skillIdToName[skill.skillId] = skill.skillName;
+  });
+
+  const bandIdToName = {};
+  managerData.band.forEach((band) => {
+    bandIdToName[band.bandId] = band.bandName;
+  });
+
+  const empTypeIdToName = {};
+  managerData.employmentType.forEach((empType) => {
+    empTypeIdToName[empType.empTypeId] = empType.employmentType;
+  });
+
+  const genderIdToName = {}
+  managerData.gender.forEach((gender) => {
+    genderIdToName[gender.genderId] = gender.gender;
+  });
+
     const skillItemStyle = {
-      backgroundColor: '#E8DEF8',
+      backgroundColor: '#ffff',
       borderRadius: '50px',
       padding: '8px',
       display: 'flex',
       marginBottom: '8px',
       marginRight: '8px',
+      border:'1px solid #1D192B'
+
     };
   
     const checkIconStyle = {
       marginRight: '8px',
-      backgroundColor:'#1D192B',
+      backgroundColor:'#00A1A1',
       color:'#ffff',
       borderRadius:'50%'
     };
@@ -163,7 +192,7 @@ const userData = useSelector(
         </Grid>
       </Grid>
       <Grid item xs={12} md={9}>
-      <Box sx={{ border: '2px solid #A4A4A4', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', padding: 8, borderRadius: '25px', width: '100%' }}>
+      <Box sx={{ border: '2px solid #A4A4A4', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', padding: 8.4, borderRadius: '25px', width: '100%' }}>
         <Typography variant="h5" gutterBottom>
           Basic Details
         </Typography>
@@ -205,7 +234,7 @@ const userData = useSelector(
               </Grid>
               <Grid item xs={8}>
                 <Typography variant="body1">
-                  Male
+                  {genderIdToName[userData.genderId]}
                 </Typography>
               </Grid>
             </Grid>
@@ -219,7 +248,7 @@ const userData = useSelector(
               </Grid>
               <Grid item xs={8}>
                 <Typography variant="body1">
-                  bandName
+                {bandIdToName[userData.bandId]}
                 </Typography>
               </Grid>
             </Grid>
@@ -228,12 +257,55 @@ const userData = useSelector(
             <Grid container spacing={2}>
               <Grid item xs={4}>
                 <Typography variant="body1">
-                  <strong>Employment:</strong>
+                  <strong>Employment Type:</strong>
                 </Typography>
               </Grid>
               <Grid item xs={8}>
                 <Typography variant="body1">
-                  Permanent
+                {empTypeIdToName[userData.empTypeId]}
+                </Typography>
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={12}>
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <Typography variant="body1">
+                  <strong>Work Mode:</strong>
+                </Typography>
+              </Grid>
+              <Grid item xs={8}>
+                <Typography variant="body1">
+                  Remote
+                </Typography>
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={12}>
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <Typography variant="body1">
+                  <strong>Currect Address:</strong>
+                </Typography>
+              </Grid>
+              <Grid item xs={8}>
+                <Typography variant="body1">
+                37, Purva Apartment, Bazar Street, Chennai -56
+                </Typography>
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={12}>
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <Typography variant="body1">
+                  <strong>Permanent Address:</strong>
+                </Typography>
+              </Grid>
+              <Grid item xs={8}>
+                <Typography variant="body1">
+                97, Elipse Apartment, Bazar Street, 
+                Mumbai -56
                 </Typography>
               </Grid>
             </Grid>
@@ -247,50 +319,88 @@ const userData = useSelector(
               </Grid>
               <Grid item xs={8}>
                 <Typography variant="body1">
-                  Swaroop Kumar
+                  {userData.managerFirstName} {userData.managerLastName}
                 </Typography>
               </Grid>
             </Grid>
-          </Grid>
-          <Grid item xs={12}>
-            <Grid container spacing={2}>
-              <Grid item xs={4}>
-                <Typography variant="body1">
-                  <strong>Address:</strong>
-                </Typography>
-              </Grid>
-              <Grid item xs={8}>
-                <Typography variant="body1">
-                  97, Elipse Apartment. Bazar Street, Mumbai - 56
-                </Typography>
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item xs={12}>
-          <Grid container spacing={2}>
-            <Grid item xs={4}>
-              <Typography variant="body1">
-                <strong>Skills:</strong>
-              </Typography>
-            </Grid>
-            <Grid item xs={8}>
-              <div style={skillsContainerStyle}>
-                {skillsArray.map((skill, index) => (
-                  <div key={index} style={skillItemStyle}>
-                    <CheckIcon style={checkIconStyle} />
-                    <Typography variant="body1">
-                      {skill}
-                    </Typography>
-                  </div>
-                ))}
-              </div>
-            </Grid>
-          </Grid>
           </Grid>
         </Grid>
       </Box>
     </Grid>
     </Grid>
+    <Grid container mt={2}>
+        <Grid item xs={12}>
+          <Typography variant="h3" gutterBottom>
+            Skill
+          </Typography>
+        </Grid>
+        <Grid mt={2} sx={{ border: '2px solid #A4A4A4', boxShadow: '#000000', padding: 2, borderRadius: '25px',width:'100%' }}>
+          <Grid container spacing={1} sx={{ padding: "10px" }}>
+          <Accordion
+            sx={{
+              border: "1px solid #898989",
+              width: "100%",
+            }}
+
+            onChange={handleSkillExpand}
+            >
+            <AccordionSummary
+                    sx={{
+                      flexDirection: "row",
+                        "&.Mui-focusVisible": {
+                      background: "none",
+                      },
+                      width: "100%",
+                      backgroundColor:'#008080'
+                    }} 
+                  >
+              {skillExpanded  ? <RemoveIcon /> : <AddIcon />}
+              <Typography variant='h6' ml={3}>Skill</Typography>
+            </AccordionSummary>
+
+              {!skillExpanded ? (
+                <>
+                </>
+              ) : (
+                <>
+                <AccordionDetails
+                    sx={{
+                      padding: '20px 20px 20px 50px',                    
+                    }}
+                  >
+                    <Grid sx={{
+                      backgroundColor:'#F0F0F0',
+                      padding:'30px',
+                      border:'1px solid #707071',
+                      borderRadius:'20px'
+                    }}>
+                      <Grid item xs={8}>
+                        <div style={skillsContainerStyle}>
+                        {userData.skillId && userData.skillId.length > 0 ? (
+                          userData.skillId.map((skill, id) => (
+                            <div key={id} style={skillItemStyle}>
+                              {id > 0 && ' | '}
+                              <CheckIcon style={checkIconStyle} />
+                              <Typography variant="body1">
+                              {skillIdToName[skill]}
+                              </Typography>
+                            </div>
+                          ))
+                        ) : (
+                          skillIdToName[userData.skillId]
+                        )}
+                        </div>
+                      </Grid>
+                    </Grid>
+                </AccordionDetails>
+                </>
+              )
+              }
+              </Accordion>
+          </Grid>
+        </Grid>
+      </Grid>
+    
     <Grid container mt={2}> 
       <Grid item xs={12}>
         <Typography variant="h3" gutterBottom>
@@ -415,7 +525,50 @@ const userData = useSelector(
                 </>
               )
               }
-              </Accordion>
+          </Accordion>
+          <Accordion
+            sx={{
+              border: "1px solid #898989",
+              width: "100%",
+              marginTop:1
+            }}
+
+            onChange={handleBankExpand}
+            >
+            <AccordionSummary
+                    sx={{
+                      flexDirection: "row",
+                        "&.Mui-focusVisible": {
+                      background: "none",
+                      },
+                      width: "100%",
+                      backgroundColor:'#008080'
+                    }} 
+              >
+              {bankExpand  ? <RemoveIcon /> : <AddIcon />}
+              <Typography variant='h6' ml={3}>Current Compensation</Typography>
+            </AccordionSummary>
+
+              {!bankExpand ? (
+                <>
+                </>
+              ) : (
+                <>
+                <AccordionDetails
+                    sx={{
+                      padding: '20px 20px 20px 50px',                    
+                    }}
+                  >
+                    <Grid>
+                      <Typography>
+                          <b>Cost to Company : </b><br />
+                        </Typography>
+                    </Grid>
+                </AccordionDetails>
+                </>
+              )
+              }
+          </Accordion>
           </Grid>
         </Grid>
       </Grid>
