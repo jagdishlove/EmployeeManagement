@@ -144,7 +144,6 @@ export default function CreateUser() {
         const newZip = e.target.value;
         setZip(newZip);
     };
-    console.log("zip:");
 
     const isValid = postcodeValidator('12345', 'US'); // Example usage
     console.log("pincode:", isValid);//Example
@@ -167,7 +166,6 @@ export default function CreateUser() {
     const masterdata5 = useSelector(
         (state) => state.persistData.masterData?.workLocation
     );
-    console.log("Master Data 3", masterdata4);
 
 
     const [validationErrors, setValidationErrors] = useState({});
@@ -227,34 +225,28 @@ export default function CreateUser() {
     const skills = useSelector(
         (state) => state.persistData.masterData?.skill
     );
-    console.log("Skills", formData.skill);
     const handleGenderChange = (selectedOption) => {
         setFormData({ ...formData, gender: selectedOption.target.value });
     };
-    console.log("Gender", formData.gender);
 
     const handleWorkLocationChange = (selectedOption) => {
         setFormData({ ...formData, Work_loc: selectedOption.target.value });
     };
-    console.log("Work_Location", formData.Work_loc);
 
     const handleManagerChange = (selectedOption) => {
         setFormData({ ...formData, ManagerName: selectedOption.target.value });
     };
-    console.log("formData", formData);
 
 
     const handleBandChange = (selectedOption) => {
         setFormData({ ...formData, band: selectedOption.target.value });
     };
-    console.log("band", formData.band);
     const handleEmptypeChange = (selectedOption) => {
         setFormData({
             ...formData,
             employeeType: selectedOption.target.value
         });
     };
-    console.log("employeeType", formData.employeeType);
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;

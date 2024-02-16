@@ -505,8 +505,8 @@ const TimesheetRow = ({
               color: "#000000",
             }}
           >
-            {`${data?.timesheet?.timesheetId.employeeFirstName || null} ${
-              data?.timesheet?.timesheetId.employeeLastName || null
+            {`${data?.timesheet?.timesheetId?.employeeFirstName || null} ${
+              data?.timesheet?.timesheetId?.employeeLastName || null
             }`}
           </Typography>
         </div>

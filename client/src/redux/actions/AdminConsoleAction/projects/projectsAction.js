@@ -10,6 +10,12 @@ import {
   FETCH_ALL_DOMAIN_REQUEST,
   FETCH_ALL_DOMAIN_SUCCESS,
   FETCH_ALL_DOMAIN_FAILURE,
+  FETCH_CLIENT_NAME_REQUEST,
+  FETCH_CLIENT_NAME_SUCCESS,
+  FETCH_CLIENT_NAME_FAILURE,
+  FETCH_RESOURCES_NAME_DESIGNATION_SEARCH_REQUEST,
+  FETCH_RESOURCES_NAME_DESIGNATION_SEARCH_SUCCESS,
+  FETCH_RESOURCES_NAME_DESIGNATION_SEARCH_FAILURE
 } from "./projectsActionTypes.js";
 
 const getAllProjectsRequest = () => {
@@ -69,6 +75,44 @@ const getAllDomainFailure = () => {
   };
 };
 
+const getClientNameRequest = () => {
+  return {
+    type: FETCH_CLIENT_NAME_REQUEST,
+  };
+};
+
+const getClientNameSuccess = (data) => {
+  return {
+    type: FETCH_CLIENT_NAME_SUCCESS,
+    payload: data,
+  };
+};
+
+const getClientNameFailure = () => {
+  return {
+    type: FETCH_CLIENT_NAME_FAILURE,
+  };
+};
+
+const getResourcesNameDesignationSearchRequest = () => {
+  return {
+    type: FETCH_RESOURCES_NAME_DESIGNATION_SEARCH_REQUEST,
+  };
+};
+
+const getResourcesNameDesignationSearchSuccess = (data) => {
+  return {
+    type: FETCH_RESOURCES_NAME_DESIGNATION_SEARCH_SUCCESS,
+    payload: data,
+  };
+};
+
+const getResourcesNameDesignationSearchFailure = () => {
+  return {
+    type: FETCH_RESOURCES_NAME_DESIGNATION_SEARCH_FAILURE,
+  };
+};
+
 export const getAllProjects = (data) => {
   return async (dispatch) => {
     dispatch(getAllProjectsRequest());
@@ -102,7 +146,6 @@ export const getEmployeeSearchAction = (data) => {
         }
       );
       dispatch(getEmployeeSearchSuccess(response));
-      console.log("getEmployeeSearchSuccess", getEmployeeSearchSuccess);
     } catch (err) {
       dispatch(getEmployeeSearchFailure());
       toast.error(err.response.data.errorMessage, {
@@ -125,6 +168,52 @@ export const getAllDomainAction = (data) => {
       dispatch(getAllDomainSuccess(response));
     } catch (err) {
       dispatch(getAllDomainFailure());
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  };
+};
+
+export const getClientNameAction = (data) => {
+  return async (dispatch) => {
+    dispatch(getClientNameRequest());
+    try {
+      const response = await makeRequest(
+        "GET",
+        "/api/clients/search",
+        null,
+        {
+          clientSearch: data || "",
+        }
+      );
+      dispatch(getClientNameSuccess(response));
+    } catch (err) {
+      dispatch(getClientNameFailure());
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  };
+};
+
+
+export const getResourcesNameDesignationSearchAction = (data) => {
+  return async (dispatch) => {
+    dispatch(getResourcesNameDesignationSearchRequest());
+    try {
+      const response = await makeRequest(
+        "GET",
+        "/api/resources/searchResource",
+        null,
+        {
+          query: data || "",
+          skillIds: data || "",
+        }
+      );
+      dispatch(getResourcesNameDesignationSearchSuccess(response));
+    } catch (err) {
+      dispatch(getResourcesNameDesignationSearchFailure());
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });

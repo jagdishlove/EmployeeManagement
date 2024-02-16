@@ -20,15 +20,16 @@ import {
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Select, { components } from "react-select";
 import { TimesheetStyle } from "../../../../pages/timesheet/timesheetStyle";
+import { getResourcesNameDesignationSearchAction } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import ProjectResourcesModal from "./projectResourcesModal";
 
 const ResourceAllocationFormDetails = () => {
-  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [setSelectedOptions] = useState([]);
   const [selectedRadio, setSelectedRadio] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [timeInput, setTimeInput] = useState("");
@@ -37,6 +38,7 @@ const ResourceAllocationFormDetails = () => {
   const style = TimesheetStyle(theme);
 
   const Navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
     projectedimplementationhours: "",
@@ -61,7 +63,6 @@ const ResourceAllocationFormDetails = () => {
       </components.Control>
     );
   };
-  const searchAPIData = useSelector((state) => state?.nonPersist);
 
   //   For Table
 
@@ -134,11 +135,64 @@ const ResourceAllocationFormDetails = () => {
     Navigate("/costallocation");
   };
 
+  // Name and Designation Search
+  const [nameDesignationSearchFormData, setNameDesignationSearchFormData] =
+    useState();
+  const nameDesignationSearchData = useSelector(
+    (state) =>
+      state.nonPersist?.projectDetails?.resourcesNameDesignationSearchData
+  );
+  console.log("nameDesignationSearchData", nameDesignationSearchData);
+
+  useEffect(() => {
+    dispatch(getResourcesNameDesignationSearchAction());
+  }, []);
+
+  const handleNameDesignationChangeSearch = (data) => {
+    setNameDesignationSearchFormData(data);
+  };
+
   const [selectedValue, setSelectedValue] = useState("");
 
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
   };
+
+  const abc = [
+    {
+      id: 623,
+      name: "Santosh",
+      type: "employee",
+      skills: ["Python dev"],
+    },
+    {
+      id: 624,
+      name: "tester",
+      type: "designation",
+    },
+    {
+      id: 623,
+      name: "Santosh",
+      type: "employee",
+      skills: ["Python dev"],
+    },
+    {
+      id: 624,
+      name: "tester",
+      type: "designation",
+    },
+    {
+      id: 623,
+      name: "Santosh",
+      type: "employee",
+      skills: ["Python dev"],
+    },
+    {
+      id: 624,
+      name: "tester",
+      type: "designation",
+    },
+  ];
 
   return (
     <div>
@@ -182,13 +236,13 @@ const ResourceAllocationFormDetails = () => {
                 }}
                 isSearchable={true}
                 menuPortalTarget={document.body}
-                value={selectedOptions}
+                value={nameDesignationSearchFormData}
                 components={{ Control: CustomSelectControl }}
-                onChange={handleInputChange}
+                onChange={handleNameDesignationChangeSearch}
                 getOptionValue={(option) => option.id}
                 getOptionLabel={(option) => option.name}
-                options={searchAPIData?.result}
-                isLoading={searchAPIData?.length === 0}
+                options={abc}
+                isLoading={nameDesignationSearchData?.length === 0}
                 placeholder="Search by Name or Designation"
               />
             </Grid>
@@ -220,7 +274,14 @@ const ResourceAllocationFormDetails = () => {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12} sm={8} md={10} lg={10}>
+        <Grid
+          // sx={{ display: false ? "block" : "none" }}
+          item
+          xs={12}
+          sm={8}
+          md={10}
+          lg={10}
+        >
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
@@ -246,14 +307,11 @@ const ResourceAllocationFormDetails = () => {
                   </TableRow>
                 ))}
               </TableBody>
-              {/* Modal component */}
               <ProjectResourcesModal
                 open={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
               >
-                {/* Content of your modal */}
                 <div style={{ marginTop: "20px" }}>
-                  {/* Add time input field */}
                   <TextField
                     placeholder="Enter Occupancy Hrs ( HH : MM )"
                     value={timeInput}
@@ -262,7 +320,6 @@ const ResourceAllocationFormDetails = () => {
                     margin="normal"
                   />
 
-                  {/* Add Confirm and Cancel buttons */}
                   <Box display="flex" justifyContent="flex-end" mt={2}>
                     <Button
                       variant="outlined"
