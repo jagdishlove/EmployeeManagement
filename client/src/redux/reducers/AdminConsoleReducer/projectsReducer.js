@@ -14,6 +14,12 @@ import {
   FETCH_RESOURCES_NAME_DESIGNATION_SEARCH_FAILURE,
   FETCH_RESOURCES_NAME_DESIGNATION_SEARCH_REQUEST,
   FETCH_RESOURCES_NAME_DESIGNATION_SEARCH_SUCCESS,
+  FETCH_CLIENT_DETAILS_REQUEST,
+  FETCH_CLIENT_DETAILS_SUCCESS,
+  FETCH_CLIENT_DETAILS_FAILURE,
+  GET_ALL_COUNTRY_CITY_STATE_REQUEST,
+  GET_ALL_COUNTRY_CITY_STATE_SUCCESS,
+  GET_ALL_COUNTRY_CITY_STATE_FAILURE,
 } from "../../actions/AdminConsoleAction/projects/projectsActionTypes";
 
 const initialState = {
@@ -27,9 +33,14 @@ const initialState = {
   clientNameDataLoading: false,
   resourcesNameDesignationSearchData: [],
   resourcesNameDesignationSearchDataLoading: false,
+  clientDetailsData: [],
+  clientDetailsDataLoading: false,
+  getAllCountryCityStateData: [],
+  getAllCountryCityStateLoading: false,
 };
 
 const projectsReducer = (state = initialState, action) => {
+  console.log("action.payload",action.payload)
   switch (action.type) {
     case FETCH_ALL_PROJECTS_REQUEST:
       return {
@@ -116,6 +127,40 @@ const projectsReducer = (state = initialState, action) => {
         resourcesNameDesignationSearchData: [],
         resourcesNameDesignationSearchDataLoading: false,
       };
+      case FETCH_CLIENT_DETAILS_REQUEST:
+      return {
+        ...state,
+        clientDetailsDataLoading: true,
+      };
+    case FETCH_CLIENT_DETAILS_SUCCESS:
+      return {
+        ...state,
+        clientDetailsData: action.payload,
+        clientDetailsLoading: false,
+      };
+    case FETCH_CLIENT_DETAILS_FAILURE:
+      return {
+        ...state,
+        clientDetailsData: [],
+        clientDetailsDataLoading: false,
+      };
+      case GET_ALL_COUNTRY_CITY_STATE_REQUEST:
+        return {
+          ...state,
+          getAllCountryCityStateDataLoading: true,
+        };
+      case GET_ALL_COUNTRY_CITY_STATE_SUCCESS:
+        return {
+          ...state,
+          getAllCountryCityStateData: action.payload,
+          getAllCountryCityStateDataLoading: false,
+        };
+      case GET_ALL_COUNTRY_CITY_STATE_FAILURE:
+        return {
+          ...state,
+          getAllCountryCityStateData: [],
+          getAllCountryCityStateLoading: false,
+        };
     default:
       return state;
   }
