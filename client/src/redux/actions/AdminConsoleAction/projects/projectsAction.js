@@ -15,8 +15,18 @@ import {
   FETCH_CLIENT_NAME_FAILURE,
   FETCH_RESOURCES_NAME_DESIGNATION_SEARCH_REQUEST,
   FETCH_RESOURCES_NAME_DESIGNATION_SEARCH_SUCCESS,
-  FETCH_RESOURCES_NAME_DESIGNATION_SEARCH_FAILURE
+  FETCH_RESOURCES_NAME_DESIGNATION_SEARCH_FAILURE,
+  FETCH_CLIENT_DETAILS_REQUEST,
+  FETCH_CLIENT_DETAILS_SUCCESS,
+  FETCH_CLIENT_DETAILS_FAILURE,
+  GET_ALL_COUNTRY_CITY_STATE_REQUEST,
+  GET_ALL_COUNTRY_CITY_STATE_SUCCESS,
+  GET_ALL_COUNTRY_CITY_STATE_FAILURE,
+  SAVE_CREATE_PROJECT_REQUEST,
+  SAVE_CREATE_PROJECT_SUCCESS,
+  SAVE_CREATE_PROJECT_FAIL,
 } from "./projectsActionTypes.js";
+import { getRefreshToken } from "../../login/loginAction.js";
 
 const getAllProjectsRequest = () => {
   return {
@@ -110,6 +120,60 @@ const getResourcesNameDesignationSearchSuccess = (data) => {
 const getResourcesNameDesignationSearchFailure = () => {
   return {
     type: FETCH_RESOURCES_NAME_DESIGNATION_SEARCH_FAILURE,
+  };
+};
+
+const getClientDetailsRequest = () => {
+  return {
+    type: FETCH_CLIENT_DETAILS_REQUEST ,
+  };
+};
+
+const getClientDetailsSuccess = (data) => {
+  return {
+    type: FETCH_CLIENT_DETAILS_SUCCESS,
+    payload: data,
+  };
+};
+
+const getClientDetailsFailure = () => {
+  return {
+    type: FETCH_CLIENT_DETAILS_FAILURE,
+  };
+};
+
+const getAllCountryCityStateRequest = () => {
+  return {
+    type: GET_ALL_COUNTRY_CITY_STATE_REQUEST ,
+  };
+};
+
+const getAllCountryCityStateSuccess = (data) => {
+  return {
+    type: GET_ALL_COUNTRY_CITY_STATE_SUCCESS,
+    payload: data,
+  };
+};
+
+const getAllCountryCityStateFailure = () => {
+  return {
+    type:GET_ALL_COUNTRY_CITY_STATE_FAILURE,
+  };
+};
+
+const saveCreateProjectRequest = () => {
+  return {
+    type: SAVE_CREATE_PROJECT_REQUEST,
+  };
+};
+const saveCreateProjectSuccess = () => {
+  return {
+    type: SAVE_CREATE_PROJECT_SUCCESS,
+  };
+};
+const saveCreateProjectFail = () => {
+  return {
+    type: SAVE_CREATE_PROJECT_FAIL,
   };
 };
 
@@ -217,6 +281,72 @@ export const getResourcesNameDesignationSearchAction = (data) => {
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
+    }
+  };
+};
+
+
+export const getClientDetailsAction = (clientId) => {
+  return async (dispatch) => {
+    dispatch(getClientDetailsRequest());
+    try {
+      const response = await makeRequest(
+        "GET",
+        `/api/client/get/${clientId}`,
+      
+      );
+      dispatch(getClientDetailsSuccess(response));
+    } catch (err) {
+      dispatch(getClientDetailsFailure());
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  };
+};
+
+export const GetAllCountryCityStateAction = () => {
+  return async (dispatch) => {
+    dispatch(getAllCountryCityStateRequest())
+    try{
+       const response = await  makeRequest(
+          "GET",
+          "api/masterData/getAll",
+        );
+        dispatch(getAllCountryCityStateSuccess(response))
+
+    } catch (err){
+      dispatch(getAllCountryCityStateFailure())
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  }
+}
+
+export const saveCreateProjectAction = ( payload ) => {
+  return async (dispatch) => {
+    try {
+      dispatch(saveCreateProjectRequest());
+      const response = await makeRequest(
+        "POST",
+        "/api/projects/createProject",
+        payload 
+      );
+      dispatch(saveCreateProjectSuccess());
+      toast.success("Project Created Successfully", {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+      return response;
+    } catch (err) {
+      if (err.response.data.errorCode === 403) {
+        dispatch(getRefreshToken());
+      } else if (err.response.data.errorCode === 500){
+        dispatch(saveCreateProjectFail(err.response.data.errorMessage));
+        toast.error(err.response.data.errorMessage, {
+          position: toast.POSITION.BOTTOM_CENTER,
+        });
+      }
     }
   };
 };
