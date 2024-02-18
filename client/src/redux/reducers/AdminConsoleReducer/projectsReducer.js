@@ -8,6 +8,9 @@ import {
   FETCH_ALL_DOMAIN_REQUEST,
   FETCH_ALL_DOMAIN_SUCCESS,
   FETCH_ALL_DOMAIN_FAILURE,
+  FETCH_CLIENT_NAME_FAILURE,
+  FETCH_CLIENT_NAME_REQUEST,
+  FETCH_CLIENT_NAME_SUCCESS,
   FETCH_ALLOCATION_SEARCH_REQUEST,
   FETCH_ALLOCATION_SEARCH_SUCCESS,
   FETCH_CLIENT_DETAILS_REQUEST,
@@ -32,6 +35,8 @@ const initialState = {
   clientDetailsDataLoading: false,
   getAllCountryCityStateData: [],
   getAllCountryCityStateLoading: false,
+  clientNameData: [],
+  clientNameDataLoading: false,
 };
 
 const projectsReducer = (state = initialState, action) => {
@@ -88,6 +93,23 @@ const projectsReducer = (state = initialState, action) => {
         allDomainData: [],
         allDomainDataLoading: false,
       };
+      case FETCH_CLIENT_NAME_REQUEST:
+        return {
+          ...state,
+          clientNameDataLoading: true,
+        };
+      case FETCH_CLIENT_NAME_SUCCESS:
+        return {
+          ...state,
+          clientNameData: action.payload,
+          clientNameDataLoading: false,
+        };
+      case FETCH_CLIENT_NAME_FAILURE:
+        return {
+          ...state,
+          clientNameData: [],
+          clientNameDataLoading: false,
+        };
     case FETCH_ALLOCATION_SEARCH_REQUEST:
       return {
         ...state,
