@@ -26,6 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Select, { components } from "react-select";
 import { TimesheetStyle } from "../../../../pages/timesheet/timesheetStyle";
+import { getResourcesNameDesignationSearchAction } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import ProjectResourcesModal from "./projectResourcesModal";
 import useDebounce from "../../../../utils/useDebounce";
 import { getAllocationSearch } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
@@ -178,6 +179,8 @@ const ResourceAllocationFormDetails = () => {
     Navigate("/costallocation");
   };
 
+  // Name and Designation Search
+
   const applySkillFilterHandler = () => {
     if (skillsCheckedData.length > 0) {
       const getSkillId = skillsCheckedData
@@ -214,6 +217,42 @@ const ResourceAllocationFormDetails = () => {
       </components.Menu>
     );
   };
+
+  const abc = [
+    {
+      id: 623,
+      name: "Santosh",
+      type: "employee",
+      skills: ["Python dev"],
+    },
+    {
+      id: 624,
+      name: "tester",
+      type: "designation",
+    },
+    {
+      id: 623,
+      name: "Santosh",
+      type: "employee",
+      skills: ["Python dev"],
+    },
+    {
+      id: 624,
+      name: "tester",
+      type: "designation",
+    },
+    {
+      id: 623,
+      name: "Santosh",
+      type: "employee",
+      skills: ["Python dev"],
+    },
+    {
+      id: 624,
+      name: "tester",
+      type: "designation",
+    },
+  ];
 
   return (
     <div>

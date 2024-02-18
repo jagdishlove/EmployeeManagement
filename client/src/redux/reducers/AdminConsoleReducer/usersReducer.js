@@ -12,7 +12,14 @@ import {
     GET_ALL_DESIGNATION_SUCCESS,
     GET_ALL_BAND_SUCCESS,
     GET_ALL_OFFICELOCAION_SUCCESS,
-    GET_OFFICE_LOCATION_SUCCESS
+    GET_OFFICE_LOCATION_SUCCESS,
+    GET_BAND_BY_ID_SUCCESS,
+    GET_ALL_HOLIDAYS_SUCCESS,
+    GET_ALL_JOBTYPE_SUCCESS,
+    GET_ALL_JOBTYPE_REQUEST,
+    GET_ALL_JOBTYPE_FAIL,
+    GET_HOLIDAY_BY_ID_SUCCESS,
+    GET_ALL_DOMINE_SUCCESS,
 } from '../../actions/masterData/masterDataActionType'
 
 
@@ -21,10 +28,15 @@ const initialState = {
     usersDataLoading: false,
     userByIdData : {},
     skillData : [],
+    jobTypeData:[],
     designationData: [],
     bandData: [],
+    holidayData: [],
     officeLocationData : [],
     officeLocation : {},
+    bandValue : {},
+    holiday : {},
+    domineData : [],
   };
 
 const usersReducer = (state = initialState, action) => {
@@ -35,7 +47,7 @@ const usersReducer = (state = initialState, action) => {
           usersDataLoading: true,
         };
      case FETCH_ALL_USERS_SUCCESS:
-        console.log("User get all Data:", action.payload);
+      
         return {
             ...state,
             usersData: action.payload,
@@ -65,6 +77,19 @@ const usersReducer = (state = initialState, action) => {
             ...state,
             skillData: action.payload
         }
+      case GET_ALL_JOBTYPE_SUCCESS:
+         return{
+            ...state,
+            jobTypeData: action.payload
+         }
+      case GET_ALL_JOBTYPE_REQUEST:
+         return{
+            ...state
+         }
+      case GET_ALL_JOBTYPE_FAIL:
+         return{
+            ...state
+         }
      case GET_ALL_DESIGNATION_SUCCESS :
         return {
             ...state,
@@ -84,6 +109,26 @@ const usersReducer = (state = initialState, action) => {
      return {
         ...state,
         officeLocation : action.payload
+     }
+     case GET_BAND_BY_ID_SUCCESS : 
+     return {
+        ...state,
+        bandValue : action.payload
+     }
+     case GET_ALL_HOLIDAYS_SUCCESS : 
+     return {
+        ...state,
+        holidayData : action.payload
+     }
+     case GET_HOLIDAY_BY_ID_SUCCESS : 
+     return {
+        ...state,
+        holiday : action.payload
+     }
+     case GET_ALL_DOMINE_SUCCESS : 
+     return{
+        ...state,
+        domineData : action.payload
      }
      default:
         return state;

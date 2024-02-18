@@ -7,10 +7,35 @@ import {
   MASTER_DATA_REQUEST,
   MASTER_DATA_SUCCESS,
   GET_ALL_SKILL_SUCCESS,
+  GET_ALL_SKILL_REQUEST,
+  GET_ALL_SKILL_FAIL,
+  GET_ALL_DESIGNATION_REQUEST,
+  GET_ALL_DESIGNATION_FAIL,
+  GET_ALL_JOBTYPE_SUCCESS,
+  GET_ALL_JOBTYPE_REQUEST,
+  GET_ALL_JOBTYPE_FAIL,
   GET_ALL_DESIGNATION_SUCCESS,
+  GET_ALL_BAND_FAIL,
+  GET_ALL_BAND_REQUEST,
   GET_ALL_BAND_SUCCESS,
+  GET_OFFICE_LOCATION_FAIL,
+  GET_OFFICE_LOCATION_REQUEST,
   GET_ALL_OFFICELOCAION_SUCCESS,
+  GET_ALL_OFFICELOCAION_FAIL,
+  GET_ALL_OFFICELOCAION_REQUEST,
   GET_OFFICE_LOCATION_SUCCESS,
+  GET_BAND_BY_ID_FAIL,
+  GET_BAND_BY_ID_REQUEST,
+  GET_BAND_BY_ID_SUCCESS,
+  GET_ALL_HOLIDAYS_FAIL,
+  GET_ALL_HOLIDAYS_REQUEST,
+  GET_ALL_HOLIDAYS_SUCCESS,
+  GET_HOLIDAY_BY_ID_FAIL,
+  GET_HOLIDAY_BY_ID_REQUEST,
+  GET_HOLIDAY_BY_ID_SUCCESS,
+  GET_ALL_DOMINE_FAIL,
+  GET_ALL_DOMINE_REQUEST,
+  GET_ALL_DOMINE_SUCCESS,
 } from "./masterDataActionType";
 
 const masterDataRequest = () => {
@@ -32,10 +57,28 @@ const masterDataFail = () => {
   };
 };
 
+const getAllSkilldataRequest = () => {
+  return{
+    type: GET_ALL_SKILL_REQUEST
+  }
+}
+
 const GetAllSkillDataSuccess = (response) => {
   return {
     type: GET_ALL_SKILL_SUCCESS,
     payload: response,
+  }
+}
+
+const getAllSkillDataFail = () => {
+  return {
+    type : GET_ALL_SKILL_FAIL
+  }
+}
+
+const getAllDesignationRequest = () => {
+  return {
+    type : GET_ALL_DESIGNATION_REQUEST
   }
 }
 
@@ -46,6 +89,18 @@ const getAllDesignationSuccess = (response) => {
   }
 }
 
+const getAllDesignationFail = () => {
+  return{
+    type : GET_ALL_DESIGNATION_FAIL
+  }
+}
+
+const getAllBandRequest = () => {
+  return {
+    type : GET_ALL_BAND_REQUEST
+  }
+}
+
 const getAllBandSuccess = (response) => {
   return{
     type : GET_ALL_BAND_SUCCESS,
@@ -53,17 +108,139 @@ const getAllBandSuccess = (response) => {
   }
 }
 
-const getAllOfficeLocations = (response) => {
+ const GetAllJobTypeSuccess = (response) => {
+  return{
+    type: GET_ALL_JOBTYPE_SUCCESS,
+    payload: response
+  }
+ }
+ const GetAllJobTypeRequest = (response) => {
+  return{
+    type: GET_ALL_JOBTYPE_REQUEST,
+    payload: response
+  }
+ }
+ const GetAllJobTypeFail = (response) => {
+  return{
+    type: GET_ALL_JOBTYPE_FAIL,
+    payload: response
+  }
+ }
+
+const getAllBandFail = () => {
+  return {
+    type : GET_ALL_BAND_FAIL
+  }
+}
+
+const getBandRequest = () => {
+  return {
+    type : GET_BAND_BY_ID_REQUEST
+  }
+}
+
+const getBandFail = () => {
+  return {
+    type : GET_BAND_BY_ID_FAIL
+  }
+}
+const getBandSuccess = (response) => {
+  return{
+    type : GET_BAND_BY_ID_SUCCESS,
+    payload: response
+  }
+}
+
+const getAllOfficeLocationRequest = () => {
+  return {
+    type : GET_ALL_OFFICELOCAION_REQUEST
+  }
+}
+
+const getAllOfficeLocationFail = () => {
+  return {
+    type : GET_ALL_OFFICELOCAION_FAIL
+  }
+}
+const getAllOfficeLocationSuccess = (response) => {
   return{
     type : GET_ALL_OFFICELOCAION_SUCCESS,
     payload:response
   }
 }
 
-const getOfficeLocation = (respose) => {
+const getOfficeLocationRequest = () => {
+  return {
+    type : GET_OFFICE_LOCATION_REQUEST
+  }
+}
+
+const getOfficeLocationFail = () => {
+  return {
+    type : GET_OFFICE_LOCATION_FAIL
+  }
+}
+
+const getOfficeLocationSuccess = (response) => {
   return {
     type : GET_OFFICE_LOCATION_SUCCESS,
-    payload : respose
+    payload : response
+  }
+}
+
+const getHolidayRequest = () => {
+  return {
+    type : GET_ALL_HOLIDAYS_REQUEST
+  }
+}
+
+const getHolidayFail = () => {
+  return {
+    type : GET_ALL_HOLIDAYS_FAIL
+  }
+}
+const getHolidaySuucess = (response) => {
+  return{
+    type : GET_ALL_HOLIDAYS_SUCCESS,
+    payload : response
+  }
+}
+
+
+const getHolidayByIdRequest = () => {
+  return {
+    type : GET_HOLIDAY_BY_ID_REQUEST
+  }
+}
+
+const getHolidayByIdFail = () => {
+  return {
+    type : GET_HOLIDAY_BY_ID_FAIL
+  }
+}
+const getHolidayByIdSuccess = (response) => {
+  return{
+    type : GET_HOLIDAY_BY_ID_SUCCESS,
+    payload : response
+  }
+}
+
+const getAllDomineRequest  = () => {
+  return {
+    type : GET_ALL_DOMINE_REQUEST
+  }
+}
+
+const getAllDomineFail = () => {
+  return {
+    type : GET_ALL_DOMINE_FAIL
+  }
+}
+
+const getAlldomineSuccess = (response) => {
+  return{
+    type : GET_ALL_DOMINE_SUCCESS,
+    payload : response
   }
 }
 export const masterDataAction = () => {
@@ -95,9 +272,42 @@ export const CreateSkillData = (data) => {
           "api/skill/create",
           data
         );
-      toast.success("Skill Is been added  ", {
+        if(data.status ==='INACTIVE'){
+          toast.success("Skill has been Disabled successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+        else if(data.status ==='ACTIVE'){
+          toast.success("Skill has been Enabled successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+        else{
+          toast.success("Skill has been Created successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+
+    } catch (err){
+      toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
+    }
+  }
+}
+
+export const UpdateSkillData = (data) => {
+  return async () => {
+    try{
+        await  makeRequest(
+          "POST",
+          "api/skill/create",
+          data
+        );
+          toast.success("Skill has been Updated successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+
     } catch (err){
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
@@ -108,6 +318,7 @@ export const CreateSkillData = (data) => {
 
 export const GetAllSkillData = () => {
   return async (dispatch) => {
+    dispatch(getAllSkilldataRequest())
     try{
        const response = await  makeRequest(
           "GET",
@@ -116,6 +327,7 @@ export const GetAllSkillData = () => {
         dispatch(GetAllSkillDataSuccess(response))
 
     } catch (err){
+      dispatch(getAllSkillDataFail())
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
@@ -149,9 +361,40 @@ export const CreateBandlData = (data) => {
           "api/band/create",
           data
         );
-      toast.success("band Is been added  ", {
+        if(data.status ==='INACTIVE'){
+          toast.success("Band has been Disabled successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+        else if(data.status ==='ACTIVE'){
+          toast.success("Band has been Enabled successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+        else{
+          toast.success("Band has been Created successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+    } catch (err){
+      toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
+    }
+  }
+}
+
+export const UpdateBandlData = (data) => {
+  return async () => {
+    try{
+        await  makeRequest(
+          "POST",
+          "api/band/create",
+          data
+        );
+          toast.success("Band has been Updated successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
     } catch (err){
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
@@ -162,6 +405,7 @@ export const CreateBandlData = (data) => {
 
 export const GetAllBandData = () => {
   return async (dispatch) => {
+    dispatch(getAllBandRequest());
     try{
        const response = await  makeRequest(
           "GET",
@@ -170,6 +414,7 @@ export const GetAllBandData = () => {
         dispatch(getAllBandSuccess(response))
 
     } catch (err){
+      dispatch(getAllBandFail());
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
@@ -177,7 +422,23 @@ export const GetAllBandData = () => {
   }
 }
 
-
+export const GetBand = (data) => {
+  return async (dispatch) => {
+    dispatch(getBandRequest())
+    try{
+       const response = await  makeRequest(
+          "GET",
+          `api/band/get/${data}`,
+        );
+        dispatch(getBandSuccess(response))
+    } catch (err){
+      dispatch(getBandFail())
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  }
+}
 
 export const DeleteBandData = (data) => {
   return async () => {
@@ -205,9 +466,40 @@ export const CreateDesignationData = (data) => {
           "api/designation/create",
           data
         );
-      toast.success("designation Is been added  ", {
+        if(data.status ==='INACTIVE'){
+          toast.success("Designation has been Disabled successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+        else if(data.status ==='ACTIVE'){
+          toast.success("Designation has been Enabled successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+        else{
+          toast.success("Designation has been Created successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+    } catch (err){
+      toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
+    }
+  }
+}
+
+export const UpdateDesignationData = (data) => {
+  return async () => {
+    try{
+        await  makeRequest(
+          "POST",
+          "api/designation/create",
+          data
+        );
+          toast.success("Designation has been updated successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
     } catch (err){
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
@@ -218,6 +510,7 @@ export const CreateDesignationData = (data) => {
 
 export const GetAllDesignationData = () => {
   return async (dispatch) => {
+    dispatch(getAllDesignationRequest())
     try{
        const response = await  makeRequest(
           "GET",
@@ -226,6 +519,7 @@ export const GetAllDesignationData = () => {
         dispatch(getAllDesignationSuccess(response))
 
     } catch (err){
+      dispatch(getAllDesignationFail())
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
@@ -259,9 +553,41 @@ export const CreateOfficeLocationnData = (data) => {
           "api/officeLocation/create",
           data
         );
-      toast.success("officeLocation Is been added  ", {
+        if(data.status ==='INACTIVE'){
+          toast.success("OfficeLocation has been Disabled successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+        else if(data.status ==='ACTIVE'){
+          toast.success("OfficeLocation has been Enabled successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+        else{
+          toast.success("OfficeLocation has been Created successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+    } catch (err){
+      toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
+    }
+  }
+}
+
+
+export const UpdateOfficeLocationnData = (data) => {
+  return async () => {
+    try{
+        await  makeRequest(
+          "POST",
+          "api/officeLocation/create",
+          data
+        );
+          toast.success("OfficeLocation has been Updated successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
     } catch (err){
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
@@ -272,14 +598,16 @@ export const CreateOfficeLocationnData = (data) => {
 
 export const GetAllOfficeLocationData = () => {
   return async (dispatch) => {
+    dispatch(getAllOfficeLocationRequest())
     try{
        const response = await  makeRequest(
           "GET",
           "api/officeLocation/getAll",
         );
-        dispatch(getAllOfficeLocations(response))
+        dispatch(getAllOfficeLocationSuccess(response))
 
     } catch (err){
+      dispatch(getAllOfficeLocationFail())
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
@@ -289,13 +617,46 @@ export const GetAllOfficeLocationData = () => {
 
 export const GetOfficeLocation = (data) => {
   return async (dispatch) => {
+    dispatch(getOfficeLocationRequest())
     try{
        const response = await  makeRequest(
           "GET",
           `api/officeLocation/get/${data}`,
         );
-        dispatch(getOfficeLocation(response))
+        dispatch(getOfficeLocationSuccess(response))
 
+    } catch (err){
+      dispatch(getOfficeLocationFail())
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  }
+}
+
+export const CreateManageHoliday = (data) => {
+  return async () => {
+    try{
+        await  makeRequest(
+          "POST",
+          "api/holiday/create",
+          data
+        );
+        if(data.status ==='INACTIVE'){
+          toast.success("Holiday has been Disabled successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+        else if(data.status ==='ACTIVE'){
+          toast.success("Holiday has been Enabled successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+        else{
+          toast.success("Holiday has been Created successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
     } catch (err){
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
@@ -303,3 +664,200 @@ export const GetOfficeLocation = (data) => {
     }
   }
 }
+
+
+export const UpdateManageHoliday = (data) => {
+  return async () => {
+    try{
+        await  makeRequest(
+          "POST",
+          "api/holiday/create",
+          data
+        );
+          toast.success("Holiday has been Updated successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+    } catch (err){
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  }
+}
+
+export const GetAllHolidays = () => {
+  return async (dispatch) => {
+    dispatch(getHolidayRequest())
+    try{
+       const response = await  makeRequest(
+          "GET",
+          "api/holiday/getAll",
+        );
+        dispatch(getHolidaySuucess(response))
+
+    } catch (err){
+      dispatch(getHolidayFail())
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  }
+}
+
+export const GetHoliday = (data) => {
+  return async (dispatch) => {
+    dispatch(getHolidayByIdRequest())
+    try{
+       const response = await  makeRequest(
+          "GET",
+          `api/holiday/get/${data}`,
+        );
+        dispatch(getHolidayByIdSuccess(response))
+    } catch (err){
+      dispatch(getHolidayByIdFail())
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  }
+}
+
+export const CreateDomine = (data) => {
+  return async () => {
+    try{
+        await  makeRequest(
+          "POST",
+          "api/domain/create",
+          data
+        );
+        if(data.status ==='INACTIVE'){
+          toast.success("Domain has been Disabled successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+        else if(data.status ==='ACTIVE'){
+          toast.success("Domain has been Enabled successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+        else{
+          toast.success("Domain has been added successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+    } catch (err){
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  }
+}
+
+
+export const UpdateDomine = (data) => {
+  return async () => {
+    try{
+        await  makeRequest(
+          "POST",
+          "api/domain/create",
+          data
+        );
+          toast.success("Domain has been Update successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+    } catch (err){
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  }
+}
+
+export const GetAllDomines = () => {
+  return async (dispatch) => {
+    dispatch(getAllDomineRequest())
+    try{
+       const response = await  makeRequest(
+          "GET",
+          "api/domain/getAllDomains",
+        );
+        dispatch(getAlldomineSuccess(response))
+
+    } catch (err){
+      dispatch(getAllDomineFail())
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  }
+}
+
+export const CreateJobTypeData = (data) => {
+  return async () => {
+    try{
+        await  makeRequest(
+          "POST",
+          "api/jobType/create",
+          data
+        );
+        if(data.status ==='INACTIVE'){
+          toast.success("JobType has been Disabled successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+        else if(data.status ==='ACTIVE'){
+          toast.success("JobType has been Enabled successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+        else{
+          toast.success("JobType has been Created successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+    } catch (err){
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  }
+}
+
+export const UpdateJobType = (data) => {
+  return async () => {
+    try{
+        await  makeRequest(
+          "POST",
+          "api/jobType/create",
+          data
+        );
+          toast.success("JobType has been Update successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+    } catch (err){
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  }
+}
+
+export const GetAllJobTypeData = () => {
+  return async (dispatch) => {
+    dispatch(GetAllJobTypeRequest());
+    try{
+      
+       const response = await  makeRequest(
+          "GET",
+          "api/jobType/getAll",
+        );
+        dispatch(GetAllJobTypeSuccess(response))
+
+    } catch (err){
+      // toast.error(err.response.data.errorMessage, {
+      //   position: toast.POSITION.BOTTOM_CENTER,
+        dispatch(GetAllJobTypeFail(err.response.data.errorMessage));
+      }
+    }
+  }
+
