@@ -3,9 +3,10 @@ import SearchIcon from "@mui/icons-material/Search";
 import {
   Box,
   Button,
+  Checkbox,
   FormControl,
   Grid,
-  MenuItem,
+  InputAdornment,
   Paper,
   Radio,
   Table,
@@ -27,18 +28,101 @@ import Select, { components } from "react-select";
 import { TimesheetStyle } from "../../../../pages/timesheet/timesheetStyle";
 import { getResourcesNameDesignationSearchAction } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import ProjectResourcesModal from "./projectResourcesModal";
+import useDebounce from "../../../../utils/useDebounce";
+import { getAllocationSearch } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
+
+const InputOption = ({
+  getStyles,
+  isDisabled,
+  isFocused,
+  isSelected,
+  children,
+  innerProps,
+  skillsCheckedData,
+  ...rest
+}) => {
+  const [isActive, setIsActive] = useState(false);
+  const onMouseDown = () => setIsActive(true);
+  const onMouseUp = () => setIsActive(false);
+  const onMouseLeave = () => setIsActive(false);
+
+  // styles
+  let bg = "transparent";
+  if (isFocused) bg = "#eee";
+  if (isActive) bg = "#B2D4FF";
+
+  const style = {
+    alignItems: "center",
+    backgroundColor: bg,
+    color: "inherit",
+    display: "flex ",
+  };
+
+  // prop assignment
+  const props = {
+    ...innerProps,
+    onMouseDown,
+    onMouseUp,
+    onMouseLeave,
+    style,
+  };
+
+  console.log("skillsCheckedData", skillsCheckedData);
+
+  return (
+    <components.Option
+      {...rest}
+      isDisabled={isDisabled}
+      isFocused={isFocused}
+      isSelected={isSelected}
+      getStyles={getStyles}
+      innerProps={props}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          width: "100%",
+          alignItems: "center",
+        }}
+      >
+        <Box>{children}</Box>
+        <Checkbox checked={skillsCheckedData?.includes(rest.data)} />
+      </Box>
+    </components.Option>
+  );
+};
 
 const ResourceAllocationFormDetails = () => {
-  const [setSelectedOptions] = useState([]);
+  const dispatch = useDispatch();
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [searchData, setSearchData] = useState();
   const [selectedRadio, setSelectedRadio] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [timeInput, setTimeInput] = useState("");
+  const [skillsCheckedData, setSkillsCheckedData] = useState([]);
+  const debouncedValue = useDebounce(searchData);
+
+  console.log("selectedOptions", selectedOptions);
+
+  useEffect(() => {
+    const params = {
+      query: searchData || "",
+      skillIds: "",
+    };
+
+    dispatch(getAllocationSearch(params));
+  }, [debouncedValue]);
+
+  const masterSkillData = useSelector(
+    (state) => state?.persistData?.masterData?.skill
+  );
+  console.log("masterSkillData", masterSkillData);
 
   const theme = useTheme();
   const style = TimesheetStyle(theme);
 
   const Navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
     projectedimplementationhours: "",
@@ -53,55 +137,15 @@ const ResourceAllocationFormDetails = () => {
     });
   };
 
-  const CustomSelectControl = (props) => {
-    return (
-      <components.Control {...props}>
-        <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
-          <SearchIcon sx={{ marginLeft: "10px" }} />
-          {props.children}
-        </div>
-      </components.Control>
-    );
-  };
+  const { allocationSearchData } = useSelector(
+    (state) => state?.nonPersist?.projectDetails
+  );
 
   //   For Table
 
   //   const handleTableInputChange = (data) => {
   //     setSelectedOptionsTable(data);
   //   };
-
-  const [selectedOptionsTable] = useState([
-    {
-      id: 1,
-      name: "Kiran Kumar",
-      designation: "Developer",
-      skills: "React, JavaScript",
-    },
-    {
-      id: 2,
-      name: "Amit Kumar",
-      designation: "Designer",
-      skills: "UI/UX, Adobe Creative Suite",
-    },
-    {
-      id: 3,
-      name: "Vidit Gupta",
-      designation: "Project Manager",
-      skills: "Agile, Scrum",
-    },
-    {
-      id: 4,
-      name: "Koushik K",
-      designation: "QA Engineer",
-      skills: "Testing, Automation",
-    },
-    {
-      id: 5,
-      name: "Swarna",
-      designation: "Business Analyst",
-      skills: "Requirements gathering",
-    },
-  ]);
 
   const handleRadioSelect = (id) => {
     setSelectedRadio(id);
@@ -136,26 +180,42 @@ const ResourceAllocationFormDetails = () => {
   };
 
   // Name and Designation Search
-  const [nameDesignationSearchFormData, setNameDesignationSearchFormData] =
-    useState();
-  const nameDesignationSearchData = useSelector(
-    (state) =>
-      state.nonPersist?.projectDetails?.resourcesNameDesignationSearchData
-  );
-  console.log("nameDesignationSearchData", nameDesignationSearchData);
 
-  useEffect(() => {
-    dispatch(getResourcesNameDesignationSearchAction());
-  }, []);
-
-  const handleNameDesignationChangeSearch = (data) => {
-    setNameDesignationSearchFormData(data);
+  const applySkillFilterHandler = () => {
+    if (skillsCheckedData.length > 0) {
+      const getSkillId = skillsCheckedData
+        .map((item) => item.skillId)
+        .join(",");
+      const params = {
+        query: searchData || "",
+        skillIds: getSkillId,
+      };
+      dispatch(getAllocationSearch(params));
+    }
   };
 
-  const [selectedValue, setSelectedValue] = useState("");
+  const onResetSkillFilterHandler = () => {
+    setSkillsCheckedData([]);
+  };
 
-  const handleChange = (event) => {
-    setSelectedValue(event.target.value);
+  const CustomMenu = (props) => {
+    return (
+      <components.Menu {...props}>
+        {props.children}
+        <Box
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            padding: "10px",
+          }}
+        >
+          <button onClick={applySkillFilterHandler}>Apply</button>
+          <button onClick={onResetSkillFilterHandler}>Reset</button>
+        </Box>
+      </components.Menu>
+    );
   };
 
   const abc = [
@@ -225,35 +285,68 @@ const ResourceAllocationFormDetails = () => {
           </Typography>
           <Grid container>
             <Grid item xs={12} sm={8} md={9} lg={9}>
-              <Select
-                isMulti
-                styles={{
-                  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                  control: (baseStyles) => ({
-                    ...baseStyles,
-                    height: "55px",
-                  }),
+              <TextField
+                value={searchData}
+                sx={{ width: "100%" }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
                 }}
-                isSearchable={true}
-                menuPortalTarget={document.body}
-                value={nameDesignationSearchFormData}
-                components={{ Control: CustomSelectControl }}
-                onChange={handleNameDesignationChangeSearch}
-                getOptionValue={(option) => option.id}
-                getOptionLabel={(option) => option.name}
-                options={abc}
-                isLoading={nameDesignationSearchData?.length === 0}
-                placeholder="Search by Name or Designation"
+                onChange={(e) => setSearchData(e.target.value)}
               />
+              <Box
+                display={"flex"}
+                gap={2}
+                justifyContent={"flex-start"}
+                alignItems={"center"}
+                p={1}
+              >
+                {skillsCheckedData?.map((selectedSkills) => {
+                  return (
+                    <Box
+                      sx={{
+                        background: "lightgray",
+                        padding: "5px",
+                        borderRadius: "5px",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                      key={selectedSkills.skillId}
+                    >
+                      <Typography>{selectedSkills?.skillName}</Typography>
+                    </Box>
+                  );
+                })}
+              </Box>
             </Grid>
             <Grid item xs={12} sm={8} md={3} lg={3}>
               <FormControl style={{ marginLeft: "15px", width: "90%" }}>
                 <Select
-                  labelId="dropdown-label"
-                  placeholder="Skill Sets"
-                  id="dropdown"
-                  value={selectedValue}
-                  onChange={handleChange}
+                  isSearchable={false}
+                  isMulti
+                  closeMenuOnSelect={false}
+                  hideSelectedOptions={false}
+                  onChange={(options) => {
+                    setSkillsCheckedData(options.map((opt) => opt));
+                  }}
+                  options={masterSkillData}
+                  components={{
+                    Option: (props) => (
+                      <InputOption
+                        {...props}
+                        skillsCheckedData={skillsCheckedData}
+                      />
+                    ),
+                    Menu: CustomMenu,
+                  }}
+                  isClearable={false}
+                  controlShouldRenderValue={false}
+                  getOptionValue={(option) => option.skillId}
+                  getOptionLabel={(option) => option.skillName}
+                  isLoading={masterSkillData?.length === 0}
                   styles={{
                     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                     control: (baseStyles) => ({
@@ -261,85 +354,113 @@ const ResourceAllocationFormDetails = () => {
                       height: "55px",
                     }),
                   }}
-                >
-                  <MenuItem value="html-css">HTML & CSS</MenuItem>
-                  <MenuItem value="javascript">JavaScript</MenuItem>
-                  <MenuItem value="react-native">React Native</MenuItem>
-                  <MenuItem value="reactjs">ReactJS</MenuItem>
-                  <MenuItem value="java">Java</MenuItem>
-                  <MenuItem value="python">Python</MenuItem>
-                  <MenuItem value="php">PHP</MenuItem>
-                </Select>
+                />
+                {/* <Select
+                  isMulti
+                  labelId="dropdown-label"
+                  placeholder="Skill Sets"
+                  getOptionValue={(option) => option.skillId}
+                  getOptionLabel={(option) => option.skillName}
+                  isLoading={masterSkillData?.length === 0}
+                  options={masterSkillData}
+                  isSearchable={false}
+                  id="dropdown"
+                  components={{
+                    Option: InputOption,
+                  }}
+                  onChange={(options) => {
+                    if (Array.isArray(options)) {
+                      setSkillsCheckedData(options.map((opt) => opt.value));
+                    }
+                  }}
+                  styles={{
+                    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                    control: (baseStyles) => ({
+                      ...baseStyles,
+                      height: "55px",
+                    }),
+                  }}
+                /> */}
               </FormControl>
             </Grid>
           </Grid>
         </Grid>
-        <Grid
-          // sx={{ display: false ? "block" : "none" }}
-          item
-          xs={12}
-          sm={8}
-          md={10}
-          lg={10}
-        >
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Designation</TableCell>
-                  <TableCell>Skills</TableCell>
-                  <TableCell>Select</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {selectedOptionsTable.map((option) => (
-                  <TableRow key={option.id}>
-                    <TableCell>{option.name}</TableCell>
-                    <TableCell>{option.designation}</TableCell>
-                    <TableCell>{option.skills}</TableCell>
-                    <TableCell>
-                      <Radio
-                        checked={selectedRadio === option.id}
-                        onChange={() => handleRadioSelect(option.id)}
-                      />
-                    </TableCell>
+        <Grid item xs={12} sm={8} md={10} lg={10}>
+          {allocationSearchData.length > 0 && (
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Designation</TableCell>
+                    <TableCell>Skills</TableCell>
+                    <TableCell>Select</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-              <ProjectResourcesModal
-                open={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-              >
-                <div style={{ marginTop: "20px" }}>
-                  <TextField
-                    placeholder="Enter Occupancy Hrs ( HH : MM )"
-                    value={timeInput}
-                    onChange={handleTimeInputChange}
-                    fullWidth
-                    margin="normal"
-                  />
+                </TableHead>
+                <TableBody>
+                  {allocationSearchData.map((option) => (
+                    <TableRow key={option.employeeId}>
+                      <TableCell>{option.employeeName}</TableCell>
+                      <TableCell>{option.employeeDesignation}</TableCell>
+                      <TableCell>
+                        {option.skills.length > 0 && (
+                          <div>
+                            {option.skills.map((skill, index) => (
+                              <React.Fragment key={index}>
+                                {index > 0 && ", "}
+                                {skill}
+                              </React.Fragment>
+                            ))}
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Radio
+                          checked={selectedRadio === option.id}
+                          onChange={() => handleRadioSelect(option.id)}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+                {/* Modal component */}
+                <ProjectResourcesModal
+                  open={isModalOpen}
+                  onClose={() => setIsModalOpen(false)}
+                >
+                  {/* Content of your modal */}
+                  <div style={{ marginTop: "20px" }}>
+                    {/* Add time input field */}
+                    <TextField
+                      placeholder="Enter Occupancy Hrs ( HH : MM )"
+                      value={timeInput}
+                      onChange={handleTimeInputChange}
+                      fullWidth
+                      margin="normal"
+                    />
 
-                  <Box display="flex" justifyContent="flex-end" mt={2}>
-                    <Button
-                      variant="outlined"
-                      onClick={() => setIsModalOpen(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleConfirm}
-                      ml={2}
-                    >
-                      Confirm
-                    </Button>
-                  </Box>
-                </div>
-              </ProjectResourcesModal>
-            </Table>
-          </TableContainer>
+                    {/* Add Confirm and Cancel buttons */}
+                    <Box display="flex" justifyContent="flex-end" mt={2}>
+                      <Button
+                        variant="outlined"
+                        onClick={() => setIsModalOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleConfirm}
+                        ml={2}
+                      >
+                        Confirm
+                      </Button>
+                    </Box>
+                  </div>
+                </ProjectResourcesModal>
+              </Table>
+            </TableContainer>
+          )}
         </Grid>
       </Grid>
 

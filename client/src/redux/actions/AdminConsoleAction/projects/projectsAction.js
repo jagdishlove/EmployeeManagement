@@ -10,6 +10,9 @@ import {
   FETCH_ALL_DOMAIN_REQUEST,
   FETCH_ALL_DOMAIN_SUCCESS,
   FETCH_ALL_DOMAIN_FAILURE,
+  FETCH_ALLOCATION_SEARCH_REQUEST,
+  FETCH_ALLOCATION_SEARCH_SUCCESS,
+  FETCH_ALLOCATION_SEARCH_FAILURE,
   FETCH_CLIENT_NAME_REQUEST,
   FETCH_CLIENT_NAME_SUCCESS,
   FETCH_CLIENT_NAME_FAILURE,
@@ -82,6 +85,23 @@ const getAllDomainSuccess = (data) => {
 const getAllDomainFailure = () => {
   return {
     type: FETCH_ALL_DOMAIN_FAILURE,
+  };
+};
+
+const getAllocationSearchRqst = () => {
+  return {
+    type: FETCH_ALLOCATION_SEARCH_REQUEST,
+  };
+};
+const getAllocationSearchSuccess = (data) => {
+  return {
+    type: FETCH_ALLOCATION_SEARCH_SUCCESS,
+    payload: data,
+  };
+};
+const getAllocationSearchFailure = () => {
+  return {
+    type: FETCH_ALLOCATION_SEARCH_FAILURE,
   };
 };
 
@@ -238,6 +258,29 @@ export const getAllDomainAction = (data) => {
     }
   };
 };
+
+export const getAllocationSearch = (data) => {
+  console.log("this is data", data);
+  return async (dispatch) => {
+    dispatch(getAllocationSearchRqst());
+    try {
+      const response = await makeRequest(
+        "GET",
+        "/api/resources/searchResource",
+        null,
+        data
+      );
+      dispatch(getAllocationSearchSuccess(response));
+    } catch (err) {
+      dispatch(getAllocationSearchFailure());
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  };
+};
+
+
 
 export const getClientNameAction = (data) => {
   return async (dispatch) => {
