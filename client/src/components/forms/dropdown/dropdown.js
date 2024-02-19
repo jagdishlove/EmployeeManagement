@@ -57,6 +57,7 @@ const Dropdown = ({
               option.managerName ||
               option.complexityName ||
               option.projectType  ||
+            
               option[valueKey]
             }
             sx={{
@@ -78,7 +79,6 @@ const Dropdown = ({
               option.managerName ||
               option.complexityName ||
               option.projectType ||
-            
               option[labelKey]}
           </MenuItem>
         ))}

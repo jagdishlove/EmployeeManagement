@@ -70,18 +70,10 @@ const CreateProjectStepperOne = () => {
                         }}
                       >
                         {label}
-                        {/* {index === 0 && (
-                          <DoneIcon
-                            style={{
-                              color: index === 0 ? "#ffffff" : "#000000",
-                              fontSize: "1rem",
-                              marginLeft: "8px",
-                            }}
-                          />
-                        )} */}
                       </div>
                     </div>
                   )}
+                  connector={null} 
                 ></StepLabel>
               </Step>
             ))}
