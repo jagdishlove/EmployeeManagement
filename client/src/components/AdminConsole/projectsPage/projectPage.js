@@ -13,6 +13,10 @@ const Projects = () => {
   const dispatch = useDispatch();
 
 
+ const projectsData = useSelector(
+    (state) => state?.nonPersist?.projectDetails?.projectsData
+  );
+ 
   const payload = {
     size: 5 * 2,
     status: projects,
@@ -21,12 +25,7 @@ const Projects = () => {
   const getProjectpayload = {
     filters: [],
   };
-
-  const projectsData = useSelector(
-    (state) => state?.nonPersist?.projectDetails?.projectsData
-  );
- 
-
+  
   useEffect(() => {
     dispatch(getAllProjects(payload, getProjectpayload));
   }, [projects, dispatch]);
@@ -59,7 +58,7 @@ const Projects = () => {
       />
 
       <Grid mb={5}>
-        <ProjectHeader projectsData={projectsData} payload={payload} getProjectpayload={getProjectpayload} projects={projects} setProjects={setProjects}/>
+        <ProjectHeader projectsData={projectsData}  projects={projects} setProjects={setProjects}/>
       </Grid>
       {projectsData?.content?.length === 0 ? (
         <Box mt={5} sx={{ display: "flex", justifyContent: "center" }}>

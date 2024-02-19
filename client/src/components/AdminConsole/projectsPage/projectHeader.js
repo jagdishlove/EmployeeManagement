@@ -87,7 +87,7 @@ export default function ProjectHeader({ projectsData,projects, setProjects}) {
           </Button>
         </Grid>
       </Grid>
-      <Box style={{ ...style.adminSubHeader }}>
+      <Box style={{ ...style.projectSubHeader }}>
         <Grid container gap={{ sm: 0, md: 0, lg: 2, xs: 2 }}>
           <Grid item xs={12} sm={4} md={2} lg={3}>
              <Dropdown
@@ -99,8 +99,8 @@ export default function ProjectHeader({ projectsData,projects, setProjects}) {
               ...style.DateTimesheetDateTextField,
               border: "1px solid silver",
               borderRadius: "5px",
-              marginBottom: "10px",
-              marginTop: "10px",
+             
+             
             }}
             valueKey="statusName"
             labelKey="statusValue"

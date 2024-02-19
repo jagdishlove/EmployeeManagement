@@ -9,6 +9,11 @@ export const adminHeaderStyle = () => ({
     padding: "25px 10px 10px 10px",
     marginTop: "25px",
   },
+  projectSubHeader: {
+    backgroundColor: "#008080",
+    padding: "10px 10px 10px 10px",
+    marginTop: "25px",
+  },
   LeaveHeader: {
     backgroundColor: "#008080",
     padding: "0px 10px 10px 10px",
