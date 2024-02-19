@@ -430,7 +430,7 @@ const CreateProjectFormDetails = () => {
           <Dropdown
             value={dropdownData.projectCategory}
             onChange={handleDropdownChange}
-            dropdownName="projectJobTypes"
+            dropdownName="projectCategory"
             options={masterdataProjectJobTypesList}
             valueKey="jobId"
             labelKey="jobType"
@@ -441,6 +441,7 @@ const CreateProjectFormDetails = () => {
               marginBottom: "10px",
               marginTop: "10px",
             }}
+            name="projectCategory"
           />
 
           <Typography variant="body1" style={{ marginTop: "15px" }}>
@@ -482,7 +483,7 @@ const CreateProjectFormDetails = () => {
               menuPortalTarget={document.body}
               value={searchFormValues.projectManager}
               name="projectManager"
-              onChange={handleChange}
+              onChange={(data) => handleChange(data, "projectManager")}
               getOptionValue={(option) => option.id}
               getOptionLabel={(option) => option.name}
               options={employeeSearchData?.result}
@@ -509,7 +510,7 @@ const CreateProjectFormDetails = () => {
               menuPortalTarget={document.body}
               value={searchFormValues.projectLead}
               name="projectLead"
-              onChange={handleChange}
+              onChange={(data) => handleChange(data, "projectLead")}
               getOptionValue={(option) => option.id}
               getOptionLabel={(option) => option.name}
               options={employeeSearchData?.result}
