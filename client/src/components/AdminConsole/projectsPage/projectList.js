@@ -14,6 +14,7 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
+import dayjs from "dayjs";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -25,6 +26,22 @@ const ProjectList = ({ projectsData }) => {
   const handleViewInDetail = () => {
     Navigate("/projectDetailPage");
   };
+
+  const startDateString = '01-01-2024';
+  const endDateString = '05-03-2024';
+  
+  const startDate = dayjs(startDateString, 'MM-DD-YYYY');
+  const endDate = dayjs(endDateString, 'MM-DD-YYYY');
+  const currentDate = dayjs();
+  
+  // Calculate the total duration in days
+  const totalDuration = endDate.diff(startDate, 'day');
+  
+  // Calculate the remaining duration in days
+  const remainingDuration = endDate.diff(currentDate, 'day');
+  
+  // Calculate the progress percentage
+  const progressPercentage = Math.max(0, Math.min(100, ((totalDuration - remainingDuration) / totalDuration) * 100));
 
   return (
     <Card
@@ -120,11 +137,11 @@ const ProjectList = ({ projectsData }) => {
               </Grid>
               <Grid item xs={6} textAlign="end">
                 <Typography variant="body2" fontWeight={"bold"}>
-                  {50}
+                  {progressPercentage}
                 </Typography>
               </Grid>
               <Grid item xs={12}>
-                <LinearProgress variant="determinate" value={50} />
+                <LinearProgress variant="determinate" value={progressPercentage} />
               </Grid>
             </Grid>
           </Grid>
