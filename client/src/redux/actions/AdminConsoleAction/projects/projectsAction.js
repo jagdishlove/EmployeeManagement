@@ -197,15 +197,15 @@ const saveCreateProjectFail = () => {
   };
 };
 
-export const getAllProjects = (data) => {
+export const getAllProjects = (payload, getProjectpayload) => {
   return async (dispatch) => {
     dispatch(getAllProjectsRequest());
     try {
       const response = await makeRequest(
-        "GET",
-        "/api/projects/getAllProjects",
-        null,
-        data
+        "POST",
+        "/api/projects/getProjects",
+        getProjectpayload,
+        payload,
       );
       dispatch(getAllProjectsSuccess(response));
     } catch (err) {
