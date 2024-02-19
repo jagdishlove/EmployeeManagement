@@ -18,7 +18,7 @@ import {
   getClientDetailsAction,
   getClientNameAction,
   getEmployeeSearchAction,
-   saveCreateProjectAction,
+  saveCreateProjectAction,
 } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import Autocomplete from "@mui/material/Autocomplete";
 import Dropdown from "../../../forms/dropdown/dropdown";
@@ -41,7 +41,6 @@ const CreateProjectFormDetails = () => {
   };
   const [searchFormValues, setSearchFormValues] = useState(intialValues);
   const [formData, setFormData] = useState(intialValues);
-  const [dropdownData, setDropdownData] = useState("");
 
   // client Search
   const clientSearchData = useSelector(
@@ -84,7 +83,7 @@ const CreateProjectFormDetails = () => {
   // Handle change for  dropdown
   const handleDropdownChange = (event, dropdownName) => {
     const { value } = event.target;
-    setDropdownData((prevSelectedValues) => ({
+    setFormData((prevSelectedValues) => ({
       ...prevSelectedValues,
       [dropdownName]: value,
     }));
@@ -113,21 +112,20 @@ const CreateProjectFormDetails = () => {
   const allDomainData = useSelector(
     (state) => state?.nonPersist?.projectDetails?.allDomainData
   );
+  useEffect(() => {
+    dispatch(getAllDomainAction());
+  }, []);
 
   //complexity
   const masterdatacomplexityList = useSelector(
     (state) => state.persistData.masterData?.complexityList
   );
 
-  useEffect(() => {
-    dispatch(getAllDomainAction());
-  }, []);
-
   //getAll country city state
   const masterDatagetAll = useSelector(
     (state) => state?.nonPersist?.projectDetails?.getAllCountryCityStateData
   );
- 
+
   useEffect(() => {
     dispatch(GetAllCountryCityStateAction());
   }, []);
@@ -138,25 +136,28 @@ const CreateProjectFormDetails = () => {
     DataValue[location.id] = location.dataValue;
   });
 
-
+  console.log("formData", formData);
   //Save
   const handleSaveData = async () => {
     const payload = {
       projectName: formData.projectName,
       description: formData.description,
-      projectTypeId: dropdownData.projectCategory,
+      projectTypeId: formData.projectCategory,
       projectManagerId: searchFormValues.projectManager?.id,
       projectTechLeadId: searchFormValues.projectLead?.id,
-      domainId: dropdownData.domain,
-      complexity: dropdownData.complexity,
+      domainId: formData.domain,
+      complexity: formData.complexity,
       clientId: searchFormValues.clientName?.id,
     };
-  
+
     await dispatch(saveCreateProjectAction(payload));
   };
 
-
-  const handleSaveAndNext = () => {
+  const handleSaveAndNext = async () => {
+    // Save data first
+    await handleSaveData();
+  
+    // Navigate to resource allocation
     Navigate("/resourceallocation");
   };
 
@@ -220,7 +221,9 @@ const CreateProjectFormDetails = () => {
           <TextField
             placeholder="Client Address"
             name="clientAddress"
-            value={clientDetailsData?.address?.addressLine1}
+            value={`${clientDetailsData?.address?.addressLine1 || ""} ${
+              clientDetailsData?.address?.addressLine2 || ""
+            }`}
             onChange={handleChange}
             style={{
               ...style.TimesheetTextField,
@@ -301,7 +304,7 @@ const CreateProjectFormDetails = () => {
           <TextField
             placeholder="State"
             name="state"
-            value={DataValue[clientDetailsData?.address?.stateId] || ''}
+            value={DataValue[clientDetailsData?.address?.stateId] || ""}
             onChange={handleChange}
             sx={{
               "& :hover": {
@@ -330,7 +333,7 @@ const CreateProjectFormDetails = () => {
                 cursor: "not-allowed",
               },
             }}
-            value={DataValue[`${clientDetailsData?.address?.cityId}`] || ''}
+            value={DataValue[`${clientDetailsData?.address?.cityId}`] || ""}
             onChange={handleChange}
             style={{
               ...style.TimesheetTextField,
@@ -428,7 +431,7 @@ const CreateProjectFormDetails = () => {
             Project Category
           </Typography>
           <Dropdown
-            value={dropdownData.projectCategory}
+            value={formData.projectCategory}
             onChange={handleDropdownChange}
             dropdownName="projectCategory"
             options={masterdataProjectJobTypesList}
@@ -523,9 +526,9 @@ const CreateProjectFormDetails = () => {
             Domain
           </Typography>
           <Dropdown
-            value={dropdownData.domain}
+            value={formData.domain}
             onChange={handleDropdownChange}
-            dropdownName="Domain"
+            dropdownName="domain"
             options={allDomainData}
             style={{
               ...style.TimesheetTextField,
@@ -538,12 +541,13 @@ const CreateProjectFormDetails = () => {
             labelKey="domainName"
             name="domain"
           />
+
           <Typography variant="body1" style={{ marginTop: "15px" }}>
             Complexity
           </Typography>
 
           <Dropdown
-            value={dropdownData.complexity}
+            value={formData.complexity}
             onChange={handleDropdownChange}
             dropdownName="complexity"
             style={{
@@ -562,7 +566,7 @@ const CreateProjectFormDetails = () => {
               variant="contained"
               color="primary"
               type="submit"
-               onClick={() => handleSaveData()}
+              onClick={() => handleSaveData()}
             >
               Save
             </Button>
