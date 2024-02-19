@@ -89,26 +89,26 @@ const ProjectList = ({ projectsData }) => {
           <Grid item xs={12}>
             <Typography variant="body2" color="textSecondary">
               <b style={{ color: "black" }}>Country : </b>{" "}
-              {projectsData?.client?.country}
+              {projectsData?.country}
             </Typography>
           </Grid>
           <Grid item xs={12}>
             <Typography variant="body2" color="textSecondary">
-              <b style={{ color: "black" }}>Domain : </b> {projectsData?.domain}
+              <b style={{ color: "black" }}>Domain : </b> {projectsData?.domainName}
             </Typography>
           </Grid>
           <Grid item xs={12}>
             <Typography variant="body2" color="textSecondary">
               <b style={{ color: "black" }}>Project Manager : </b>{" "}
-              {projectsData?.projectManagerId}
+              {projectsData?.projectManager}
             </Typography>
           </Grid>
           <Grid item xs={12}>
             <Typography variant="body2" color="textSecondary">
               <b style={{ color: "black" }}>Start Date : </b>{" "}
-              {projectsData?.phases?.startDate}
+              {projectsData?.startDate}
               <b style={{ color: "black" }}>End Date : </b>{" "}
-              {projectsData?.phases?.endDate}
+              {projectsData?.endDate}
             </Typography>
           </Grid>
           <Grid item xs={12}>
