@@ -217,6 +217,7 @@ const ResourceAllocationFormDetails = () => {
     );
   };
 
+  
 
   return (
     <div>

@@ -13,6 +13,9 @@ import {
   FETCH_ALLOCATION_SEARCH_REQUEST,
   FETCH_ALLOCATION_SEARCH_SUCCESS,
   FETCH_ALLOCATION_SEARCH_FAILURE,
+  FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_REQUEST,
+  FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_SUCCESS,
+  FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_FAIL,
   FETCH_CLIENT_NAME_REQUEST,
   FETCH_CLIENT_NAME_SUCCESS,
   FETCH_CLIENT_NAME_FAILURE,
@@ -197,6 +200,25 @@ const saveCreateProjectFail = () => {
   };
 };
 
+const getClientProjectNameSearchRequest = () => {
+  return {
+    type: FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_REQUEST,
+  };
+};
+
+const getClientProjectNameSearchSuccess = (data) => {
+  return {
+    type: FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_SUCCESS,
+    payload: data,
+  };
+};
+
+const getClientProjectNameSearchFailure = () => {
+  return {
+    type: FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_FAIL,
+  };
+};
+
 export const getAllProjects = (payload, getProjectpayload) => {
   return async (dispatch) => {
     dispatch(getAllProjectsRequest());
@@ -280,7 +302,27 @@ export const getAllocationSearch = (data) => {
   };
 };
 
-
+export const getClientProjectNameSearchAction = (data) => {
+  return async (dispatch) => {
+    dispatch(getClientProjectNameSearchRequest());
+    try {
+      const response = await makeRequest(
+        "GET",
+        "api/projects/searchByProjectOrClientName",
+        null,
+        {
+          searchTerm: data || "",
+        }
+      );
+      dispatch(getClientProjectNameSearchSuccess(response));
+    } catch (err) {
+      dispatch(getClientProjectNameSearchFailure());
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  };
+};
 
 export const getClientNameAction = (data) => {
   return async (dispatch) => {

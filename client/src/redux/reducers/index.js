@@ -10,6 +10,7 @@ import projectListReducer from "./projectListReducer";
 import teamMemberListReducer from "./teamMemberListReducer";
 import timesheetReducer from "./timesheetReducer";
 import usersReducer from "./AdminConsoleReducer/usersReducer";
+import masterDataReducer from "./AdminConsoleReducer/masterDataReducer";
 
 const rootReducer = combineReducers({
   forgotPassword: forgotPasswordReducer,
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
   leaveHistoryData: leaveHistoryReducer,
   userDetails: usersReducer,
   projectDetails: projectsReducer,
+  masterDataDetails: masterDataReducer
 });
 
 export default rootReducer;

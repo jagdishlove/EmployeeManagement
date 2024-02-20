@@ -36,6 +36,27 @@ import {
   GET_ALL_DOMINE_FAIL,
   GET_ALL_DOMINE_REQUEST,
   GET_ALL_DOMINE_SUCCESS,
+  GET_ALL_COUNTRY_REQUEST,
+  GET_ALL_STATE_REQUEST,
+  GET_ALL_COUNTRY_SUCCESS,
+  GET_ALL_STATE_SUCCESS,
+  GET_ALL_COUNTRY_FAIL,
+  GET_ALL_STATE_FAIL,
+  GET_ALL_CLIENT_DETAILS_FAIL,
+  GET_ALL_CLIENT_DETAILS_REQUEST,
+  GET_ALL_CLIENT_DETAILS_SUCCESS,
+  GET_CLIENT_DETAILS_FAIL,
+  GET_CLIENT_DETAILS_REQUEST,
+  GET_CLIENT_DETAILS_SUCCESS,
+  GET_LOCATION_MASTER_DATA_FAIL,
+  GET_LOCATION_MASTER_DATA_REQUEST,
+  GET_LOCATION_MASTER_DATA_SUCCESS,
+  GET_ALL_ONSITE_OFFICE_LOCATION_FAIL,
+  GET_ALL_ONSITE_OFFICE_LOCATION_REQUEST,
+  GET_ALL_ONSITE_OFFICE_LOCATION_SUCCESS,
+  GET_ONSITE_OFFICE_LOCATION_FAIL,
+  GET_ONSITE_OFFICE_LOCATION_REQUEST,
+  GET_ONSITE_OFFICE_LOCATION_SUCCESS,
 } from "./masterDataActionType";
 
 const masterDataRequest = () => {
@@ -241,6 +262,141 @@ const getAlldomineSuccess = (response) => {
   return{
     type : GET_ALL_DOMINE_SUCCESS,
     payload : response
+  }
+}
+
+const getAllcountryRequest = () => {
+  return{
+      type : GET_ALL_COUNTRY_REQUEST
+  }
+}
+
+const getAllCountrySuccess = (response) => {
+  return {
+      type : GET_ALL_COUNTRY_SUCCESS,
+      payload : response
+  }
+}
+
+const getAllCountryFail = () => {
+  return{
+      type : GET_ALL_COUNTRY_FAIL
+  }
+}
+
+
+const getAllStateRequest = () => {
+  return {
+      type: GET_ALL_STATE_REQUEST
+  };
+};
+
+const getAllStateSuccess = (response) => {
+  return {
+      type: GET_ALL_STATE_SUCCESS,
+      payload: response
+  };
+};
+
+const getAllStateFail = () => {
+  return {
+      type: GET_ALL_STATE_FAIL
+  };
+};
+
+
+const getAllClinetDetailsRequest = () => {
+  return {
+    type : GET_ALL_CLIENT_DETAILS_REQUEST
+  }
+}
+
+const getAllClinetDetailsSuccess = (response) => {
+  return {
+    type : GET_ALL_CLIENT_DETAILS_SUCCESS,
+    payload : response
+  }
+}
+
+const getAllClinetDetailsFail = () => {
+  return {
+    type : GET_ALL_CLIENT_DETAILS_FAIL
+  }
+}
+
+const getClientDetailsRequest = () => {
+  return {
+    type : GET_CLIENT_DETAILS_REQUEST
+  }
+}
+
+const getClientDetailsSuccess = (data) => {
+  return {
+    type : GET_CLIENT_DETAILS_SUCCESS,
+    payload : data
+  }
+}
+
+const getClientDetailsFail = () => {
+  return {
+    type : GET_CLIENT_DETAILS_FAIL
+  }
+}
+
+const getLocationMasterDataRequest = () => {
+  return {
+    type : GET_LOCATION_MASTER_DATA_REQUEST
+  }
+} 
+
+const getLocationMasterDataSuccess = (data) => {
+  return {
+    type : GET_LOCATION_MASTER_DATA_SUCCESS,
+    payload : data
+  }
+}
+
+const getLocationMasterDataFail = () => {
+  return {
+    type : GET_LOCATION_MASTER_DATA_FAIL
+  }
+}
+
+const getOnsiteLocationRequest = () => {
+  return {
+    type : GET_ALL_ONSITE_OFFICE_LOCATION_REQUEST
+  }
+}
+
+const getOnsiteLocationSuccess = (response) => {
+  return {
+    type : GET_ALL_ONSITE_OFFICE_LOCATION_SUCCESS,
+    payload : response
+  }
+}
+
+const getOnsiteLocationFail = () => {
+  return {
+    type : GET_ALL_ONSITE_OFFICE_LOCATION_FAIL
+  }
+}
+
+const getclientLocationRequest = () => {
+  return {
+    type : GET_ONSITE_OFFICE_LOCATION_REQUEST
+  }
+}
+
+const getClientLocationSuccess = (data) => {
+  return {
+    type: GET_ONSITE_OFFICE_LOCATION_SUCCESS,
+    payload: data
+  }
+}
+
+const getClientLocationFail = () => {
+  return {
+    type : GET_ONSITE_OFFICE_LOCATION_FAIL
   }
 }
 export const masterDataAction = () => {
@@ -846,7 +1002,6 @@ export const GetAllJobTypeData = () => {
   return async (dispatch) => {
     dispatch(GetAllJobTypeRequest());
     try{
-      
        const response = await  makeRequest(
           "GET",
           "api/jobType/getAll",
@@ -861,3 +1016,242 @@ export const GetAllJobTypeData = () => {
     }
   }
 
+  export const getAllCountry = (data) => {
+    return async (dispatch) => {
+      dispatch(getAllcountryRequest());
+      try {
+        const response = await makeRequest(
+            "GET",
+            "/api/masterData/getAll",
+            null,
+            data);
+        dispatch(getAllCountrySuccess(response));
+      } catch (err) {
+        dispatch(getAllCountryFail());
+        toast.error(err.response.data.errorMessage, {
+          position: toast.POSITION.BOTTOM_CENTER,
+        });
+      }
+    };
+  };
+
+
+  export const getAllState = (data) => {
+    return async (dispatch) => {
+      dispatch(getAllStateRequest());
+      try {
+        const response = await makeRequest(
+            "GET",
+            "/api/masterData/getAll",
+            null,
+            data);
+            
+        dispatch(getAllStateSuccess(response));
+      } catch (err) {
+        dispatch(getAllStateFail());
+        toast.error(err.response.data.errorMessage, {
+          position: toast.POSITION.BOTTOM_CENTER,
+        });
+      }
+    };
+  };
+
+  export const CreateClinetDetails = (data) => {
+    return async () => {
+      try{
+          await  makeRequest(
+            "POST",
+            "api/client/create",
+            data
+          );
+          if(data.status ==='INACTIVE'){
+            toast.success("client has been Disabled successfully", {
+              position: toast.POSITION.BOTTOM_CENTER,
+            });
+          }
+          else if(data.status ==='ACTIVE'){
+            toast.success("client has been Enabled successfully", {
+              position: toast.POSITION.BOTTOM_CENTER,
+            });
+          }
+          else{
+            toast.success("client has been Created successfully", {
+              position: toast.POSITION.BOTTOM_CENTER,
+            });
+          }
+      } catch (err){
+        toast.error(err.response.data.errorMessage, {
+          position: toast.POSITION.BOTTOM_CENTER,
+        });
+      }
+    }
+  }
+
+  export const UpdateClinetDetails = (data) => {
+    return async () => {
+      try{
+          await  makeRequest(
+            "POST",
+            "api/client/create",
+            data
+          );
+            toast.success("client has been Update successfully", {
+              position: toast.POSITION.BOTTOM_CENTER,
+            });
+      } catch (err){
+        toast.error(err.response.data.errorMessage, {
+          position: toast.POSITION.BOTTOM_CENTER,
+        });
+      }
+    }
+  }
+
+  export const GatAllClinetDetails = () => {
+    return async (dispatch) => {
+      dispatch(getAllClinetDetailsRequest());
+      try{
+         const response = await  makeRequest(
+            "GET",
+            "api/client/getAll",
+          );
+          dispatch(getAllClinetDetailsSuccess(response))
+  
+      } catch (err){
+        dispatch(getAllClinetDetailsFail())
+        // toast.error(err.response.data.errorMessage, {
+        //   position: toast.POSITION.BOTTOM_CENTER,
+          dispatch(GetAllJobTypeFail(err.response.data.errorMessage));
+        }
+      }
+    }
+
+    export const getClientDetails = (data) => {
+      return async (dispatch) => {
+        dispatch(getClientDetailsRequest())
+        try{
+           const response = await  makeRequest(
+              "GET",
+              `api/client/get/${data}`,
+            );
+            dispatch(getClientDetailsSuccess(response))
+    
+        } catch (err){
+          dispatch(getClientDetailsFail())
+          toast.error(err.response.data.errorMessage, {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+      }
+    }
+
+    export const getLoocations = () => {
+      return async (dispatch) => {
+        dispatch(getLocationMasterDataRequest())
+        try{
+           const response = await  makeRequest(
+              "GET",
+              "/api/masterData/getAll",
+            );
+            dispatch(getLocationMasterDataSuccess(response))
+    
+        } catch (err){
+          dispatch(getLocationMasterDataFail())
+          toast.error(err.response.data.errorMessage, {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+      }
+    }
+
+    export const GetAllOnsiteOfficeLocation = () => {
+      return async (dispatch) => {
+        dispatch(getOnsiteLocationRequest());
+        try{
+           const response = await  makeRequest(
+              "GET",
+              "api/clientOnsiteOfficeLocation/getAll",
+            );
+            dispatch(getOnsiteLocationSuccess(response))
+    
+        } catch (err){
+          dispatch(getOnsiteLocationFail())
+          // toast.error(err.response.data.errorMessage, {
+          //   position: toast.POSITION.BOTTOM_CENTER,
+            dispatch(GetAllJobTypeFail(err.response.data.errorMessage));
+          }
+        }
+      }
+
+      export const CreateOnsiteOfficeLocation = (data) => {
+        console.log("Data:", data);
+        return async () => {
+          try{
+              await  makeRequest(
+                "POST",
+                "api/clientOnsiteOfficeLocation/create",
+                data
+              );
+              if(data.status ==='INACTIVE'){
+                toast.success("clientOnsiteOfficeLocation has been Disabled successfully", {
+                  position: toast.POSITION.BOTTOM_CENTER,
+                });
+              }
+              else if(data.status ==='ACTIVE'){
+                toast.success("clientOnsiteOfficeLocation has been Enabled successfully", {
+                  position: toast.POSITION.BOTTOM_CENTER,
+                });
+              }
+              else{
+                toast.success("clientOnsiteOfficeLocation has been Created successfully", {
+                  position: toast.POSITION.BOTTOM_CENTER,
+                });
+              }
+          } catch (err){
+            toast.error(err.response.data.errorMessage, {
+              position: toast.POSITION.BOTTOM_CENTER,
+            });
+          }
+        }
+      }
+  
+  
+      export const getClientLocation = (data) => {
+        return async (dispatch) => {
+          dispatch(getclientLocationRequest())
+          try{
+             const response = await  makeRequest(
+                "GET",
+                `api/clientOnsiteOfficeLocation/get/${data}`,
+              );
+              dispatch(getClientLocationSuccess(response))
+      
+          } catch (err){
+            dispatch(getClientLocationFail())
+            toast.error(err.response.data.errorMessage, {
+              position: toast.POSITION.BOTTOM_CENTER,
+            });
+          }
+        }
+      }
+
+
+      export const UpdateOnsiteOfficeLocation = (data) => {
+        console.log("Data:", data);
+        return async () => {
+          try{
+              await  makeRequest(
+                "POST",
+                "api/clientOnsiteOfficeLocation/create",
+                data
+              );
+                toast.success("clientOnsiteOfficeLocation has been Updated successfully", {
+                  position: toast.POSITION.BOTTOM_CENTER,
+                });
+          } catch (err){
+            toast.error(err.response.data.errorMessage, {
+              position: toast.POSITION.BOTTOM_CENTER,
+            });
+          }
+        }
+      }
+    

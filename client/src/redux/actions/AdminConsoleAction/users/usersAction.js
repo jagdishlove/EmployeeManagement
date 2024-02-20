@@ -10,6 +10,7 @@ import {
   CREATE_USER_FAIL,
   CREATE_USER_REQUEST,
   CREATE_USER_SUCCESS,
+  GET_ALL_CITYS
 } from "./usersActionTypes";
 import { getRefreshToken } from "../../login/loginAction";
 
@@ -68,6 +69,13 @@ export const createUserFail = (error) => {
     payload: error,
   };
 };
+
+const getAllCitys = (data) => {
+  return{
+    type : GET_ALL_CITYS,
+    payload : data
+  }
+}
 
 
 export const getAllUsers = (data) => {
@@ -130,6 +138,23 @@ export const CreateUserForm = (data) => {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
+    }
+  };
+};
+
+export const GetAllCitys = (data) => {
+  return async (dispatch) => {
+    try {
+      const response = await makeRequest(
+          "GET",
+          "/api/masterData/getAll",
+          null,
+          data);
+      dispatch(getAllCitys(response));
+    } catch (err) {
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
     }
   };
 };
