@@ -1,6 +1,8 @@
 import {
+  Autocomplete,
   Box,
   Button,
+  Checkbox,
   Grid,
   InputAdornment,
   TextField,
@@ -20,7 +22,6 @@ import {
   getEmployeeSearchAction,
   saveCreateProjectAction,
 } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
-import Autocomplete from "@mui/material/Autocomplete";
 import Dropdown from "../../../forms/dropdown/dropdown";
 
 const CreateProjectFormDetails = () => {
@@ -39,7 +40,6 @@ const CreateProjectFormDetails = () => {
     domain: "",
     complexity: "",
   };
-  const [searchFormValues, setSearchFormValues] = useState(intialValues);
   const [formData, setFormData] = useState(intialValues);
 
   // client Search
@@ -47,12 +47,13 @@ const CreateProjectFormDetails = () => {
     (state) => state.nonPersist?.projectDetails?.clientNameData
   );
 
+
   useEffect(() => {
     dispatch(getClientNameAction());
   }, []);
 
   const handleChange = (e, name) => {
-    setSearchFormValues((prevData) => ({
+    setFormData((prevData) => ({
       ...prevData,
       [name]: e,
     }));
@@ -66,11 +67,11 @@ const CreateProjectFormDetails = () => {
 
   //For autopopulate data added condition
   useEffect(() => {
-    if (searchFormValues.clientName) {
-      const selectedId = searchFormValues.clientName.id;
+    if (formData.clientName) {
+      const selectedId = formData.clientName.id;
       dispatch(getClientDetailsAction(selectedId));
     }
-  }, [searchFormValues.clientName]);
+  }, [formData.clientName]);
 
   const handleFormChange = (event) => {
     const { name, value } = event.target;
@@ -103,7 +104,7 @@ const CreateProjectFormDetails = () => {
   const employeeSearchData = useSelector(
     (state) => state.nonPersist?.projectDetails?.employeeSearchData
   );
-
+console.log("employeeSearchData", employeeSearchData)
   useEffect(() => {
     dispatch(getEmployeeSearchAction());
   }, []);
@@ -143,11 +144,11 @@ const CreateProjectFormDetails = () => {
       projectName: formData.projectName,
       description: formData.description,
       projectTypeId: formData.projectCategory,
-      projectManagerId: searchFormValues.projectManager?.id,
-      projectTechLeadId: searchFormValues.projectLead?.id,
+      projectManagerId: formData.projectManager?.id,
+      projectTechLeadId: formData.projectLead?.id,
       domainId: formData.domain,
       complexity: formData.complexity,
-      clientId: searchFormValues.clientName?.id,
+      clientId: formData.clientName?.id,
     };
 
     await dispatch(saveCreateProjectAction(payload));
@@ -156,7 +157,7 @@ const CreateProjectFormDetails = () => {
   const handleSaveAndNext = async () => {
     // Save data first
     await handleSaveData();
-  
+
     // Navigate to resource allocation
     Navigate("/resourceallocation");
   };
@@ -203,8 +204,9 @@ const CreateProjectFormDetails = () => {
               }}
               isSearchable={true}
               menuPortalTarget={document.body}
-              value={searchFormValues.clientName}
+              value={formData.clientName}
               onChange={(data) => handleChange(data, "clientName")}
+              name="clientName"
               getOptionValue={(option) => option.id}
               getOptionLabel={(option) => option.name}
               options={clientSearchData?.result}
@@ -444,13 +446,12 @@ const CreateProjectFormDetails = () => {
               marginBottom: "10px",
               marginTop: "10px",
             }}
-            name="projectCategory"
           />
 
           <Typography variant="body1" style={{ marginTop: "15px" }}>
             Applicable Activities
           </Typography>
-          <Autocomplete
+            <Autocomplete
             multiple
             id="applicable-activities"
             options={masterdataProjectActivityList}
@@ -458,6 +459,14 @@ const CreateProjectFormDetails = () => {
             onChange={(event, value) =>
               handleChange(value, "applicableActivity")
             }
+            disableCloseOnSelect
+                freeSolo
+            renderOption={(props, option, { selected }) => (
+                  <li {...props}>
+                    <Checkbox checked={selected} />
+                    {option.activityType}
+                  </li>
+                )}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -465,6 +474,7 @@ const CreateProjectFormDetails = () => {
                 placeholder="Applicable Activities"
               />
             )}
+            name="applicableActivity"
           />
 
           <Typography variant="body1" style={{ marginTop: "15px" }}>
@@ -484,7 +494,7 @@ const CreateProjectFormDetails = () => {
               }}
               isSearchable={true}
               menuPortalTarget={document.body}
-              value={searchFormValues.projectManager}
+              value={formData.projectManager}
               name="projectManager"
               onChange={(data) => handleChange(data, "projectManager")}
               getOptionValue={(option) => option.id}
@@ -511,7 +521,7 @@ const CreateProjectFormDetails = () => {
               }}
               isSearchable={true}
               menuPortalTarget={document.body}
-              value={searchFormValues.projectLead}
+              value={formData.projectLead}
               name="projectLead"
               onChange={(data) => handleChange(data, "projectLead")}
               getOptionValue={(option) => option.id}

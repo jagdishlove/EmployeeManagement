@@ -6,7 +6,6 @@ import CreateNewPassword from "../pages/createNewPassword/createNewPassword";
 import ForgotPassword from "../pages/forgotPassword/forgotPassword";
 
 import { useSelector } from "react-redux";
-import MasterDataPage from "../components/AdminConsole/masterDataPage/masterDataPage";
 import CreateProjectStepperOne from "../components/AdminConsole/projectsPage/createProjectStepper/createProjectStepperOne";
 import ProjectPage from "../components/AdminConsole/projectsPage/projectPage";
 import ResourceAllocationStepperTwo from "../components/AdminConsole/projectsPage/createProjectStepper/resourceAllocationStepperTwo";
@@ -20,6 +19,7 @@ import ErrorPage from "../pages/error/errorPage";
 import History from "../pages/records/records";
 import Timesheet from "../pages/timesheet/timesheet";
 import CostAllocationStepperFinal from "../components/AdminConsole/projectsPage/createProjectStepper/costAllocationStepperFinal";
+import MasterData from "../components/AdminConsole/masterDataPage/masterData";
 
 const Router = () => {
   const isAuthenticated = useSelector(
@@ -210,7 +210,7 @@ const Router = () => {
         element={
           isAuthenticated ? (
             <ConditionalSidebar>
-              <MasterDataPage />
+              <MasterData />
             </ConditionalSidebar>
           ) : (
             <>

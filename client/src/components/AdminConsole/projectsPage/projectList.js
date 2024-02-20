@@ -27,11 +27,12 @@ const ProjectList = ({ projectsData }) => {
     Navigate("/projectDetailPage");
   };
 
-  const startDateString = '01-01-2024';
-  const endDateString = '05-03-2024';
+  const startDateString = projectsData.startDate;
+   const endDateString = projectsData.endDate;
+ 
   
-  const startDate = dayjs(startDateString, 'MM-DD-YYYY');
-  const endDate = dayjs(endDateString, 'MM-DD-YYYY');
+  const startDate = dayjs(startDateString, 'YYYYMM-DD-');
+  const endDate = dayjs(endDateString, 'YYYYMM-DD-');
   const currentDate = dayjs();
   
   // Calculate the total duration in days
@@ -137,11 +138,12 @@ const ProjectList = ({ projectsData }) => {
               </Grid>
               <Grid item xs={6} textAlign="end">
                 <Typography variant="body2" fontWeight={"bold"}>
-                  {progressPercentage}
+                  {progressPercentage.toFixed(2)}
                 </Typography>
               </Grid>
               <Grid item xs={12}>
-                <LinearProgress variant="determinate" value={progressPercentage} />
+                <LinearProgress variant="determinate" value={progressPercentage.toFixed(2)}/>
+             
               </Grid>
             </Grid>
           </Grid>

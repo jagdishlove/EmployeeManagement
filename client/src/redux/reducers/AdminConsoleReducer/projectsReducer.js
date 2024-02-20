@@ -20,6 +20,9 @@ import {
   GET_ALL_COUNTRY_CITY_STATE_SUCCESS,
   GET_ALL_COUNTRY_CITY_STATE_FAILURE,
   FETCH_ALLOCATION_SEARCH_FAILURE,
+  FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_REQUEST,
+  FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_SUCCESS,
+  FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_FAIL,
 } from "../../actions/AdminConsoleAction/projects/projectsActionTypes";
 
 const initialState = {
@@ -37,6 +40,8 @@ const initialState = {
   getAllCountryCityStateLoading: false,
   clientNameData: [],
   clientNameDataLoading: false,
+  clientProjectNameSearchData: [],
+  clientProjectNameSearchDataLoading: false,
 };
 
 const projectsReducer = (state = initialState, action) => {
@@ -127,6 +132,24 @@ const projectsReducer = (state = initialState, action) => {
         allocationSearchData: [],
         allDomainDataLoading: false,
       };
+      case FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_REQUEST:
+        return {
+          ...state,
+          clientProjectNameSearchDataLoading: true,
+        };
+      case FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_SUCCESS:
+        return {
+          ...state,
+          clientProjectNameSearchData: action.payload,
+          clientProjectNameSearchDataLoading: false,
+        };
+      case FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_FAIL:
+        return {
+          ...state,
+          clientProjectNameSearchData: [],
+          clientProjectNameSearchDataLoading: false,
+        };
+
       case FETCH_CLIENT_DETAILS_REQUEST:
       return {
         ...state,

@@ -6,17 +6,50 @@ import ProjectList from "./projectList";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Box } from "@mui/system";
 import ProjectHeader from "./projectHeader";
+import { object } from "yup";
 
 const Projects = () => {
-  const [projects, setProjects] = useState("ONGOING_PROJECTS");
+  const ONGOING_PROJECTS = "ONGOING_PROJECTS";
+  const [projects, setProjects] = useState(ONGOING_PROJECTS);
   const [pageCounter, setPageCounter] = useState(2);
+  const [searchData, setSearchData] = useState();
   const dispatch = useDispatch();
+  const[resultFilterData,setResultFilterData] = useState([])
+
+  console.log("resultFilterData",resultFilterData)
 
 
- const projectsData = useSelector(
+
+  const projectsData = useSelector(
     (state) => state?.nonPersist?.projectDetails?.projectsData
   );
+
  
+
+  const searchDataArray = searchData?.map((obj)=> obj.name || [])
+
+  useEffect(()=>{
+    setResultFilterData(projectsData)
+  },[projectsData])
+  useEffect(()=>{
+    if(searchDataArray?.length > 0 ){
+      const filterProjects =  projectsData?.content?.filter((obj)=>  searchDataArray.includes(obj.projectName) ) 
+      setResultFilterData({content:filterProjects})
+    }
+
+  },[searchData])
+
+  
+
+
+  const handleChange = (e) => {
+    setSearchData(e);
+    // setFormData((prevData) => ({
+    //   ...prevData,
+    //   [name]: e,
+    // }));
+  };
+
   const payload = {
     size: 5 * 2,
     status: projects,
@@ -25,7 +58,7 @@ const Projects = () => {
   const getProjectpayload = {
     filters: [],
   };
-  
+
   useEffect(() => {
     dispatch(getAllProjects(payload, getProjectpayload));
   }, [projects, dispatch]);
@@ -58,9 +91,15 @@ const Projects = () => {
       />
 
       <Grid mb={5}>
-        <ProjectHeader projectsData={projectsData}  projects={projects} setProjects={setProjects}/>
+        <ProjectHeader
+          setProjects={setProjects}
+          projectsData={projectsData}
+          projects={projects}
+          handleChange={handleChange}
+          searchData={searchData}
+        />
       </Grid>
-      {projectsData?.content?.length === 0 ? (
+      {resultFilterData?.content?.length === 0 ? (
         <Box mt={5} sx={{ display: "flex", justifyContent: "center" }}>
           <Typography>No Project Data Found</Typography>
         </Box>
@@ -77,7 +116,7 @@ const Projects = () => {
               display: "flex",
             }}
           >
-            {projectsData?.content?.map((projects) => (
+            {resultFilterData?.content?.map((projects) => (
               <Grid key={projects.id} item xs={12} sm={6} md={4} lg={4}>
                 <ProjectList
                   key={projects.id}
