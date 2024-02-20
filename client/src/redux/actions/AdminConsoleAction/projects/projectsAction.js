@@ -31,6 +31,9 @@ import {
   SAVE_CREATE_PROJECT_REQUEST,
   SAVE_CREATE_PROJECT_SUCCESS,
   SAVE_CREATE_PROJECT_FAIL,
+  SAVE_CREATE_COST_INCURRED_REQUEST,
+  SAVE_CREATE_COST_INCURRED_SUCCESS,
+  SAVE_CREATE_COST_INCURRED_FAIL
 } from "./projectsActionTypes.js";
 import { getRefreshToken } from "../../login/loginAction.js";
 
@@ -216,6 +219,22 @@ const getClientProjectNameSearchSuccess = (data) => {
 const getClientProjectNameSearchFailure = () => {
   return {
     type: FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_FAIL,
+  };
+};
+
+const saveCreateCostIncurredRequest = () => {
+  return {
+    type: SAVE_CREATE_COST_INCURRED_REQUEST ,
+  };
+};
+const saveCreateCostIncurredSuccess = () => {
+  return {
+    type:SAVE_CREATE_COST_INCURRED_SUCCESS,
+  };
+};
+const saveCreateCostIncurredFail = () => {
+  return {
+    type: SAVE_CREATE_COST_INCURRED_FAIL,
   };
 };
 
@@ -428,6 +447,33 @@ export const saveCreateProjectAction = ( payload ) => {
         dispatch(getRefreshToken());
       } else if (err.response.data.errorCode === 500){
         dispatch(saveCreateProjectFail(err.response.data.errorMessage));
+        toast.error(err.response.data.errorMessage, {
+          position: toast.POSITION.BOTTOM_CENTER,
+        });
+      }
+    }
+  };
+};
+
+export const saveCreateCostIncurredAction = ( payload ) => {
+  return async (dispatch) => {
+    try {
+      dispatch(saveCreateCostIncurredRequest());
+      const response = await makeRequest(
+        "POST",
+        "/api/costIncurred/create",
+        payload 
+      );
+      dispatch(saveCreateCostIncurredSuccess());
+      toast.success("Project Created Successfully", {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+      return response;
+    } catch (err) {
+      if (err.response.data.errorCode === 403) {
+        dispatch(getRefreshToken());
+      } else if (err.response.data.errorCode === 500){
+        dispatch(saveCreateCostIncurredFail(err.response.data.errorMessage));
         toast.error(err.response.data.errorMessage, {
           position: toast.POSITION.BOTTOM_CENTER,
         });

@@ -6,18 +6,21 @@ import { TimesheetStyle } from "../../../../pages/timesheet/timesheetStyle";
 import {  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useDispatch } from "react-redux";
+import { saveCreateCostIncurredAction } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 const CostAllocationFormDetails = () => {
   const theme = useTheme();
   const style = TimesheetStyle(theme);
   const Navigate = useNavigate();
-
-  const [formData, setFormData] = useState({
+  const dispatch = useDispatch();
+  const intialValues = {
     itemName:"",
     costIncurred:"",
     projectRevenue: "",
     projectImplimentationCost: "",
     percentageOfRevenue: "",
-  });
+  };
+  const [formData, setFormData] = useState(intialValues);
 console.log("formDataCost", formData)
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -31,9 +34,16 @@ console.log("formDataCost", formData)
     Navigate("/projects");
   };
 
- const  handleAdd= () => {
-   
+ //Save or ADD Cost inoccured
+ const handleAdd = async () => {
+  const payload = {
+    projectId:  formData.projectId,
+   itemName:  formData.itemName,
+   costIncurred:formData.costIncurred,
   };
+
+  await dispatch(saveCreateCostIncurredAction(payload));
+};
 
   const rows = [
     { slNo: 1, itemName: 'Item 1', costIncurred: 100 },
