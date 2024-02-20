@@ -31,8 +31,8 @@ const ProjectList = ({ projectsData }) => {
    const endDateString = projectsData.endDate;
  
   
-  const startDate = dayjs(startDateString, 'YYYY-MM-DD-');
-  const endDate = dayjs(endDateString, 'YYYY-MM-DD-');
+  const startDate = dayjs(startDateString,  'YYYY-MM-DD');
+  const endDate = dayjs(endDateString,  'YYYY-MM-DD');
   const currentDate = dayjs();
   
   // Calculate the total duration in days
