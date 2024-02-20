@@ -6,7 +6,7 @@ import ProjectList from "./projectList";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Box } from "@mui/system";
 import ProjectHeader from "./projectHeader";
-import { object } from "yup";
+
 
 const Projects = () => {
   const ONGOING_PROJECTS = "ONGOING_PROJECTS";
