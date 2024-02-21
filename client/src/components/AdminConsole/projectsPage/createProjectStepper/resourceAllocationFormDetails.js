@@ -21,7 +21,7 @@ import {
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Select, { components } from "react-select";
@@ -37,7 +37,6 @@ const InputOption = ({
   isSelected,
   children,
   innerProps,
-  skillsCheckedData,
   ...rest
 }) => {
   const [isActive, setIsActive] = useState(false);
@@ -45,7 +44,6 @@ const InputOption = ({
   const onMouseUp = () => setIsActive(false);
   const onMouseLeave = () => setIsActive(false);
 
-  // styles
   let bg = "transparent";
   if (isFocused) bg = "#eee";
   if (isActive) bg = "#B2D4FF";
@@ -57,7 +55,6 @@ const InputOption = ({
     display: "flex ",
   };
 
-  // prop assignment
   const props = {
     ...innerProps,
     onMouseDown,
@@ -65,8 +62,6 @@ const InputOption = ({
     onMouseLeave,
     style,
   };
-
-  console.log("skillsCheckedData", skillsCheckedData);
 
   return (
     <components.Option
@@ -86,7 +81,7 @@ const InputOption = ({
         }}
       >
         <Box>{children}</Box>
-        <Checkbox checked={skillsCheckedData?.includes(rest.data)} />
+        <Checkbox checked={isSelected} />
       </Box>
     </components.Option>
   );
@@ -100,6 +95,7 @@ const ResourceAllocationFormDetails = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [timeInput, setTimeInput] = useState("");
   const [skillsCheckedData, setSkillsCheckedData] = useState([]);
+  const [applyFilerClick, setApplyFilterClick] = useState(false);
   const debouncedValue = useDebounce(searchData);
 
   console.log("selectedOptions", selectedOptions);
@@ -180,8 +176,14 @@ const ResourceAllocationFormDetails = () => {
 
   // Name and Designation Search
 
-  const applySkillFilterHandler = () => {
-    if (skillsCheckedData.length > 0) {
+  // const applySkillFilterHandler = () => {
+
+  // };
+
+  const CustomMenu = (props) => {
+    const { innerProps, children } = props;
+    const applySkillFilterHandler = () => {
+      setApplyFilterClick(true);
       const getSkillId = skillsCheckedData
         .map((item) => item.skillId)
         .join(",");
@@ -190,25 +192,27 @@ const ResourceAllocationFormDetails = () => {
         skillIds: getSkillId,
       };
       dispatch(getAllocationSearch(params));
-    }
-  };
+    };
 
-  const onResetSkillFilterHandler = () => {
-    setSkillsCheckedData([]);
-  };
-
-  const CustomMenu = (props) => {
+    const onResetSkillFilterHandler = () => {
+      setSkillsCheckedData([]);
+    };
     return (
       <components.Menu {...props}>
-        {props.children}
+        {children}
         <Box
           style={{
             position: "absolute",
-            bottom: 0,
+            bottom: "-50px",
             left: 0,
             right: 0,
             padding: "10px",
+            background: "white",
+            border: "1px solid lightgray",
+            display: "flex",
+            justifyContent: "space-between",
           }}
+          {...innerProps}
         >
           <button onClick={applySkillFilterHandler}>Apply</button>
           <button onClick={onResetSkillFilterHandler}>Reset</button>
@@ -217,7 +221,9 @@ const ResourceAllocationFormDetails = () => {
     );
   };
 
-  
+  const handleOptionChange = (selected) => {
+    setSkillsCheckedData(selected);
+  };
 
   return (
     <div>
@@ -294,17 +300,11 @@ const ResourceAllocationFormDetails = () => {
                   isMulti
                   closeMenuOnSelect={false}
                   hideSelectedOptions={false}
-                  onChange={(options) => {
-                    setSkillsCheckedData(options.map((opt) => opt));
-                  }}
+                  onChange={handleOptionChange}
                   options={masterSkillData}
+                  value={skillsCheckedData}
                   components={{
-                    Option: (props) => (
-                      <InputOption
-                        {...props}
-                        skillsCheckedData={skillsCheckedData}
-                      />
-                    ),
+                    Option: InputOption,
                     Menu: CustomMenu,
                   }}
                   isClearable={false}
