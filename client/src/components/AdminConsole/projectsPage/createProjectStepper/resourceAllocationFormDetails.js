@@ -21,7 +21,7 @@ import {
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Select, { components } from "react-select";
@@ -95,9 +95,7 @@ const ResourceAllocationFormDetails = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [timeInput, setTimeInput] = useState("");
   const [skillsCheckedData, setSkillsCheckedData] = useState([]);
-  const [applyFilerClick, setApplyFilterClick] = useState(false);
   const debouncedValue = useDebounce(searchData);
-
   console.log("selectedOptions", selectedOptions);
 
   useEffect(() => {
@@ -183,7 +181,6 @@ const ResourceAllocationFormDetails = () => {
   const CustomMenu = (props) => {
     const { innerProps, children } = props;
     const applySkillFilterHandler = () => {
-      setApplyFilterClick(true);
       const getSkillId = skillsCheckedData
         .map((item) => item.skillId)
         .join(",");
