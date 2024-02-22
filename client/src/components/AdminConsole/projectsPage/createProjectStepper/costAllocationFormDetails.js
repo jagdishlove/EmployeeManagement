@@ -17,8 +17,7 @@ const CostAllocationFormDetails = () => {
     itemName:"",
     costIncurred:"",
     projectRevenue: "",
-    projectImplimentationCost: "",
-    percentageOfRevenue: "",
+    projectBudget: "",
   };
 
   const projectId = useSelector(state=> state.nonPersist.projectDetails?.projectId)
@@ -44,6 +43,7 @@ console.log("formDataCost", formData)
    itemName:  formData.itemName,
    costIncurred:formData.costIncurred,
   };
+  console.log("payloadvv", payload)
 
   await dispatch(saveCreateCostIncurredAction(payload));
 };
@@ -197,8 +197,8 @@ console.log("formDataCost", formData)
           </Typography>
           <TextField
             placeholder="Project Implementation Cost"
-            name="projectImplimentationCost"
-            value={formData.projectImplimentationCost}
+            name="projectBudget"
+            value={formData.projectBudget}
             onChange={handleInputChange}
             style={{
               ...style.TimesheetTextField,
@@ -216,8 +216,8 @@ console.log("formDataCost", formData)
            Other Costs Incurred
           </Typography>
           <TextField
-            placeholder="Project Implementation Cost"
-            name="projectImplimentationCost"
+            placeholder=" Other Costs Incurred"
+            name="otherCostsIncurred"
             value={formData.projectImplimentationCost}
             onChange={handleInputChange}
             style={{
@@ -225,6 +225,7 @@ console.log("formDataCost", formData)
               borderRadius: "15px",
               marginTop: "5px",
             }}
+            disabled
             fullWidth
             InputProps={{ classes: { focused: "green-border" } }}
           />
@@ -240,6 +241,7 @@ console.log("formDataCost", formData)
             name="projectImplimentationCost"
             value={formData.projectImplimentationCost}
             onChange={handleInputChange}
+            disabled
             style={{
               ...style.TimesheetTextField,
               borderRadius: "15px",
@@ -282,6 +284,7 @@ console.log("formDataCost", formData)
             name="percentageOfRevenue"
             value={formData.percentageOfRevenue}
             onChange={handleInputChange}
+            disabled
             style={{
               ...style.TimesheetTextField,
               borderRadius: "15px",

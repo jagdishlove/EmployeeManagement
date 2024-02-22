@@ -8,19 +8,16 @@ import {
   Grid,
   InputAdornment,
   Paper,
-  Radio,
   Table,
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
   TextField,
   Typography,
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -29,6 +26,7 @@ import { TimesheetStyle } from "../../../../pages/timesheet/timesheetStyle";
 import ProjectResourcesModal from "./projectResourcesModal";
 import useDebounce from "../../../../utils/useDebounce";
 import { getAllocationSearch } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 
 const InputOption = ({
   getStyles,
@@ -91,7 +89,7 @@ const ResourceAllocationFormDetails = () => {
   const dispatch = useDispatch();
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [searchData, setSearchData] = useState();
-  const [selectedRadio, setSelectedRadio] = useState(null);
+  // const [selectedRadio, setSelectedRadio] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [timeInput, setTimeInput] = useState("");
   const [skillsCheckedData, setSkillsCheckedData] = useState([]);
@@ -140,8 +138,8 @@ const ResourceAllocationFormDetails = () => {
   //     setSelectedOptionsTable(data);
   //   };
 
-  const handleRadioSelect = (id) => {
-    setSelectedRadio(id);
+  const handleRadioSelect = () => {
+    // setSelectedRadio(id);
     setIsModalOpen(true);
   };
 
@@ -211,8 +209,20 @@ const ResourceAllocationFormDetails = () => {
           }}
           {...innerProps}
         >
-          <button onClick={applySkillFilterHandler}>Apply</button>
-          <button onClick={onResetSkillFilterHandler}>Reset</button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={applySkillFilterHandler}
+          >
+            Apply
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={onResetSkillFilterHandler}
+          >
+            Reset
+          </Button>
         </Box>
       </components.Menu>
     );
@@ -252,10 +262,11 @@ const ResourceAllocationFormDetails = () => {
             Add Project Resources
           </Typography>
           <Grid container>
-            <Grid item xs={12} sm={8} md={9} lg={9}>
+            <Grid item xs={12} sm={8} md={6} lg={6}>
               <TextField
                 value={searchData}
                 sx={{ width: "100%" }}
+                placeholder="Search by Name"
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -296,6 +307,7 @@ const ResourceAllocationFormDetails = () => {
                   isSearchable={false}
                   isMulti
                   closeMenuOnSelect={false}
+                  placeholder="Designation"
                   hideSelectedOptions={false}
                   onChange={handleOptionChange}
                   options={masterSkillData}
@@ -314,35 +326,43 @@ const ResourceAllocationFormDetails = () => {
                     control: (baseStyles) => ({
                       ...baseStyles,
                       height: "55px",
+                      background: "#008080",
+                      color: "white !important",
                     }),
                   }}
                 />
-                {/* <Select
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={8} md={3} lg={3}>
+              <FormControl style={{ marginLeft: "15px", width: "90%" }}>
+                <Select
+                  isSearchable={false}
                   isMulti
-                  labelId="dropdown-label"
-                  placeholder="Skill Sets"
+                  closeMenuOnSelect={false}
+                  placeholder="Skill Set"
+                  hideSelectedOptions={false}
+                  onChange={handleOptionChange}
+                  options={masterSkillData}
+                  value={skillsCheckedData}
+                  components={{
+                    Option: InputOption,
+                    Menu: CustomMenu,
+                  }}
+                  isClearable={false}
+                  controlShouldRenderValue={false}
                   getOptionValue={(option) => option.skillId}
                   getOptionLabel={(option) => option.skillName}
                   isLoading={masterSkillData?.length === 0}
-                  options={masterSkillData}
-                  isSearchable={false}
-                  id="dropdown"
-                  components={{
-                    Option: InputOption,
-                  }}
-                  onChange={(options) => {
-                    if (Array.isArray(options)) {
-                      setSkillsCheckedData(options.map((opt) => opt.value));
-                    }
-                  }}
                   styles={{
                     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                     control: (baseStyles) => ({
                       ...baseStyles,
                       height: "55px",
+                      background: "#008080",
+                      color: "white !important",
                     }),
                   }}
-                /> */}
+                />
               </FormControl>
             </Grid>
           </Grid>
@@ -351,36 +371,59 @@ const ResourceAllocationFormDetails = () => {
           {allocationSearchData.length > 0 && (
             <TableContainer component={Paper}>
               <Table>
-                <TableHead>
+                {/* <TableHead>
                   <TableRow>
                     <TableCell>Name</TableCell>
                     <TableCell>Designation</TableCell>
                     <TableCell>Skills</TableCell>
                     <TableCell>Select</TableCell>
                   </TableRow>
-                </TableHead>
+                </TableHead> */}
                 <TableBody>
                   {allocationSearchData.map((option) => (
                     <TableRow key={option.employeeId}>
+                      <TableCell>
+                        <AddCircleIcon
+                          cursor={"pointer"}
+                          onClick={() => handleRadioSelect(option.id)}
+                          sx={{ color: "#008080" }}
+                        />
+                      </TableCell>
                       <TableCell>{option.employeeName}</TableCell>
                       <TableCell>{option.employeeDesignation}</TableCell>
                       <TableCell>
                         {option.skills.length > 0 && (
-                          <div>
-                            {option.skills.map((skill, index) => (
-                              <React.Fragment key={index}>
-                                {index > 0 && ", "}
-                                {skill}
-                              </React.Fragment>
-                            ))}
-                          </div>
+                          <Grid
+                            container
+                            sx={{
+                              border: "1px solid ##F3F3F3",
+                              borderRadius: "5px",
+                              backgroundColor: "#F3F3F3",
+                              overflow: "auto",
+                            }}
+                          >
+                            <Grid item  
+                            sx={{
+                                    border: "1px solid #AEAEAE",
+                                    borderRadius: "8px",
+                                    padding: "4px",
+                                    margin: "5px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "flex-end",
+                                    color: "#000000",
+                                  }}>
+                              {option.skills.map((skill, index) => (
+                                <React.Fragment
+                                  key={index}
+                                >
+                                  {index > 0 && ", "}
+                                  {skill}
+                                </React.Fragment>
+                              ))}
+                            </Grid>
+                          </Grid>
                         )}
-                      </TableCell>
-                      <TableCell>
-                        <Radio
-                          checked={selectedRadio === option.id}
-                          onChange={() => handleRadioSelect(option.id)}
-                        />
                       </TableCell>
                     </TableRow>
                   ))}
@@ -402,7 +445,12 @@ const ResourceAllocationFormDetails = () => {
                     />
 
                     {/* Add Confirm and Cancel buttons */}
-                    <Box display="flex" justifyContent="flex-end" mt={2}>
+                    <Box
+                      display="flex"
+                      justifyContent="flex-end"
+                      mt={2}
+                      gap={2}
+                    >
                       <Button
                         variant="outlined"
                         onClick={() => setIsModalOpen(false)}
@@ -463,6 +511,7 @@ const ResourceAllocationFormDetails = () => {
               borderRadius: "15px",
               marginTop: "5px",
             }}
+            disabled
             fullWidth
             InputProps={{ classes: { focused: "green-border" } }}
           />
@@ -486,8 +535,8 @@ const ResourceAllocationFormDetails = () => {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 name="toDate"
-                format="ddd, MMM DD,YYYY"
-                value={dayjs()}
+                format="DD/MM/YYYY"
+                value={null} // Set value to null to not display the current date
                 onChange={startDateHandler}
                 renderInput={(params) => <TextField {...params} />}
               />
@@ -513,8 +562,8 @@ const ResourceAllocationFormDetails = () => {
               <DatePicker
                 name="endDate"
                 fullWidth
-                format="ddd, MMM DD,YYYY"
-                value={dayjs()}
+                format="DD/MM/YYYY"
+                value={null} // Set
                 onChange={endDateHandler}
                 renderInput={(params) => <TextField {...params} />}
               />
@@ -540,8 +589,8 @@ const ResourceAllocationFormDetails = () => {
               <DatePicker
                 name="actualEndDate"
                 fullWidth
-                format="ddd, MMM DD,YYYY"
-                value={dayjs()}
+                format="DD/MM/YYYY"
+                value={null} // Set
                 onChange={actualEndDateHandler}
                 renderInput={(params) => <TextField {...params} />}
               />
