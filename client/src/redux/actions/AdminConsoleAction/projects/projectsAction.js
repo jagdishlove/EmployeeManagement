@@ -192,9 +192,10 @@ const saveCreateProjectRequest = () => {
     type: SAVE_CREATE_PROJECT_REQUEST,
   };
 };
-const saveCreateProjectSuccess = () => {
+const saveCreateProjectSuccess = (data) => {
   return {
     type: SAVE_CREATE_PROJECT_SUCCESS,
+    payload:data
   };
 };
 const saveCreateProjectFail = () => {
@@ -437,7 +438,7 @@ export const saveCreateProjectAction = ( payload ) => {
         "/api/projects/createProject",
         payload 
       );
-      dispatch(saveCreateProjectSuccess());
+      dispatch(saveCreateProjectSuccess(response));
       toast.success("Project Created Successfully", {
         position: toast.POSITION.BOTTOM_CENTER,
       });

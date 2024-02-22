@@ -81,7 +81,7 @@ const InputOption = ({
         }}
       >
         <Box>{children}</Box>
-        <Checkbox checked={isSelected} />
+        <Checkbox color="primary" checked={isSelected} />
       </Box>
     </components.Option>
   );

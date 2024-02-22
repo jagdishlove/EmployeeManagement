@@ -6,7 +6,7 @@ import { TimesheetStyle } from "../../../../pages/timesheet/timesheetStyle";
 import {  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { saveCreateCostIncurredAction } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 const CostAllocationFormDetails = () => {
   const theme = useTheme();
@@ -20,6 +20,9 @@ const CostAllocationFormDetails = () => {
     projectImplimentationCost: "",
     percentageOfRevenue: "",
   };
+
+  const projectId = useSelector(state=> state.nonPersist.projectDetails?.projectId)
+  
   const [formData, setFormData] = useState(intialValues);
 console.log("formDataCost", formData)
   const handleInputChange = (event) => {
@@ -37,7 +40,7 @@ console.log("formDataCost", formData)
  //Save or ADD Cost inoccured
  const handleAdd = async () => {
   const payload = {
-    projectId:  formData.projectId,
+    projectId:  projectId,
    itemName:  formData.itemName,
    costIncurred:formData.costIncurred,
   };

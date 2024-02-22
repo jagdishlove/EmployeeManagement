@@ -29,7 +29,7 @@ const CreateProjectFormDetails = () => {
   const style = TimesheetStyle(theme);
   const Navigate = useNavigate();
   const dispatch = useDispatch();
-  const intialValues = {
+  const initialValues = {
     clientName: "",
     projectName: "",
     description: "",
@@ -40,13 +40,19 @@ const CreateProjectFormDetails = () => {
     domain: "",
     complexity: "",
   };
-  const [formData, setFormData] = useState(intialValues);
+  const [formData, setFormData] = useState(initialValues);
+  const [validationErrors, setValidationErrors] = useState({
+    clientName: "",
+    projectName: "",
+    description: "",
+    projectManager: "",
+    projectLead: "",
+  });
 
   // client Search
   const clientSearchData = useSelector(
     (state) => state.nonPersist?.projectDetails?.clientNameData
   );
-
 
   useEffect(() => {
     dispatch(getClientNameAction());
@@ -57,6 +63,10 @@ const CreateProjectFormDetails = () => {
       ...prevData,
       [name]: e,
     }));
+    setValidationErrors({
+      ...validationErrors,
+      [name]: "",
+    });
   };
 
   //client Details like address etc
@@ -79,6 +89,11 @@ const CreateProjectFormDetails = () => {
       ...formData,
       [name]: value,
     });
+    // Clear validation error when user starts typing
+    setValidationErrors({
+      ...validationErrors,
+      [name]: "",
+    });
   };
 
   // Handle change for  dropdown
@@ -88,6 +103,10 @@ const CreateProjectFormDetails = () => {
       ...prevSelectedValues,
       [dropdownName]: value,
     }));
+    setValidationErrors({
+      ...validationErrors,
+      [dropdownName]: "",
+    });
   };
 
   //project category
@@ -104,7 +123,7 @@ const CreateProjectFormDetails = () => {
   const employeeSearchData = useSelector(
     (state) => state.nonPersist?.projectDetails?.employeeSearchData
   );
-console.log("employeeSearchData", employeeSearchData)
+  console.log("employeeSearchData", employeeSearchData);
   useEffect(() => {
     dispatch(getEmployeeSearchAction());
   }, []);
@@ -138,8 +157,18 @@ console.log("employeeSearchData", employeeSearchData)
   });
 
   console.log("formData", formData);
+
   //Save
-  const handleSaveData = async () => {
+  const handleSaveData = async (e) => {
+    e.preventDefault();
+
+    // Validate form fields
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return; // Do not proceed with saving if there are validation errors
+    }
+
     const payload = {
       projectName: formData.projectName,
       description: formData.description,
@@ -152,14 +181,67 @@ console.log("employeeSearchData", employeeSearchData)
     };
 
     await dispatch(saveCreateProjectAction(payload));
+
+    // Reset form data
+    setFormData(initialValues);
+     // Manually clear disabled fields
+  setFormData((prevData) => ({
+    ...prevData,
+    clientAddress: "",
+    phone: "",
+    country: "",
+    state: "",
+    city: "",
+    zipCode: "",
+  }));
+    // Clear validation errors
+    setValidationErrors({});
+     
   };
 
-  const handleSaveAndNext = async () => {
+  const handleSaveAndNext = async (e) => {
+    e.preventDefault();
+    // Validate form fields
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return; // Do not proceed with saving if there are validation errors
+    }
+
     // Save data first
-    await handleSaveData();
+    await handleSaveData(e);
 
     // Navigate to resource allocation
     Navigate("/resourceallocation");
+  };
+
+  const validateForm = () => {
+    const errors = {};
+    if (!formData.clientName) {
+      errors.clientName = "Client Name is required";
+    }
+    if (!formData.projectName) {
+      errors.projectName = "Project Name is required";
+    }
+    if (!formData.description) {
+      errors.description = "Description is required";
+    }
+    if (!formData.projectCategory) {
+      errors.projectCategory = "Project Category is required";
+    }
+    if (!formData.projectManager) {
+      errors.projectManager = "Project Manager is required";
+    }
+    if (!formData.projectLead) {
+      errors.projectLead = "Project Lead is required";
+    }
+    if (!formData.complexity) {
+      errors.complexity = "Complexity is required";
+    }
+    if (!formData.domain) {
+      errors.domain = "Domain is required";
+    }
+    return errors;
   };
 
   return (
@@ -214,6 +296,11 @@ console.log("employeeSearchData", employeeSearchData)
               placeholder="Client Name"
             />
           </Box>
+          {validationErrors.clientName && (
+            <Typography variant="caption" color="error">
+              {validationErrors.clientName}
+            </Typography>
+          )}
           <Typography
             variant="body1"
             style={{ marginTop: "15px", color: " #ADADAD" }}
@@ -226,7 +313,6 @@ console.log("employeeSearchData", employeeSearchData)
             value={`${clientDetailsData?.address?.addressLine1 || ""} ${
               clientDetailsData?.address?.addressLine2 || ""
             }`}
-            onChange={handleChange}
             style={{
               ...style.TimesheetTextField,
               borderRadius: "10px",
@@ -252,7 +338,6 @@ console.log("employeeSearchData", employeeSearchData)
             placeholder="Phone"
             name="phone"
             value={clientDetailsData?.phone}
-            onChange={handleChange}
             style={{
               ...style.TimesheetTextField,
               borderRadius: "10px",
@@ -283,7 +368,6 @@ console.log("employeeSearchData", employeeSearchData)
             placeholder="Country"
             name="country"
             value={DataValue[clientDetailsData?.address?.countryId] || ""}
-            onChange={handleChange}
             sx={{
               "& :hover": {
                 cursor: "not-allowed",
@@ -307,7 +391,6 @@ console.log("employeeSearchData", employeeSearchData)
             placeholder="State"
             name="state"
             value={DataValue[clientDetailsData?.address?.stateId] || ""}
-            onChange={handleChange}
             sx={{
               "& :hover": {
                 cursor: "not-allowed",
@@ -336,7 +419,6 @@ console.log("employeeSearchData", employeeSearchData)
               },
             }}
             value={DataValue[`${clientDetailsData?.address?.cityId}`] || ""}
-            onChange={handleChange}
             style={{
               ...style.TimesheetTextField,
               borderRadius: "10px",
@@ -360,7 +442,6 @@ console.log("employeeSearchData", employeeSearchData)
               },
             }}
             value={clientDetailsData?.address?.postalCode}
-            onChange={handleChange}
             style={{
               ...style.TimesheetTextField,
               borderRadius: "10px",
@@ -411,6 +492,11 @@ console.log("employeeSearchData", employeeSearchData)
             fullWidth
             InputProps={{ classes: { focused: "green-border" } }}
           />
+          {validationErrors.projectName && (
+            <Typography variant="caption" color="error">
+              {validationErrors.projectName}
+            </Typography>
+          )}
           <Typography variant="body1" style={{ marginTop: "15px" }}>
             Description
           </Typography>
@@ -428,7 +514,11 @@ console.log("employeeSearchData", employeeSearchData)
             rows={4}
             fullWidth
           />
-
+          {validationErrors.description && (
+            <Typography variant="caption" color="error">
+              {validationErrors.description}
+            </Typography>
+          )}
           <Typography variant="body1" style={{ marginTop: "15px" }}>
             Project Category
           </Typography>
@@ -447,11 +537,15 @@ console.log("employeeSearchData", employeeSearchData)
               marginTop: "10px",
             }}
           />
-
+          {validationErrors.projectCategory && (
+            <Typography variant="caption" color="error">
+              {validationErrors.projectCategory}
+            </Typography>
+          )}
           <Typography variant="body1" style={{ marginTop: "15px" }}>
             Applicable Activities
           </Typography>
-            <Autocomplete
+          <Autocomplete
             multiple
             id="applicable-activities"
             options={masterdataProjectActivityList}
@@ -460,13 +554,13 @@ console.log("employeeSearchData", employeeSearchData)
               handleChange(value, "applicableActivity")
             }
             disableCloseOnSelect
-                freeSolo
+            freeSolo
             renderOption={(props, option, { selected }) => (
-                  <li {...props}>
-                    <Checkbox checked={selected} />
-                    {option.activityType}
-                  </li>
-                )}
+              <li {...props}>
+                <Checkbox checked={selected} />
+                {option.activityType}
+              </li>
+            )}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -504,7 +598,11 @@ console.log("employeeSearchData", employeeSearchData)
               placeholder="Project Manager"
             />
           </Box>
-
+          {validationErrors.projectManager && (
+            <Typography variant="caption" color="error">
+              {validationErrors.projectManager}
+            </Typography>
+          )}
           <Typography variant="body1" style={{ marginTop: "15px" }}>
             Project Lead
           </Typography>
@@ -531,7 +629,11 @@ console.log("employeeSearchData", employeeSearchData)
               placeholder="Project Lead"
             />
           </Box>
-
+          {validationErrors.projectLead && (
+            <Typography variant="caption" color="error">
+              {validationErrors.projectLead}
+            </Typography>
+          )}
           <Typography variant="body1" style={{ marginTop: "15px" }}>
             Domain
           </Typography>
@@ -551,7 +653,11 @@ console.log("employeeSearchData", employeeSearchData)
             labelKey="domainName"
             name="domain"
           />
-
+          {validationErrors.domain && (
+            <Typography variant="caption" color="error">
+              {validationErrors.domain}
+            </Typography>
+          )}
           <Typography variant="body1" style={{ marginTop: "15px" }}>
             Complexity
           </Typography>
@@ -568,6 +674,11 @@ console.log("employeeSearchData", employeeSearchData)
             options={masterdatacomplexityList}
             name="complexity"
           />
+          {validationErrors.complexity && (
+            <Typography variant="caption" color="error">
+              {validationErrors.complexity}
+            </Typography>
+          )}
         </Grid>
 
         <Grid item xs={12} sm={8} md={10} lg={10}>
@@ -576,7 +687,7 @@ console.log("employeeSearchData", employeeSearchData)
               variant="contained"
               color="primary"
               type="submit"
-              onClick={() => handleSaveData()}
+              onClick={ handleSaveData}
             >
               Save
             </Button>
