@@ -10,6 +10,8 @@ import dayjs from 'dayjs';
 import Dropdown from '../../forms/dropdown/dropdown';
 import { TimesheetStyle } from '../../../pages/timesheet/timesheetStyle';
 import { useTheme } from "@mui/material/styles";
+import { MuiTelInput as MuiPhoneNumber } from 'mui-tel-input';
+
 
 export default function MasterDataDialogs({
     openDialog,
@@ -75,7 +77,7 @@ export default function MasterDataDialogs({
         >
             <CloseIcon />
         </IconButton>
-        <DialogTitle sx={{width:'500px'}}>
+        <DialogTitle sx={{width:'400px'}}>
         <img src={icon}/> {changeData}
         </DialogTitle>
         {desginationEdit ? (
@@ -88,17 +90,24 @@ export default function MasterDataDialogs({
                         width:'100%'
                     }}
                 />
+                {errors.value && (
+                <Box>
+                    <Typography color="error">
+                    {errors.value}
+                    </Typography>
+                </Box>
+                )}
             </Grid>
         ) : (
             <>
-            {desginationDisable ? (
+            {desginationDisable ? ( 
                 <>
                 <DialogContent>
                     <DialogContentText>
-                        Are you sure you want to proceed with removing the
+                        Are you sure you want to proceed with <b style={{color:'black'}}>removing</b> the
                     </DialogContentText>
                     <DialogContentText>
-                        {chnageDataType} &apos;{changeData}&apos; from the Master Data ?
+                        {chnageDataType} <b style={{color:'black'}}>&apos;{changeData}&apos;</b>  from the Master Data?
                     </DialogContentText>
                 </DialogContent>
                 </>
@@ -106,10 +115,10 @@ export default function MasterDataDialogs({
                 <>
                 <DialogContent>
                     <DialogContentText>
-                        Are you sure you want to edit/disablr the {chnageDataType}
+                        Are you sure you want to edit/disable the {chnageDataType}
                     </DialogContentText>
                     <DialogContentText>
-                        &apos;{changeData}&apos; from the Master Data ?
+                        &apos;{changeData}&apos; from the Master Data?
                     </DialogContentText>
                 </DialogContent>
                 </>
@@ -129,6 +138,7 @@ export default function MasterDataDialogs({
                             '&:hover': {
                                 backgroundColor: '#008080',
                             },
+                            textTransform: 'capitalize',
                         }}
                     >
                         Save
@@ -138,7 +148,8 @@ export default function MasterDataDialogs({
                         sx={{
                             color:'#000',
                             borderRadius:'8px',
-                            border:'1px solid #D0D5DD'
+                            border:'1px solid #D0D5DD',
+                            textTransform: 'capitalize',
                         }}  
                     >
                         Cancel
@@ -153,7 +164,8 @@ export default function MasterDataDialogs({
                         sx={{
                             color:'#344054',
                             border:'1px solid #D0D5DD',
-                            borderRadius:'8px'
+                            borderRadius:'8px',
+                            textTransform: 'capitalize',
                         }}
                     >
                         Cancle
@@ -167,6 +179,7 @@ export default function MasterDataDialogs({
                             '&:hover': {
                                 backgroundColor: '#B7251B',
                             },
+                            textTransform: 'capitalize',
                         }}  
                     >
                         Disable
@@ -179,7 +192,8 @@ export default function MasterDataDialogs({
                         sx={{
                             color:'#344054',
                             border:'1px solid #D0D5DD',
-                            borderRadius:'8px'
+                            borderRadius:'8px',
+                            textTransform: 'capitalize',
                         }}
                     >
                         Edit
@@ -193,6 +207,7 @@ export default function MasterDataDialogs({
                             '&:hover': {
                                 backgroundColor: '#B7251B',
                             },
+                            textTransform: 'capitalize',
                         }}  
                     >
                         Disable
@@ -220,7 +235,7 @@ export default function MasterDataDialogs({
         >
             <CloseIcon />
         </IconButton>
-        <DialogTitle sx={{width:'500px'}}>
+        <DialogTitle sx={{width:'400px'}}>
         <img src={icon}/> {dialogTitle}
         </DialogTitle>
         <DialogContent>
@@ -231,16 +246,13 @@ export default function MasterDataDialogs({
             value={value}
             sx={{width:'100%',height:'56px',marginTop:'10px'}}
           />
-        {errors.value && (
+            {errors.value && (
             <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.value}
+                <Typography color="error">
+                {errors.value}
                 </Typography>
             </Box>
-        )}
+            )}
         </DialogContent>
         <DialogActions>
         <Button 
@@ -254,6 +266,7 @@ export default function MasterDataDialogs({
                 '&:hover': {
                     backgroundColor: '#008080',
                 },
+                textTransform: 'capitalize',
             }}
         >
             Save
@@ -274,8 +287,8 @@ export default function MasterDataDialogs({
         >
             <CloseIcon />
         </IconButton>
-        <DialogTitle sx={{width:'500px'}}>
-        <img src={icon}/> Office Address</DialogTitle>
+        <DialogTitle sx={{width:'400px'}}>
+        <img src={icon}/> Office Location</DialogTitle>
       <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
         <Typography>Office Name</Typography>
         <TextField
@@ -301,6 +314,16 @@ export default function MasterDataDialogs({
             onChange={(e) => handleOfficeChange('addressLine1', e.target.value)}
             sx={{ marginBottom: 1}}
         />
+        {errors.addressLine2 && (
+            <Box>
+                <Typography
+                    color="error"
+                >
+                    {" "}
+                    {errors.addressLine2}
+                </Typography>
+            </Box>
+        )}
         <Typography>Address Line 2</Typography>
         <TextField
             placeholder="Enter Office Address"
@@ -308,9 +331,19 @@ export default function MasterDataDialogs({
             onChange={(e) => handleOfficeChange('addressLine2', e.target.value)}
             sx={{ marginBottom: 1}}
         />
+        {errors.addressLine1 && (
+            <Box>
+                <Typography
+                    color="error"
+                >
+                    {" "}
+                    {errors.addressLine1}
+                </Typography>
+            </Box>
+        )}
         <Typography>Phone Number</Typography>
         <TextField
-            placeholder="phoneNumber"
+            placeholder="Phone Number"
             value={officeData.phoneNumber}
             onChange={(e) => handleOfficeChange('phoneNumber', e.target.value)}
             sx={{ marginBottom: 1}}
@@ -400,22 +433,38 @@ export default function MasterDataDialogs({
         )}
         </DialogContent>
       <DialogActions>
-      <Button 
-            onClick={() => handleSubmit(chnageDataType,chnageDataId,'ACTIVE')}
+        {edit ? (
+            <Button 
+            onClick={handleCloseDialog}
             sx={{
-                backgroundColor:'#008080',
-                color:'#ffff',
-                marginRight:'30px',
+                color:'#000',
                 width:'100px',
                 marginTop:'-10px',
-                '&:hover': {
-                    backgroundColor: '#008080',
-                },
+                border:'1px solid #AEAEAE',
+                textTransform: 'capitalize',
+            }}
+            >
+            Cancel
+            </Button>
+        ) : null}
+        <Button 
+            onClick={() => (edit === false ? handleSubmit(chnageDataType, chnageDataId) : handleUpdate(chnageDataType, chnageDataId))} 
+            sx={{
+            backgroundColor:'#008080',
+            color:'#ffff',
+            marginRight:'30px',
+            width:'100px',
+            marginTop:'-10px',
+            '&:hover': {
+                backgroundColor: '#008080',
+            },
+            textTransform: 'capitalize',
             }}
         >
             Save
         </Button>
-      </DialogActions>
+        </DialogActions>
+
     </Dialog>
     <Dialog open={enable} onClose={handleCloseDialog}>
       <IconButton
@@ -431,14 +480,14 @@ export default function MasterDataDialogs({
         >
             <CloseIcon />
         </IconButton>
-        <DialogTitle sx={{width:'500px'}}>
+        <DialogTitle sx={{width:'400px'}}>
         <img src={icon}/> Office Address</DialogTitle>
             <DialogContent>
                     <DialogContentText>
                         Are you sure you want to enable the {chnageDataType}
                     </DialogContentText>
                     <DialogContentText>
-                         &apos;{changeData}&apos; from the Master Data ?
+                        <b style={{color:'black'}}>&apos;{changeData}&apos;</b>  from the Master Data?
                     </DialogContentText>
                 </DialogContent>
         <DialogActions>
@@ -448,7 +497,8 @@ export default function MasterDataDialogs({
                     color:'#000',
                     width:'100px',
                     marginTop:'-10px',
-                    border:'1px solid #AEAEAE'
+                    border:'1px solid #AEAEAE',
+                    textTransform: 'capitalize',
                 }}
             >
                 cancle
@@ -464,6 +514,7 @@ export default function MasterDataDialogs({
                     '&:hover': {
                         backgroundColor: '#008080',
                     },
+                    textTransform: 'capitalize',
                 }}
             >
                 Enable
@@ -484,7 +535,7 @@ export default function MasterDataDialogs({
         >
             <CloseIcon />
         </IconButton>
-        <DialogTitle sx={{width:'500px'}}>
+        <DialogTitle sx={{width:'400px'}}>
         <img src={icon}/> Band Details</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 1}}>
                 <TextField 
@@ -540,34 +591,39 @@ export default function MasterDataDialogs({
                 )}
 
             </DialogContent>
-        <DialogActions>
+            <DialogActions>
+        {edit ? (
             <Button 
-                onClick={handleCloseDialog}
-                sx={{
-                    color:'#000',
-                    width:'100px',
-                    marginTop:'-10px',
-                    border:'1px solid #AEAEAE'
-                }}
+            onClick={handleCloseDialog}
+            sx={{
+                color:'#000',
+                width:'100px',
+                marginTop:'-10px',
+                border:'1px solid #AEAEAE',
+                textTransform: 'capitalize',
+            }}
             >
-                cancle
+            Cancel
             </Button>
-            <Button 
-                onClick={() => handleSubmit(chnageDataType,chnageDataId)} 
-                sx={{
-                    backgroundColor:'#008080',
-                    color:'#ffff',
-                    marginRight:'30px',
-                    width:'100px',
-                    marginTop:'-10px',
-                    '&:hover': {
-                        backgroundColor: '#008080',
-                    },
-                }}
-            >
-                Save
-            </Button>
-      </DialogActions>
+        ) : null}
+        <Button 
+            onClick={() => (edit === false ? handleSubmit(chnageDataType, chnageDataId) : handleUpdate(chnageDataType, chnageDataId))} 
+            sx={{
+            backgroundColor:'#008080',
+            color:'#ffff',
+            marginRight:'30px',
+            width:'100px',
+            marginTop:'-10px',
+            '&:hover': {
+                backgroundColor: '#008080',
+            },
+            textTransform: 'capitalize',
+            }}
+        >
+            Save
+        </Button>
+        </DialogActions>
+
     </Dialog>
     <Dialog open={holidayDialog} onClose={handleCloseDialog}>
       <IconButton
@@ -583,7 +639,7 @@ export default function MasterDataDialogs({
         >
             <CloseIcon />
         </IconButton>
-        <DialogTitle sx={{width:'500px'}}>
+        <DialogTitle sx={{width:'400px'}}>
         <img src={icon}/> Holiday Details</DialogTitle>
             <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 1}}>
             <TextField
@@ -651,20 +707,23 @@ export default function MasterDataDialogs({
                 )}
 
             </DialogContent>
-        <DialogActions>
-            <Button 
-                onClick={handleCloseDialog}
-                sx={{
-                    color:'#000',
-                    width:'100px',
-                    marginTop:'-10px',
-                    border:'1px solid #AEAEAE'
-                }}
-            >
-                cancle
-            </Button>
-            <Button 
-                    onClick={() => (edit=== false ? handleSubmit(chnageDataType, chnageDataId) : handleUpdate(chnageDataType, chnageDataId))} 
+            <DialogActions>
+                {edit ? (
+                    <Button 
+                    onClick={handleCloseDialog}
+                    sx={{
+                        color:'#000',
+                        width:'100px',
+                        marginTop:'-10px',
+                        border:'1px solid #AEAEAE',
+                        textTransform: 'capitalize',
+                    }}
+                    >
+                    Cancel
+                    </Button>
+                ) : null}
+                <Button 
+                    onClick={() => (edit === false ? handleSubmit(chnageDataType, chnageDataId) : handleUpdate(chnageDataType, chnageDataId))} 
                     sx={{
                     backgroundColor:'#008080',
                     color:'#ffff',
@@ -674,11 +733,13 @@ export default function MasterDataDialogs({
                     '&:hover': {
                         backgroundColor: '#008080',
                     },
-                }}
-            >
-                Save
-            </Button>
-      </DialogActions>
+                    textTransform: 'capitalize',
+                    }}
+                >
+                    Save
+                </Button>
+                </DialogActions>
+
     </Dialog>
     <Dialog
         open={isOpenCalender}
@@ -714,12 +775,12 @@ export default function MasterDataDialogs({
         >
             <CloseIcon />
         </IconButton>
-        <DialogTitle sx={{width:'500px'}}>
+        <DialogTitle sx={{width:'400px'}}>
         <img src={icon}/> Client Details</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
         <Typography>Clinet Name</Typography>
         <TextField
-            placeholder="Office Address"
+            placeholder="Enter Client Name"
             name = 'clinetName'
             value={clinetDetails.clinetName}
             onChange={(e) => handleClinetDetails('clinetName', e.target.value)}
@@ -737,7 +798,7 @@ export default function MasterDataDialogs({
         )}
         <Typography>Address Line 1</Typography>
         <TextField
-            placeholder="Office Address"
+            placeholder="Enter Client Address"
             name = 'addressLine1'
             value={clinetDetails.addressLine1}
             onChange={(e) => handleClinetDetails('addressLine1', e.target.value)}
@@ -755,7 +816,7 @@ export default function MasterDataDialogs({
         )}
         <Typography>Address Line 1</Typography>
         <TextField
-            placeholder="Office Address"
+            placeholder="Enter Client Address"
             name = 'addressLine2'
             value={clinetDetails.addressLine2}
             onChange={(e) => handleClinetDetails('addressLine2', e.target.value)}
@@ -772,13 +833,18 @@ export default function MasterDataDialogs({
             </Box>
         )}
         <Typography>Phone Number</Typography>
-        <TextField
-            placeholder="phoneNumber"
-            name='phone'
-            value={clinetDetails.phone}
-            onChange={(e) => handleClinetDetails('phone', e.target.value)}
-            sx={{ marginBottom: 1}}
+        <MuiPhoneNumber
+        defaultCountry={'IN'} 
+        name='phone'
+        placeholder='Enter Phone Number'
+        value={clinetDetails.phone}
+        onChange={(value) => {
+            const cleanedPhoneNumber = value.replace(/\s/g, '');
+            handleClinetDetails('phone', cleanedPhoneNumber);
+          }}
+        sx={{ marginBottom: 1 }}
         />
+
         {errors.phone && (
             <Box>
                 <Typography
@@ -793,6 +859,7 @@ export default function MasterDataDialogs({
         <Autocomplete
             freeSolo
             id="country"
+            placeholder='Enter Client Address'
             options={country}
             getOptionLabel={(option) => option.dataValue}
             onChange={(e, value) => handleClinetDetails('country', e, value)}
@@ -872,7 +939,8 @@ export default function MasterDataDialogs({
                     color:'#000',
                     width:'100px',
                     marginTop:'-10px',
-                    border:'1px solid #AEAEAE'
+                    border:'1px solid #AEAEAE',
+                    textTransform: 'capitalize',
                 }}
             >
                 cancle
@@ -888,6 +956,7 @@ export default function MasterDataDialogs({
                     '&:hover': {
                         backgroundColor: '#008080',
                     },
+                    textTransform: 'capitalize',
                 }}
             >
                 Save
@@ -908,7 +977,7 @@ export default function MasterDataDialogs({
         >
             <CloseIcon />
         </IconButton>
-        <DialogTitle sx={{width:'500px'}}>
+        <DialogTitle sx={{width:'400px'}}>
         <img src={icon}/> Client Onsite Office Location</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
         <Typography>Clinet Name</Typography>
@@ -966,12 +1035,23 @@ export default function MasterDataDialogs({
             </Box>
         )}
         <Typography>Phone Number</Typography>
-        <TextField
-            placeholder="phoneNumber"
-            name='phone'
-            value={clientLocationData.phone}
-            onChange={(e) => handleOnsiteLocation('phoneNumber', e.target.value)}
-            sx={{ marginBottom: 1}}
+        <MuiPhoneNumber
+        defaultCountry={'IN'} 
+        name='phone'
+        value={clientLocationData.phone}
+        onChange={(value) => handleOnsiteLocation('phoneNumber', value)}
+        sx={{ marginBottom: 1 }}
+        />
+        <MuiPhoneNumber
+        defaultCountry={'IN'} 
+        name='phone'
+        placeholder='Enter Phone Number'
+        value={clinetDetails.phone}
+        onChange={(value) => {
+            const cleanedPhoneNumber = value.replace(/\s/g, '');
+            handleClinetDetails('phone', cleanedPhoneNumber);
+          }}
+        sx={{ marginBottom: 1 }}
         />
         {errors.phone && (
             <Box>
@@ -1066,7 +1146,8 @@ export default function MasterDataDialogs({
                     color:'#000',
                     width:'100px',
                     marginTop:'-10px',
-                    border:'1px solid #AEAEAE'
+                    border:'1px solid #AEAEAE',
+                    textTransform: 'capitalize',
                 }}
             >
                 cancle
@@ -1082,6 +1163,7 @@ export default function MasterDataDialogs({
                     '&:hover': {
                         backgroundColor: '#008080',
                     },
+                    textTransform: 'capitalize',
                 }}
             >
                 Save

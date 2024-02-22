@@ -145,18 +145,19 @@ const LeaveRequestForm = ({
     if (!leaveRqstData.comments) {
       errors.comments = "Comment is required";
     }
-    const ccEmails = leaveRqstData.cc?.split(',').map(email => email.trim()) || [];
+    const ccEmails = leaveRqstData?.cc?.split?.(',').map?.(email => email?.trim()) || [];
 
-    const isValidCCEmails = ccEmails.every(email => isValidEmail(email));
+    const isValidCCEmails = ccEmails?.every?.(email => isValidEmail(email));
 
     function isValidEmail(email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(email);
+      return emailRegex?.test?.(email);
     }
-      
+
     if (!isValidCCEmails) {
       errors.cc = "Invalid email domain.";
     }
+
 
     // Check if fromDate is before toDate
     if (dayjs(leaveRqstData.fromDate).isAfter(dayjs(leaveRqstData.toDate))) {

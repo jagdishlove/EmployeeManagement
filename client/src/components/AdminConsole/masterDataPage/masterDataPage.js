@@ -100,7 +100,7 @@ export default function MasterDataPage({
                                 <Button 
                                 variant="contained" 
                                 color="primary"
-                                onClick={() => handleAdd('designation')}
+                                onClick={() => handleAdd('Designation')}
                                 sx={{
                                     width:'100px',
                                     height:'46px',
@@ -115,7 +115,7 @@ export default function MasterDataPage({
                                 {designationData.map((designation, index) => (
                                 <Grid item key={index} sx={{ border: designation.status === "ACTIVE" ? "1.5px solid #008080" : "1.5px solid #AEAEAE", borderRadius: '15px', padding: '6px', margin: '5px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', color: designation.status === "ACTIVE" ? "black" : "#AEAEAE" }}>
                                     <Typography
-                                    onClick={() => handleDesignation('designation', designation.designationName, designation.designationId, designation.status)}
+                                    onClick={() => handleDesignation('Designation', designation.designationName, designation.designationId, designation.status)}
                                     sx={{
                                         cursor: 'pointer'
                                     }}
@@ -130,7 +130,7 @@ export default function MasterDataPage({
                     </Grid>
                 </AccordionDetails>
                 </>
-              )}
+              )} 
         </Accordion>
         <Accordion
             sx={{
@@ -177,7 +177,7 @@ export default function MasterDataPage({
                                 <Button 
                                 variant="contained" 
                                 color="primary"
-                                onClick={() => handleAdd('skill')}
+                                onClick={() => handleAdd('Skill')}
                                 sx={{
                                     width:'100px',
                                     height:'46px',
@@ -192,7 +192,7 @@ export default function MasterDataPage({
                             {skillData?.map((skill, index) => (
                                 <Grid item key={index} sx={{ border:skill.status === "ACTIVE" ?  "1.5px solid #008080" : "1.5px solid #AEAEAE", borderRadius: '15px', padding: '6px', margin: '5px', height: '40px',color : skill.status === "ACTIVE" ? "black" : "#AEAEAE" }}>
                                     <Typography
-                                        onClick={() => handleDesignation('skill', skill.skillName, skill.skillId,skill.status)}
+                                        onClick={() => handleDesignation('Skill', skill.skillName, skill.skillId,skill.status)}
                                         sx={{
                                             cursor: 'pointer'
                                         }}
@@ -268,7 +268,7 @@ export default function MasterDataPage({
                             {officeLocationData?.map((officeLocation , index) => (
                                 <Grid item key={index} sx={{ border: officeLocation.status === "ACTIVE" ?"1.5px solid #008080": "1.5px solid #AEAEAE", borderRadius: '15px', padding: '30px', margin: '5px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end',cursor: 'pointer',color : officeLocation.status === "ACTIVE" ? "black" : "#AEAEAE" }}>
                                 <Typography
-                                    onClick={() => handleDesignation('officeLocation', officeLocation.officeAddress,officeLocation.locationId,officeLocation.status)} 
+                                    onClick={() => handleDesignation('officeLocation', officeLocation.address.name,officeLocation.locationId,officeLocation.status)} 
                                     sx={{
                                     textAlign:'center',
                                     }}
@@ -424,7 +424,7 @@ export default function MasterDataPage({
                             {onsiteLocationData?.map((onsiteLocation, index) => (
                                 <Grid item key={index} sx={{ border: onsiteLocation.status === "ACTIVE" ?"1.5px solid #008080": "1.5px solid #AEAEAE", borderRadius: '15px', padding: '40px', margin: '5px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end',cursor: 'pointer',color : onsiteLocation.status === "ACTIVE" ? "black" : "#AEAEAE" }}>
                                 <Typography
-                                    onClick={() => handleDesignation('clientOfficeLocation','',onsiteLocation.locationId,onsiteLocation.status)} 
+                                    onClick={() => handleDesignation('clientOfficeLocation',onsiteLocation.address.name,onsiteLocation.locationId,onsiteLocation.status)} 
                                     sx={{
                                     textAlign:'center',
                                     }}
@@ -488,7 +488,7 @@ export default function MasterDataPage({
                                 <Button 
                                 variant="contained" 
                                 color="primary"
-                                onClick={() => handleAdd('jobType')}
+                                onClick={() => handleAdd('Job Type')}
                                 sx={{
                                     width:'100px',
                                     height:'46px',
@@ -503,7 +503,7 @@ export default function MasterDataPage({
                             {jobTypeData?.map((job, index) => (
                                 <Grid item key={index} sx={{ border:job.status === "ACTIVE" ?  "1.5px solid #008080" : "1.5px solid #AEAEAE", borderRadius: '15px', padding: '6px', margin: '5px',height:'40px',color : job.status === "ACTIVE" ? "black" : "#AEAEAE" }}>
                                         <Typography
-                                            onClick={() => handleDesignation('jobType', job.jobType, job.jobId, job.status)} 
+                                            onClick={() => handleDesignation('Job Type', job.jobType, job.jobId, job.status)} 
                                             sx={{
                                             cursor: 'pointer'
                                             }}
@@ -660,7 +660,7 @@ export default function MasterDataPage({
                             {clinetData?.map((clinet, index) => (
                                 <Grid item key={index} sx={{ border: clinet.status === "ACTIVE" ?"1.5px solid #008080": "1.5px solid #AEAEAE", borderRadius: '15px', padding: '40px', margin: '5px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end',cursor: 'pointer',color : clinet.status === "ACTIVE" ? "black" : "#AEAEAE" }}>
                                 <Typography
-                                    onClick={() => handleDesignation('clinetDetails','',clinet.clientId,clinet.status)} 
+                                    onClick={() => handleDesignation('clinetDetails',clinet.clientName,clinet.clientId,clinet.status)} 
                                     sx={{
                                     textAlign:'center',
                                     }}
@@ -726,7 +726,7 @@ export default function MasterDataPage({
                                 <Button 
                                 variant="contained" 
                                 color="primary"
-                                onClick={() => handleAdd('domine')}
+                                onClick={() => handleAdd('Domine')}
                                 sx={{
                                     width:'100px',
                                     height:'46px',
@@ -741,7 +741,7 @@ export default function MasterDataPage({
                             {domineData?.map((domine, index) => (
                                 <Grid item key={index} sx={{ border:domine.status === "ACTIVE" ?  "1.5px solid #008080" : "1.5px solid #AEAEAE", borderRadius: '15px', padding: '6px', margin: '5px',height:'40px' ,color : domine.status === "ACTIVE" ? "black" : "#AEAEAE"}}>
                                         <Typography
-                                            onClick={() => handleDesignation('domine', domine.domainName,domine.domainId,domine?.status)} 
+                                            onClick={() => handleDesignation('Domine', domine.domainName,domine.domainId,domine?.status)} 
                                             sx={{
                                             cursor: 'pointer'
                                             }}

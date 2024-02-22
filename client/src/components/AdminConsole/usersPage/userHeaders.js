@@ -1,4 +1,4 @@
-import { Autocomplete, Box, Button, Checkbox, FormControl, Grid, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
+import { Box, Button, FormControl, Grid, IconButton, InputAdornment, TextField, Typography, Checkbox } from '@mui/material';
 import Dropdown from '../../forms/dropdown/dropdown';
 import { useTheme } from '@emotion/react';
 import { adminHeaderStyle } from '../../admin/approvalTimesheets/adminHeaderStyle';
@@ -6,8 +6,72 @@ import SearchIcon from '@mui/icons-material/Search';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import Select, {components} from "react-select";
+import { useState } from 'react';
 
-export default function UserHerders({userData}) {
+
+const InputOption = ({
+  getStyles,
+  isDisabled,
+  isFocused,
+  isSelected,
+  children,
+  innerProps,
+  skillsCheckedData,
+  ...rest
+}) => {
+  const [isActive, setIsActive] = useState(false);
+  const onMouseDown = () => setIsActive(true);
+  const onMouseUp = () => setIsActive(false);
+  const onMouseLeave = () => setIsActive(false);
+
+  // styles
+  let bg = "transparent";
+  if (isFocused) bg = "#eee";
+  if (isActive) bg = "#B2D4FF";
+
+  const style = {
+    alignItems: "center",
+    backgroundColor: bg,
+    color: "inherit",
+    display: "flex ",
+  };
+
+  // prop assignment
+  const props = {
+    ...innerProps,
+    onMouseDown,
+    onMouseUp,
+    onMouseLeave,
+    style,
+  };
+
+  return (
+    <components.Option
+      {...rest}
+      isDisabled={isDisabled}
+      isFocused={isFocused}
+      isSelected={isSelected}
+      getStyles={getStyles}
+      innerProps={props}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          width: "100%",
+          alignItems: "center",
+        }}
+      >
+        <Box>{children}</Box>
+        <Checkbox checked={skillsCheckedData?.includes(rest.data)} />
+      </Box>
+    </components.Option>
+  );
+};
+
+
+export default function UserHerders({userData , skillsCheckedData , setSkillsCheckedData, designationId}) {
   const theme = useTheme();
   const style = adminHeaderStyle(theme);
 
@@ -15,11 +79,68 @@ export default function UserHerders({userData}) {
 
 
   const handleChange = () => {
-    console.log('Handle Change');
   };
   const skills = useSelector(
     (state) => state.persistData.masterData?.skill
   );
+
+  const designation = useSelector(
+    (state) => state.persistData.masterData?.designation
+  );
+
+
+  const onResetSkillFilterHandler = () => {
+    setSkillsCheckedData([]);
+  };
+
+  const applySkillFilterHandler = () => {
+    
+  };
+
+
+  const CustomMenu = (props) => {
+    return (
+      <components.Menu {...props}>
+      {props.children}
+      <Box
+        style={{
+          bottom: 0,
+          left: 0,
+          right: 0,
+          padding: "10px",
+          display: "flex",
+          flexDirection: "column", 
+          alignItems: "center",
+        }}
+      >
+        <Button 
+          onClick={applySkillFilterHandler}
+          style={{
+            width:'100%',
+            backgroundColor:'#008080',
+            borderRadius:'10px',
+            color:'#fff'
+          }}
+        >Apply
+      </Button>
+        <Button 
+          onClick={onResetSkillFilterHandler}
+          style={{
+            width:'100%',
+            borderRadius:'10px',
+            border:'1px solid #008080',
+            color:'#008080',
+            marginTop:'5px'
+          }}
+        >
+          Clear All</Button>
+      </Box>
+    </components.Menu>
+    );
+  };
+
+
+
   const handleAddUser = () => {
     Navigate('/userForm')
   }
@@ -65,53 +186,52 @@ export default function UserHerders({userData}) {
         <Grid container gap={{ sm: 0, md: 0, lg: 2, xs: 2 }}>
           <Grid item xs={12} sm={4} md={2} lg={3}>
             <Dropdown
-              options={[{ id: "All", value: "All" }]} 
-            //   value={newDateDashboard} 
-            //   onChange={handleDateChange} 
-              dropdownName="Designation" // Pass the dropdown name
+              options={[{ id: "All", value: "All" }, ...(Array.isArray(designation) ? designation : [])]}
+              value={designationId} 
+              dropdownName="Designation"
               title="Designation"
-              style={style.DateTimesheetDateTextField} // Pass any additional style
+              style={style.DateTimesheetDateTextField}
+              valueKey="designationId"
+              labelKey="designationName"
+
             />
           </Grid>
+
           <Grid item xs={12} sm={4} md={3} lg={2}>
             <Typography sx={{ color: "#ffffff", fontSize: '14px', marginTop: "-20px" }}>Skills</Typography>
             <FormControl fullWidth style={{ borderRadius: "5px" }}>
-              <Autocomplete
-                multiple
-                options={skills}
-                sx={{
-                  backgroundColor:'#fff',
-                  borderRadius: "5px"
-                }}
-                disableCloseOnSelect
-                freeSolo
-                getOptionLabel={(option) => option.skillName}
-                renderOption={(props, option, { selected }) => (
-                  <li {...props}>
-                    <Checkbox
-                      checked={selected}
-                    />
-                    {option.skillName}
-                  </li>
-                )}
-                renderInput={(params) => (
-                  <>
-                    <TextField
-                      {...params}
-                      onChange={handleChange}
-                      placeholder='SKILLS'
-                      InputProps={{
-                        ...params.InputProps,
-                        style: {
-                          overflow:'auto',
-                          backgroundColor:'#fff',
-                          marginTop:-1
-                        },
-                      }}
-                    />
-                  </>
-                )}
-              />
+                <Select
+                  isSearchable={false}
+                  isMulti
+                  closeMenuOnSelect={false}
+                  hideSelectedOptions={false}
+                  onChange={(options) => {
+                    setSkillsCheckedData(options.map((opt) => opt));
+                  }}
+                  options={skills}
+                  components={{
+                    Option: (props) => (
+                      <InputOption
+                        {...props}
+                        skillsCheckedData={skillsCheckedData}
+                      />
+                    ),
+                    Menu: CustomMenu,
+                  }}
+                  isClearable={false}
+                  controlShouldRenderValue={false}
+                  getOptionValue={(option) => option.skillId}
+                  getOptionLabel={(option) => option.skillName}
+                  isLoading={skills?.length === 0}
+                  styles={{
+                    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                    control: (baseStyles) => ({
+                      ...baseStyles,
+                      height: "55px",
+                    }),
+                  }}
+                />
+
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={12} md={4} lg={4}>

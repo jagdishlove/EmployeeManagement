@@ -5,6 +5,7 @@ import { Edit as EditIcon } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
+
 const UserDataListPage = ({ userData }) => {
   const [menuAnchor, setMenuAnchor] = useState(null);
   const managerData = useSelector(
@@ -14,11 +15,12 @@ const UserDataListPage = ({ userData }) => {
 
 
   const skillIdToName = {};
-  managerData.forEach((skill) => {
-    skillIdToName[skill.skillId] = skill.skillName;
+  managerData?.forEach((skill) => {
+    skillIdToName[skill?.skillId] = skill?.skillName;
   });
 
   return (
+    <>
     <Card style={{
       border: '1px solid darkgray',
       borderRadius: '10px',
@@ -125,6 +127,7 @@ const UserDataListPage = ({ userData }) => {
         </Box>
       </Grid>
     </Card>
+    </>
   );
 };
 

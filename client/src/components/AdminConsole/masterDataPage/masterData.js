@@ -170,6 +170,7 @@ export default function MasterData() {
       (state) =>  state?.nonPersist?.masterDataDetails?.onsiteLocation
 
     )
+
   
     const DataValue = {};
     LocationData.forEach((location) => {
@@ -194,6 +195,10 @@ export default function MasterData() {
     const cancleHandler = () => {
       setIsOpenCalender(false);
     };
+
+    const cancleHandlerAccepentc =() => {
+      setIsOpenCalender(false);
+    }
   
     const handleExpand = (type) => {
       if(type === 'designation'){
@@ -215,17 +220,16 @@ export default function MasterData() {
       if (type === 'domine'){
           setDomineExpand(!domineExpand)
       }
-      if(type === 'jobType')
-      setJobTypeExpand(!jobTypeExpand)
-      
+      if(type === 'jobType'){
+        setJobTypeExpand(!jobTypeExpand)
+      }
     }
 
-    console.log('holidayFormData',holidayFormData)
   
     const ActionList = () => {
       return (
         <Box>
-          <Button onClick={cancleHandler}>Okay</Button>
+          <Button onClick={cancleHandlerAccepentc}>Okay</Button>
           <Button onClick={cancleHandler}>Cancel</Button>
         </Box>
       );
@@ -317,25 +321,33 @@ export default function MasterData() {
       setValue(e.target.value)
     }
     const handleDesignation = (type , data , id , status) => {
+     
+
       if (status === "INACTIVE"){
           if(type === 'band'){
+              setChangeDataType('band')
               dispatch(GetBand(id))
           }
           if(type === 'holiday'){
+              setChangeDataType('holiday')
               dispatch(GetHoliday(id))
           }
           if(type === 'officeLocation'){
               dispatch(GetOfficeLocation(id))
+              setChangeDataType('office location')
           }
           if (type === 'clinetDetails'){
-            dispatch(getClientDetails(id))
+              setChangeDataType('clinetDetails')
+              dispatch(getClientDetails(id))
           }
           if(type === 'clientOfficeLocation'){
-            dispatch(getClientLocation(id))
+              setChangeDataType('clientOfficeLocation')
+              dispatch(getClientLocation(id))
           }
           setEnable(true)
           setChnageDataId(id)
-          setChangeDataType(type)
+          setChnageData(data)
+
           setValue(data)  
       } else{
       setOpenDialog(true);
@@ -344,15 +356,16 @@ export default function MasterData() {
       setChnageDataId(id)
       setChnageData(data)
       setChangeDataType(type)
-      setValue(data)  
+      setValue(data) 
       }  
+      setErrors({})
   }
   
     const handleEditDesignation = (type) => {
+      setValue(changeData)
       if(type === "officeLocation"){
           setOpen(true)
           dispatch(GetOfficeLocation(chnageDataId))
-          console.log('officedata',officeData)
           setChangeDataType(type)
           setEdit(true)
       } else if(type === "band") {
@@ -379,8 +392,10 @@ export default function MasterData() {
       else{
           setDesugnationEdit(true)
       }
+      setErrors({})
+
     };
-    const handleCloseDialog = () => {
+    const handleCloseDialog = async () => {
       setOpenDialog(false)
       setOpen(false)
       setDialog(false)
@@ -409,6 +424,7 @@ export default function MasterData() {
         setChnageDataId('');
         setSelectedDate(dayjs())
         setEnable(false) 
+        setErrors({})
     }
   
   
@@ -621,7 +637,7 @@ export default function MasterData() {
           await dispatch(CreateSkillData(payload));
           await dispatch(GetAllSkillData());
           setValue('');
-        } else if (type === 'jobType') {
+        } else if (type === 'Job Type') {
           const payload = {
               jobId: id ? id : "",
               jobType: value,
@@ -642,10 +658,9 @@ export default function MasterData() {
             if (status) {
               payload.status = status;
             }
-            console.log('andFormData',bandFormData)
           await dispatch(CreateBandlData(payload));
           await dispatch(GetAllBandData());
-        } else if (type === 'designation') {
+        } else if (type === 'Designation') {
           const payload = {
             designationId: id ? id : "",
             designationName: value,
@@ -686,7 +701,7 @@ export default function MasterData() {
             }
           await dispatch(CreateManageHoliday(payload));
           await dispatch(GetAllHolidays())
-        } else if (type === 'domine') {
+        } else if (type === 'Domine') {
           const payload = {
               domainId: id ? id : "",
               domainName: value,
@@ -775,7 +790,7 @@ export default function MasterData() {
             }
           await dispatch(UpdateBandlData(payload));
           await dispatch(GetAllBandData());
-        } else if (type === 'designation') {
+        } else if (type === 'Designation') {
           const payload = {
             designationId: id ? id : "",
             designationName: value,
@@ -857,6 +872,7 @@ export default function MasterData() {
             }
           }
           await dispatch(UpdateClinetDetails(payload))
+          await dispatch(GatAllClinetDetails())
       }
       else  if(type === 'clientOfficeLocation'){
         const payload = {
@@ -892,7 +908,7 @@ export default function MasterData() {
     
       if (type === 'officeLocation') {
         if (!officeData.officeAddress) {
-          errors.officeAddress = "Address is required";
+          errors.officeAddress = "Office name is a mandatory field.";
         }
         if (!officeData.phoneNumber) {
           errors.phoneNumber = "Phone number required";
@@ -933,10 +949,13 @@ export default function MasterData() {
           }
         }
       }  
-     if (type === 'skill' || type === 'designation' || type === "domine") {
-          if(!value){
-              errors.value= `${type} is required`
-          }
+      if (type === 'Skill' || type === 'Designation' || type === "Domine" || type === "Job Type") {
+        if (!value.match(/^[a-zA-Z\s]+$/)) {
+          errors.value = `${type} should only contain letters and spaces`;
+        }
+        if (!value.trim()) {
+          errors.value = `${type} name is a mandatory field.`; 
+        }
       }
       if (type === 'band'){
           if(!bandFormData.bandName) {
@@ -945,11 +964,13 @@ export default function MasterData() {
           if(!bandFormData.minimumCtc) {
               errors.minimum = "please enter mainimum Ctc"
           }
+          const maximumCtc = parseFloat(bandFormData.maximumCtc);
+          const minimumCtc = parseFloat(bandFormData.minimumCtc);
           if (!bandFormData.maximumCtc) {
               errors.maximum = "Please enter maximum Ctc";
-            } else if (bandFormData.maximumCtc <= bandFormData.minimumCtc) {
+          } else if (maximumCtc <= minimumCtc) {
               errors.maximum = "Maximum Ctc should be greater than minimum Ctc";
-          }
+          }          
       }
       if (type === 'holiday'){
           if(!holidayFormData.holidayName){
@@ -1034,7 +1055,7 @@ export default function MasterData() {
         if(!clientLocationData.addressName){
           errors.clinetName = "please add ClientName"
         }
-        if(!clientLocationData.phone){
+        if(!clientLocationData.phoneNumber){
           errors.phone = "please add phoneNumber"
         }
       }
