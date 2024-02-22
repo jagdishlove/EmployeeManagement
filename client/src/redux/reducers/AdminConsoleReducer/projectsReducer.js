@@ -23,6 +23,7 @@ import {
   FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_REQUEST,
   FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_SUCCESS,
   FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_FAIL,
+  SAVE_CREATE_PROJECT_SUCCESS,
 
 } from "../../actions/AdminConsoleAction/projects/projectsActionTypes";
 
@@ -43,6 +44,7 @@ const initialState = {
   clientNameDataLoading: false,
   clientProjectNameSearchData: [],
   clientProjectNameSearchDataLoading: false,
+  projectId:null,
 };
 
 const projectsReducer = (state = initialState, action) => {
@@ -184,6 +186,11 @@ const projectsReducer = (state = initialState, action) => {
           ...state,
           getAllCountryCityStateData: [],
           getAllCountryCityStateLoading: false,
+        };
+      case   SAVE_CREATE_PROJECT_SUCCESS:
+        return {
+          ...state,
+       projectId:action.payload.id
         };
     default:
       return state;
