@@ -20,6 +20,7 @@ import History from "../pages/records/records";
 import Timesheet from "../pages/timesheet/timesheet";
 import CostAllocationStepperFinal from "../components/AdminConsole/projectsPage/createProjectStepper/costAllocationStepperFinal";
 import MasterData from "../components/AdminConsole/masterDataPage/masterData";
+import ProjectDetailPage from "../components/AdminConsole/projectsPage/projectDetails/projectDetailPage";
 
 const Router = () => {
   const isAuthenticated = useSelector(
@@ -195,6 +196,22 @@ const Router = () => {
           isAuthenticated ? (
             <ConditionalSidebar>
               <CostAllocationStepperFinal />
+            </ConditionalSidebar>
+          ) : (
+            <>
+              <Navigate to="/" />
+              <Login />
+            </>
+          )
+        }
+      />
+
+<Route
+        path="/projectDetailPage"
+        element={
+          isAuthenticated ? (
+            <ConditionalSidebar>
+              <ProjectDetailPage />
             </ConditionalSidebar>
           ) : (
             <>

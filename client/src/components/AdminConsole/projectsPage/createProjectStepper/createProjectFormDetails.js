@@ -39,6 +39,13 @@ const CreateProjectFormDetails = () => {
     projectLead: "",
     domain: "",
     complexity: "",
+    clientAddress:"",
+    phone:"",
+    country:"",
+    state:"",
+    city:"",
+    zipCode:""
+    
   };
   const [formData, setFormData] = useState(initialValues);
   const [validationErrors, setValidationErrors] = useState({
@@ -182,34 +189,28 @@ const CreateProjectFormDetails = () => {
 
     await dispatch(saveCreateProjectAction(payload));
 
+    // Navigate to resource allocation
+    Navigate("/projectViewDeatils");
+
     // Reset form data
     setFormData(initialValues);
-     // Manually clear disabled fields
-  setFormData((prevData) => ({
-    ...prevData,
-    clientAddress: "",
-    phone: "",
-    country: "",
-    state: "",
-    city: "",
-    zipCode: "",
-  }));
+
     // Clear validation errors
     setValidationErrors({});
      
   };
 
   const handleSaveAndNext = async (e) => {
-    e.preventDefault();
-    // Validate form fields
-    const errors = validateForm();
-    if (Object.keys(errors).length > 0) {
-      setValidationErrors(errors);
-      return; // Do not proceed with saving if there are validation errors
-    }
+     e.preventDefault();
+    // // Validate form fields
+    // const errors = validateForm();
+    // if (Object.keys(errors).length > 0) {
+    //   setValidationErrors(errors);
+    //   return; // Do not proceed with saving if there are validation errors
+    // }
 
-    // Save data first
-    await handleSaveData(e);
+    // // Save data first
+    // await handleSaveData(e);
 
     // Navigate to resource allocation
     Navigate("/resourceallocation");
@@ -223,9 +224,6 @@ const CreateProjectFormDetails = () => {
     if (!formData.projectName) {
       errors.projectName = "Project Name is required";
     }
-    if (!formData.description) {
-      errors.description = "Description is required";
-    }
     if (!formData.projectCategory) {
       errors.projectCategory = "Project Category is required";
     }
@@ -235,12 +233,8 @@ const CreateProjectFormDetails = () => {
     if (!formData.projectLead) {
       errors.projectLead = "Project Lead is required";
     }
-    if (!formData.complexity) {
-      errors.complexity = "Complexity is required";
-    }
-    if (!formData.domain) {
-      errors.domain = "Domain is required";
-    }
+   
+   
     return errors;
   };
 
@@ -303,7 +297,7 @@ const CreateProjectFormDetails = () => {
           )}
           <Typography
             variant="body1"
-            style={{ marginTop: "15px", color: " #ADADAD" }}
+            style={{ marginTop: "15px", color: " #000000" }}
           >
             Client Address
           </Typography>
@@ -330,7 +324,7 @@ const CreateProjectFormDetails = () => {
           />
           <Typography
             variant="body1"
-            style={{ marginTop: "15px", color: " #ADADAD" }}
+            style={{ marginTop: "15px", color: " #000000" }}
           >
             Phone
           </Typography>
@@ -360,7 +354,7 @@ const CreateProjectFormDetails = () => {
           />
           <Typography
             variant="body1"
-            style={{ marginTop: "15px", color: " #ADADAD" }}
+            style={{ marginTop: "15px", color: "  #000000" }}
           >
             Country
           </Typography>
@@ -383,7 +377,7 @@ const CreateProjectFormDetails = () => {
           />
           <Typography
             variant="body1"
-            style={{ marginTop: "15px", color: " #ADADAD" }}
+            style={{ marginTop: "15px", color: "  #000000" }}
           >
             State
           </Typography>
@@ -406,7 +400,7 @@ const CreateProjectFormDetails = () => {
           />
           <Typography
             variant="body1"
-            style={{ marginTop: "15px", color: " #ADADAD" }}
+            style={{ marginTop: "15px", color: "  #000000" }}
           >
             City
           </Typography>
@@ -429,7 +423,7 @@ const CreateProjectFormDetails = () => {
           />
           <Typography
             variant="body1"
-            style={{ marginTop: "15px", color: " #ADADAD" }}
+            style={{ marginTop: "15px", color: "  #000000" }}
           >
             Zip / Postal Code
           </Typography>
@@ -514,11 +508,7 @@ const CreateProjectFormDetails = () => {
             rows={4}
             fullWidth
           />
-          {validationErrors.description && (
-            <Typography variant="caption" color="error">
-              {validationErrors.description}
-            </Typography>
-          )}
+         
           <Typography variant="body1" style={{ marginTop: "15px" }}>
             Project Category
           </Typography>
@@ -653,11 +643,7 @@ const CreateProjectFormDetails = () => {
             labelKey="domainName"
             name="domain"
           />
-          {validationErrors.domain && (
-            <Typography variant="caption" color="error">
-              {validationErrors.domain}
-            </Typography>
-          )}
+         
           <Typography variant="body1" style={{ marginTop: "15px" }}>
             Complexity
           </Typography>
@@ -674,11 +660,7 @@ const CreateProjectFormDetails = () => {
             options={masterdatacomplexityList}
             name="complexity"
           />
-          {validationErrors.complexity && (
-            <Typography variant="caption" color="error">
-              {validationErrors.complexity}
-            </Typography>
-          )}
+  
         </Grid>
 
         <Grid item xs={12} sm={8} md={10} lg={10}>
