@@ -51,9 +51,8 @@ const CreateProjectFormDetails = () => {
   const [validationErrors, setValidationErrors] = useState({
     clientName: "",
     projectName: "",
-    description: "",
+    projectCategory:"",
     projectManager: "",
-    projectLead: "",
   });
 
   // client Search
@@ -192,16 +191,16 @@ const CreateProjectFormDetails = () => {
     // Navigate to resource allocation
     Navigate("/projectViewDeatils");
 
-    // Reset form data
-    setFormData(initialValues);
+    // // Reset form data
+    // setFormData(initialValues);
 
     // Clear validation errors
     setValidationErrors({});
      
   };
 
-  const handleSaveAndNext = async (e) => {
-     e.preventDefault();
+  const handleSaveAndNext = async () => {
+    //  e.preventDefault();
     // // Validate form fields
     // const errors = validateForm();
     // if (Object.keys(errors).length > 0) {
@@ -230,9 +229,7 @@ const CreateProjectFormDetails = () => {
     if (!formData.projectManager) {
       errors.projectManager = "Project Manager is required";
     }
-    if (!formData.projectLead) {
-      errors.projectLead = "Project Lead is required";
-    }
+
    
    
     return errors;
@@ -583,7 +580,7 @@ const CreateProjectFormDetails = () => {
               onChange={(data) => handleChange(data, "projectManager")}
               getOptionValue={(option) => option.id}
               getOptionLabel={(option) => option.name}
-              options={employeeSearchData?.result}
+              options={employeeSearchData?.result || []}
               isLoading={employeeSearchData?.length === 0}
               placeholder="Project Manager"
             />
@@ -619,11 +616,6 @@ const CreateProjectFormDetails = () => {
               placeholder="Project Lead"
             />
           </Box>
-          {validationErrors.projectLead && (
-            <Typography variant="caption" color="error">
-              {validationErrors.projectLead}
-            </Typography>
-          )}
           <Typography variant="body1" style={{ marginTop: "15px" }}>
             Domain
           </Typography>
