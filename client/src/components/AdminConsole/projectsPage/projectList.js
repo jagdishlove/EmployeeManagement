@@ -24,25 +24,35 @@ const ProjectList = ({ projectsData }) => {
   const Navigate = useNavigate();
 
   const handleViewInDetail = () => {
-    Navigate("/projectDetailPage");
+    Navigate(
+      `/projectDetailPage/${projectsData.id}`
+      // ,
+      //  {
+      //   state: {
+      //     projectId: projectsData.id,
+      //   },
+      // }
+    );
   };
 
   const startDateString = projectsData.startDate;
-   const endDateString = projectsData.endDate;
- 
-  
-  const startDate = dayjs(startDateString,  'YYYY-MM-DD');
-  const endDate = dayjs(endDateString,  'YYYY-MM-DD');
+  const endDateString = projectsData.endDate;
+
+  const startDate = dayjs(startDateString, "YYYY-MM-DD");
+  const endDate = dayjs(endDateString, "YYYY-MM-DD");
   const currentDate = dayjs();
-  
+
   // Calculate the total duration in days
-  const totalDuration = endDate.diff(startDate, 'day');
-  
+  const totalDuration = endDate.diff(startDate, "day");
+
   // Calculate the remaining duration in days
-  const remainingDuration = endDate.diff(currentDate, 'day');
-  
+  const remainingDuration = endDate.diff(currentDate, "day");
+
   // Calculate the progress percentage
-  const progressPercentage = Math.max(0, Math.min(100, ((totalDuration - remainingDuration) / totalDuration) * 100));
+  const progressPercentage = Math.max(
+    0,
+    Math.min(100, ((totalDuration - remainingDuration) / totalDuration) * 100)
+  );
 
   return (
     <Card
@@ -112,7 +122,8 @@ const ProjectList = ({ projectsData }) => {
           </Grid>
           <Grid item xs={12}>
             <Typography variant="body2" color="textSecondary">
-              <b style={{ color: "black" }}>Domain : </b> {projectsData?.domainName}
+              <b style={{ color: "black" }}>Domain : </b>{" "}
+              {projectsData?.domainName}
             </Typography>
           </Grid>
           <Grid item xs={12}>
@@ -142,8 +153,10 @@ const ProjectList = ({ projectsData }) => {
                 </Typography>
               </Grid>
               <Grid item xs={12}>
-                <LinearProgress variant="determinate" value={progressPercentage.toFixed(2)}/>
-             
+                <LinearProgress
+                  variant="determinate"
+                  value={progressPercentage.toFixed(2)}
+                />
               </Grid>
             </Grid>
           </Grid>

@@ -33,7 +33,10 @@ import {
   SAVE_CREATE_PROJECT_FAIL,
   SAVE_CREATE_COST_INCURRED_REQUEST,
   SAVE_CREATE_COST_INCURRED_SUCCESS,
-  SAVE_CREATE_COST_INCURRED_FAIL
+  SAVE_CREATE_COST_INCURRED_FAIL,
+  FETCH_PROJECT_DETAILS_REQUEST,
+  FETCH_PROJECT_DETAILS_SUCCESS,
+  FETCH_PROJECT_DETAILS_FAILURE,
 } from "./projectsActionTypes.js";
 import { getRefreshToken } from "../../login/loginAction.js";
 
@@ -151,7 +154,7 @@ const getResourcesNameDesignationSearchFailure = () => {
 
 const getClientDetailsRequest = () => {
   return {
-    type: FETCH_CLIENT_DETAILS_REQUEST ,
+    type: FETCH_CLIENT_DETAILS_REQUEST,
   };
 };
 
@@ -170,7 +173,7 @@ const getClientDetailsFailure = () => {
 
 const getAllCountryCityStateRequest = () => {
   return {
-    type: GET_ALL_COUNTRY_CITY_STATE_REQUEST ,
+    type: GET_ALL_COUNTRY_CITY_STATE_REQUEST,
   };
 };
 
@@ -183,7 +186,7 @@ const getAllCountryCityStateSuccess = (data) => {
 
 const getAllCountryCityStateFailure = () => {
   return {
-    type:GET_ALL_COUNTRY_CITY_STATE_FAILURE,
+    type: GET_ALL_COUNTRY_CITY_STATE_FAILURE,
   };
 };
 
@@ -195,7 +198,7 @@ const saveCreateProjectRequest = () => {
 const saveCreateProjectSuccess = (data) => {
   return {
     type: SAVE_CREATE_PROJECT_SUCCESS,
-    payload:data
+    payload: data,
   };
 };
 const saveCreateProjectFail = () => {
@@ -225,17 +228,36 @@ const getClientProjectNameSearchFailure = () => {
 
 const saveCreateCostIncurredRequest = () => {
   return {
-    type: SAVE_CREATE_COST_INCURRED_REQUEST ,
+    type: SAVE_CREATE_COST_INCURRED_REQUEST,
   };
 };
 const saveCreateCostIncurredSuccess = () => {
   return {
-    type:SAVE_CREATE_COST_INCURRED_SUCCESS,
+    type: SAVE_CREATE_COST_INCURRED_SUCCESS,
   };
 };
 const saveCreateCostIncurredFail = () => {
   return {
     type: SAVE_CREATE_COST_INCURRED_FAIL,
+  };
+};
+
+const getProjectDetailsRequest = () => {
+  return {
+    type: FETCH_PROJECT_DETAILS_REQUEST,
+  };
+};
+
+const getProjectDetailsSuccess = (data) => {
+  return {
+    type: FETCH_PROJECT_DETAILS_SUCCESS,
+    payload: data,
+  };
+};
+
+const getProjectDetailsFailure = () => {
+  return {
+    type: FETCH_PROJECT_DETAILS_FAILURE,
   };
 };
 
@@ -246,12 +268,30 @@ export const getAllProjects = (payload, getProjectpayload) => {
       const response = await makeRequest(
         "POST",
         "/api/projects/getProjects",
-        getProjectpayload,
         payload,
+        getProjectpayload
       );
       dispatch(getAllProjectsSuccess(response));
     } catch (err) {
       dispatch(getAllProjectsFailure());
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  };
+};
+
+export const getProjectDetailsAction = (data) => {
+  return async (dispatch) => {
+    dispatch(getProjectDetailsRequest());
+    try {
+      const response = await makeRequest(
+        "GET",
+        `/api/projects/getProject/${data}`
+      );
+      dispatch(getProjectDetailsSuccess(response));
+    } catch (err) {
+      dispatch(getProjectDetailsFailure());
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
@@ -348,14 +388,9 @@ export const getClientNameAction = (data) => {
   return async (dispatch) => {
     dispatch(getClientNameRequest());
     try {
-      const response = await makeRequest(
-        "GET",
-        "/api/clients/search",
-        null,
-        {
-          clientSearch: data || "",
-        }
-      );
+      const response = await makeRequest("GET", "/api/clients/search", null, {
+        clientSearch: data || "",
+      });
       dispatch(getClientNameSuccess(response));
     } catch (err) {
       dispatch(getClientNameFailure());
@@ -365,7 +400,6 @@ export const getClientNameAction = (data) => {
     }
   };
 };
-
 
 export const getResourcesNameDesignationSearchAction = (data) => {
   return async (dispatch) => {
@@ -390,16 +424,11 @@ export const getResourcesNameDesignationSearchAction = (data) => {
   };
 };
 
-
 export const getClientDetailsAction = (clientId) => {
   return async (dispatch) => {
     dispatch(getClientDetailsRequest());
     try {
-      const response = await makeRequest(
-        "GET",
-        `/api/client/get/${clientId}`,
-      
-      );
+      const response = await makeRequest("GET", `/api/client/get/${clientId}`);
       dispatch(getClientDetailsSuccess(response));
     } catch (err) {
       dispatch(getClientDetailsFailure());
@@ -412,31 +441,27 @@ export const getClientDetailsAction = (clientId) => {
 
 export const GetAllCountryCityStateAction = () => {
   return async (dispatch) => {
-    dispatch(getAllCountryCityStateRequest())
-    try{
-       const response = await  makeRequest(
-          "GET",
-          "api/masterData/getAll",
-        );
-        dispatch(getAllCountryCityStateSuccess(response))
-
-    } catch (err){
-      dispatch(getAllCountryCityStateFailure())
+    dispatch(getAllCountryCityStateRequest());
+    try {
+      const response = await makeRequest("GET", "api/masterData/getAll");
+      dispatch(getAllCountryCityStateSuccess(response));
+    } catch (err) {
+      dispatch(getAllCountryCityStateFailure());
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
     }
-  }
-}
+  };
+};
 
-export const saveCreateProjectAction = ( payload ) => {
+export const saveCreateProjectAction = (payload) => {
   return async (dispatch) => {
     try {
       dispatch(saveCreateProjectRequest());
       const response = await makeRequest(
         "POST",
         "/api/projects/createProject",
-        payload 
+        payload
       );
       dispatch(saveCreateProjectSuccess(response));
       toast.success("Project Created Successfully", {
@@ -446,7 +471,7 @@ export const saveCreateProjectAction = ( payload ) => {
     } catch (err) {
       if (err.response.data.errorCode === 403) {
         dispatch(getRefreshToken());
-      } else if (err.response.data.errorCode === 500){
+      } else if (err.response.data.errorCode === 500) {
         dispatch(saveCreateProjectFail(err.response.data.errorMessage));
         toast.error(err.response.data.errorMessage, {
           position: toast.POSITION.BOTTOM_CENTER,
@@ -456,14 +481,14 @@ export const saveCreateProjectAction = ( payload ) => {
   };
 };
 
-export const saveCreateCostIncurredAction = ( payload ) => {
+export const saveCreateCostIncurredAction = (payload) => {
   return async (dispatch) => {
     try {
       dispatch(saveCreateCostIncurredRequest());
       const response = await makeRequest(
         "POST",
         "/api/costIncurred/create",
-        payload 
+        payload
       );
       dispatch(saveCreateCostIncurredSuccess());
       toast.success("Project Created Successfully", {
@@ -473,7 +498,7 @@ export const saveCreateCostIncurredAction = ( payload ) => {
     } catch (err) {
       if (err.response.data.errorCode === 403) {
         dispatch(getRefreshToken());
-      } else if (err.response.data.errorCode === 500){
+      } else if (err.response.data.errorCode === 500) {
         dispatch(saveCreateCostIncurredFail(err.response.data.errorMessage));
         toast.error(err.response.data.errorMessage, {
           position: toast.POSITION.BOTTOM_CENTER,

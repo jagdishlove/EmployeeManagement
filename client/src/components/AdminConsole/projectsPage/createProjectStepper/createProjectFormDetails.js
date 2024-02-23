@@ -39,19 +39,18 @@ const CreateProjectFormDetails = () => {
     projectLead: "",
     domain: "",
     complexity: "",
-    clientAddress:"",
-    phone:"",
-    country:"",
-    state:"",
-    city:"",
-    zipCode:""
-    
+    clientAddress: "",
+    phone: "",
+    country: "",
+    state: "",
+    city: "",
+    zipCode: "",
   };
   const [formData, setFormData] = useState(initialValues);
   const [validationErrors, setValidationErrors] = useState({
     clientName: "",
     projectName: "",
-    projectCategory:"",
+    projectCategory: "",
     projectManager: "",
   });
 
@@ -196,7 +195,6 @@ const CreateProjectFormDetails = () => {
 
     // Clear validation errors
     setValidationErrors({});
-     
   };
 
   const handleSaveAndNext = async () => {
@@ -230,8 +228,6 @@ const CreateProjectFormDetails = () => {
       errors.projectManager = "Project Manager is required";
     }
 
-   
-   
     return errors;
   };
 
@@ -505,7 +501,7 @@ const CreateProjectFormDetails = () => {
             rows={4}
             fullWidth
           />
-         
+
           <Typography variant="body1" style={{ marginTop: "15px" }}>
             Project Category
           </Typography>
@@ -635,7 +631,7 @@ const CreateProjectFormDetails = () => {
             labelKey="domainName"
             name="domain"
           />
-         
+
           <Typography variant="body1" style={{ marginTop: "15px" }}>
             Complexity
           </Typography>
@@ -652,7 +648,6 @@ const CreateProjectFormDetails = () => {
             options={masterdatacomplexityList}
             name="complexity"
           />
-  
         </Grid>
 
         <Grid item xs={12} sm={8} md={10} lg={10}>
@@ -661,7 +656,7 @@ const CreateProjectFormDetails = () => {
               variant="contained"
               color="primary"
               type="submit"
-              onClick={ handleSaveData}
+              onClick={handleSaveData}
             >
               Save
             </Button>
