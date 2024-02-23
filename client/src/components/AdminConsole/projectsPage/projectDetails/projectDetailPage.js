@@ -1,23 +1,37 @@
 import { IconButton, Typography, Grid } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 import GaugeChart from "react-gauge-chart";
 import ProjectAccordion from "./projectAccordion";
-import  
-{Button} from "@mui/material";
+import { Button } from "@mui/material";
 import { BorderColorOutlined } from "@mui/icons-material";
-
+import { useDispatch, useSelector } from "react-redux";
+import { getProjectDetailsAction } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
+import { useParams } from "react-router-dom/dist";
 
 const ProjectDetailPage = () => {
+  const dispatch = useDispatch();
+  const { id } = useParams();
+
+  // Project Details
+  const { projectDetailsData } = useSelector(
+    (state) => state.nonPersist?.projectDetails
+  );
+  console.log("projectDetailsData", projectDetailsData);
+
+  useEffect(() => {
+    dispatch(getProjectDetailsAction(id));
+  }, [id]);
+
   const Navigate = useNavigate();
   const handleBackClick = () => {
     Navigate("/projects");
   };
- 
+
   const handleEditProject = () => {
     Navigate("/projectForm");
- } 
+  };
   return (
     <>
       <div
@@ -42,19 +56,28 @@ const ProjectDetailPage = () => {
           border: "1px solid #008080",
         }}
       />
-      <Grid container >
-        <Grid item xs={12} md={12} style={{ display: 'flex', justifyContent: 'flex-end', paddingBottom: '30px' }}>
-        <Button
+      <Grid container>
+        <Grid
+          item
+          xs={12}
+          md={12}
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            paddingBottom: "30px",
+          }}
+        >
+          <Button
             variant="contained"
             color="primary"
-            startIcon={<BorderColorOutlined  />}
+            startIcon={<BorderColorOutlined />}
             style={{ borderRadius: "10px" }}
             onClick={handleEditProject}
           >
             Edit
           </Button>
         </Grid>
-</Grid>
+      </Grid>
       <Grid container>
         <Grid item xs={12} md={2}>
           <img src="path/to/your/logo.png" alt="Logo" />
@@ -221,7 +244,7 @@ const ProjectDetailPage = () => {
         }}
       >
         <Grid item sx={12} md={12}>
-        <ProjectAccordion/>
+          <ProjectAccordion />
         </Grid>
       </Grid>
     </>

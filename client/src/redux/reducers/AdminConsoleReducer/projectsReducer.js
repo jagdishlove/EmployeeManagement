@@ -24,7 +24,9 @@ import {
   FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_SUCCESS,
   FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_FAIL,
   SAVE_CREATE_PROJECT_SUCCESS,
-
+  FETCH_PROJECT_DETAILS_REQUEST,
+  FETCH_PROJECT_DETAILS_SUCCESS,
+  FETCH_PROJECT_DETAILS_FAILURE,
 } from "../../actions/AdminConsoleAction/projects/projectsActionTypes";
 
 const initialState = {
@@ -44,11 +46,13 @@ const initialState = {
   clientNameDataLoading: false,
   clientProjectNameSearchData: [],
   clientProjectNameSearchDataLoading: false,
-  projectId:null,
+  projectId: null,
+  projectDetailsData: [],
+  projectDetailsDataLoading: false,
 };
 
 const projectsReducer = (state = initialState, action) => {
-  console.log("action.payload",action.payload)
+  console.log("action.payload", action.payload);
   switch (action.type) {
     case FETCH_ALL_PROJECTS_REQUEST:
       return {
@@ -101,23 +105,23 @@ const projectsReducer = (state = initialState, action) => {
         allDomainData: [],
         allDomainDataLoading: false,
       };
-      case FETCH_CLIENT_NAME_REQUEST:
-        return {
-          ...state,
-          clientNameDataLoading: true,
-        };
-      case FETCH_CLIENT_NAME_SUCCESS:
-        return {
-          ...state,
-          clientNameData: action.payload,
-          clientNameDataLoading: false,
-        };
-      case FETCH_CLIENT_NAME_FAILURE:
-        return {
-          ...state,
-          clientNameData: [],
-          clientNameDataLoading: false,
-        };
+    case FETCH_CLIENT_NAME_REQUEST:
+      return {
+        ...state,
+        clientNameDataLoading: true,
+      };
+    case FETCH_CLIENT_NAME_SUCCESS:
+      return {
+        ...state,
+        clientNameData: action.payload,
+        clientNameDataLoading: false,
+      };
+    case FETCH_CLIENT_NAME_FAILURE:
+      return {
+        ...state,
+        clientNameData: [],
+        clientNameDataLoading: false,
+      };
     case FETCH_ALLOCATION_SEARCH_REQUEST:
       return {
         ...state,
@@ -135,25 +139,25 @@ const projectsReducer = (state = initialState, action) => {
         allocationSearchData: [],
         allDomainDataLoading: false,
       };
-      case FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_REQUEST:
-        return {
-          ...state,
-          clientProjectNameSearchDataLoading: true,
-        };
-      case FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_SUCCESS:
-        return {
-          ...state,
-          clientProjectNameSearchData: action.payload,
-          clientProjectNameSearchDataLoading: false,
-        };
-      case FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_FAIL:
-        return {
-          ...state,
-          clientProjectNameSearchData: [],
-          clientProjectNameSearchDataLoading: false,
-        };
+    case FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_REQUEST:
+      return {
+        ...state,
+        clientProjectNameSearchDataLoading: true,
+      };
+    case FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_SUCCESS:
+      return {
+        ...state,
+        clientProjectNameSearchData: action.payload,
+        clientProjectNameSearchDataLoading: false,
+      };
+    case FETCH_SEARCH_CLIENT_NAME_PROJECT_NAME_FAIL:
+      return {
+        ...state,
+        clientProjectNameSearchData: [],
+        clientProjectNameSearchDataLoading: false,
+      };
 
-      case FETCH_CLIENT_DETAILS_REQUEST:
+    case FETCH_CLIENT_DETAILS_REQUEST:
       return {
         ...state,
         clientDetailsDataLoading: true,
@@ -170,28 +174,45 @@ const projectsReducer = (state = initialState, action) => {
         clientDetailsData: [],
         clientDetailsDataLoading: false,
       };
-      case GET_ALL_COUNTRY_CITY_STATE_REQUEST:
-        return {
-          ...state,
-          getAllCountryCityStateDataLoading: true,
-        };
-      case GET_ALL_COUNTRY_CITY_STATE_SUCCESS:
-        return {
-          ...state,
-          getAllCountryCityStateData: action.payload,
-          getAllCountryCityStateDataLoading: false,
-        };
-      case GET_ALL_COUNTRY_CITY_STATE_FAILURE:
-        return {
-          ...state,
-          getAllCountryCityStateData: [],
-          getAllCountryCityStateLoading: false,
-        };
-      case   SAVE_CREATE_PROJECT_SUCCESS:
-        return {
-          ...state,
-       projectId:action.payload.id
-        };
+    case GET_ALL_COUNTRY_CITY_STATE_REQUEST:
+      return {
+        ...state,
+        getAllCountryCityStateDataLoading: true,
+      };
+    case GET_ALL_COUNTRY_CITY_STATE_SUCCESS:
+      return {
+        ...state,
+        getAllCountryCityStateData: action.payload,
+        getAllCountryCityStateDataLoading: false,
+      };
+    case GET_ALL_COUNTRY_CITY_STATE_FAILURE:
+      return {
+        ...state,
+        getAllCountryCityStateData: [],
+        getAllCountryCityStateLoading: false,
+      };
+    case SAVE_CREATE_PROJECT_SUCCESS:
+      return {
+        ...state,
+        projectId: action.payload.id,
+      };
+    case FETCH_PROJECT_DETAILS_REQUEST:
+      return {
+        ...state,
+        projectDetailsDataLoading: true,
+      };
+    case FETCH_PROJECT_DETAILS_SUCCESS:
+      return {
+        ...state,
+        projectDetailsData: action.payload,
+        projectDetailsDataLoading: false,
+      };
+    case FETCH_PROJECT_DETAILS_FAILURE:
+      return {
+        ...state,
+        projectDetailsData: [],
+        projectDetailsDataLoading: false,
+      };
     default:
       return state;
   }

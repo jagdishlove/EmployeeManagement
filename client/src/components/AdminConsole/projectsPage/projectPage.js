@@ -7,40 +7,33 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { Box } from "@mui/system";
 import ProjectHeader from "./projectHeader";
 
-
 const Projects = () => {
   const ONGOING_PROJECTS = "ONGOING_PROJECTS";
   const [projects, setProjects] = useState(ONGOING_PROJECTS);
   const [pageCounter, setPageCounter] = useState(2);
   const [searchData, setSearchData] = useState();
   const dispatch = useDispatch();
-  const[resultFilterData,setResultFilterData] = useState([])
+  const [resultFilterData, setResultFilterData] = useState([]);
 
-  console.log("resultFilterData",resultFilterData)
-
-
+  console.log("resultFilterData", resultFilterData);
 
   const projectsData = useSelector(
     (state) => state?.nonPersist?.projectDetails?.projectsData
   );
 
- 
+  const searchDataArray = searchData?.map((obj) => obj.name || []);
 
-  const searchDataArray = searchData?.map((obj)=> obj.name || [])
-
-  useEffect(()=>{
-    setResultFilterData(projectsData)
-  },[projectsData])
-  useEffect(()=>{
-    if(searchDataArray?.length > 0 ){
-      const filterProjects =  projectsData?.content?.filter((obj)=>  searchDataArray.includes(obj.projectName) ) 
-      setResultFilterData({content:filterProjects})
+  useEffect(() => {
+    setResultFilterData(projectsData);
+  }, [projectsData]);
+  useEffect(() => {
+    if (searchDataArray?.length > 0) {
+      const filterProjects = projectsData?.content?.filter((obj) =>
+        searchDataArray.includes(obj.projectName)
+      );
+      setResultFilterData({ content: filterProjects });
     }
-
-  },[searchData])
-
-  
-
+  }, [searchData]);
 
   const handleChange = (e) => {
     setSearchData(e);
@@ -50,12 +43,12 @@ const Projects = () => {
     // }));
   };
 
-  const payload = {
+  const getProjectpayload = {
     size: 5 * 2,
     status: projects,
   };
 
-  const getProjectpayload = {
+  const payload = {
     filters: [],
   };
 
@@ -68,12 +61,12 @@ const Projects = () => {
     const nextPage = 10 * pageCounter;
     const nextPagePayload = {
       size: nextPage,
-      filters: [
-        { status: projects }, // Include the status in the filters array for pagination as well
-      ],
+      status: projects,
     };
 
-    dispatch(getAllProjects(nextPagePayload));
+    const payload = { filters: [] };
+
+    dispatch(getAllProjects(payload, nextPagePayload));
     setPageCounter((counter) => counter + 1);
   };
   return (

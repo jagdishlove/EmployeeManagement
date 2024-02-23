@@ -190,7 +190,7 @@ const Router = () => {
         }
       />
 
-<Route
+      <Route
         path="/costallocation"
         element={
           isAuthenticated ? (
@@ -206,8 +206,8 @@ const Router = () => {
         }
       />
 
-<Route
-        path="/projectDetailPage"
+      <Route
+        path="/projectDetailPage/:id"
         element={
           isAuthenticated ? (
             <ConditionalSidebar>
