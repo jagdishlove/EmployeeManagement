@@ -3,9 +3,18 @@ import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TimesheetStyle } from "../../../../pages/timesheet/timesheetStyle";
-import {  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
+} from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch, useSelector } from "react-redux";
 import { saveCreateCostIncurredAction } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 const CostAllocationFormDetails = () => {
@@ -14,16 +23,31 @@ const CostAllocationFormDetails = () => {
   const Navigate = useNavigate();
   const dispatch = useDispatch();
   const intialValues = {
-    itemName:"",
-    costIncurred:"",
+    itemName: "",
+    costIncurred: "",
     projectRevenue: "",
     projectBudget: "",
   };
 
-  const projectId = useSelector(state=> state.nonPersist.projectDetails?.projectId)
-  
+  const projectId = useSelector(
+    (state) => state.nonPersist.projectDetails?.projectId
+  );
   const [formData, setFormData] = useState(intialValues);
-console.log("formDataCost", formData)
+  console.log("formDataCost", formData);
+
+  const [errors, setErrors] = useState({
+    itemName: "",
+    costIncurred: "",
+  });
+
+  const handleReset = () => {
+    setFormData(intialValues);
+    setErrors({
+      itemName: "",
+      costIncurred: "",
+    });
+  };
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData({
@@ -36,21 +60,45 @@ console.log("formDataCost", formData)
     Navigate("/projects");
   };
 
- //Save or ADD Cost inoccured
- const handleAdd = async () => {
-  const payload = {
-    projectId:  projectId,
-   itemName:  formData.itemName,
-   costIncurred:formData.costIncurred,
-  };
-  console.log("payloadvv", payload)
+  //Save or ADD Cost inoccured
+  const handleAdd = async () => {
+    // Check for validation errors
+    const newErrors = {};
 
-  await dispatch(saveCreateCostIncurredAction(payload));
-};
+    if (!formData.itemName) {
+      newErrors.itemName = "Item Name is required.";
+    }
+
+    if (!formData.costIncurred) {
+      newErrors.costIncurred = "Cost Incurred is required.";
+    } else if (!/^\d+$/.test(formData.costIncurred)) {
+      newErrors.costIncurred = "Cost Incurred must contain only digits.";
+    }
+
+    // Update the error state
+    setErrors(newErrors);
+
+    // If there are validation errors, do not dispatch the action
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+
+    const payload = {
+      projectId: projectId,
+      itemName: formData.itemName,
+      costIncurred: formData.costIncurred,
+    };
+    console.log("payloadvv", payload);
+
+    await dispatch(saveCreateCostIncurredAction(payload));
+
+    // Reset the form after dispatching the action
+    handleReset();
+  };
 
   const rows = [
-    { slNo: 1, itemName: 'Item 1', costIncurred: 100 },
-    { slNo: 2, itemName: 'Item 2', costIncurred: 150 },
+    { slNo: 1, itemName: "Item 1", costIncurred: 100 },
+    { slNo: 2, itemName: "Item 2", costIncurred: 150 },
     // Add more rows as needed
   ];
   return (
@@ -76,9 +124,15 @@ console.log("formDataCost", formData)
           border: "1px solid silver",
         }}
       />
-            <Grid container spacing={2} justifyContent={"center"} display={"flex"} direction={"row"}>
+      <Grid
+        container
+        spacing={2}
+        justifyContent={"center"}
+        display={"flex"}
+        direction={"row"}
+      >
         <Grid item xs={12} sm={4} md={5} lg={5}>
-        <Typography
+          <Typography
             variant="body1"
             fontWeight="bold"
             style={{ marginTop: "15px" }}
@@ -98,8 +152,11 @@ console.log("formDataCost", formData)
             fullWidth
             InputProps={{ classes: { focused: "green-border" } }}
           />
-          </Grid>
-          <Grid item xs={12} sm={4} md={5} lg={5}>
+          <Typography variant="body2" color="error">
+            {errors.itemName}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} sm={4} md={5} lg={5}>
           <Typography
             variant="body1"
             fontWeight="bold"
@@ -120,8 +177,11 @@ console.log("formDataCost", formData)
             fullWidth
             InputProps={{ classes: { focused: "green-border" } }}
           />
-          </Grid>
-          <Grid item xs={12} sm={8} md={10} lg={10}>
+          <Typography variant="body2" color="error">
+            {errors.costIncurred}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} sm={8} md={10} lg={10}>
           <Box sx={{ display: "flex", gap: "10px", justifyContent: "start" }}>
             <Button
               onClick={handleAdd}
@@ -134,39 +194,43 @@ console.log("formDataCost", formData)
           </Box>
         </Grid>
         <Grid item xs={12} sm={8} md={10} lg={10}>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow style={{backgroundColor:"#008080", color:"#ffffff"}}>
-              <TableCell  style={{color:"#ffffff",}}>SL No.</TableCell>
-              <TableCell style={{color:"#ffffff"}}>Item Name</TableCell>
-              <TableCell style={{color:"#ffffff"}}>Cost Incurred</TableCell>
-              <TableCell></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.slNo} >
-                <TableCell>{row.slNo}</TableCell>
-                <TableCell>{row.itemName}</TableCell>
-                <TableCell>{row.costIncurred}</TableCell>
-                <TableCell>
-                  <IconButton color="primary">
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton color="primary">
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Grid>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow
+                  style={{ backgroundColor: "#008080", color: "#ffffff" }}
+                >
+                  <TableCell style={{ color: "#ffffff" }}>SL No.</TableCell>
+                  <TableCell style={{ color: "#ffffff" }}>Item Name</TableCell>
+                  <TableCell style={{ color: "#ffffff" }}>
+                    Cost Incurred
+                  </TableCell>
+                  <TableCell></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows.map((row) => (
+                  <TableRow key={row.slNo}>
+                    <TableCell>{row.slNo}</TableCell>
+                    <TableCell>{row.itemName}</TableCell>
+                    <TableCell>{row.costIncurred}</TableCell>
+                    <TableCell>
+                      <IconButton color="primary">
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton color="primary">
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Grid>
+      </Grid>
 
-        <div
+      <div
         className="Heading"
         style={{
           display: "flex",
@@ -188,12 +252,12 @@ console.log("formDataCost", formData)
       />
       <Grid container spacing={2} justifyContent={"center"}>
         <Grid item xs={12} sm={8} md={10} lg={10}>
-        <Typography
+          <Typography
             variant="body1"
             fontWeight="bold"
             style={{ marginTop: "15px" }}
           >
-          Project Budget
+            Project Budget
           </Typography>
           <TextField
             placeholder="Project Implementation Cost"
@@ -208,12 +272,12 @@ console.log("formDataCost", formData)
             fullWidth
             InputProps={{ classes: { focused: "green-border" } }}
           />
-        <Typography
+          <Typography
             variant="body1"
             fontWeight="bold"
             style={{ marginTop: "15px" }}
           >
-           Other Costs Incurred
+            Other Costs Incurred
           </Typography>
           <TextField
             placeholder=" Other Costs Incurred"
@@ -229,7 +293,7 @@ console.log("formDataCost", formData)
             fullWidth
             InputProps={{ classes: { focused: "green-border" } }}
           />
-        <Typography
+          <Typography
             variant="body1"
             fontWeight="bold"
             style={{ marginTop: "15px" }}
@@ -271,7 +335,6 @@ console.log("formDataCost", formData)
             InputProps={{ classes: { focused: "green-border" } }}
           />
 
-        
           <Typography
             variant="body1"
             fontWeight="bold"

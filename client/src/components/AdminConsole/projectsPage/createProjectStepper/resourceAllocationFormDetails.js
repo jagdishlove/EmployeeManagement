@@ -322,6 +322,10 @@ const ResourceAllocationFormDetails = () => {
                   getOptionLabel={(option) => option.skillName}
                   isLoading={masterSkillData?.length === 0}
                   styles={{
+                    placeholder: (base) => ({
+                      ...base,
+                      color: "white",
+                    }),
                     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                     control: (baseStyles) => ({
                       ...baseStyles,
@@ -354,6 +358,10 @@ const ResourceAllocationFormDetails = () => {
                   getOptionLabel={(option) => option.skillName}
                   isLoading={masterSkillData?.length === 0}
                   styles={{
+                    placeholder: (base) => ({
+                      ...base,
+                      color: "white",
+                    }),
                     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                     control: (baseStyles) => ({
                       ...baseStyles,
@@ -402,21 +410,21 @@ const ResourceAllocationFormDetails = () => {
                               overflow: "auto",
                             }}
                           >
-                            <Grid item  
-                            sx={{
-                                    border: "1px solid #AEAEAE",
-                                    borderRadius: "8px",
-                                    padding: "4px",
-                                    margin: "5px",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "flex-end",
-                                    color: "#000000",
-                                  }}>
+                            <Grid
+                              item
+                              sx={{
+                                border: "1px solid #AEAEAE",
+                                borderRadius: "8px",
+                                padding: "4px",
+                                margin: "5px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "flex-end",
+                                color: "#000000",
+                              }}
+                            >
                               {option.skills.map((skill, index) => (
-                                <React.Fragment
-                                  key={index}
-                                >
+                                <React.Fragment key={index}>
                                   {index > 0 && ", "}
                                   {skill}
                                 </React.Fragment>
