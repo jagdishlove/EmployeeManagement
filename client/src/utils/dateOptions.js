@@ -37,8 +37,8 @@ export const modifyDataFormat = (data) => {
         id:
           item[`${key}Id`] ||
           item.id ||
-          item.status ||
           item.jobId ||
+          item.status ||
           item.locationId,
         value:
           item[`${key}Type`] ||

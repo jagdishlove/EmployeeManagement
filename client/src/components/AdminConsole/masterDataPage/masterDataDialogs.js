@@ -1,751 +1,748 @@
-import React from 'react'
-import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, TextField, Typography } from '@mui/material'
+import React from "react";
+import {
+  Autocomplete,
+  Avatar,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Grid,
+  Input,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { LocalizationProvider, StaticDatePicker } from "@mui/x-date-pickers";
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
-import icon from '../../../assets/Featured icon.svg'
-import dayjs from 'dayjs';
-import Dropdown from '../../forms/dropdown/dropdown';
-import { TimesheetStyle } from '../../../pages/timesheet/timesheetStyle';
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import icon from "../../../assets/Featured icon.svg";
+import dayjs from "dayjs";
+import Dropdown from "../../forms/dropdown/dropdown";
+import { TimesheetStyle } from "../../../pages/timesheet/timesheetStyle";
 import { useTheme } from "@mui/material/styles";
-import { MuiTelInput as MuiPhoneNumber } from 'mui-tel-input';
-
+import { MuiTelInput as MuiPhoneNumber } from "mui-tel-input";
+import InsertPhotoOutlinedIcon from "@mui/icons-material/InsertPhotoOutlined";
 
 export default function MasterDataDialogs({
-    openDialog,
-    dialog,
-    open,
-    enable,
-    isOpenCalender,
-    bandDialog,
-    holidayDialog,
-    desginationEdit,
-    desginationDisable,
-    clientDialog,
-    clientLocationDialog,
-    dialogTitle,
-    changeData,
-    chnageDataType,
-    errors,
-    country,
-    state,
-    handleDisable,
-    handleAddDesignationCancle,
-    handleOfficeChange,
-    handleClinetDetails,
-    handleOnsiteLocation,
-    hnadleBandChnage,
-    handleHolidayChnage,
-    handleSubmit,
-    handleUpdate,
-    chnageDataId,
-    handleCloseDialog,
-    clientLocationData,
-    edit,
-    officeData,
-    clinetDetails,
-    setSelectedDate,
-    selectedDate,
-    value,
-    setValue,
-    handleEditDesignation,
-    handlechange,
-    bandFormData,
-    setIsOpenCalender,
-    holidayFormData,
-    city,
-    holidayType
+  openDialog,
+  dialog,
+  open,
+  enable,
+  isOpenCalender,
+  bandDialog,
+  holidayDialog,
+  desginationEdit,
+  desginationDisable,
+  clientDialog,
+  clientLocationDialog,
+  dialogTitle,
+  changeData,
+  chnageDataType,
+  errors,
+  country,
+  state,
+  handleDisable,
+  handleAddDesignationCancle,
+  handleOfficeChange,
+  handleClinetDetails,
+  handleOnsiteLocation,
+  hnadleBandChnage,
+  handleHolidayChnage,
+  handleSubmit,
+  handleUpdate,
+  chnageDataId,
+  handleCloseDialog,
+  clientLocationData,
+  edit,
+  officeData,
+  clinetDetails,
+  setSelectedDate,
+  selectedDate,
+  value,
+  setValue,
+  handleEditDesignation,
+  handlechange,
+  bandFormData,
+  setIsOpenCalender,
+  holidayFormData,
+  city,
+  holidayType,
+  selectedImage,
+  handleFileChange,
 }) {
-    const theme = useTheme();
-    const style = TimesheetStyle(theme);
-
+  const theme = useTheme();
+  const style = TimesheetStyle(theme);
   return (
     <>
-       <Dialog open={openDialog} onClose={handleCloseDialog}>
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
         <IconButton
-            edge="end"
-            color="inherit"
-            onClick={handleCloseDialog}
-            aria-label="close"
-            sx={{
-            position: 'absolute',
+          edge="end"
+          color="inherit"
+          onClick={handleCloseDialog}
+          aria-label="close"
+          sx={{
+            position: "absolute",
             right: 10,
             top: 8,
-            }}
+          }}
         >
-            <CloseIcon />
+          <CloseIcon />
         </IconButton>
-        <DialogTitle sx={{width:'400px'}}>
-        <img src={icon}/> {changeData}
+        <DialogTitle sx={{ width: "400px" }}>
+          {desginationDisable ? (
+            <>
+              <img src={icon} /> Disable
+            </>
+          ) : (
+            <>
+              <img src={icon} /> {changeData}
+            </>
+          )}
         </DialogTitle>
         {desginationEdit ? (
-            <Grid sx={{padding:'10px'}}>
-                <TextField 
-                    label={chnageDataType}
-                    value={value}
-                    onChange={(e)=>{setValue(e.target.value)}}
-                    sx={{
-                        width:'100%'
-                    }}
-                />
-                {errors.value && (
-                <Box>
-                    <Typography color="error">
-                    {errors.value}
-                    </Typography>
-                </Box>
-                )}
-            </Grid>
-        ) : (
-            <>
-            {desginationDisable ? ( 
-                <>
-                <DialogContent>
-                    <DialogContentText>
-                        Are you sure you want to proceed with <b style={{color:'black'}}>removing</b> the
-                    </DialogContentText>
-                    <DialogContentText>
-                        {chnageDataType} <b style={{color:'black'}}>&apos;{changeData}&apos;</b>  from the Master Data?
-                    </DialogContentText>
-                </DialogContent>
-                </>
-            ) : (
-                <>
-                <DialogContent>
-                    <DialogContentText>
-                        Are you sure you want to edit/disable the {chnageDataType}
-                    </DialogContentText>
-                    <DialogContentText>
-                        &apos;{changeData}&apos; from the Master Data?
-                    </DialogContentText>
-                </DialogContent>
-                </>
+          <Grid sx={{ padding: "10px" }}>
+            <TextField
+              label={chnageDataType}
+              value={value}
+              onChange={(e) => {
+                setValue(e.target.value);
+              }}
+              sx={{
+                width: "100%",
+              }}
+            />
+            {errors.value && (
+              <Box>
+                <Typography color="error">{errors.value}</Typography>
+              </Box>
             )}
-
-            </>
+          </Grid>
+        ) : (
+          <>
+            {desginationDisable ? (
+              <>
+                <DialogContent>
+                  <DialogContentText>
+                    Are you sure you want to proceed with{" "}
+                    <b style={{ color: "black" }}>removing</b> the
+                  </DialogContentText>
+                  <DialogContentText>
+                    {chnageDataType}{" "}
+                    <b style={{ color: "black" }}>&apos;{changeData}&apos;</b>{" "}
+                    from the Master Data?
+                  </DialogContentText>
+                </DialogContent>
+              </>
+            ) : (
+              <>
+                <DialogContent>
+                  <DialogContentText>
+                    Are you sure you want to edit/disable the {chnageDataType}
+                  </DialogContentText>
+                  <DialogContentText>
+                    &apos;{changeData}&apos; from the Master Data?
+                  </DialogContentText>
+                </DialogContent>
+              </>
+            )}
+          </>
         )}
         <DialogActions>
-            {desginationEdit ? (
+          {desginationEdit ? (
+            <>
+              <Button
+                onClick={() => handleUpdate(chnageDataType, chnageDataId)}
+                sx={{
+                  color: "#fff",
+                  borderRadius: "8px",
+                  backgroundColor: "#008080",
+                  "&:hover": {
+                    backgroundColor: "#008080",
+                  },
+                  textTransform: "capitalize",
+                }}
+              >
+                Save
+              </Button>
+              <Button
+                onClick={handleAddDesignationCancle}
+                sx={{
+                  color: "#000",
+                  borderRadius: "8px",
+                  border: "1px solid #D0D5DD",
+                  textTransform: "capitalize",
+                }}
+              >
+                Cancel
+              </Button>
+            </>
+          ) : (
+            <>
+              {desginationDisable ? (
                 <>
-                    <Button 
-                        onClick={() => handleUpdate(chnageDataType,chnageDataId)} 
-                        sx={{
-                            color: '#fff',
-                            borderRadius: '8px',
-                            backgroundColor: "#008080",
-                            '&:hover': {
-                                backgroundColor: '#008080',
-                            },
-                            textTransform: 'capitalize',
-                        }}
-                    >
-                        Save
-                    </Button>
-                    <Button 
-                        onClick={handleAddDesignationCancle}
-                        sx={{
-                            color:'#000',
-                            borderRadius:'8px',
-                            border:'1px solid #D0D5DD',
-                            textTransform: 'capitalize',
-                        }}  
-                    >
-                        Cancel
-                    </Button>
+                  <Button
+                    onClick={handleAddDesignationCancle}
+                    sx={{
+                      color: "#344054",
+                      border: "1px solid #D0D5DD",
+                      borderRadius: "8px",
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    Cancle
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      handleSubmit(chnageDataType, chnageDataId, "INACTIVE")
+                    }
+                    sx={{
+                      color: "#fff",
+                      backgroundColor: "#B7251B",
+                      borderRadius: "8px",
+                      "&:hover": {
+                        backgroundColor: "#B7251B",
+                      },
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    Disable
+                  </Button>
                 </>
-            ) : (
+              ) : (
                 <>
-                {desginationDisable ? (
-                    <>
-                    <Button 
-                        onClick={handleAddDesignationCancle} 
-                        sx={{
-                            color:'#344054',
-                            border:'1px solid #D0D5DD',
-                            borderRadius:'8px',
-                            textTransform: 'capitalize',
-                        }}
-                    >
-                        Cancle
-                    </Button>
-                    <Button 
-                            onClick={() => handleSubmit(chnageDataType, chnageDataId,'INACTIVE')}
-                            sx={{
-                            color:'#fff',
-                            backgroundColor:"#B7251B",
-                            borderRadius:'8px',
-                            '&:hover': {
-                                backgroundColor: '#B7251B',
-                            },
-                            textTransform: 'capitalize',
-                        }}  
-                    >
-                        Disable
-                    </Button>
-                    </>
-                ) : (
-                    <>
-                    <Button 
-                        onClick={() => handleEditDesignation(chnageDataType,chnageDataId)} 
-                        sx={{
-                            color:'#344054',
-                            border:'1px solid #D0D5DD',
-                            borderRadius:'8px',
-                            textTransform: 'capitalize',
-                        }}
-                    >
-                        Edit
-                    </Button>
-                    <Button 
-                        onClick={() => handleDisable(chnageDataType,chnageDataId)} 
-                        sx={{
-                            color:'#fff',
-                            backgroundColor:"#B7251B",
-                            borderRadius:'8px',
-                            '&:hover': {
-                                backgroundColor: '#B7251B',
-                            },
-                            textTransform: 'capitalize',
-                        }}  
-                    >
-                        Disable
-                    </Button>
-                    </>
-                )}
-
+                  <Button
+                    onClick={() =>
+                      handleEditDesignation(chnageDataType, chnageDataId)
+                    }
+                    sx={{
+                      color: "#344054",
+                      border: "1px solid #D0D5DD",
+                      borderRadius: "8px",
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    onClick={() => handleDisable(chnageDataType, chnageDataId)}
+                    sx={{
+                      color: "#fff",
+                      backgroundColor: "#B7251B",
+                      borderRadius: "8px",
+                      "&:hover": {
+                        backgroundColor: "#B7251B",
+                      },
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    Disable
+                  </Button>
                 </>
-            )}
+              )}
+            </>
+          )}
         </DialogActions>
-        </Dialog>
-        <Dialog open={dialog} onClose={handleCloseDialog} sx={{
-            borderRadius:'20px'
-        }}>
+      </Dialog>
+      <Dialog
+        open={dialog}
+        onClose={handleCloseDialog}
+        sx={{
+          borderRadius: "20px",
+        }}
+      >
         <IconButton
-            edge="end"
-            color="inherit"
-            onClick={handleCloseDialog}
-            aria-label="close"
-            sx={{
-            position: 'absolute',
+          edge="end"
+          color="inherit"
+          onClick={handleCloseDialog}
+          aria-label="close"
+          sx={{
+            position: "absolute",
             right: 10,
             top: 8,
-            }}
+          }}
         >
-            <CloseIcon />
+          <CloseIcon />
         </IconButton>
-        <DialogTitle sx={{width:'400px'}}>
-        <img src={icon}/> {dialogTitle}
+        <DialogTitle sx={{ width: "400px" }}>
+          <img src={icon} /> {dialogTitle}
         </DialogTitle>
         <DialogContent>
-          <TextField 
-            label={dialogTitle} 
+          <TextField
+            label={dialogTitle}
             placeholder={`Enter ${dialogTitle}`}
             onChange={(e) => handlechange(e, dialogTitle)}
             value={value}
-            sx={{width:'100%',height:'56px',marginTop:'10px'}}
+            sx={{ width: "100%", height: "56px", marginTop: "10px" }}
           />
-            {errors.value && (
+          {errors.value && (
             <Box>
-                <Typography color="error">
-                {errors.value}
-                </Typography>
+              <Typography color="error">{errors.value}</Typography>
             </Box>
-            )}
+          )}
         </DialogContent>
         <DialogActions>
-        <Button 
+          <Button
             onClick={() => handleSubmit(dialogTitle)}
             sx={{
-                backgroundColor:'#008080',
-                color:'#ffff',
-                marginRight:'30px',
-                width:'100px',
-                marginTop:'-10px',
-                '&:hover': {
-                    backgroundColor: '#008080',
-                },
-                textTransform: 'capitalize',
+              backgroundColor: "#008080",
+              color: "#ffff",
+              marginRight: "30px",
+              width: "100px",
+              marginTop: "-10px",
+              "&:hover": {
+                backgroundColor: "#008080",
+              },
+              textTransform: "capitalize",
             }}
-        >
+          >
             Save
-        </Button>
+          </Button>
         </DialogActions>
       </Dialog>
       <Dialog open={open} onClose={handleCloseDialog}>
-      <IconButton
-            edge="end"
-            color="inherit"
-            onClick={handleCloseDialog}
-            aria-label="close"
-            sx={{
-            position: 'absolute',
+        <IconButton
+          edge="end"
+          color="inherit"
+          onClick={handleCloseDialog}
+          aria-label="close"
+          sx={{
+            position: "absolute",
             right: 10,
             top: 8,
-            }}
+          }}
         >
-            <CloseIcon />
+          <CloseIcon />
         </IconButton>
-        <DialogTitle sx={{width:'400px'}}>
-        <img src={icon}/> Office Location</DialogTitle>
-      <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-        <Typography>Office Name</Typography>
-        <TextField
+        <DialogTitle sx={{ width: "400px" }}>
+          <img src={icon} /> Office Location
+        </DialogTitle>
+        <DialogContent
+          sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+        >
+          <Typography>Office Name</Typography>
+          <TextField
             placeholder="Enter Office Name"
             value={officeData.officeAddress}
-            onChange={(e) => handleOfficeChange('officeAddress', e.target.value)}
-            sx={{ marginBottom: 1}}
-        />
-        {errors.officeAddress && (
+            onChange={(e) =>
+              handleOfficeChange("officeAddress", e.target.value)
+            }
+            sx={{ marginBottom: 1 }}
+          />
+          {errors.officeAddress && (
             <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.officeAddress}
-                </Typography>
+              <Typography color="error"> {errors.officeAddress}</Typography>
             </Box>
-        )}
-        <Typography>Address Line 1</Typography>
-        <TextField
+          )}
+          <Typography>Address Line 1</Typography>
+          <TextField
             placeholder="Enter Office Address"
             value={officeData.addressLine1}
-            onChange={(e) => handleOfficeChange('addressLine1', e.target.value)}
-            sx={{ marginBottom: 1}}
-        />
-        {errors.addressLine2 && (
+            onChange={(e) => handleOfficeChange("addressLine1", e.target.value)}
+            sx={{ marginBottom: 1 }}
+          />
+          {errors.addressLine2 && (
             <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.addressLine2}
-                </Typography>
+              <Typography color="error"> {errors.addressLine2}</Typography>
             </Box>
-        )}
-        <Typography>Address Line 2</Typography>
-        <TextField
+          )}
+          <Typography>Address Line 2</Typography>
+          <TextField
             placeholder="Enter Office Address"
             value={officeData.addressLine2}
-            onChange={(e) => handleOfficeChange('addressLine2', e.target.value)}
-            sx={{ marginBottom: 1}}
-        />
-        {errors.addressLine1 && (
+            onChange={(e) => handleOfficeChange("addressLine2", e.target.value)}
+            sx={{ marginBottom: 1 }}
+          />
+          {errors.addressLine1 && (
             <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.addressLine1}
-                </Typography>
+              <Typography color="error"> {errors.addressLine1}</Typography>
             </Box>
-        )}
-        <Typography>Phone Number</Typography>
-        <TextField
-            placeholder="Phone Number"
-            value={officeData.phoneNumber}
-            onChange={(e) => handleOfficeChange('phoneNumber', e.target.value)}
-            sx={{ marginBottom: 1}}
-        />
-        {errors.phoneNumber && (
+          )}
+          <Typography>Phone Number</Typography>
+          <MuiPhoneNumber
+            defaultCountry={"IN"}
+            name="phone"
+            placeholder="Enter Phone Number"
+            value={officeData.phone}
+            onChange={(value) => {
+              const cleanedPhoneNumber = value.replace(/\s/g, "");
+              handleOfficeChange("phone", cleanedPhoneNumber);
+            }}
+            sx={{ marginBottom: 1 }}
+          />
+          {errors.phoneNumber && (
             <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.phoneNumber}
-                </Typography>
+              <Typography color="error"> {errors.phoneNumber}</Typography>
             </Box>
-        )}
-        <Typography>Country</Typography>
+          )}
+          <Typography>Country</Typography>
           <Autocomplete
             freeSolo
             id="country"
             options={country}
             getOptionLabel={(option) => option.dataValue}
-            onChange={(e, value) => handleOfficeChange('country', e, value)}
+            onChange={(e, value) => handleOfficeChange("country", e, value)}
             value={country.find((c) => c.id === officeData?.countryId) || null}
-            renderInput={(params) => <TextField {...params} placeholder="Country" />}
+            renderInput={(params) => (
+              <TextField {...params} placeholder="Country" />
+            )}
           />
           {errors.country && (
             <Box>
-              <Typography color="error">
-                {" "}
-                {errors.country}
-              </Typography>
+              <Typography color="error"> {errors.country}</Typography>
             </Box>
           )}
-            <Typography>State</Typography>
-            <Autocomplete
+          <Typography>State</Typography>
+          <Autocomplete
             freeSolo
             options={state}
             getOptionLabel={(option) => option.dataValue}
-            onChange={(e, value) => handleOfficeChange('state', e, value)}
+            onChange={(e, value) => handleOfficeChange("state", e, value)}
             value={state.find((c) => c.id === officeData?.stateId) || null}
-            renderInput={(params) => <TextField {...params}  value={officeData.state} placeholder="State" />}
-            />
-        {errors.state && (
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                value={officeData.state}
+                placeholder="State"
+              />
+            )}
+          />
+          {errors.state && (
             <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.state}
-                </Typography>
+              <Typography color="error"> {errors.state}</Typography>
             </Box>
-        )}
-            <Typography>City</Typography>
-            <Autocomplete
+          )}
+          <Typography>City</Typography>
+          <Autocomplete
             freeSolo
             options={city}
             getOptionLabel={(option) => option.dataValue}
-            onChange={(e, value) => handleOfficeChange('city', e, value)}
+            onChange={(e, value) => handleOfficeChange("city", e, value)}
             value={city.find((c) => c.id === officeData?.cityId) || null}
-            renderInput={(params) => <TextField {...params}  value={officeData.state}  placeholder="City" />}
-            />
-        {errors.city && (
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                value={officeData.state}
+                placeholder="City"
+              />
+            )}
+          />
+          {errors.city && (
             <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.city}
-                </Typography>
+              <Typography color="error"> {errors.city}</Typography>
             </Box>
-        )}
-        <Typography>Zip / Postal Code</Typography>
-        <TextField
+          )}
+          <Typography>Zip / Postal Code</Typography>
+          <TextField
             placeholder="Zip / Postal Code"
             value={officeData.postalCode}
-            onChange={(e) => handleOfficeChange('postalCode', e.target.value)}
+            onChange={(e) => handleOfficeChange("postalCode", e.target.value)}
             sx={{ marginBottom: 1 }}
-        />
-            {errors.postalCode && (
+          />
+          {errors.postalCode && (
             <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.postalCode}
-                </Typography>
+              <Typography color="error"> {errors.postalCode}</Typography>
             </Box>
-        )}
+          )}
         </DialogContent>
-      <DialogActions>
-        {edit ? (
-            <Button 
-            onClick={handleCloseDialog}
-            sx={{
-                color:'#000',
-                width:'100px',
-                marginTop:'-10px',
-                border:'1px solid #AEAEAE',
-                textTransform: 'capitalize',
-            }}
-            >
-            Cancel
-            </Button>
-        ) : null}
-        <Button 
-            onClick={() => (edit === false ? handleSubmit(chnageDataType, chnageDataId) : handleUpdate(chnageDataType, chnageDataId))} 
-            sx={{
-            backgroundColor:'#008080',
-            color:'#ffff',
-            marginRight:'30px',
-            width:'100px',
-            marginTop:'-10px',
-            '&:hover': {
-                backgroundColor: '#008080',
-            },
-            textTransform: 'capitalize',
-            }}
-        >
-            Save
-        </Button>
-        </DialogActions>
-
-    </Dialog>
-    <Dialog open={enable} onClose={handleCloseDialog}>
-      <IconButton
-            edge="end"
-            color="inherit"
-            onClick={handleCloseDialog}
-            aria-label="close"
-            sx={{
-            position: 'absolute',
-            right: 10,
-            top: 8,
-            }}
-        >
-            <CloseIcon />
-        </IconButton>
-        <DialogTitle sx={{width:'400px'}}>
-        <img src={icon}/> Office Address</DialogTitle>
-            <DialogContent>
-                    <DialogContentText>
-                        Are you sure you want to enable the {chnageDataType}
-                    </DialogContentText>
-                    <DialogContentText>
-                        <b style={{color:'black'}}>&apos;{changeData}&apos;</b>  from the Master Data?
-                    </DialogContentText>
-                </DialogContent>
         <DialogActions>
-            <Button 
-                onClick={handleCloseDialog}
-                sx={{
-                    color:'#000',
-                    width:'100px',
-                    marginTop:'-10px',
-                    border:'1px solid #AEAEAE',
-                    textTransform: 'capitalize',
-                }}
+          {edit ? (
+            <Button
+              onClick={handleAddDesignationCancle}
+              sx={{
+                color: "#000",
+                width: "100px",
+                marginTop: "-10px",
+                border: "1px solid #AEAEAE",
+                textTransform: "capitalize",
+              }}
             >
-                cancle
+              Cancel
             </Button>
-            <Button 
-                onClick={() => handleSubmit(chnageDataType,chnageDataId,'ACTIVE')} 
-                sx={{
-                    backgroundColor:'#008080',
-                    color:'#ffff',
-                    marginRight:'30px',
-                    width:'100px',
-                    marginTop:'-10px',
-                    '&:hover': {
-                        backgroundColor: '#008080',
-                    },
-                    textTransform: 'capitalize',
-                }}
-            >
-                Enable
-            </Button>
-      </DialogActions>
-    </Dialog>
-    <Dialog open={bandDialog} onClose={handleCloseDialog}>
-      <IconButton
-            edge="end"
-            color="inherit"
-            onClick={handleCloseDialog}
-            aria-label="close"
+          ) : null}
+          <Button
+            onClick={() =>
+              edit === false
+                ? handleSubmit(chnageDataType, chnageDataId)
+                : handleUpdate(chnageDataType, chnageDataId)
+            }
             sx={{
-            position: 'absolute',
-            right: 10,
-            top: 8,
+              backgroundColor: "#008080",
+              color: "#ffff",
+              marginRight: "30px",
+              width: "100px",
+              marginTop: "-10px",
+              "&:hover": {
+                backgroundColor: "#008080",
+              },
+              textTransform: "capitalize",
             }}
-        >
-            <CloseIcon />
-        </IconButton>
-        <DialogTitle sx={{width:'400px'}}>
-        <img src={icon}/> Band Details</DialogTitle>
-        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 1}}>
-                <TextField 
-                    label='Band Name'
-                    value={bandFormData.bandName}
-                    onChange={(e) => hnadleBandChnage('bandName', e.target.value)}
-                    sx={{
-                        marginTop:2
-                    }}
-                />
-                {errors.bandName && (
-                    <Box>
-                        <Typography
-                            color="error"
-                        >
-                            {" "}
-                            {errors.bandName}
-                        </Typography>
-                    </Box>
-                )}
-                <Typography>Enter CTC</Typography>
-                <Typography>Minimum</Typography>
-                <TextField 
-                    name='Minimum'
-                    value={bandFormData.minimumCtc}
-                    onChange={(e) => hnadleBandChnage('minimumCtc', e.target.value)}
-                />
-                {errors.minimum && (
-                    <Box>
-                        <Typography
-                            color="error"
-                        >
-                            {" "}
-                            {errors.minimum}
-                        </Typography>
-                    </Box>
-                )}
-                <Typography>Maximum</Typography>
-                <TextField 
-                    name='Maximum'
-                    value={bandFormData.maximumCtc}
-                    onChange={(e) => hnadleBandChnage('maximumCtc', e.target.value)}
-                />
-                {errors.maximum && (
-                    <Box>
-                        <Typography
-                            color="error"
-                        >
-                            {" "}
-                            {errors.maximum}
-                        </Typography>
-                    </Box>
-                )}
-
-            </DialogContent>
-            <DialogActions>
-        {edit ? (
-            <Button 
-            onClick={handleCloseDialog}
-            sx={{
-                color:'#000',
-                width:'100px',
-                marginTop:'-10px',
-                border:'1px solid #AEAEAE',
-                textTransform: 'capitalize',
-            }}
-            >
-            Cancel
-            </Button>
-        ) : null}
-        <Button 
-            onClick={() => (edit === false ? handleSubmit(chnageDataType, chnageDataId) : handleUpdate(chnageDataType, chnageDataId))} 
-            sx={{
-            backgroundColor:'#008080',
-            color:'#ffff',
-            marginRight:'30px',
-            width:'100px',
-            marginTop:'-10px',
-            '&:hover': {
-                backgroundColor: '#008080',
-            },
-            textTransform: 'capitalize',
-            }}
-        >
+          >
             Save
-        </Button>
+          </Button>
         </DialogActions>
-
-    </Dialog>
-    <Dialog open={holidayDialog} onClose={handleCloseDialog}>
-      <IconButton
-            edge="end"
-            color="inherit"
-            onClick={handleCloseDialog}
-            aria-label="close"
-            sx={{
-            position: 'absolute',
+      </Dialog>
+      <Dialog open={enable} onClose={handleCloseDialog}>
+        <IconButton
+          edge="end"
+          color="inherit"
+          onClick={handleCloseDialog}
+          aria-label="close"
+          sx={{
+            position: "absolute",
             right: 10,
             top: 8,
-            }}
+          }}
         >
-            <CloseIcon />
+          <CloseIcon />
         </IconButton>
-        <DialogTitle sx={{width:'400px'}}>
-        <img src={icon}/> Holiday Details</DialogTitle>
-            <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 1}}>
-            <TextField
-                    id="outlined-basic"
-                    type='calander'
-                    placeholder='Choose Date'
-                    onClick={() => setIsOpenCalender(true)}
-                    value={selectedDate ? dayjs(selectedDate).format("DD-MM-YYYY") : ''}
-                    InputProps={{
-                        endAdornment: (
-                            <IconButton>
-                                <CalendarMonthIcon />
-                            </IconButton>
-                        ),
-                    }}
-                />
-                {errors.selectedDate && (
-                <Box>
-                    <Typography
-                        color="error"
-                    >
-                        {" "}
-                        {errors.selectedDate}
-                    </Typography>
-                </Box>
-                )}
-                <Typography>Enter Holiday Type</Typography>
-                <Dropdown
-                options={holidayType} // Pass any additional options if needed
-                value={holidayFormData.holidayType}
-                onChange={(e) => handleHolidayChnage('holidayType',  e.target.value)}
-                title=""
-                dropdownName="holiday Type" // Pass the dropdown name
-                style={{
-                    ...style.TimesheetTextField,
-                    border: "1px solid #8897ad87",
-                    borderRadius: "10px",
-                  }}
-                />
-                {errors.holidayType && (
-                <Box>
-                    <Typography
-                        color="error"
-                    >
-                        {" "}
-                        {errors.holidayType}
-                    </Typography>
-                </Box>
-                )}
-                <Typography>Enter Holiday Name</Typography>
-                <TextField 
-                    placeholder='holiday Name'
-                    value={holidayFormData.holidayName}
-                    onChange={(e) => handleHolidayChnage('holidayName', e.target.value)}
-                />
-                {errors.holidayName && (
-                <Box>
-                    <Typography
-                        color="error"
-                    >
-                        {" "}
-                        {errors.holidayName}
-                    </Typography>
-                </Box>
-                )}
-
-            </DialogContent>
-            <DialogActions>
-                {edit ? (
-                    <Button 
-                    onClick={handleCloseDialog}
-                    sx={{
-                        color:'#000',
-                        width:'100px',
-                        marginTop:'-10px',
-                        border:'1px solid #AEAEAE',
-                        textTransform: 'capitalize',
-                    }}
-                    >
-                    Cancel
-                    </Button>
-                ) : null}
-                <Button 
-                    onClick={() => (edit === false ? handleSubmit(chnageDataType, chnageDataId) : handleUpdate(chnageDataType, chnageDataId))} 
-                    sx={{
-                    backgroundColor:'#008080',
-                    color:'#ffff',
-                    marginRight:'30px',
-                    width:'100px',
-                    marginTop:'-10px',
-                    '&:hover': {
-                        backgroundColor: '#008080',
-                    },
-                    textTransform: 'capitalize',
-                    }}
-                >
-                    Save
-                </Button>
-                </DialogActions>
-
-    </Dialog>
-    <Dialog
-        open={isOpenCalender}
-        onClose={() => setIsOpenCalender(false)}
-        onClick={(e) => e.stopPropagation()}
-      >
+        <DialogTitle sx={{ width: "400px" }}>
+          <img src={icon} /> Enable
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to enable the {chnageDataType}
+          </DialogContentText>
+          <DialogContentText>
+            <b style={{ color: "black" }}>&apos;{changeData}&apos;</b> from the
+            Master Data?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={handleCloseDialog}
+            sx={{
+              color: "#000",
+              width: "100px",
+              marginTop: "-10px",
+              border: "1px solid #AEAEAE",
+              textTransform: "capitalize",
+            }}
+          >
+            cancle
+          </Button>
+          <Button
+            onClick={() => handleSubmit(chnageDataType, chnageDataId, "ACTIVE")}
+            sx={{
+              backgroundColor: "#008080",
+              color: "#ffff",
+              marginRight: "30px",
+              width: "100px",
+              marginTop: "-10px",
+              "&:hover": {
+                backgroundColor: "#008080",
+              },
+              textTransform: "capitalize",
+            }}
+          >
+            Enable
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={bandDialog} onClose={handleCloseDialog}>
+        <IconButton
+          edge="end"
+          color="inherit"
+          onClick={handleCloseDialog}
+          aria-label="close"
+          sx={{
+            position: "absolute",
+            right: 10,
+            top: 8,
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogTitle sx={{ width: "400px" }}>
+          <img src={icon} /> Band Details
+        </DialogTitle>
+        <DialogContent
+          sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+        >
+          <TextField
+            label="Band Name"
+            value={bandFormData.bandName}
+            onChange={(e) => hnadleBandChnage("bandName", e.target.value)}
+            sx={{
+              marginTop: 2,
+            }}
+          />
+          {errors.bandName && (
+            <Box>
+              <Typography color="error"> {errors.bandName}</Typography>
+            </Box>
+          )}
+          <Typography>Enter CTC</Typography>
+          <Typography>Minimum</Typography>
+          <TextField
+            name="Minimum"
+            value={bandFormData.minimumCtc}
+            onChange={(e) => hnadleBandChnage("minimumCtc", e.target.value)}
+          />
+          {errors.minimum && (
+            <Box>
+              <Typography color="error"> {errors.minimum}</Typography>
+            </Box>
+          )}
+          <Typography>Maximum</Typography>
+          <TextField
+            name="Maximum"
+            value={bandFormData.maximumCtc}
+            onChange={(e) => hnadleBandChnage("maximumCtc", e.target.value)}
+          />
+          {errors.maximum && (
+            <Box>
+              <Typography color="error"> {errors.maximum}</Typography>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          {edit ? (
+            <Button
+              onClick={handleAddDesignationCancle}
+              sx={{
+                color: "#000",
+                width: "100px",
+                marginTop: "-10px",
+                border: "1px solid #AEAEAE",
+                textTransform: "capitalize",
+              }}
+            >
+              Cancel
+            </Button>
+          ) : null}
+          <Button
+            onClick={() =>
+              edit === false
+                ? handleSubmit(chnageDataType, chnageDataId)
+                : handleUpdate(chnageDataType, chnageDataId)
+            }
+            sx={{
+              backgroundColor: "#008080",
+              color: "#ffff",
+              marginRight: "30px",
+              width: "100px",
+              marginTop: "-10px",
+              "&:hover": {
+                backgroundColor: "#008080",
+              },
+              textTransform: "capitalize",
+            }}
+          >
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={holidayDialog} onClose={handleCloseDialog}>
+        <IconButton
+          edge="end"
+          color="inherit"
+          onClick={handleCloseDialog}
+          aria-label="close"
+          sx={{
+            position: "absolute",
+            right: 10,
+            top: 8,
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogTitle sx={{ width: "400px" }}>
+          <img src={icon} /> Manage Holidays
+        </DialogTitle>
+        <DialogContent
+          sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+        >
+          <TextField
+            id="outlined-basic"
+            type="calander"
+            placeholder="Choose Date"
+            onClick={() => setIsOpenCalender(true)}
+            value={selectedDate ? dayjs(selectedDate).format("DD-MM-YYYY") : ""}
+            InputProps={{
+              endAdornment: (
+                <IconButton>
+                  <CalendarMonthIcon />
+                </IconButton>
+              ),
+            }}
+          />
+          {errors.selectedDate && (
+            <Box>
+              <Typography color="error"> {errors.selectedDate}</Typography>
+            </Box>
+          )}
+          <Typography>Enter Holiday Type</Typography>
+          <Dropdown
+            options={holidayType} // Pass any additional options if needed
+            value={holidayFormData.holidayType}
+            onChange={(e) => handleHolidayChnage("holidayType", e.target.value)}
+            title=""
+            dropdownName="holiday Type" // Pass the dropdown name
+            style={{
+              ...style.TimesheetTextField,
+              border: "1px solid #8897ad87",
+              borderRadius: "10px",
+            }}
+          />
+          {errors.holidayType && (
+            <Box>
+              <Typography color="error"> {errors.holidayType}</Typography>
+            </Box>
+          )}
+          <Typography>Enter Holiday Name</Typography>
+          <TextField
+            placeholder="holiday Name"
+            value={holidayFormData.holidayName}
+            onChange={(e) => handleHolidayChnage("holidayName", e.target.value)}
+          />
+          {errors.holidayName && (
+            <Box>
+              <Typography color="error"> {errors.holidayName}</Typography>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          {edit ? (
+            <Button
+              onClick={handleAddDesignationCancle}
+              sx={{
+                color: "#000",
+                width: "100px",
+                marginTop: "-10px",
+                border: "1px solid #AEAEAE",
+                textTransform: "capitalize",
+              }}
+            >
+              Cancel
+            </Button>
+          ) : null}
+          <Button
+            onClick={() =>
+              edit === false
+                ? handleSubmit(chnageDataType, chnageDataId)
+                : handleUpdate(chnageDataType, chnageDataId)
+            }
+            sx={{
+              backgroundColor: "#008080",
+              color: "#ffff",
+              marginRight: "30px",
+              width: "100px",
+              marginTop: "-10px",
+              "&:hover": {
+                backgroundColor: "#008080",
+              },
+              textTransform: "capitalize",
+            }}
+          >
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={isOpenCalender} onClose={() => setIsOpenCalender(false)}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <StaticDatePicker
             sx={{
@@ -754,422 +751,420 @@ export default function MasterDataDialogs({
               flexDirection: "column",
             }}
             defaultValue={dayjs()}
-            value={selectedDate ? dayjs(selectedDate).format("DD-MM-YYYY") : ''}
+            value={selectedDate}
             onChange={(date) => setSelectedDate(date)}
-            onAccept={() => setIsOpenCalender(false)} 
+            onAccept={() => setIsOpenCalender(false)}
             onCancel={() => setIsOpenCalender(false)}
           />
         </LocalizationProvider>
       </Dialog>
       <Dialog open={clientDialog} onClose={handleCloseDialog}>
-      <IconButton
-            edge="end"
-            color="inherit"
-            onClick={handleCloseDialog}
-            aria-label="close"
-            sx={{
-            position: 'absolute',
+        <IconButton
+          edge="end"
+          color="inherit"
+          onClick={handleCloseDialog}
+          aria-label="close"
+          sx={{
+            position: "absolute",
             right: 10,
             top: 8,
-            }}
-        >
-            <CloseIcon />
-        </IconButton>
-        <DialogTitle sx={{width:'400px'}}>
-        <img src={icon}/> Client Details</DialogTitle>
-        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-        <Typography>Clinet Name</Typography>
-        <TextField
-            placeholder="Enter Client Name"
-            name = 'clinetName'
-            value={clinetDetails.clinetName}
-            onChange={(e) => handleClinetDetails('clinetName', e.target.value)}
-            sx={{ marginBottom: 1}}
-        />
-        {errors.clinetName && (
-            <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.clinetName}
-                </Typography>
-            </Box>
-        )}
-        <Typography>Address Line 1</Typography>
-        <TextField
-            placeholder="Enter Client Address"
-            name = 'addressLine1'
-            value={clinetDetails.addressLine1}
-            onChange={(e) => handleClinetDetails('addressLine1', e.target.value)}
-            sx={{ marginBottom: 1}}
-        />
-        {errors.addressLine1 && (
-            <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.addressLine1}
-                </Typography>
-            </Box>
-        )}
-        <Typography>Address Line 1</Typography>
-        <TextField
-            placeholder="Enter Client Address"
-            name = 'addressLine2'
-            value={clinetDetails.addressLine2}
-            onChange={(e) => handleClinetDetails('addressLine2', e.target.value)}
-            sx={{ marginBottom: 1}}
-        />
-        {errors.addressLine2 && (
-            <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.addressLine2}
-                </Typography>
-            </Box>
-        )}
-        <Typography>Phone Number</Typography>
-        <MuiPhoneNumber
-        defaultCountry={'IN'} 
-        name='phone'
-        placeholder='Enter Phone Number'
-        value={clinetDetails.phone}
-        onChange={(value) => {
-            const cleanedPhoneNumber = value.replace(/\s/g, '');
-            handleClinetDetails('phone', cleanedPhoneNumber);
           }}
-        sx={{ marginBottom: 1 }}
-        />
-
-        {errors.phone && (
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogTitle sx={{ width: "400px" }}>
+          <img src={icon} /> Client Details
+        </DialogTitle>
+        <DialogContent
+          sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+        >
+          <label htmlFor="upload-photo">
+            <Avatar
+              sx={{
+                cursor: "pointer",
+              }}
+            >
+              {selectedImage ? (
+                <img
+                  src={selectedImage}
+                  alt="Selected"
+                  style={{ width: "100%", height: "100%" }}
+                />
+              ) : (
+                <InsertPhotoOutlinedIcon />
+              )}
+            </Avatar>
+            <Input
+              accept="image/*"
+              id="upload-photo"
+              type="file"
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
+          </label>
+          <Typography>Clinet Name</Typography>
+          <TextField
+            placeholder="Enter Client Name"
+            name="clinetName"
+            value={clinetDetails.clinetName}
+            onChange={(e) => handleClinetDetails("clinetName", e.target.value)}
+            sx={{ marginBottom: 1 }}
+          />
+          {errors.clinetName && (
             <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.phone}
-                </Typography>
+              <Typography color="error"> {errors.clinetName}</Typography>
             </Box>
-        )}
-        <Typography>Country</Typography>
-        <Autocomplete
+          )}
+          <Typography>Address Line 1</Typography>
+          <TextField
+            placeholder="Enter Client Address"
+            name="addressLine1"
+            value={clinetDetails.addressLine1}
+            onChange={(e) =>
+              handleClinetDetails("addressLine1", e.target.value)
+            }
+            sx={{ marginBottom: 1 }}
+          />
+          {errors.addressLine1 && (
+            <Box>
+              <Typography color="error"> {errors.addressLine1}</Typography>
+            </Box>
+          )}
+          <Typography>Address Line 1</Typography>
+          <TextField
+            placeholder="Enter Client Address"
+            name="addressLine2"
+            value={clinetDetails.addressLine2}
+            onChange={(e) =>
+              handleClinetDetails("addressLine2", e.target.value)
+            }
+            sx={{ marginBottom: 1 }}
+          />
+          {errors.addressLine2 && (
+            <Box>
+              <Typography color="error"> {errors.addressLine2}</Typography>
+            </Box>
+          )}
+          <Typography>Phone Number</Typography>
+          <MuiPhoneNumber
+            defaultCountry={"IN"}
+            name="phone"
+            placeholder="Enter Phone Number"
+            value={clinetDetails.phone}
+            onChange={(value) => {
+              const cleanedPhoneNumber = value.replace(/\s/g, "");
+              handleClinetDetails("phone", cleanedPhoneNumber);
+            }}
+            sx={{ marginBottom: 1 }}
+          />
+
+          {errors.phone && (
+            <Box>
+              <Typography color="error"> {errors.phone}</Typography>
+            </Box>
+          )}
+          <Typography>Country</Typography>
+          <Autocomplete
             freeSolo
             id="country"
-            placeholder='Enter Client Address'
+            placeholder="Enter Client Address"
             options={country}
             getOptionLabel={(option) => option.dataValue}
-            onChange={(e, value) => handleClinetDetails('country', e, value)}
-            value={country.find((c) => c.id === clinetDetails?.countryId) || null}
-            renderInput={(params) => <TextField {...params} placeholder="Country" />}
+            onChange={(e, value) => handleClinetDetails("country", e, value)}
+            value={
+              country.find((c) => c.id === clinetDetails?.countryId) || null
+            }
+            renderInput={(params) => (
+              <TextField {...params} placeholder="Country" />
+            )}
           />
-        {errors.countryId && (
+          {errors.countryId && (
             <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.countryId}
-                </Typography>
+              <Typography color="error"> {errors.countryId}</Typography>
             </Box>
-        )}
-            <Typography>State</Typography>
-            <Autocomplete
+          )}
+          <Typography>State</Typography>
+          <Autocomplete
             freeSolo
             options={state}
             getOptionLabel={(option) => option.dataValue}
-            onChange={(e, value) => handleClinetDetails('state', e, value)}
+            onChange={(e, value) => handleClinetDetails("state", e, value)}
             value={state.find((c) => c.id === clinetDetails?.stateId) || null}
-            renderInput={(params) => <TextField {...params}  value={officeData.state} placeholder="State" />}
-            />
-        {errors.stateId && (
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                value={officeData.state}
+                placeholder="State"
+              />
+            )}
+          />
+          {errors.stateId && (
             <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.stateId}
-                </Typography>
+              <Typography color="error"> {errors.stateId}</Typography>
             </Box>
-        )}
-            <Typography>City</Typography>
-            <Autocomplete
+          )}
+          <Typography>City</Typography>
+          <Autocomplete
             freeSolo
             options={city}
             getOptionLabel={(option) => option.dataValue}
-            onChange={(e, value) => handleClinetDetails('city', e, value)}
+            onChange={(e, value) => handleClinetDetails("city", e, value)}
             value={city.find((c) => c.id === clinetDetails?.stateId) || null}
-            renderInput={(params) => <TextField {...params}  value={officeData.state}  placeholder="City" />}
-            />
-        {errors.cityId && (
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                value={officeData.state}
+                placeholder="City"
+              />
+            )}
+          />
+          {errors.cityId && (
             <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.cityId}
-                </Typography>
+              <Typography color="error"> {errors.cityId}</Typography>
             </Box>
-        )}
-        <Typography>Zip / Postal Code</Typography>
-        <TextField
+          )}
+          <Typography>Zip / Postal Code</Typography>
+          <TextField
             placeholder="Zip / Postal Code"
             value={clinetDetails.postalCode}
-            onChange={(e) => handleClinetDetails('postalCode', e.target.value)}
+            onChange={(e) => handleClinetDetails("postalCode", e.target.value)}
             sx={{ marginBottom: 1 }}
-        />
-                {errors.postalCode && (
+          />
+          {errors.postalCode && (
             <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.postalCode}
-                </Typography>
+              <Typography color="error"> {errors.postalCode}</Typography>
             </Box>
-        )}
+          )}
         </DialogContent>
         <DialogActions>
-            <Button 
-                onClick={handleCloseDialog}
-                sx={{
-                    color:'#000',
-                    width:'100px',
-                    marginTop:'-10px',
-                    border:'1px solid #AEAEAE',
-                    textTransform: 'capitalize',
-                }}
-            >
-                cancle
-            </Button>
-            <Button 
-                    onClick={() => (edit=== false ? handleSubmit(chnageDataType, chnageDataId) : handleUpdate(chnageDataType, chnageDataId))} 
-                    sx={{
-                    backgroundColor:'#008080',
-                    color:'#ffff',
-                    marginRight:'30px',
-                    width:'100px',
-                    marginTop:'-10px',
-                    '&:hover': {
-                        backgroundColor: '#008080',
-                    },
-                    textTransform: 'capitalize',
-                }}
-            >
-                Save
-            </Button>
-      </DialogActions>
-    </Dialog>
-    <Dialog open={clientLocationDialog} onClose={handleCloseDialog}>
-      <IconButton
-            edge="end"
-            color="inherit"
-            onClick={handleCloseDialog}
-            aria-label="close"
+          <Button
+            onClick={handleAddDesignationCancle}
             sx={{
-            position: 'absolute',
+              color: "#000",
+              width: "100px",
+              marginTop: "-10px",
+              border: "1px solid #AEAEAE",
+              textTransform: "capitalize",
+            }}
+          >
+            cancle
+          </Button>
+          <Button
+            onClick={() =>
+              edit === false
+                ? handleSubmit(chnageDataType, chnageDataId)
+                : handleUpdate(chnageDataType, chnageDataId)
+            }
+            sx={{
+              backgroundColor: "#008080",
+              color: "#ffff",
+              marginRight: "30px",
+              width: "100px",
+              marginTop: "-10px",
+              "&:hover": {
+                backgroundColor: "#008080",
+              },
+              textTransform: "capitalize",
+            }}
+          >
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={clientLocationDialog} onClose={handleCloseDialog}>
+        <IconButton
+          edge="end"
+          color="inherit"
+          onClick={handleCloseDialog}
+          aria-label="close"
+          sx={{
+            position: "absolute",
             right: 10,
             top: 8,
-            }}
-        >
-            <CloseIcon />
-        </IconButton>
-        <DialogTitle sx={{width:'400px'}}>
-        <img src={icon}/> Client Onsite Office Location</DialogTitle>
-        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-        <Typography>Clinet Name</Typography>
-        <TextField
-            placeholder="Office Address"
-            name = 'addressName'
-            value={clientLocationData.addressName}
-            onChange={(e) => handleOnsiteLocation('addressName', e.target.value)}
-            sx={{ marginBottom: 1}}
-        />
-        {errors.clinetName && (
-            <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.clinetName}
-                </Typography>
-            </Box>
-        )}
-        <Typography>Address Line 1</Typography>
-        <TextField
-            placeholder="Office Address"
-            name = 'addressLine1'
-            value={clientLocationData.addressLine1}
-            onChange={(e) => handleOnsiteLocation('addressLine1', e.target.value)}
-            sx={{ marginBottom: 1}}
-        />
-        {errors.addressLine1 && (
-            <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.addressLine1}
-                </Typography>
-            </Box>
-        )}
-        <Typography>Address Line 1</Typography>
-        <TextField
-            placeholder="Office Address"
-            name = 'addressLine2'
-            value={clientLocationData.addressLine2}
-            onChange={(e) => handleOnsiteLocation('addressLine2', e.target.value)}
-            sx={{ marginBottom: 1}}
-        />
-        {errors.addressLine2 && (
-            <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.addressLine2}
-                </Typography>
-            </Box>
-        )}
-        <Typography>Phone Number</Typography>
-        <MuiPhoneNumber
-        defaultCountry={'IN'} 
-        name='phone'
-        value={clientLocationData.phone}
-        onChange={(value) => handleOnsiteLocation('phoneNumber', value)}
-        sx={{ marginBottom: 1 }}
-        />
-        <MuiPhoneNumber
-        defaultCountry={'IN'} 
-        name='phone'
-        placeholder='Enter Phone Number'
-        value={clinetDetails.phone}
-        onChange={(value) => {
-            const cleanedPhoneNumber = value.replace(/\s/g, '');
-            handleClinetDetails('phone', cleanedPhoneNumber);
           }}
-        sx={{ marginBottom: 1 }}
-        />
-        {errors.phone && (
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogTitle sx={{ width: "400px" }}>
+          <img src={icon} /> Client Onsite Office Location
+        </DialogTitle>
+        <DialogContent
+          sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+        >
+          <Typography>Clinet Name</Typography>
+          <TextField
+            placeholder="Office Address"
+            name="addressName"
+            value={clientLocationData.addressName}
+            onChange={(e) =>
+              handleOnsiteLocation("addressName", e.target.value)
+            }
+            sx={{ marginBottom: 1 }}
+          />
+          {errors.clinetName && (
             <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.phone}
-                </Typography>
+              <Typography color="error"> {errors.clinetName}</Typography>
             </Box>
-        )}
-        <Typography>Country</Typography>
-        <Autocomplete
-          freeSolo
-          id="country"
-          options={country}
-          getOptionLabel={(option) => option.dataValue}
-          onChange={(e, value) => handleOnsiteLocation('countryId', e, value)}
-          value={country.find((c) => c.id === clientLocationData?.countryId) || null}
-          renderInput={(params) => <TextField {...params} placeholder="Country" />}
-        />
-        {errors.countryId && (
+          )}
+          <Typography>Address Line 1</Typography>
+          <TextField
+            placeholder="Office Address"
+            name="addressLine1"
+            value={clientLocationData.addressLine1}
+            onChange={(e) =>
+              handleOnsiteLocation("addressLine1", e.target.value)
+            }
+            sx={{ marginBottom: 1 }}
+          />
+          {errors.addressLine1 && (
             <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.countryId}
-                </Typography>
+              <Typography color="error"> {errors.addressLine1}</Typography>
             </Box>
-        )}
-            <Typography>State</Typography>
-            <Autocomplete
+          )}
+          <Typography>Address Line 1</Typography>
+          <TextField
+            placeholder="Office Address"
+            name="addressLine2"
+            value={clientLocationData.addressLine2}
+            onChange={(e) =>
+              handleOnsiteLocation("addressLine2", e.target.value)
+            }
+            sx={{ marginBottom: 1 }}
+          />
+          {errors.addressLine2 && (
+            <Box>
+              <Typography color="error"> {errors.addressLine2}</Typography>
+            </Box>
+          )}
+          <Typography>Phone Number</Typography>
+          <MuiPhoneNumber
+            defaultCountry={"IN"}
+            name="phone"
+            placeholder="Enter Phone Number"
+            value={clientLocationData.phone}
+            onChange={(value) => {
+              const cleanedPhoneNumber = value.replace(/\s/g, "");
+              handleOnsiteLocation("phone", cleanedPhoneNumber);
+            }}
+            sx={{ marginBottom: 1 }}
+          />
+          {errors.phone && (
+            <Box>
+              <Typography color="error"> {errors.phone}</Typography>
+            </Box>
+          )}
+          <Typography>Country</Typography>
+          <Autocomplete
+            freeSolo
+            id="country"
+            options={country}
+            getOptionLabel={(option) => option.dataValue}
+            onChange={(e, value) => handleOnsiteLocation("countryId", e, value)}
+            value={
+              country.find((c) => c.id === clientLocationData?.countryId) ||
+              null
+            }
+            renderInput={(params) => (
+              <TextField {...params} placeholder="Country" />
+            )}
+          />
+          {errors.countryId && (
+            <Box>
+              <Typography color="error"> {errors.countryId}</Typography>
+            </Box>
+          )}
+          <Typography>State</Typography>
+          <Autocomplete
             freeSolo
             options={state}
             getOptionLabel={(option) => option.dataValue}
-            onChange={(e, value) => handleOnsiteLocation('state', e, value)}
-            value={state.find((c) => c.id === clientLocationData?.stateId) || null}
-            renderInput={(params) => <TextField {...params}  value={officeData.state} placeholder="State" />}
-            />
-        {errors.stateId && (
+            onChange={(e, value) => handleOnsiteLocation("state", e, value)}
+            value={
+              state.find((c) => c.id === clientLocationData?.stateId) || null
+            }
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                value={officeData.state}
+                placeholder="State"
+              />
+            )}
+          />
+          {errors.stateId && (
             <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.stateId}
-                </Typography>
+              <Typography color="error"> {errors.stateId}</Typography>
             </Box>
-        )}
-            <Typography>City</Typography>
-            <Autocomplete
+          )}
+          <Typography>City</Typography>
+          <Autocomplete
             freeSolo
             options={city}
             getOptionLabel={(option) => option.dataValue}
-            onChange={(e, value) => handleOnsiteLocation('city', e, value)}
-            value={city.find((c) => c.id === clientLocationData?.cityId) || null}
-            renderInput={(params) => <TextField {...params}  value={officeData.state}  placeholder="City" />}
-            />
-        {errors.cityId && (
+            onChange={(e, value) => handleOnsiteLocation("city", e, value)}
+            value={
+              city.find((c) => c.id === clientLocationData?.cityId) || null
+            }
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                value={officeData.state}
+                placeholder="City"
+              />
+            )}
+          />
+          {errors.cityId && (
             <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.cityId}
-                </Typography>
+              <Typography color="error"> {errors.cityId}</Typography>
             </Box>
-        )}
-        <Typography>Zip / Postal Code</Typography>
-        <TextField
+          )}
+          <Typography>Zip / Postal Code</Typography>
+          <TextField
             placeholder="Zip / Postal Code"
             value={clientLocationData.postalCode}
-            onChange={(e) => handleOnsiteLocation('postalCode', e.target.value)}
+            onChange={(e) => handleOnsiteLocation("postalCode", e.target.value)}
             sx={{ marginBottom: 1 }}
-        />
-                {errors.postalCode && (
+          />
+          {errors.postalCode && (
             <Box>
-                <Typography
-                    color="error"
-                >
-                    {" "}
-                    {errors.postalCode}
-                </Typography>
+              <Typography color="error"> {errors.postalCode}</Typography>
             </Box>
-        )}
+          )}
         </DialogContent>
         <DialogActions>
-            <Button 
-                onClick={handleCloseDialog}
-                sx={{
-                    color:'#000',
-                    width:'100px',
-                    marginTop:'-10px',
-                    border:'1px solid #AEAEAE',
-                    textTransform: 'capitalize',
-                }}
-            >
-                cancle
-            </Button>
-            <Button 
-                    onClick={() => (edit=== false ? handleSubmit('clientOfficeLocation', chnageDataId) : handleUpdate(chnageDataType, chnageDataId))} 
-                    sx={{
-                    backgroundColor:'#008080',
-                    color:'#ffff',
-                    marginRight:'30px',
-                    width:'100px',
-                    marginTop:'-10px',
-                    '&:hover': {
-                        backgroundColor: '#008080',
-                    },
-                    textTransform: 'capitalize',
-                }}
-            >
-                Save
-            </Button>
-      </DialogActions>
-    </Dialog>
+          <Button
+            onClick={handleAddDesignationCancle}
+            sx={{
+              color: "#000",
+              width: "100px",
+              marginTop: "-10px",
+              border: "1px solid #AEAEAE",
+              textTransform: "capitalize",
+            }}
+          >
+            cancle
+          </Button>
+          <Button
+            onClick={() =>
+              edit === false
+                ? handleSubmit("clientOfficeLocation", chnageDataId)
+                : handleUpdate(chnageDataType, chnageDataId)
+            }
+            sx={{
+              backgroundColor: "#008080",
+              color: "#ffff",
+              marginRight: "30px",
+              width: "100px",
+              marginTop: "-10px",
+              "&:hover": {
+                backgroundColor: "#008080",
+              },
+              textTransform: "capitalize",
+            }}
+          >
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
-  )
+  );
 }

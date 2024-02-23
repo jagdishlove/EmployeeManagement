@@ -5,7 +5,10 @@ import {
     GET_USER_BY_ID_FAILURE,
     GET_USER_BY_ID_REQUEST,
     GET_USER_BY_ID_SUCCESS,
-    GET_ALL_CITYS
+    GET_ALL_CITYS,
+    SEARCH_EMPLOYEEANDPROJECT_FAILURE,
+    SEARCH_EMPLOYEEANDPROJECT_REQUEST,
+    SEARCH_EMPLOYEEANDPROJECT_SUCCESS
 } from '../../actions/AdminConsoleAction/users/usersActionTypes'
 
 
@@ -15,6 +18,7 @@ const initialState = {
     usersDataLoading: false,
     userByIdData : {},
     cityData : [],
+    searchData: [],
   };
 
 const usersReducer = (state = initialState, action) => {
@@ -55,6 +59,19 @@ const usersReducer = (state = initialState, action) => {
             ...state,
             cityData : action.payload
          }
+      case SEARCH_EMPLOYEEANDPROJECT_FAILURE :
+        return {
+            ...state
+        }
+      case SEARCH_EMPLOYEEANDPROJECT_REQUEST : 
+      return {
+        ...state,
+      }
+      case SEARCH_EMPLOYEEANDPROJECT_SUCCESS :
+        return {
+            ...state,
+            searchData : action.payload
+        }
      default:
         return state;
     }

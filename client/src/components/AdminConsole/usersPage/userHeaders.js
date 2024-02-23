@@ -1,14 +1,23 @@
-import { Box, Button, FormControl, Grid, IconButton, InputAdornment, TextField, Typography, Checkbox } from '@mui/material';
-import Dropdown from '../../forms/dropdown/dropdown';
-import { useTheme } from '@emotion/react';
-import { adminHeaderStyle } from '../../admin/approvalTimesheets/adminHeaderStyle';
-import SearchIcon from '@mui/icons-material/Search';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import Select, {components} from "react-select";
-import { useState } from 'react';
-
+import {
+  Box,
+  Button,
+  FormControl,
+  Grid,
+  Typography,
+  Checkbox,
+  TextField,
+} from "@mui/material";
+import Dropdown from "../../forms/dropdown/dropdown";
+import { useTheme } from "@emotion/react";
+import { adminHeaderStyle } from "../../admin/approvalTimesheets/adminHeaderStyle";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import Select, { components } from "react-select";
+import { useEffect, useState } from "react";
+import { SearchEmployeeAndProject } from "../../../redux/actions/AdminConsoleAction/users/usersAction";
+import useDebounce from "../../../utils/useDebounce";
+import SearchIcon from "@mui/icons-material/Search";
 
 const InputOption = ({
   getStyles,
@@ -70,187 +79,247 @@ const InputOption = ({
   );
 };
 
-
-export default function UserHerders({userData , skillsCheckedData , setSkillsCheckedData, designationId}) {
+export default function UserHerders({
+  userData,
+  skillsCheckedData,
+  setSkillsCheckedData,
+  designationId,
+}) {
   const theme = useTheme();
   const style = adminHeaderStyle(theme);
 
   const Navigate = useNavigate();
+  const dispatch = useDispatch();
 
+  const [selectedSearchOption, setSelectedSearchOption] = useState();
+  const [selectedOptions, setSelectedOptions] = useState([]);
 
-  const handleChange = () => {
+  const [filterData, setFilterData] = useState({
+    searchTerm: "",
+  });
+  const debouncedValue = useDebounce(filterData.searchTerm);
+
+  console.log("selectedSearchOption", selectedSearchOption);
+
+  useEffect(() => {
+    // dispatch(SearchEmployeeAndProject(payload))
+  }, [debouncedValue]);
+
+  const handleChange = (data) => {
+    console.log("hello");
+    setSelectedSearchOption(data);
+    setSelectedOptions(data);
   };
-  const skills = useSelector(
-    (state) => state.persistData.masterData?.skill
-  );
+
+  const handleInputChange = (e) => {
+    console.log("object");
+    console.log("e", e);
+    setFilterData((prevFormData) => ({
+      ...prevFormData,
+      searchName: e.target.value,
+    }));
+    dispatch(SearchEmployeeAndProject(filterData));
+  };
+  const skills = useSelector((state) => state.persistData.masterData?.skill);
 
   const designation = useSelector(
     (state) => state.persistData.masterData?.designation
   );
 
+  const searchData = useSelector(
+    (state) => state?.nonPersist?.userDetails?.searchData
+  );
 
   const onResetSkillFilterHandler = () => {
     setSkillsCheckedData([]);
   };
 
-  const applySkillFilterHandler = () => {
-    
-  };
-
-
+  const applySkillFilterHandler = () => {};
   const CustomMenu = (props) => {
     return (
       <components.Menu {...props}>
-      {props.children}
-      <Box
-        style={{
-          bottom: 0,
-          left: 0,
-          right: 0,
-          padding: "10px",
-          display: "flex",
-          flexDirection: "column", 
-          alignItems: "center",
-        }}
-      >
-        <Button 
-          onClick={applySkillFilterHandler}
+        {props.children}
+        <Box
           style={{
-            width:'100%',
-            backgroundColor:'#008080',
-            borderRadius:'10px',
-            color:'#fff'
-          }}
-        >Apply
-      </Button>
-        <Button 
-          onClick={onResetSkillFilterHandler}
-          style={{
-            width:'100%',
-            borderRadius:'10px',
-            border:'1px solid #008080',
-            color:'#008080',
-            marginTop:'5px'
+            bottom: 0,
+            left: 0,
+            right: 0,
+            padding: "10px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
-          Clear All</Button>
-      </Box>
-    </components.Menu>
+          <Button
+            onClick={applySkillFilterHandler}
+            style={{
+              width: "100%",
+              backgroundColor: "#008080",
+              borderRadius: "10px",
+              color: "#fff",
+            }}
+          >
+            Apply
+          </Button>
+          <Button
+            onClick={onResetSkillFilterHandler}
+            style={{
+              width: "100%",
+              borderRadius: "10px",
+              border: "1px solid #008080",
+              color: "#008080",
+              marginTop: "5px",
+            }}
+          >
+            Clear All
+          </Button>
+        </Box>
+      </components.Menu>
     );
   };
 
-
+  const CustomSelectControl = (props) => {
+    return (
+      <components.Control {...props}>
+        <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
+          <SearchIcon sx={{ marginLeft: "10px" }} />
+          {props.children}
+        </div>
+      </components.Control>
+    );
+  };
 
   const handleAddUser = () => {
-    Navigate('/userForm')
-  }
+    Navigate("/userForm");
+  };
+
   return (
     <div>
       <Grid container justifyContent="space-between">
         <Grid item xs={12} sm={12} md={4} lg={5}>
-        <TextField
-          fullWidth
-          label="Search by user name, Project Name"
-          placeholder="Search by user name, Project Name"
-          variant="outlined"
-          onChange={handleChange}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              borderRadius: '30px',
-            },
-          }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <IconButton>
-                  <SearchIcon />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
+          <Box>
+            <Select
+              styles={{
+                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                control: (baseStyles) => ({
+                  ...baseStyles,
+                  borderRadius: "20px",
+                  height: "55px",
+                  maxWidth: "800px",
+                  width: "400px",
+                }),
+              }}
+              isSearchable={true}
+              menuPortalTarget={document.body}
+              value={selectedOptions}
+              components={{ Control: CustomSelectControl }}
+              onChange={handleChange}
+              getOptionValue={(option) => option.id}
+              getOptionLabel={(option) => option.name}
+              options={searchData?.result}
+              isLoading={searchData?.length === 0}
+              placeholder="Search by Name or Leave Type"
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="standard"
+                  placeholder="Search by User Name, Project Name"
+                  onChange={handleInputChange}
+                />
+              )}
+            />
+          </Box>
         </Grid>
-        <Grid item xs={12} sm={12} md={4} lg={6.5} display="flex" justifyContent="flex-end">
-          <Button 
-            variant="contained" 
-            color="primary" 
-            startIcon={<PersonAddIcon />} 
-            style={{borderRadius:'10px'}}
+        <Grid
+          item
+          xs={12}
+          sm={12}
+          md={4}
+          lg={6.5}
+          display="flex"
+          justifyContent="flex-end"
+        >
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<PersonAddIcon />}
+            style={{ borderRadius: "10px" }}
             onClick={handleAddUser}
           >
             Add New Users
           </Button>
         </Grid>
       </Grid>
-        <Box style={{ ...style.adminSubHeader }}>
+      <Box style={{ ...style.adminSubHeader }}>
         <Grid container gap={{ sm: 0, md: 0, lg: 2, xs: 2 }}>
           <Grid item xs={12} sm={4} md={2} lg={3}>
             <Dropdown
-              options={[{ id: "All", value: "All" }, ...(Array.isArray(designation) ? designation : [])]}
-              value={designationId} 
+              options={[
+                { id: "All", value: "All" },
+                ...(Array.isArray(designation) ? designation : []),
+              ]}
+              value={designationId}
               dropdownName="Designation"
               title="Designation"
               style={style.DateTimesheetDateTextField}
               valueKey="designationId"
               labelKey="designationName"
-
             />
           </Grid>
 
           <Grid item xs={12} sm={4} md={3} lg={2}>
-            <Typography sx={{ color: "#ffffff", fontSize: '14px', marginTop: "-20px" }}>Skills</Typography>
+            <Typography
+              sx={{ color: "#ffffff", fontSize: "14px", marginTop: "-20px" }}
+            >
+              Skills
+            </Typography>
             <FormControl fullWidth style={{ borderRadius: "5px" }}>
-                <Select
-                  isSearchable={false}
-                  isMulti
-                  closeMenuOnSelect={false}
-                  hideSelectedOptions={false}
-                  onChange={(options) => {
-                    setSkillsCheckedData(options.map((opt) => opt));
-                  }}
-                  options={skills}
-                  components={{
-                    Option: (props) => (
-                      <InputOption
-                        {...props}
-                        skillsCheckedData={skillsCheckedData}
-                      />
-                    ),
-                    Menu: CustomMenu,
-                  }}
-                  isClearable={false}
-                  controlShouldRenderValue={false}
-                  getOptionValue={(option) => option.skillId}
-                  getOptionLabel={(option) => option.skillName}
-                  isLoading={skills?.length === 0}
-                  styles={{
-                    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                    control: (baseStyles) => ({
-                      ...baseStyles,
-                      height: "55px",
-                    }),
-                  }}
-                />
-
+              <Select
+                isSearchable={false}
+                isMulti
+                closeMenuOnSelect={false}
+                hideSelectedOptions={false}
+                onChange={(options) => {
+                  setSkillsCheckedData(options.map((opt) => opt));
+                }}
+                options={skills}
+                components={{
+                  Option: (props) => (
+                    <InputOption
+                      {...props}
+                      skillsCheckedData={skillsCheckedData}
+                    />
+                  ),
+                  Menu: CustomMenu,
+                }}
+                isClearable={false}
+                controlShouldRenderValue={false}
+                getOptionValue={(option) => option.skillId}
+                getOptionLabel={(option) => option.skillName}
+                isLoading={skills?.length === 0}
+                styles={{
+                  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                  control: (baseStyles) => ({
+                    ...baseStyles,
+                    height: "55px",
+                  }),
+                }}
+              />
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={12} md={4} lg={4}>
-          </Grid>
-          <Grid item  margin={"auto"} alignItems='flex-end'>
-          <Typography
-            variant="h7"
-            color={"secondary"}
-            textAlign={"right"}
-            sx={{ textWrap: "nowrap" }}
-            marginTop={4}
+          <Grid item xs={12} sm={12} md={4} lg={4}></Grid>
+          <Grid item margin={"auto"} alignItems="flex-end">
+            <Typography
+              variant="h7"
+              color={"secondary"}
+              textAlign={"right"}
+              sx={{ textWrap: "nowrap" }}
+              marginTop={4}
             >
               <b>
                 {" "}
                 Total Entries{" "}
-                {userData?.numberOfElements
-                  ? userData.numberOfElements
-                  : "0"}
-                /
+                {userData?.numberOfElements ? userData.numberOfElements : "0"}/
                 {userData?.totalElements ? userData.totalElements : "0"}
               </b>
             </Typography>
@@ -258,5 +327,5 @@ export default function UserHerders({userData , skillsCheckedData , setSkillsChe
         </Grid>
       </Box>
     </div>
-  )
+  );
 }

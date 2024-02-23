@@ -11,6 +11,9 @@ import {
   CREATE_USER_REQUEST,
   CREATE_USER_SUCCESS,
   GET_ALL_CITYS,
+  SEARCH_EMPLOYEEANDPROJECT_FAILURE,
+  SEARCH_EMPLOYEEANDPROJECT_REQUEST,
+  SEARCH_EMPLOYEEANDPROJECT_SUCCESS,
 } from "./usersActionTypes";
 import { getRefreshToken } from "../../login/loginAction";
 
@@ -74,6 +77,24 @@ const getAllCitys = (data) => {
   return {
     type: GET_ALL_CITYS,
     payload: data,
+  };
+};
+const searchEmployeeAndProjectRequest = () => {
+  return {
+    type: SEARCH_EMPLOYEEANDPROJECT_REQUEST,
+  };
+};
+
+const searchEmployeeAndProjectSuccess = (data) => {
+  return {
+    type: SEARCH_EMPLOYEEANDPROJECT_SUCCESS,
+    payload: data,
+  };
+};
+
+const searchEmployeeAndProjectFail = () => {
+  return {
+    type: SEARCH_EMPLOYEEANDPROJECT_FAILURE,
   };
 };
 
@@ -155,6 +176,26 @@ export const GetAllCitys = (data) => {
       );
       dispatch(getAllCitys(response));
     } catch (err) {
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  };
+};
+
+export const SearchEmployeeAndProject = (data) => {
+  return async (dispatch) => {
+    dispatch(searchEmployeeAndProjectRequest());
+    try {
+      const response = await makeRequest(
+        "GET",
+        "/employee/searchByemployeeAndProjectName",
+        null,
+        data
+      );
+      dispatch(searchEmployeeAndProjectSuccess(response));
+    } catch (err) {
+      dispatch(searchEmployeeAndProjectFail());
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
