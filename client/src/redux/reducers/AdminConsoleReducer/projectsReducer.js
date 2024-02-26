@@ -27,6 +27,9 @@ import {
   FETCH_PROJECT_DETAILS_REQUEST,
   FETCH_PROJECT_DETAILS_SUCCESS,
   FETCH_PROJECT_DETAILS_FAILURE,
+  FETCH_ALL_COST_INCURRED_SUCCESS,
+  FETCH_ALL_COST_INCURRED_REQUEST,
+  FETCH_ALL_COST_INCURRED_FAILURE,
 } from "../../actions/AdminConsoleAction/projects/projectsActionTypes";
 
 const initialState = {
@@ -49,6 +52,8 @@ const initialState = {
   projectId: null,
   projectDetailsData: [],
   projectDetailsDataLoading: false,
+  allCostIncurredData: [],
+  allCostIncurredDataLoading: false,
 };
 
 const projectsReducer = (state = initialState, action) => {
@@ -212,6 +217,24 @@ const projectsReducer = (state = initialState, action) => {
         ...state,
         projectDetailsData: [],
         projectDetailsDataLoading: false,
+      };
+
+    case FETCH_ALL_COST_INCURRED_REQUEST:
+      return {
+        ...state,
+        allCostIncurredDataLoading: true,
+      };
+    case FETCH_ALL_COST_INCURRED_SUCCESS:
+      return {
+        ...state,
+        allCostIncurredData: action.payload,
+        allCostIncurredDataLoading: false,
+      };
+    case FETCH_ALL_COST_INCURRED_FAILURE:
+      return {
+        ...state,
+        allCostIncurredData: [],
+        allCostIncurredDataLoading: false,
       };
     default:
       return state;
