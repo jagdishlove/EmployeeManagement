@@ -84,11 +84,13 @@ const ProjectDetailPage = () => {
         </Grid>
 
         <Grid item xs={12} md={8}>
-          <Typography variant="h5">Financial Data Exchange - FDX</Typography>
-          <Typography variant="body2">
-            15- Bazar Street, Hsr Layout-363473, Bengaluru, Karnataka, India.
+          <Typography variant="h5">
+            {projectDetailsData?.client?.clientName}
           </Typography>
-          <Typography variant="body2">Phone: +91 7363731111</Typography>
+          <Typography variant="body2">
+            {projectDetailsData?.client?.address?.addressLine1}{" "}
+            {projectDetailsData?.client?.address?.addressLine2}
+          </Typography>
         </Grid>
 
         <Grid item xs={12} md={2}>
@@ -121,7 +123,9 @@ const ProjectDetailPage = () => {
             </Typography>
           </Grid>
           <Grid item xs={8}>
-            <Typography variant="body1">{/* {userData.empId} */}</Typography>
+            <Typography variant="body1">
+              {projectDetailsData?.projectName}
+            </Typography>
           </Grid>
         </Grid>
 
@@ -133,7 +137,7 @@ const ProjectDetailPage = () => {
           </Grid>
           <Grid item xs={8}>
             <Typography variant="body1">
-              {/* {userData.joiningDate} */}
+              {projectDetailsData?.startDate}
             </Typography>
           </Grid>
         </Grid>
@@ -146,7 +150,7 @@ const ProjectDetailPage = () => {
           </Grid>
           <Grid item xs={8}>
             <Typography variant="body1">
-              {/* {genderIdToName[userData.genderId]} */}
+              {projectDetailsData?.endDate}
             </Typography>
           </Grid>
         </Grid>
@@ -159,7 +163,7 @@ const ProjectDetailPage = () => {
           </Grid>
           <Grid item xs={8}>
             <Typography variant="body1">
-              {/* {bandIdToName[userData.bandId]} */}
+              {projectDetailsData?.actualEndDate}
             </Typography>
           </Grid>
         </Grid>
@@ -172,7 +176,7 @@ const ProjectDetailPage = () => {
           </Grid>
           <Grid item xs={8}>
             <Typography variant="body1">
-              {/* {empTypeIdToName[userData.empTypeId]} */}
+              {projectDetailsData?.domain?.domainName}
             </Typography>
           </Grid>
         </Grid>
@@ -184,7 +188,9 @@ const ProjectDetailPage = () => {
             </Typography>
           </Grid>
           <Grid item xs={8}>
-            <Typography variant="body1"></Typography>
+            <Typography variant="body1">
+              {projectDetailsData?.projectManager}
+            </Typography>
           </Grid>
         </Grid>
 
@@ -195,7 +201,9 @@ const ProjectDetailPage = () => {
             </Typography>
           </Grid>
           <Grid item xs={8}>
-            <Typography variant="body1"></Typography>
+            <Typography variant="body1">
+              {projectDetailsData?.projectTechLead}
+            </Typography>
           </Grid>
         </Grid>
 
@@ -206,7 +214,9 @@ const ProjectDetailPage = () => {
             </Typography>
           </Grid>
           <Grid item xs={8}>
-            <Typography variant="body1"></Typography>
+            <Typography variant="body1">
+              {projectDetailsData?.jobType?.jobType}
+            </Typography>
           </Grid>
         </Grid>
 
@@ -218,7 +228,7 @@ const ProjectDetailPage = () => {
           </Grid>
           <Grid item xs={8}>
             <Typography variant="body1">
-              {/* {userData.managerFirstName} {userData.managerLastName} */}
+              {projectDetailsData?.complexity}
             </Typography>
           </Grid>
         </Grid>
@@ -230,9 +240,11 @@ const ProjectDetailPage = () => {
             </Typography>
           </Grid>
           <Grid item xs={8}>
-            <Typography variant="body1">
-              {/* {userData.managerFirstName} {userData.managerLastName} */}
-            </Typography>
+            {projectDetailsData?.activities?.map((activity) => (
+              <Typography variant="body1" key={activity.activityId}>
+                {activity.activityType}
+              </Typography>
+            ))}
           </Grid>
         </Grid>
       </Grid>

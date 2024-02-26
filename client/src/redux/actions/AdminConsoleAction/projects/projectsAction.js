@@ -37,6 +37,9 @@ import {
   FETCH_PROJECT_DETAILS_REQUEST,
   FETCH_PROJECT_DETAILS_SUCCESS,
   FETCH_PROJECT_DETAILS_FAILURE,
+  FETCH_ALL_COST_INCURRED_REQUEST,
+  FETCH_ALL_COST_INCURRED_SUCCESS,
+  FETCH_ALL_COST_INCURRED_FAILURE,
 } from "./projectsActionTypes.js";
 import { getRefreshToken } from "../../login/loginAction.js";
 
@@ -258,6 +261,25 @@ const getProjectDetailsSuccess = (data) => {
 const getProjectDetailsFailure = () => {
   return {
     type: FETCH_PROJECT_DETAILS_FAILURE,
+  };
+};
+
+const getAllCostIncurredRequest = () => {
+  return {
+    type: FETCH_ALL_COST_INCURRED_REQUEST,
+  };
+};
+
+const getAllCostIncurredSuccess = (data) => {
+  return {
+    type: FETCH_ALL_COST_INCURRED_SUCCESS,
+    payload: data,
+  };
+};
+
+const getAllCostIncurredFailure = () => {
+  return {
+    type: FETCH_ALL_COST_INCURRED_FAILURE,
   };
 };
 
@@ -504,6 +526,24 @@ export const saveCreateCostIncurredAction = (payload) => {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
+    }
+  };
+};
+
+export const getAllCostIncurredAction = (data) => {
+  return async (dispatch) => {
+    dispatch(getAllCostIncurredRequest());
+    try {
+      const response = await makeRequest(
+        "GET",
+        `/api/costIncurred/getAllCostIncurred/${data}`
+      );
+      dispatch(getAllCostIncurredSuccess(response));
+    } catch (err) {
+      dispatch(getAllCostIncurredFailure());
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
     }
   };
 };

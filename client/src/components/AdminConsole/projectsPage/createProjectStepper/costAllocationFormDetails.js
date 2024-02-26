@@ -1,7 +1,7 @@
 import { useTheme } from "@emotion/react";
 import { Box, Button, Grid, TextField, Typography } from "@mui/material";
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { TimesheetStyle } from "../../../../pages/timesheet/timesheetStyle";
 import {
   Table,
@@ -16,12 +16,16 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch, useSelector } from "react-redux";
-import { saveCreateCostIncurredAction } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
+import {
+  getAllCostIncurredAction,
+  saveCreateCostIncurredAction,
+} from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 const CostAllocationFormDetails = () => {
   const theme = useTheme();
   const style = TimesheetStyle(theme);
   const Navigate = useNavigate();
   const dispatch = useDispatch();
+  const { costIncurredId } = useParams();
   const intialValues = {
     itemName: "",
     costIncurred: "",
@@ -96,11 +100,22 @@ const CostAllocationFormDetails = () => {
     handleReset();
   };
 
-  const rows = [
-    { slNo: 1, itemName: "Item 1", costIncurred: 100 },
-    { slNo: 2, itemName: "Item 2", costIncurred: 150 },
-    // Add more rows as needed
-  ];
+  const allCostIncurredData = useSelector(
+    (state) => state.nonPersist.projectDetails?.allCostIncurredData
+  );
+  console.log("allCostIncurredData", allCostIncurredData);
+
+  useEffect(() => {
+    if (costIncurredId) {
+      dispatch(getAllCostIncurredAction(costIncurredId));
+    }
+  }, [dispatch, costIncurredId]);
+
+  // const rows = [
+  //   { slNo: 1, itemName: "Item 1", costIncurred: 100 },
+  //   { slNo: 2, itemName: "Item 2", costIncurred: 150 },
+  //   // Add more rows as needed
+  // ];
   return (
     <div style={{ marginBottom: "50px" }}>
       {/* Client Details */}
@@ -209,11 +224,11 @@ const CostAllocationFormDetails = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => (
-                  <TableRow key={row.slNo}>
-                    <TableCell>{row.slNo}</TableCell>
-                    <TableCell>{row.itemName}</TableCell>
-                    <TableCell>{row.costIncurred}</TableCell>
+                {allCostIncurredData.map((allCostIncurred) => (
+                  <TableRow key={allCostIncurred.slNo}>
+                    <TableCell>{allCostIncurred.slNo}</TableCell>
+                    <TableCell>{allCostIncurred.itemName}</TableCell>
+                    <TableCell>{allCostIncurred.costIncurred}</TableCell>
                     <TableCell>
                       <IconButton color="primary">
                         <EditIcon />
