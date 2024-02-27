@@ -40,6 +40,12 @@ import {
   FETCH_ALL_COST_INCURRED_REQUEST,
   FETCH_ALL_COST_INCURRED_SUCCESS,
   FETCH_ALL_COST_INCURRED_FAILURE,
+  FETCH_RESOURCE_DETAILS_POPUP_REQUEST,
+  FETCH_RESOURCE_DETAILS_POPUP_SUCCESS,
+  FETCH_RESOURCE_DETAILS_POPUP_FAILURE,
+  SAVE_CREATE_RESOURCES_SUCCESS,
+  SAVE_CREATE_RESOURCES_REQUEST,
+  SAVE_CREATE_RESOURCES_FAIL,
 } from "./projectsActionTypes.js";
 import { getRefreshToken } from "../../login/loginAction.js";
 
@@ -283,6 +289,42 @@ const getAllCostIncurredFailure = () => {
   };
 };
 
+const getResourceDetailsPopupRequest = () => {
+  return {
+    type: FETCH_RESOURCE_DETAILS_POPUP_REQUEST,
+  };
+};
+
+const getResourceDetailsPopupSuccess = (data) => {
+  return {
+    type: FETCH_RESOURCE_DETAILS_POPUP_SUCCESS,
+    payload: data,
+  };
+};
+
+const saveCreateResourcesRequest = () => {
+  return {
+    type: SAVE_CREATE_RESOURCES_REQUEST,
+  };
+};
+const saveCreateResourcesSuccess = (data) => {
+  return {
+    type: SAVE_CREATE_RESOURCES_SUCCESS,
+    payload: data,
+  };
+};
+const saveCreateResourcesFail = () => {
+  return {
+    type: SAVE_CREATE_RESOURCES_FAIL,
+  };
+};
+
+const getResourceDetailsPopupFailure = () => {
+  return {
+    type: FETCH_RESOURCE_DETAILS_POPUP_FAILURE,
+  };
+};
+
 export const getAllProjects = (payload, getProjectpayload) => {
   return async (dispatch) => {
     dispatch(getAllProjectsRequest());
@@ -336,9 +378,9 @@ export const getEmployeeSearchAction = (data) => {
       dispatch(getEmployeeSearchSuccess(response));
     } catch (err) {
       dispatch(getEmployeeSearchFailure());
-      toast.error(err.response.data.errorMessage, {
-        position: toast.POSITION.BOTTOM_CENTER,
-      });
+      // toast.error(err.response.data.errorMessage, {
+      // position: toast.POSITION.BOTTOM_CENTER,
+      // });
     }
   };
 };
@@ -454,9 +496,9 @@ export const getClientDetailsAction = (clientId) => {
       dispatch(getClientDetailsSuccess(response));
     } catch (err) {
       dispatch(getClientDetailsFailure());
-      toast.error(err.response.data.errorMessage, {
-        position: toast.POSITION.BOTTOM_CENTER,
-      });
+      // toast.error(err.response.data.errorMessage, {
+      // position: toast.POSITION.BOTTOM_CENTER,
+      // });
     }
   };
 };
@@ -544,6 +586,51 @@ export const getAllCostIncurredAction = (data) => {
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
+    }
+  };
+};
+
+export const getResourceDetailsPopupAction = (data) => {
+  return async (dispatch) => {
+    dispatch(getResourceDetailsPopupRequest());
+    try {
+      const response = await makeRequest(
+        "GET",
+        `/api/resources/resourceDetails/${data}`
+      );
+      dispatch(getResourceDetailsPopupSuccess(response));
+    } catch (err) {
+      dispatch(getResourceDetailsPopupFailure());
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  };
+};
+
+export const saveCreateResourcesAction = (payload) => {
+  return async (dispatch) => {
+    try {
+      dispatch(saveCreateResourcesRequest());
+      const response = await makeRequest(
+        "POST",
+        "/api/resources/create",
+        payload
+      );
+      dispatch(saveCreateResourcesSuccess(response));
+      toast.success("Recorces Created Successfully", {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+      return response;
+    } catch (err) {
+      if (err.response.data.errorCode === 403) {
+        dispatch(getRefreshToken());
+      } else if (err.response.data.errorCode === 500) {
+        dispatch(saveCreateResourcesFail(err.response.data.errorMessage));
+        toast.error(err.response.data.errorMessage, {
+          position: toast.POSITION.BOTTOM_CENTER,
+        });
+      }
     }
   };
 };

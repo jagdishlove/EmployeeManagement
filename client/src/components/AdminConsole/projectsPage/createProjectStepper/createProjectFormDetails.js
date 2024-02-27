@@ -12,7 +12,7 @@ import { useTheme } from "@mui/material/styles";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import Select from "react-select";
+// import Select from "react-select";
 import { TimesheetStyle } from "../../../../pages/timesheet/timesheetStyle";
 import {
   GetAllCountryCityStateAction,
@@ -65,6 +65,7 @@ const CreateProjectFormDetails = () => {
   }, []);
 
   const handleChange = (e, name) => {
+    console.log("e", e);
     setFormData((prevData) => ({
       ...prevData,
       [name]: e,
@@ -84,7 +85,7 @@ const CreateProjectFormDetails = () => {
   //For autopopulate data added condition
   useEffect(() => {
     if (formData.clientName) {
-      const selectedId = formData.clientName.id;
+      const selectedId = formData.clientName.value;
       dispatch(getClientDetailsAction(selectedId));
     }
   }, [formData.clientName]);
@@ -165,6 +166,9 @@ const CreateProjectFormDetails = () => {
 
   console.log("formData", formData);
 
+  const projectId = useSelector(
+    (state) => state.nonPersist.projectDetails?.projectId
+  );
   //Save
   const handleSaveData = async (e) => {
     e.preventDefault();
@@ -178,18 +182,18 @@ const CreateProjectFormDetails = () => {
     const payload = {
       projectName: formData.projectName,
       description: formData.description,
-      projectTypeId: formData.projectCategory,
-      projectManagerId: formData.projectManager?.id,
-      projectTechLeadId: formData.projectLead?.id,
+      jobTypeId: formData.projectCategory,
+      projectManagerId: formData.projectManager?.value,
+      projectTechLeadId: formData.projectLead?.value,
       domainId: formData.domain,
       complexity: formData.complexity,
-      clientId: formData.clientName?.id,
+      clientId: formData.clientName.value,
     };
 
     await dispatch(saveCreateProjectAction(payload));
 
     // Navigate to resource allocation
-    Navigate("/projectViewDeatils");
+    Navigate(`/projectDetailPage/${projectId}`);
 
     // // Reset form data
     // setFormData(initialValues);
@@ -198,17 +202,17 @@ const CreateProjectFormDetails = () => {
     setValidationErrors({});
   };
 
-  const handleSaveAndNext = async () => {
-    //  e.preventDefault();
-    // // Validate form fields
-    // const errors = validateForm();
-    // if (Object.keys(errors).length > 0) {
-    //   setValidationErrors(errors);
-    //   return; // Do not proceed with saving if there are validation errors
-    // }
+  const handleSaveAndNext = async (e) => {
+    e.preventDefault();
+    // Validate form fields
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return; // Do not proceed with saving if there are validation errors
+    }
 
-    // // Save data first
-    // await handleSaveData(e);
+    // Save data first
+    await handleSaveData(e);
 
     // Navigate to resource allocation
     Navigate("/resourceallocation");
@@ -236,6 +240,19 @@ const CreateProjectFormDetails = () => {
     try {
       dispatch(getEmployeeSearchAction(inputValue));
       const options = employeeSearchData?.result?.map((item) => ({
+        value: item.id,
+        label: item.name,
+      }));
+      callback(options);
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+  const loadOptionss = async (inputValue, callback) => {
+    try {
+      dispatch(getClientNameAction(inputValue));
+      const options = clientSearchData?.result?.map((item) => ({
         value: item.id,
         label: item.name,
       }));
@@ -275,7 +292,7 @@ const CreateProjectFormDetails = () => {
             Client
           </Typography>
           <Box>
-            <Select
+            {/* <Select
               isMulti={false}
               styles={{
                 menuPortal: (base) => ({ ...base, zIndex: 9999 }),
@@ -295,6 +312,24 @@ const CreateProjectFormDetails = () => {
               options={clientSearchData?.result}
               isLoading={clientSearchData?.length === 0}
               placeholder="Client Name"
+            /> */}
+            <AsyncSelect
+              cacheOptions
+              defaultOptions
+              value={formData.clientName}
+              name="clientName"
+              onChange={(data) => handleChange(data, "clientName")}
+              loadOptions={loadOptionss}
+              placeholder="Search..."
+              noOptionsMessage={() => "No results"}
+              styles={{
+                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                control: (baseStyles) => ({
+                  ...baseStyles,
+
+                  height: "55px",
+                }),
+              }}
             />
           </Box>
           {validationErrors.clientName && (
@@ -575,7 +610,6 @@ const CreateProjectFormDetails = () => {
           <Box>
             <AsyncSelect
               cacheOptions
-              defaultOptions
               value={formData.projectManager}
               name="projectManager"
               onChange={(data) => handleChange(data, "projectManager")}

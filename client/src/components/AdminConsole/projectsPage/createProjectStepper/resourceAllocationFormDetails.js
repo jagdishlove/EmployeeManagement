@@ -25,9 +25,12 @@ import Select, { components } from "react-select";
 import { TimesheetStyle } from "../../../../pages/timesheet/timesheetStyle";
 import ProjectResourcesModal from "./projectResourcesModal";
 import useDebounce from "../../../../utils/useDebounce";
-import { getAllocationSearch } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
+import {
+  getAllocationSearch,
+  getResourceDetailsPopupAction,
+  saveCreateResourcesAction,
+} from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import ReactSelect from "../../../react-select/ReactSelect";
 
 const InputOption = ({
   getStyles,
@@ -177,6 +180,7 @@ const ResourceAllocationFormDetails = () => {
 
   const [formData, setFormData] = useState({
     projectedimplementationhours: "",
+    occupancyHrs: "",
   });
 
   const handleInputChange = (event, data) => {
@@ -191,6 +195,9 @@ const ResourceAllocationFormDetails = () => {
   const { allocationSearchData } = useSelector(
     (state) => state?.nonPersist?.projectDetails
   );
+  const { resourceDetailsPopupData } = useSelector(
+    (state) => state?.nonPersist?.projectDetails
+  );
 
   //   For Table
 
@@ -198,13 +205,20 @@ const ResourceAllocationFormDetails = () => {
   //     setSelectedOptionsTable(data);
   //   };
 
-  const handleRadioSelect = () => {
+  const handleRadioSelect = (id) => {
     // setSelectedRadio(id);
     setIsModalOpen(true);
+    setEmployeeId(id);
+    dispatch(getResourceDetailsPopupAction(id));
   };
 
   const handleTimeInputChange = (event) => {
     const input = event.target.value;
+    const { name, value } = event.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
     const numericInput = input.replace(/\D/g, ""); // Remove non-numeric characters
 
     // Format the numeric input to HH:MM format
@@ -214,7 +228,21 @@ const ResourceAllocationFormDetails = () => {
     setTimeInput(formattedInput);
   };
 
-  const handleConfirm = () => {
+  const projectId = useSelector(
+    (state) => state.nonPersist.projectDetails?.projectId
+  );
+
+  const [employeeId, setEmployeeId] = useState();
+
+  const handleConfirm = async (e) => {
+    e.preventDefault();
+    const payload = {
+      employeeId: employeeId,
+      projectId: projectId,
+      occupancyHours: formData.occupancyHrs,
+    };
+
+    await dispatch(saveCreateResourcesAction(payload));
     // Add your logic for handling the confirmation with the timeInput value
     console.log("Selected time:", timeInput);
     setIsModalOpen(false); // Close the modal after confirmation
@@ -506,7 +534,7 @@ const ResourceAllocationFormDetails = () => {
                       <TableCell>
                         <AddCircleIcon
                           cursor={"pointer"}
-                          onClick={() => handleRadioSelect(option.id)}
+                          onClick={() => handleRadioSelect(option.employeeId)}
                           sx={{ color: "#008080" }}
                         />
                       </TableCell>
@@ -554,6 +582,33 @@ const ResourceAllocationFormDetails = () => {
                   open={isModalOpen}
                   onClose={() => setIsModalOpen(false)}
                 >
+                  {resourceDetailsPopupData.map((resource, index) => (
+                    <div key={index} style={{ marginTop: "20px" }}>
+                      {/* Display project details */}
+                      <Grid container>
+                        <Grid item xs={2}></Grid>
+                        <Grid item xs={10}>
+                          <Typography variant="h5">
+                            {resource.employeeName}
+                          </Typography>
+                          <Typography variant="paragraph">
+                            <b> Current Projects :</b>
+                          </Typography>
+                          <Typography variant="h6">
+                            {resource.projectName}
+                          </Typography>
+                          <Typography variant="h6">
+                            <b>Start Date:</b> {resource.startDate}
+                            <b> End Date: </b> {resource.endDate}
+                          </Typography>
+                          <Typography variant="h6">
+                            <b> Occupancy Hrs:</b>
+                            {resource.occupancyHours}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </div>
+                  ))}
                   {/* Content of your modal */}
                   <div style={{ marginTop: "20px" }}>
                     {/* Add time input field */}
@@ -563,6 +618,7 @@ const ResourceAllocationFormDetails = () => {
                       onChange={handleTimeInputChange}
                       fullWidth
                       margin="normal"
+                      name="occupancyHrs"
                     />
 
                     {/* Add Confirm and Cancel buttons */}
