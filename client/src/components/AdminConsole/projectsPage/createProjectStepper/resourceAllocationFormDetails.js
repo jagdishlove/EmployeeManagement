@@ -199,12 +199,6 @@ const ResourceAllocationFormDetails = () => {
     (state) => state?.nonPersist?.projectDetails
   );
 
-  //   For Table
-
-  //   const handleTableInputChange = (data) => {
-  //     setSelectedOptionsTable(data);
-  //   };
-
   const handleRadioSelect = (id) => {
     // setSelectedRadio(id);
     setIsModalOpen(true);
@@ -520,14 +514,6 @@ const ResourceAllocationFormDetails = () => {
           {allocationSearchData.length > 0 && (
             <TableContainer component={Paper}>
               <Table>
-                {/* <TableHead>
-                  <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Designation</TableCell>
-                    <TableCell>Skills</TableCell>
-                    <TableCell>Select</TableCell>
-                  </TableRow>
-                </TableHead> */}
                 <TableBody>
                   {allocationSearchData.map((option) => (
                     <TableRow key={option.employeeId}>

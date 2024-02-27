@@ -41,6 +41,8 @@ const Projects = () => {
     //   ...prevData,
     //   [name]: e,
     // }));
+    //   const selectedData = Array.isArray(e) ? e : [e];
+    // setSearchData(selectedData);
   };
 
   const getProjectpayload = {
