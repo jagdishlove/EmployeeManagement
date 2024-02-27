@@ -27,6 +27,7 @@ import ProjectResourcesModal from "./projectResourcesModal";
 import useDebounce from "../../../../utils/useDebounce";
 import { getAllocationSearch } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import ReactSelect from "../../../react-select/ReactSelect";
 
 const InputOption = ({
   getStyles,
@@ -93,8 +94,64 @@ const ResourceAllocationFormDetails = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [timeInput, setTimeInput] = useState("");
   const [skillsCheckedData, setSkillsCheckedData] = useState([]);
+  const [descCheckedData, setDescCheckedData] = useState([]);
   const debouncedValue = useDebounce(searchData);
   console.log("selectedOptions", selectedOptions);
+
+  // const CustomMenu = (props) => {
+  //   const { innerProps, children } = props;
+  //   const applySkillFilterHandler = () => {
+  //     const getSkillId = props.handleOptionChange
+  //       ?.map((item) => item.skillId)
+  //       .join(",");
+
+  //     console.log("getSkillId", getSkillId);
+  //     // const params = {
+  //     //   query: searchData || "",
+  //     //   skillIds: getSkillId,
+  //     // };
+  //     // dispatch(getAllocationSearch(params));
+  //   };
+
+  //   const onResetSkillFilterHandler = () => {
+  //     setSkillsCheckedData([]);
+  //   };
+
+  //   return (
+  //     <components.Menu {...props}>
+  //       {children}
+  //       <Box
+  //         style={{
+  //           position: "absolute",
+  //           bottom: "-50px",
+  //           left: 0,
+  //           right: 0,
+  //           padding: "10px",
+  //           background: "white",
+  //           border: "1px solid lightgray",
+  //           display: "flex",
+  //           justifyContent: "space-between",
+  //         }}
+  //         {...innerProps}
+  //       >
+  //         <Button
+  //           variant="contained"
+  //           color="primary"
+  //           onClick={applySkillFilterHandler}
+  //         >
+  //           Apply
+  //         </Button>
+  //         <Button
+  //           variant="contained"
+  //           color="primary"
+  //           onClick={onResetSkillFilterHandler}
+  //         >
+  //           Reset
+  //         </Button>
+  //       </Box>
+  //     </components.Menu>
+  //   );
+  // };
 
   useEffect(() => {
     const params = {
@@ -107,6 +164,9 @@ const ResourceAllocationFormDetails = () => {
 
   const masterSkillData = useSelector(
     (state) => state?.persistData?.masterData?.skill
+  );
+  const masterDesigData = useSelector(
+    (state) => state?.persistData?.masterData?.designation
   );
   console.log("masterSkillData", masterSkillData);
 
@@ -228,8 +288,61 @@ const ResourceAllocationFormDetails = () => {
     );
   };
 
+  const CustomMenuDesc = (props) => {
+    const { innerProps, children } = props;
+    const applySkillFilterHandler = () => {
+      const getSkillId = descCheckedData?.map((item) => item.skillId).join(",");
+      const params = {
+        query: searchData || "",
+        designationIds: getSkillId,
+      };
+      dispatch(getAllocationSearch(params));
+    };
+
+    const onResetSkillFilterHandler = () => {
+      setDescCheckedData([]);
+    };
+    return (
+      <components.Menu {...props}>
+        {children}
+        <Box
+          style={{
+            position: "absolute",
+            bottom: "-50px",
+            left: 0,
+            right: 0,
+            padding: "10px",
+            background: "white",
+            border: "1px solid lightgray",
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+          {...innerProps}
+        >
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={applySkillFilterHandler}
+          >
+            Apply
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={onResetSkillFilterHandler}
+          >
+            Reset
+          </Button>
+        </Box>
+      </components.Menu>
+    );
+  };
+
   const handleOptionChange = (selected) => {
     setSkillsCheckedData(selected);
+  };
+  const handleOptionChangeDesc = (selected) => {
+    setDescCheckedData(selected);
   };
 
   return (
@@ -276,7 +389,7 @@ const ResourceAllocationFormDetails = () => {
                 }}
                 onChange={(e) => setSearchData(e.target.value)}
               />
-              <Box
+              {/* <Box
                 display={"flex"}
                 gap={2}
                 justifyContent={"flex-start"}
@@ -299,7 +412,7 @@ const ResourceAllocationFormDetails = () => {
                     </Box>
                   );
                 })}
-              </Box>
+              </Box> */}
             </Grid>
             <Grid item xs={12} sm={8} md={3} lg={3}>
               <FormControl style={{ marginLeft: "15px", width: "90%" }}>
@@ -309,17 +422,17 @@ const ResourceAllocationFormDetails = () => {
                   closeMenuOnSelect={false}
                   placeholder="Designation"
                   hideSelectedOptions={false}
-                  onChange={handleOptionChange}
-                  options={masterSkillData}
-                  value={skillsCheckedData}
+                  onChange={handleOptionChangeDesc}
+                  options={masterDesigData}
+                  value={descCheckedData}
                   components={{
                     Option: InputOption,
-                    Menu: CustomMenu,
+                    Menu: CustomMenuDesc,
                   }}
                   isClearable={false}
                   controlShouldRenderValue={false}
-                  getOptionValue={(option) => option.skillId}
-                  getOptionLabel={(option) => option.skillName}
+                  getOptionValue={(option) => option.designationId}
+                  getOptionLabel={(option) => option.designationName}
                   isLoading={masterSkillData?.length === 0}
                   styles={{
                     placeholder: (base) => ({
