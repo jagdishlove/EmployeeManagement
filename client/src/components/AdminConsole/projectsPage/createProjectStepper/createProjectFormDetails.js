@@ -23,6 +23,7 @@ import {
   saveCreateProjectAction,
 } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import Dropdown from "../../../forms/dropdown/dropdown";
+import AsyncSelect from "react-select/async";
 
 const CreateProjectFormDetails = () => {
   const theme = useTheme();
@@ -128,6 +129,7 @@ const CreateProjectFormDetails = () => {
   const employeeSearchData = useSelector(
     (state) => state.nonPersist?.projectDetails?.employeeSearchData
   );
+
   console.log("employeeSearchData", employeeSearchData);
   useEffect(() => {
     dispatch(getEmployeeSearchAction());
@@ -166,7 +168,6 @@ const CreateProjectFormDetails = () => {
   //Save
   const handleSaveData = async (e) => {
     e.preventDefault();
-
     // Validate form fields
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
@@ -229,6 +230,19 @@ const CreateProjectFormDetails = () => {
     }
 
     return errors;
+  };
+
+  const loadOptions = async (inputValue, callback) => {
+    try {
+      dispatch(getEmployeeSearchAction(inputValue));
+      const options = employeeSearchData?.result?.map((item) => ({
+        value: item.id,
+        label: item.name,
+      }));
+      callback(options);
+    } catch (error) {
+      console.error(error.message);
+    }
   };
 
   return (
@@ -559,7 +573,25 @@ const CreateProjectFormDetails = () => {
           </Typography>
 
           <Box>
-            <Select
+            <AsyncSelect
+              cacheOptions
+              defaultOptions
+              value={formData.projectManager}
+              name="projectManager"
+              onChange={(data) => handleChange(data, "projectManager")}
+              loadOptions={loadOptions}
+              placeholder="Search..."
+              noOptionsMessage={() => "No results"}
+              styles={{
+                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                control: (baseStyles) => ({
+                  ...baseStyles,
+
+                  height: "55px",
+                }),
+              }}
+            />
+            {/* <Select
               isMulti={false}
               styles={{
                 menuPortal: (base) => ({ ...base, zIndex: 9999 }),
@@ -579,7 +611,7 @@ const CreateProjectFormDetails = () => {
               options={employeeSearchData?.result || []}
               isLoading={employeeSearchData?.length === 0}
               placeholder="Project Manager"
-            />
+            /> */}
           </Box>
           {validationErrors.projectManager && (
             <Typography variant="caption" color="error">
@@ -590,7 +622,25 @@ const CreateProjectFormDetails = () => {
             Project Lead
           </Typography>
           <Box>
-            <Select
+            <AsyncSelect
+              cacheOptions
+              defaultOptions
+              value={formData.projectLead}
+              name="projectLead"
+              onChange={(data) => handleChange(data, "projectLead")}
+              loadOptions={loadOptions}
+              placeholder="Search..."
+              noOptionsMessage={() => "No results"}
+              styles={{
+                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                control: (baseStyles) => ({
+                  ...baseStyles,
+
+                  height: "55px",
+                }),
+              }}
+            />
+            {/* <Select
               isMulti={false}
               styles={{
                 menuPortal: (base) => ({ ...base, zIndex: 9999 }),
@@ -610,7 +660,7 @@ const CreateProjectFormDetails = () => {
               options={employeeSearchData?.result}
               isLoading={employeeSearchData?.length === 0}
               placeholder="Project Lead"
-            />
+            /> */}
           </Box>
           <Typography variant="body1" style={{ marginTop: "15px" }}>
             Domain
