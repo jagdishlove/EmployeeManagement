@@ -23,7 +23,7 @@ import {
   saveCreateProjectAction,
 } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import Dropdown from "../../../forms/dropdown/dropdown";
-import AsyncSelect from "react-select/async";
+// import AsyncSelect from "react-select/async";
 
 const CreateProjectFormDetails = () => {
   const theme = useTheme();
@@ -85,7 +85,7 @@ const CreateProjectFormDetails = () => {
   //For autopopulate data added condition
   useEffect(() => {
     if (formData.clientName) {
-      const selectedId = formData.clientName.value;
+      const selectedId = formData.clientName.id;
       dispatch(getClientDetailsAction(selectedId));
     }
   }, [formData.clientName]);
@@ -183,11 +183,11 @@ const CreateProjectFormDetails = () => {
       projectName: formData.projectName,
       description: formData.description,
       jobTypeId: formData.projectCategory,
-      projectManagerId: formData.projectManager?.value,
-      projectTechLeadId: formData.projectLead?.value,
+      projectManagerId: formData.projectManager?.id,
+      projectTechLeadId: formData.projectLead?.id,
       domainId: formData.domain,
       complexity: formData.complexity,
-      clientId: formData.clientName.value,
+      clientId: formData.clientName.id,
     };
 
     await dispatch(saveCreateProjectAction(payload));
@@ -236,29 +236,61 @@ const CreateProjectFormDetails = () => {
     return errors;
   };
 
-  const loadOptions = async (inputValue, callback) => {
-    try {
+  // const loadOptions = async (inputValue, callback) => {
+  //   try {
+  //     dispatch(getEmployeeSearchAction(inputValue));
+  //     const options = employeeSearchData?.result?.map((item) => ({
+  //       value: item.id,
+  //       label: item.name,
+  //     }));
+  //     callback(options);
+  //   } catch (error) {
+  //     console.error(error.message);
+  //   }
+  // };
+
+  // const loadOptionss = async (inputValue, callback) => {
+  //   try {
+  //     dispatch(getClientNameAction(inputValue));
+  //     const options = clientSearchData?.result?.map((item) => ({
+  //       value: item.id,
+  //       label: item.name,
+  //     }));
+  //     callback(options);
+  //   } catch (error) {
+  //     console.error(error.message);
+  //   }
+  // };
+
+  const handleInputChange = (e) => {
+    const inputValue = e.target.value;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      projectManager: inputValue,
+    }));
+    if (inputValue.length >= 3) {
       dispatch(getEmployeeSearchAction(inputValue));
-      const options = employeeSearchData?.result?.map((item) => ({
-        value: item.id,
-        label: item.name,
-      }));
-      callback(options);
-    } catch (error) {
-      console.error(error.message);
+    }
+  };
+  const handleInputChangeOne = (e) => {
+    const inputValue = e.target.value;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      projectLead: inputValue,
+    }));
+    if (inputValue.length >= 3) {
+      dispatch(getEmployeeSearchAction(inputValue));
     }
   };
 
-  const loadOptionss = async (inputValue, callback) => {
-    try {
+  const handleInputChangeClientSearch = (e) => {
+    const inputValue = e.target.value;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      clientName: inputValue,
+    }));
+    if (inputValue.length >= 3) {
       dispatch(getClientNameAction(inputValue));
-      const options = clientSearchData?.result?.map((item) => ({
-        value: item.id,
-        label: item.name,
-      }));
-      callback(options);
-    } catch (error) {
-      console.error(error.message);
     }
   };
 
@@ -292,28 +324,7 @@ const CreateProjectFormDetails = () => {
             Client
           </Typography>
           <Box>
-            {/* <Select
-              isMulti={false}
-              styles={{
-                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                control: (baseStyles) => ({
-                  ...baseStyles,
-
-                  height: "55px",
-                }),
-              }}
-              isSearchable={true}
-              menuPortalTarget={document.body}
-              value={formData.clientName}
-              onChange={(data) => handleChange(data, "clientName")}
-              name="clientName"
-              getOptionValue={(option) => option.id}
-              getOptionLabel={(option) => option.name}
-              options={clientSearchData?.result}
-              isLoading={clientSearchData?.length === 0}
-              placeholder="Client Name"
-            /> */}
-            <AsyncSelect
+            {/* <AsyncSelect
               cacheOptions
               defaultOptions
               value={formData.clientName}
@@ -330,6 +341,27 @@ const CreateProjectFormDetails = () => {
                   height: "55px",
                 }),
               }}
+            /> */}
+            <Autocomplete
+              options={clientSearchData?.result || []}
+              sx={{
+                borderRadius: "8px",
+              }}
+              getOptionLabel={(option) => option.name}
+              getOptionSelected={(option, value) => option.id === value.id}
+              onChange={(event, data) => {
+                handleChange(data, "clientName");
+              }}
+              isSearchable={true}
+              getOptionValue={(option) => option.id}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  placeholder="Search by  Client Name"
+                  onChange={handleInputChangeClientSearch}
+                />
+              )}
             />
           </Box>
           {validationErrors.clientName && (
@@ -608,7 +640,7 @@ const CreateProjectFormDetails = () => {
           </Typography>
 
           <Box>
-            <AsyncSelect
+            {/* <AsyncSelect
               cacheOptions
               value={formData.projectManager}
               name="projectManager"
@@ -624,28 +656,28 @@ const CreateProjectFormDetails = () => {
                   height: "55px",
                 }),
               }}
-            />
-            {/* <Select
-              isMulti={false}
-              styles={{
-                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                control: (baseStyles) => ({
-                  ...baseStyles,
-
-                  height: "55px",
-                }),
+            /> */}
+            <Autocomplete
+              options={employeeSearchData?.result || []}
+              sx={{
+                borderRadius: "8px",
+              }}
+              getOptionLabel={(option) => option.name}
+              getOptionSelected={(option, value) => option.id === value.id}
+              onChange={(event, data) => {
+                handleChange(data, "projectManager");
               }}
               isSearchable={true}
-              menuPortalTarget={document.body}
-              value={formData.projectManager}
-              name="projectManager"
-              onChange={(data) => handleChange(data, "projectManager")}
               getOptionValue={(option) => option.id}
-              getOptionLabel={(option) => option.name}
-              options={employeeSearchData?.result || []}
-              isLoading={employeeSearchData?.length === 0}
-              placeholder="Project Manager"
-            /> */}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  placeholder="Search by Manager"
+                  onChange={handleInputChange}
+                />
+              )}
+            />
           </Box>
           {validationErrors.projectManager && (
             <Typography variant="caption" color="error">
@@ -656,45 +688,27 @@ const CreateProjectFormDetails = () => {
             Project Lead
           </Typography>
           <Box>
-            <AsyncSelect
-              cacheOptions
-              defaultOptions
-              value={formData.projectLead}
-              name="projectLead"
-              onChange={(data) => handleChange(data, "projectLead")}
-              loadOptions={loadOptions}
-              placeholder="Search..."
-              noOptionsMessage={() => "No results"}
-              styles={{
-                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                control: (baseStyles) => ({
-                  ...baseStyles,
-
-                  height: "55px",
-                }),
+            <Autocomplete
+              options={employeeSearchData?.result || []}
+              sx={{
+                borderRadius: "8px",
               }}
-            />
-            {/* <Select
-              isMulti={false}
-              styles={{
-                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                control: (baseStyles) => ({
-                  ...baseStyles,
-
-                  height: "55px",
-                }),
+              getOptionLabel={(option) => option.name}
+              getOptionSelected={(option, value) => option.id === value.id}
+              onChange={(event, data) => {
+                handleChange(data, "projectLead");
               }}
               isSearchable={true}
-              menuPortalTarget={document.body}
-              value={formData.projectLead}
-              name="projectLead"
-              onChange={(data) => handleChange(data, "projectLead")}
               getOptionValue={(option) => option.id}
-              getOptionLabel={(option) => option.name}
-              options={employeeSearchData?.result}
-              isLoading={employeeSearchData?.length === 0}
-              placeholder="Project Lead"
-            /> */}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  placeholder="Search by Project Lead"
+                  onChange={handleInputChangeOne}
+                />
+              )}
+            />
           </Box>
           <Typography variant="body1" style={{ marginTop: "15px" }}>
             Domain
