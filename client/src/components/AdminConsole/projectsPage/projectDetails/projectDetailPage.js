@@ -24,13 +24,19 @@ const ProjectDetailPage = () => {
     dispatch(getProjectDetailsAction(id));
   }, [id]);
 
+  const projectId = useSelector(
+    (state) => state.nonPersist.projectDetails?.projectId
+  );
+
+  useEffect(() => {}, [projectId]);
+
   const Navigate = useNavigate();
   const handleBackClick = () => {
     Navigate("/projects");
   };
 
   const handleEditProject = () => {
-    Navigate("/projectForm");
+    Navigate(-2);
   };
   return (
     <>

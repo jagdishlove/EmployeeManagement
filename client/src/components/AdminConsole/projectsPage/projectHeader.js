@@ -111,7 +111,7 @@ export default function ProjectHeader({
               getOptionValue={(option) => option.id}
               getOptionLabel={(option) => option.name}
               getOptionSelected={(option, value) => option.id === value.id}
-              onChange={handleChange}
+              onChange={(e, data) => handleChange(data)}
               name="clientProjectSearch"
               isLoading={clientProjectSearchData?.length === 0}
               renderInput={(params) => (
