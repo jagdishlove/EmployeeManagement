@@ -289,7 +289,7 @@ const CreateProjectFormDetails = () => {
       ...prevFormData,
       clientName: inputValue,
     }));
-    if (inputValue.length >= 3) {
+    if (inputValue.length >= 0) {
       dispatch(getClientNameAction(inputValue));
     }
   };
