@@ -17,7 +17,7 @@ const ProjectResourcesModal = ({ children, ...props }) => {
           left: "50%",
           transform: "translate(-50%, -50%)",
           overflowY: "auto",
-          height: "50vh", // Set the maximum height for the modal
+          height: "65vh", // Set the maximum height for the modal
         }}
       >
         <IconButton

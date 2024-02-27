@@ -1,7 +1,7 @@
 import { useTheme } from "@emotion/react";
 import { Box, Button, Grid, TextField, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { TimesheetStyle } from "../../../../pages/timesheet/timesheetStyle";
 import {
   Table,
@@ -25,7 +25,6 @@ const CostAllocationFormDetails = () => {
   const style = TimesheetStyle(theme);
   const Navigate = useNavigate();
   const dispatch = useDispatch();
-  const { costIncurredId } = useParams();
   const intialValues = {
     itemName: "",
     costIncurred: "",
@@ -92,10 +91,9 @@ const CostAllocationFormDetails = () => {
       itemName: formData.itemName,
       costIncurred: formData.costIncurred,
     };
-    console.log("payloadvv", payload);
 
     await dispatch(saveCreateCostIncurredAction(payload));
-
+    await dispatch(getAllCostIncurredAction(projectId));
     // Reset the form after dispatching the action
     handleReset();
   };
@@ -103,19 +101,22 @@ const CostAllocationFormDetails = () => {
   const allCostIncurredData = useSelector(
     (state) => state.nonPersist.projectDetails?.allCostIncurredData
   );
-  console.log("allCostIncurredData", allCostIncurredData);
 
-  useEffect(() => {
-    if (costIncurredId) {
-      dispatch(getAllCostIncurredAction(costIncurredId));
-    }
-  }, [dispatch, costIncurredId]);
+  const handleEdit = (costIncurredId) => {
+    const payload = {
+      costIncurredId: costIncurredId,
+      projectId: projectId,
+      itemName: formData.itemName,
+      costIncurred: formData.costIncurred,
+    };
 
-  // const rows = [
-  //   { slNo: 1, itemName: "Item 1", costIncurred: 100 },
-  //   { slNo: 2, itemName: "Item 2", costIncurred: 150 },
-  //   // Add more rows as needed
-  // ];
+    dispatch(saveCreateCostIncurredAction(payload));
+    dispatch(getAllCostIncurredAction(projectId));
+
+    // Reset the form after dispatching the action
+    handleReset();
+  };
+
   return (
     <div style={{ marginBottom: "50px" }}>
       {/* Client Details */}
@@ -225,12 +226,12 @@ const CostAllocationFormDetails = () => {
               </TableHead>
               <TableBody>
                 {allCostIncurredData.map((allCostIncurred) => (
-                  <TableRow key={allCostIncurred.slNo}>
+                  <TableRow key={allCostIncurred}>
                     <TableCell>{allCostIncurred.slNo}</TableCell>
                     <TableCell>{allCostIncurred.itemName}</TableCell>
                     <TableCell>{allCostIncurred.costIncurred}</TableCell>
                     <TableCell>
-                      <IconButton color="primary">
+                      <IconButton color="primary" onClick={handleEdit}>
                         <EditIcon />
                       </IconButton>
                       <IconButton color="primary">
