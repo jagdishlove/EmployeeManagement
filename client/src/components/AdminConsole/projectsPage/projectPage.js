@@ -1,7 +1,10 @@
 import { Grid, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllProjects } from "../../../redux/actions/AdminConsoleAction/projects/projectsAction";
+import {
+  getAllProjects,
+  getClientProjectNameSearchAction,
+} from "../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import ProjectList from "./projectList";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Box } from "@mui/system";
@@ -35,8 +38,9 @@ const Projects = () => {
     }
   }, [searchData]);
 
-  const handleChange = (e) => {
-    setSearchData(e);
+  const handleChange = (data) => {
+    dispatch(getClientProjectNameSearchAction(data.name));
+
     // setFormData((prevData) => ({
     //   ...prevData,
     //   [name]: e,

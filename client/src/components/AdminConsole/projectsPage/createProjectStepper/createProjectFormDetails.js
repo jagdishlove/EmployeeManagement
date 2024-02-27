@@ -30,8 +30,9 @@ const CreateProjectFormDetails = () => {
   const style = TimesheetStyle(theme);
   const Navigate = useNavigate();
   const dispatch = useDispatch();
+  const localFormData = JSON.parse(localStorage.getItem("formData"));
   const initialValues = {
-    clientName: "",
+    clientName: "asdasdsa",
     projectName: "",
     description: "",
     projectCategory: "",
@@ -54,6 +55,7 @@ const CreateProjectFormDetails = () => {
     projectCategory: "",
     projectManager: "",
   });
+  const [saveButton, setSaveButton] = useState(false);
 
   // client Search
   const clientSearchData = useSelector(
@@ -169,8 +171,17 @@ const CreateProjectFormDetails = () => {
   const projectId = useSelector(
     (state) => state.nonPersist.projectDetails?.projectId
   );
+
+  useEffect(() => {
+    if (projectId && saveButton) Navigate(`/projectDetailPage/${projectId}`);
+  }, [projectId]);
   //Save
-  const handleSaveData = async (e) => {
+  const handleSaveData = async (e, type) => {
+    if (type === "save") {
+      setSaveButton(true);
+    } else if (type === "next") {
+      setSaveButton(true);
+    }
     e.preventDefault();
     // Validate form fields
     const errors = validateForm();
@@ -189,11 +200,11 @@ const CreateProjectFormDetails = () => {
       complexity: formData.complexity,
       clientId: formData.clientName.id,
     };
+    localStorage.setItem("formData", JSON.stringify(payload));
 
     await dispatch(saveCreateProjectAction(payload));
 
     // Navigate to resource allocation
-    Navigate(`/projectDetailPage/${projectId}`);
 
     // // Reset form data
     // setFormData(initialValues);
@@ -212,7 +223,7 @@ const CreateProjectFormDetails = () => {
     }
 
     // Save data first
-    await handleSaveData(e);
+    await handleSaveData(e, "next");
 
     // Navigate to resource allocation
     Navigate("/resourceallocation");
@@ -354,6 +365,7 @@ const CreateProjectFormDetails = () => {
               }}
               isSearchable={true}
               getOptionValue={(option) => option.id}
+              value="asdasd"
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -754,7 +766,7 @@ const CreateProjectFormDetails = () => {
               variant="contained"
               color="primary"
               type="submit"
-              onClick={handleSaveData}
+              onClick={(e) => handleSaveData(e, "save")}
             >
               Save
             </Button>
