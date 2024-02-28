@@ -1,10 +1,7 @@
 import { Grid, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getAllProjects,
-  getClientProjectNameSearchAction,
-} from "../../../redux/actions/AdminConsoleAction/projects/projectsAction";
+import { getAllProjects } from "../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import ProjectList from "./projectList";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Box } from "@mui/system";
@@ -14,7 +11,7 @@ const Projects = () => {
   const ONGOING_PROJECTS = "ONGOING_PROJECTS";
   const [projects, setProjects] = useState(ONGOING_PROJECTS);
   const [pageCounter, setPageCounter] = useState(2);
-  const [searchData, setSearchData] = useState();
+  const [searchData, setSearchData] = useState("");
   const dispatch = useDispatch();
   const [resultFilterData, setResultFilterData] = useState([]);
 
@@ -24,23 +21,22 @@ const Projects = () => {
     (state) => state?.nonPersist?.projectDetails?.projectsData
   );
 
-  const searchDataArray = searchData?.map((obj) => obj.name || []);
+  // const searchDataArray = searchData?.map((obj) => obj.name || []);
 
   useEffect(() => {
     setResultFilterData(projectsData);
   }, [projectsData]);
-  useEffect(() => {
-    if (searchDataArray?.length > 0) {
-      const filterProjects = projectsData?.content?.filter((obj) =>
-        searchDataArray.includes(obj.projectName)
-      );
-      setResultFilterData({ content: filterProjects });
-    }
-  }, [searchData]);
+  // useEffect(() => {
+  //   if (searchDataArray?.length > 0) {
+  //     const filterProjects = projectsData?.content?.filter((obj) =>
+  //       searchDataArray.includes(obj.projectName)
+  //     );
+  //     setResultFilterData({ content: filterProjects });
+  //   }
+  // }, [searchData]);
 
-  const handleChange = (data) => {
-    dispatch(getClientProjectNameSearchAction(data.name));
-
+  const handleChange = (e) => {
+    setSearchData(e);
     // setFormData((prevData) => ({
     //   ...prevData,
     //   [name]: e,
@@ -55,12 +51,12 @@ const Projects = () => {
   };
 
   const payload = {
-    filters: [],
+    filters: searchData ? [searchData] : [],
   };
 
   useEffect(() => {
     dispatch(getAllProjects(payload, getProjectpayload));
-  }, [projects, dispatch]);
+  }, [projects, dispatch, searchData]);
 
   const fetchMore = () => {
     // Fetch more data only if there is more data available

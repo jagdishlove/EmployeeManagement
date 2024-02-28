@@ -33,6 +33,9 @@ import {
   FETCH_RESOURCE_DETAILS_POPUP_REQUEST,
   FETCH_RESOURCE_DETAILS_POPUP_SUCCESS,
   FETCH_RESOURCE_DETAILS_POPUP_FAILURE,
+  FETCH_ALL_RESOURCE_REQUEST,
+  FETCH_ALL_RESOURCE__SUCCESS,
+  FETCH_ALL_RESOURCE__FAILURE,
 } from "../../actions/AdminConsoleAction/projects/projectsActionTypes";
 
 const initialState = {
@@ -59,6 +62,8 @@ const initialState = {
   allCostIncurredDataLoading: false,
   resourceDetailsPopupData: [],
   resourceDetailsPopupDataLoading: false,
+  allResourcesData: [],
+  allResourcesDataLoading: false,
 };
 
 const projectsReducer = (state = initialState, action) => {
@@ -257,6 +262,23 @@ const projectsReducer = (state = initialState, action) => {
         ...state,
         resourceDetailsPopupData: [],
         resourceDetailsPopupDataLoading: false,
+      };
+    case FETCH_ALL_RESOURCE_REQUEST:
+      return {
+        ...state,
+        allResourcesDataLoading: true,
+      };
+    case FETCH_ALL_RESOURCE__SUCCESS:
+      return {
+        ...state,
+        allResourcesData: action.payload,
+        allResourcesDataLoading: false,
+      };
+    case FETCH_ALL_RESOURCE__FAILURE:
+      return {
+        ...state,
+        allResourcesData: [],
+        allResourcesDataLoading: false,
       };
     default:
       return state;

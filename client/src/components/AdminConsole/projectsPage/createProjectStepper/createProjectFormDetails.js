@@ -30,9 +30,9 @@ const CreateProjectFormDetails = () => {
   const style = TimesheetStyle(theme);
   const Navigate = useNavigate();
   const dispatch = useDispatch();
-  const localFormData = JSON.parse(localStorage.getItem("formData"));
+  // const localFormData = JSON.parse(localStorage.getItem("formData"));
   const initialValues = {
-    clientName: "asdasdsa",
+    clientName: "",
     projectName: "",
     description: "",
     projectCategory: "",
@@ -200,6 +200,7 @@ const CreateProjectFormDetails = () => {
       complexity: formData.complexity,
       clientId: formData.clientName.id,
     };
+    // Save form data to local storage
     localStorage.setItem("formData", JSON.stringify(payload));
 
     await dispatch(saveCreateProjectAction(payload));
@@ -221,7 +222,8 @@ const CreateProjectFormDetails = () => {
       setValidationErrors(errors);
       return; // Do not proceed with saving if there are validation errors
     }
-
+    // Save form data to local storage
+    localStorage.setItem("formData", JSON.stringify(formData));
     // Save data first
     await handleSaveData(e, "next");
 
@@ -247,32 +249,6 @@ const CreateProjectFormDetails = () => {
     return errors;
   };
 
-  // const loadOptions = async (inputValue, callback) => {
-  //   try {
-  //     dispatch(getEmployeeSearchAction(inputValue));
-  //     const options = employeeSearchData?.result?.map((item) => ({
-  //       value: item.id,
-  //       label: item.name,
-  //     }));
-  //     callback(options);
-  //   } catch (error) {
-  //     console.error(error.message);
-  //   }
-  // };
-
-  // const loadOptionss = async (inputValue, callback) => {
-  //   try {
-  //     dispatch(getClientNameAction(inputValue));
-  //     const options = clientSearchData?.result?.map((item) => ({
-  //       value: item.id,
-  //       label: item.name,
-  //     }));
-  //     callback(options);
-  //   } catch (error) {
-  //     console.error(error.message);
-  //   }
-  // };
-
   const handleInputChange = (e) => {
     const inputValue = e.target.value;
     setFormData((prevFormData) => ({
@@ -296,10 +272,23 @@ const CreateProjectFormDetails = () => {
 
   const handleInputChangeClientSearch = (e) => {
     const inputValue = e.target.value;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      clientName: inputValue,
-    }));
+    // Check if clientSearchData?.result is available
+    if (clientSearchData?.result) {
+      const matchingClients = clientSearchData.result.filter((client) =>
+        client.name.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        clientName: matchingClients[0] || { name: inputValue },
+      }));
+    } else {
+      // If clientSearchData?.result is not available, set only the name
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        clientName: { name: inputValue },
+      }));
+    }
     if (inputValue.length >= 0) {
       dispatch(getClientNameAction(inputValue));
     }
@@ -335,24 +324,6 @@ const CreateProjectFormDetails = () => {
             Client
           </Typography>
           <Box>
-            {/* <AsyncSelect
-              cacheOptions
-              defaultOptions
-              value={formData.clientName}
-              name="clientName"
-              onChange={(data) => handleChange(data, "clientName")}
-              loadOptions={loadOptionss}
-              placeholder="Search..."
-              noOptionsMessage={() => "No results"}
-              styles={{
-                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                control: (baseStyles) => ({
-                  ...baseStyles,
-
-                  height: "55px",
-                }),
-              }}
-            /> */}
             <Autocomplete
               options={clientSearchData?.result || []}
               sx={{
@@ -365,7 +336,7 @@ const CreateProjectFormDetails = () => {
               }}
               isSearchable={true}
               getOptionValue={(option) => option.id}
-              value="asdasd"
+              value={formData.clientName || null}
               renderInput={(params) => (
                 <TextField
                   {...params}

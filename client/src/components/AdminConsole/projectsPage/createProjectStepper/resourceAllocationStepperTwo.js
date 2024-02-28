@@ -9,89 +9,88 @@ import React from "react";
 import ResourceAllocationFormDetails from "./resourceAllocationFormDetails";
 import { useNavigate } from "react-router-dom";
 
-
 const ResourceAllocationStepperTwo = () => {
-    const steps = ["Create Project", "Resource Allocation", "Cost Allocation"];
-    const Navigate = useNavigate();
-    const handleBackClick = () => {
-       Navigate("/projectForm")
-      };
-    return(
+  const steps = ["Create Project", "Resource Allocation", "Cost Allocation"];
+  const Navigate = useNavigate();
+  const handleBackClick = () => {
+    Navigate("/projectForm");
+  };
+  return (
     <>
-    <div
-      className="Heading"
-      style={{ display: "flex", alignItems: "center" }}
-    >
-      <IconButton
-        style={{ color: "silver" }}
-        onClick={() => handleBackClick()}
+      <div
+        className="Heading"
+        style={{ display: "flex", alignItems: "center" }}
       >
-        <ArrowBackIcon />
-      </IconButton>
-      <Typography variant="h6">
-        <b>Project Name</b>
-      </Typography>
-    </div>
-    <div
-      style={{
-        width: "100%",
-        margin: "auto",
-        marginBottom: "18px",
-        border: "1px solid #008080",
-      }}
-    />
-
-    <div
-      style={{ margin: "auto", display: "flex", justifyContent: "center" }}
-    >
-      <Box
-        sx={{
-          width: "70%",
+        <IconButton
+          style={{ color: "silver" }}
+          onClick={() => handleBackClick()}
+        >
+          <ArrowBackIcon />
+        </IconButton>
+        <Typography variant="h6">
+          <b>Project Name</b>
+        </Typography>
+      </div>
+      <div
+        style={{
+          width: "100%",
+          margin: "auto",
+          marginBottom: "18px",
+          border: "1px solid #008080",
         }}
+      />
+
+      <div
+        style={{ margin: "auto", display: "flex", justifyContent: "center" }}
       >
-        <Stepper activeStep={1} alternativeLabel>
-          {steps.map((label, index) => (
-            <Step key={index}>
-              <StepLabel
-                StepIconComponent={() => (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "center",
-                    }}
-                  >
+        <Box
+          sx={{
+            width: "70%",
+          }}
+        >
+          <Stepper activeStep={1} alternativeLabel>
+            {steps.map((label, index) => (
+              <Step key={index}>
+                <StepLabel
+                  StepIconComponent={() => (
                     <div
                       style={{
-                        color: index === 1 ? "#ffffff" : "#000000",
-                        backgroundColor: index === 1 ? "#008080" : "#e6e6e6",
-                        padding: "10px",
-                        zIndex: "1",
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
                       }}
                     >
-                      {label}
-                      {index === 0 && (
-                        <DoneIcon
-                          style={{
-                            color: index === 0 ? "#000000" : "#ffffff",
-                            fontSize: "1rem",
-                            marginLeft: "8px",
-                          }}
-                        />
-                      )}
+                      <div
+                        style={{
+                          color: index === 1 ? "#ffffff" : "#000000",
+                          backgroundColor: index === 1 ? "#008080" : "#e6e6e6",
+                          padding: "10px",
+                          zIndex: "1",
+                        }}
+                      >
+                        {label}
+                        {index === 0 && (
+                          <DoneIcon
+                            style={{
+                              color: index === 0 ? "#000000" : "#ffffff",
+                              fontSize: "1rem",
+                              marginLeft: "8px",
+                            }}
+                          />
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
-              ></StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-      </Box>
-    </div>
+                  )}
+                ></StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+        </Box>
+      </div>
 
-<ResourceAllocationFormDetails/>
-  </>
-);
+      <ResourceAllocationFormDetails />
+    </>
+  );
 };
 
 export default ResourceAllocationStepperTwo;

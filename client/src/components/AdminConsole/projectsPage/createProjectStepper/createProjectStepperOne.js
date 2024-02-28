@@ -73,7 +73,7 @@ const CreateProjectStepperOne = () => {
                       </div>
                     </div>
                   )}
-                  connector={null} 
+                  connector={null}
                 ></StepLabel>
               </Step>
             ))}
