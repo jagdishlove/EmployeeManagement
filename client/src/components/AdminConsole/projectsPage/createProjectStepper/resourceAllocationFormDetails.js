@@ -28,7 +28,9 @@ import useDebounce from "../../../../utils/useDebounce";
 import {
   getAllResourcesAction,
   getAllocationSearch,
+  getProjectDetailsAction,
   getResourceDetailsPopupAction,
+  saveCreateProjectAction,
   saveCreateResourcesAction,
 } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -95,68 +97,14 @@ const ResourceAllocationFormDetails = () => {
   const dispatch = useDispatch();
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [searchData, setSearchData] = useState();
-  // const [selectedRadio, setSelectedRadio] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [timeInput, setTimeInput] = useState("");
   const [skillsCheckedData, setSkillsCheckedData] = useState([]);
   const [descCheckedData, setDescCheckedData] = useState([]);
   const debouncedValue = useDebounce(searchData);
   console.log("selectedOptions", selectedOptions);
-
-  // const CustomMenu = (props) => {
-  //   const { innerProps, children } = props;
-  //   const applySkillFilterHandler = () => {
-  //     const getSkillId = props.handleOptionChange
-  //       ?.map((item) => item.skillId)
-  //       .join(",");
-
-  //     console.log("getSkillId", getSkillId);
-  //     // const params = {
-  //     //   query: searchData || "",
-  //     //   skillIds: getSkillId,
-  //     // };
-  //     // dispatch(getAllocationSearch(params));
-  //   };
-
-  //   const onResetSkillFilterHandler = () => {
-  //     setSkillsCheckedData([]);
-  //   };
-
-  //   return (
-  //     <components.Menu {...props}>
-  //       {children}
-  //       <Box
-  //         style={{
-  //           position: "absolute",
-  //           bottom: "-50px",
-  //           left: 0,
-  //           right: 0,
-  //           padding: "10px",
-  //           background: "white",
-  //           border: "1px solid lightgray",
-  //           display: "flex",
-  //           justifyContent: "space-between",
-  //         }}
-  //         {...innerProps}
-  //       >
-  //         <Button
-  //           variant="contained"
-  //           color="primary"
-  //           onClick={applySkillFilterHandler}
-  //         >
-  //           Apply
-  //         </Button>
-  //         <Button
-  //           variant="contained"
-  //           color="primary"
-  //           onClick={onResetSkillFilterHandler}
-  //         >
-  //           Reset
-  //         </Button>
-  //       </Box>
-  //     </components.Menu>
-  //   );
-  // };
+  const [saveButton, setSaveButton] = useState(false);
+  const [resources, setresources] = useState(2);
 
   useEffect(() => {
     const params = {
@@ -249,21 +197,65 @@ const ResourceAllocationFormDetails = () => {
     setShowAllResourcesTable(true);
   };
 
-  const startDateHandler = () => {};
-
-  const endDateHandler = () => {};
-
-  const actualEndDateHandler = () => {};
-
-  const handleSaveAndNext = () => {
-    Navigate("/costallocation");
+  const handleDateChange = (name, date) => {
+    setFormData({
+      ...formData,
+      [name]: date,
+    });
   };
 
-  // Name and Designation Search
+  useEffect(() => {
+    if (projectId && saveButton) Navigate(`/projectDetailPage/${projectId}`);
+  }, [projectId]);
 
-  // const applySkillFilterHandler = () => {
+  //Save
+  const handleSaveData = async (e, type) => {
+    if (type === "save") {
+      setSaveButton(true);
+    } else if (type === "next") {
+      setSaveButton(true);
+    }
+    e.preventDefault();
 
-  // };
+    const getResourcespayload = {
+      stage: resources,
+    };
+    const today = new Date();
+    const payload = {
+      id: projectId,
+      projectedImplementationHours: formData.projectName,
+      startDate: formatDate(
+        new Date(today.getFullYear(), today.getMonth() + 1, today.getDate())
+      ),
+      endDate: formatDate(
+        new Date(today.getFullYear(), today.getMonth() + 1, today.getDate())
+      ),
+      actualEndDate: formatDate(
+        new Date(
+          today.getFullYear(),
+          today.getMonth() + 1,
+          today.getDate() + 10
+        )
+      ),
+    };
+
+    // Function to format date as "YYYY-MM-DD"
+    function formatDate(date) {
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, "0");
+      const day = date.getDate().toString().padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    await dispatch(saveCreateProjectAction(payload, getResourcespayload));
+  };
+
+  const handleSaveAndNext = async (e) => {
+    e.preventDefault();
+    // Save data first
+    await handleSaveData(e, "next");
+    Navigate("/costallocation");
+  };
 
   const CustomMenu = (props) => {
     const { innerProps, children } = props;
@@ -373,6 +365,30 @@ const ResourceAllocationFormDetails = () => {
   const handleOptionChangeDesc = (selected) => {
     setDescCheckedData(selected);
   };
+
+  //for not clear the form we are calling Projectdetails
+  const projectDetailsData = useSelector(
+    (state) => state.nonPersist.projectDetails?.projectDetailsData
+  );
+  console.log("projectDetailsData", projectDetailsData);
+
+  useEffect(() => {
+    if (projectId) {
+      dispatch(getProjectDetailsAction(projectId));
+    }
+  }, [projectId]);
+
+  useEffect(() => {
+    if (projectDetailsData) {
+      setFormData({
+        projectedImplementationHours:
+          projectDetailsData?.projectedImplementationHours || "",
+        startDate: projectDetailsData?.startDate || "",
+        endDate: projectDetailsData?.endDate || "",
+        actualEndDate: projectDetailsData?.actualEndDate || "",
+      });
+    }
+  }, [projectDetailsData]);
 
   return (
     <div>
@@ -676,14 +692,14 @@ const ResourceAllocationFormDetails = () => {
               fontWeight="bold"
               style={{ marginTop: "15px" }}
             >
-              start Date
+              Start Date
             </Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
-                name="toDate"
+                name="startDate"
                 format="DD/MM/YYYY"
-                value={null} // Set value to null to not display the current date
-                onChange={startDateHandler}
+                value={formData.toDate} // Set value to null to not display the current date
+                onChange={handleDateChange}
                 renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>
@@ -709,8 +725,8 @@ const ResourceAllocationFormDetails = () => {
                 name="endDate"
                 fullWidth
                 format="DD/MM/YYYY"
-                value={null} // Set
-                onChange={endDateHandler}
+                value={formData.endDate} // Set
+                onChange={handleDateChange}
                 renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>
@@ -736,8 +752,8 @@ const ResourceAllocationFormDetails = () => {
                 name="actualEndDate"
                 fullWidth
                 format="DD/MM/YYYY"
-                value={null} // Set
-                onChange={actualEndDateHandler}
+                value={formData.actualEndDate}
+                onChange={handleDateChange}
                 renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>
@@ -749,7 +765,7 @@ const ResourceAllocationFormDetails = () => {
               variant="contained"
               color="primary"
               type="submit"
-              // onClick={(e) => formHandleSubmit(e, "Save")}
+              onClick={(e) => handleSaveData(e, "save")}
             >
               Save
             </Button>

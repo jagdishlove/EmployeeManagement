@@ -31,7 +31,6 @@ const CreateProjectFormDetails = () => {
   const style = TimesheetStyle(theme);
   const Navigate = useNavigate();
   const dispatch = useDispatch();
-  //  const localFormData = JSON.parse(localStorage.getItem("formData"));
   const initialValues = {
     clientName: "",
     projectName: "",
@@ -57,7 +56,7 @@ const CreateProjectFormDetails = () => {
     projectManager: "",
   });
   const [saveButton, setSaveButton] = useState(false);
-
+  const [createProject, setCreateProject] = useState(1);
   // client Search
   const clientSearchData = useSelector(
     (state) => state.nonPersist?.projectDetails?.clientNameData
@@ -133,7 +132,6 @@ const CreateProjectFormDetails = () => {
     (state) => state.nonPersist?.projectDetails?.employeeSearchData
   );
 
-  console.log("employeeSearchData", employeeSearchData);
   useEffect(() => {
     dispatch(getEmployeeSearchAction());
   }, []);
@@ -176,6 +174,7 @@ const CreateProjectFormDetails = () => {
     if (projectId && saveButton) Navigate(`/projectDetailPage/${projectId}`);
   }, [projectId]);
 
+  //for not clear the form we are calling Projectdetails
   const projectDetailsData = useSelector(
     (state) => state.nonPersist.projectDetails?.projectDetailsData
   );
@@ -193,11 +192,11 @@ const CreateProjectFormDetails = () => {
         clientName: projectDetailsData?.client?.clientName || "",
         projectName: projectDetailsData?.projectName || "",
         description: projectDetailsData?.description || "",
-        projectCategory: projectDetailsData?.projectCategory || "",
+        projectCategory: projectDetailsData?.jobType?.jobId || "",
         applicableActivity: projectDetailsData?.applicableActivity || "",
         projectManager: projectDetailsData?.projectManager || "",
         projectLead: projectDetailsData?.projectLead || "",
-        domain: projectDetailsData?.domain || "",
+        domain: projectDetailsData?.domain?.domainId || "",
         complexity: projectDetailsData?.complexity || "",
         clientAddress: projectDetailsData?.clientAddress || "",
         phone: projectDetailsData?.phone || "",
@@ -206,8 +205,13 @@ const CreateProjectFormDetails = () => {
         city: projectDetailsData?.city || "",
         zipCode: projectDetailsData?.zipCode || "",
       });
+
+      if (projectDetailsData?.client?.clientName) {
+        dispatch(getClientNameAction(projectDetailsData?.client?.clientName));
+      }
     }
   }, [projectDetailsData]);
+
   //Save
   const handleSaveData = async (e, type) => {
     if (type === "save") {
@@ -223,6 +227,10 @@ const CreateProjectFormDetails = () => {
       return; // Do not proceed with saving if there are validation errors
     }
 
+    const saveProjectStagePayload = {
+      stage: [createProject],
+    };
+
     const payload = {
       projectName: formData.projectName,
       description: formData.description,
@@ -232,16 +240,10 @@ const CreateProjectFormDetails = () => {
       domainId: formData.domain,
       complexity: formData.complexity,
       clientId: formData.clientName.id,
+      activitiesIds: formData.activityId,
     };
-    // Save form data to local storage
-    // localStorage.setItem("formData", JSON.stringify(payload));
 
-    await dispatch(saveCreateProjectAction(payload));
-
-    // Navigate to resource allocation
-
-    // // Reset form data
-    // setFormData(initialValues);
+    await dispatch(saveCreateProjectAction(payload, saveProjectStagePayload));
 
     // Clear validation errors
     setValidationErrors({});
@@ -255,8 +257,6 @@ const CreateProjectFormDetails = () => {
       setValidationErrors(errors);
       return; // Do not proceed with saving if there are validation errors
     }
-    // Save form data to local storage
-    // localStorage.setItem("formData", JSON.stringify(formData));
     // Save data first
     await handleSaveData(e, "next");
 
@@ -307,14 +307,13 @@ const CreateProjectFormDetails = () => {
     const inputValue = e.target.value;
     // Check if clientSearchData?.result is available
     if (clientSearchData?.result) {
-      const matchingClients = clientSearchData.result.filter((client) =>
-        client.name.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        clientName: matchingClients[0] || { name: inputValue },
-      }));
+      // const matchingClients = clientSearchData.result.filter((client) =>
+      //   client.name.toLowerCase().includes(inputValue.toLowerCase())
+      // );
+      // setFormData((prevFormData) => ({
+      //   ...prevFormData,
+      //   clientName: matchingClients[0] || { name: inputValue },
+      // }));
     } else {
       // If clientSearchData?.result is not available, set only the name
       setFormData((prevFormData) => ({
@@ -327,6 +326,22 @@ const CreateProjectFormDetails = () => {
     }
   };
 
+  const selectedClientId = projectDetailsData?.client?.clientId;
+  console.log("selectedClientId", selectedClientId);
+
+  // Find the corresponding client object based on clientID
+  const selectedClient = clientSearchData?.result?.find(
+    (client) => client.id === selectedClientId
+  );
+
+  useEffect(() => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      clientName: selectedClient,
+    }));
+  }, [selectedClient]);
+
+  console.log("selectedClient", selectedClient);
   return (
     <div style={{ marginBottom: "50px" }}>
       {/* Client Details */}
@@ -369,7 +384,7 @@ const CreateProjectFormDetails = () => {
               }}
               isSearchable={true}
               getOptionValue={(option) => option.id}
-              value={formData.clientName || null}
+              value={selectedClient}
               renderInput={(params) => (
                 <TextField
                   {...params}

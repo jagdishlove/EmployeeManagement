@@ -15,34 +15,16 @@ const Projects = () => {
   const dispatch = useDispatch();
   const [resultFilterData, setResultFilterData] = useState([]);
 
-  console.log("resultFilterData", resultFilterData);
-
   const projectsData = useSelector(
     (state) => state?.nonPersist?.projectDetails?.projectsData
   );
 
-  // const searchDataArray = searchData?.map((obj) => obj.name || []);
-
   useEffect(() => {
     setResultFilterData(projectsData);
   }, [projectsData]);
-  // useEffect(() => {
-  //   if (searchDataArray?.length > 0) {
-  //     const filterProjects = projectsData?.content?.filter((obj) =>
-  //       searchDataArray.includes(obj.projectName)
-  //     );
-  //     setResultFilterData({ content: filterProjects });
-  //   }
-  // }, [searchData]);
 
   const handleChange = (e) => {
     setSearchData(e);
-    // setFormData((prevData) => ({
-    //   ...prevData,
-    //   [name]: e,
-    // }));
-    //   const selectedData = Array.isArray(e) ? e : [e];
-    // setSearchData(selectedData);
   };
 
   const getProjectpayload = {

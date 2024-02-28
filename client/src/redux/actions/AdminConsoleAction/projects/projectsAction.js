@@ -555,14 +555,15 @@ export const GetAllCountryCityStateAction = () => {
   };
 };
 
-export const saveCreateProjectAction = (payload) => {
+export const saveCreateProjectAction = (payload, saveProjectStagePayload) => {
   return async (dispatch) => {
     try {
       dispatch(saveCreateProjectRequest());
       const response = await makeRequest(
         "POST",
         "/api/projects/createProject",
-        payload
+        payload,
+        saveProjectStagePayload
       );
       dispatch(saveCreateProjectSuccess(response));
       toast.success("Project Created Successfully", {
