@@ -20,6 +20,7 @@ import {
   getClientDetailsAction,
   getClientNameAction,
   getEmployeeSearchAction,
+  getProjectDetailsAction,
   saveCreateProjectAction,
 } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import Dropdown from "../../../forms/dropdown/dropdown";
@@ -30,7 +31,7 @@ const CreateProjectFormDetails = () => {
   const style = TimesheetStyle(theme);
   const Navigate = useNavigate();
   const dispatch = useDispatch();
-  // const localFormData = JSON.parse(localStorage.getItem("formData"));
+  //  const localFormData = JSON.parse(localStorage.getItem("formData"));
   const initialValues = {
     clientName: "",
     projectName: "",
@@ -82,7 +83,6 @@ const CreateProjectFormDetails = () => {
   const { clientDetailsData } = useSelector(
     (state) => state.nonPersist.projectDetails
   );
-  console.log("clientDetailsData", clientDetailsData);
 
   //For autopopulate data added condition
   useEffect(() => {
@@ -175,6 +175,39 @@ const CreateProjectFormDetails = () => {
   useEffect(() => {
     if (projectId && saveButton) Navigate(`/projectDetailPage/${projectId}`);
   }, [projectId]);
+
+  const projectDetailsData = useSelector(
+    (state) => state.nonPersist.projectDetails?.projectDetailsData
+  );
+  console.log("projectDetailsData", projectDetailsData);
+
+  useEffect(() => {
+    if (projectId) {
+      dispatch(getProjectDetailsAction(projectId));
+    }
+  }, [projectId]);
+
+  useEffect(() => {
+    if (projectDetailsData) {
+      setFormData({
+        clientName: projectDetailsData?.client?.clientName || "",
+        projectName: projectDetailsData?.projectName || "",
+        description: projectDetailsData?.description || "",
+        projectCategory: projectDetailsData?.projectCategory || "",
+        applicableActivity: projectDetailsData?.applicableActivity || "",
+        projectManager: projectDetailsData?.projectManager || "",
+        projectLead: projectDetailsData?.projectLead || "",
+        domain: projectDetailsData?.domain || "",
+        complexity: projectDetailsData?.complexity || "",
+        clientAddress: projectDetailsData?.clientAddress || "",
+        phone: projectDetailsData?.phone || "",
+        country: projectDetailsData?.country || "",
+        state: projectDetailsData?.state || "",
+        city: projectDetailsData?.city || "",
+        zipCode: projectDetailsData?.zipCode || "",
+      });
+    }
+  }, [projectDetailsData]);
   //Save
   const handleSaveData = async (e, type) => {
     if (type === "save") {
@@ -201,7 +234,7 @@ const CreateProjectFormDetails = () => {
       clientId: formData.clientName.id,
     };
     // Save form data to local storage
-    localStorage.setItem("formData", JSON.stringify(payload));
+    // localStorage.setItem("formData", JSON.stringify(payload));
 
     await dispatch(saveCreateProjectAction(payload));
 
@@ -223,7 +256,7 @@ const CreateProjectFormDetails = () => {
       return; // Do not proceed with saving if there are validation errors
     }
     // Save form data to local storage
-    localStorage.setItem("formData", JSON.stringify(formData));
+    // localStorage.setItem("formData", JSON.stringify(formData));
     // Save data first
     await handleSaveData(e, "next");
 
