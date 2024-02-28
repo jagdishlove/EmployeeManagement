@@ -1,6 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { Box, Button, Grid, TextField, Typography } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TimesheetStyle } from "../../../../pages/timesheet/timesheetStyle";
 import {
@@ -19,7 +19,9 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   deleteCostIncurredAction,
   getAllCostIncurredAction,
+  getProjectDetailsAction,
   saveCreateCostIncurredAction,
+  saveCreateProjectAction,
 } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 const CostAllocationFormDetails = () => {
   const theme = useTheme();
@@ -33,7 +35,8 @@ const CostAllocationFormDetails = () => {
     projectBudget: "",
   };
   const [selectedCostIncurredId, setSelectedCostIncurredId] = useState(null);
-
+  const [costIncurred, setCostIncurred] = useState(3);
+  const [saveButton, setSaveButton] = useState(false);
   const projectId = useSelector(
     (state) => state.nonPersist.projectDetails?.projectId
   );
@@ -63,10 +66,6 @@ const CostAllocationFormDetails = () => {
       ...formData,
       [name]: value,
     });
-  };
-
-  const handleSave = () => {
-    Navigate("/projects");
   };
 
   //Save or ADD Cost inoccured
@@ -127,10 +126,50 @@ const CostAllocationFormDetails = () => {
     setSelectedCostIncurredId(costIncurredId);
   };
 
-  // const handleDelete = async (costIncurredId) => {
-  //   await dispatch(deleteCostIncurredAction(costIncurredId));
-  //   await dispatch(getAllCostIncurredAction(projectId));
-  // };
+  useEffect(() => {
+    if (projectId && saveButton) Navigate(`/projectDetailPage/${projectId}`);
+  }, [projectId]);
+  //Save
+  const handleSaveData = async (e, type) => {
+    if (type === "save") {
+      setSaveButton(true);
+    } else if (type === "next") {
+      setSaveButton(true);
+    }
+    e.preventDefault();
+
+    const getResourcespayload = {
+      stage: costIncurred,
+    };
+    const payload = {
+      id: projectId,
+      projectBudget: formData.projectBudget,
+      projectRevenue: formData.projectRevenue,
+    };
+
+    await dispatch(saveCreateProjectAction(payload, getResourcespayload));
+  };
+
+  //for not clear the form we are calling Projectdetails
+  // const projectDetailsData = useSelector(
+  //   (state) => state.nonPersist.projectDetails?.projectDetailsData
+  // );
+  // console.log("projectDetailsData", projectDetailsData);
+
+  // useEffect(() => {
+  //   if (projectId) {
+  //     dispatch(getProjectDetailsAction(projectId));
+  //   }
+  // }, [projectId]);
+
+  // useEffect(() => {
+  //   if (projectDetailsData) {
+  //     setFormData({
+  //       projectBudget: projectDetailsData?.projectBudget || "",
+  //       projectRevenue: projectDetailsData?.projectRevenue || "",
+  //     });
+  //   }
+  // }, [projectDetailsData]);
   return (
     <div style={{ marginBottom: "50px" }}>
       {/* Client Details */}
@@ -403,7 +442,7 @@ const CostAllocationFormDetails = () => {
         <Grid item xs={12} sm={8} md={10} lg={10}>
           <Box sx={{ display: "flex", gap: "10px", justifyContent: "end" }}>
             <Button
-              onClick={handleSave}
+              onClick={(e) => handleSaveData(e, "save")}
               variant="contained"
               color="primary"
               type="submit"
