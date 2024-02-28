@@ -1,8 +1,13 @@
-// TableComponent.js
-import React from "react";
+import { useSelector } from "react-redux";
 
-const AllResourcesTable = (data) => {
-  // Your table rendering logic here using the 'data' prop
+const AllResourcesTable = () => {
+  const allResourcesData = useSelector(
+    (state) => state.nonPersist.projectDetails?.allResourcesData
+  );
+  // Check if allResourcesData is available and not null
+  if (!allResourcesData || !Array.isArray(allResourcesData)) {
+    return <p>No resources available</p>;
+  }
   return (
     <table>
       <thead>
@@ -15,12 +20,13 @@ const AllResourcesTable = (data) => {
       </thead>
       <tbody>
         {/* Map through each employee data and render a row for each */}
-        {data.map((employee, index) => (
-          <tr key={index}>
-            <td>{employee.employeeName}</td>
-            <td>{employee.designation}</td>
-            <td>{employee.skills.join(", ")}</td>
-            <td>{employee.occupancyHours}</td>
+        {allResourcesData?.map((allResources, index) => (
+          <tr key={allResources.allResourcesId}>
+            <td>{index + 1}</td>
+            <td>{allResources.employeeName}</td>
+            <td>{allResources.designation}</td>
+            <td>{allResources.skills.join(", ")}</td>
+            <td>{allResources.occupancyHours}</td>
           </tr>
         ))}
       </tbody>

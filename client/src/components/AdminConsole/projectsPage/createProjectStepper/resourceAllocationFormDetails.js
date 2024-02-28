@@ -26,11 +26,13 @@ import { TimesheetStyle } from "../../../../pages/timesheet/timesheetStyle";
 import ProjectResourcesModal from "./projectResourcesModal";
 import useDebounce from "../../../../utils/useDebounce";
 import {
+  getAllResourcesAction,
   getAllocationSearch,
   getResourceDetailsPopupAction,
   saveCreateResourcesAction,
 } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import AllResourcesTable from "./allResourcesTable";
 
 const InputOption = ({
   getStyles,
@@ -175,6 +177,7 @@ const ResourceAllocationFormDetails = () => {
 
   const theme = useTheme();
   const style = TimesheetStyle(theme);
+  const [showAllResourcesTable, setShowAllResourcesTable] = useState(false);
 
   const Navigate = useNavigate();
 
@@ -237,9 +240,13 @@ const ResourceAllocationFormDetails = () => {
     };
 
     await dispatch(saveCreateResourcesAction(payload));
+    await dispatch(getAllResourcesAction(projectId));
     // Add your logic for handling the confirmation with the timeInput value
     console.log("Selected time:", timeInput);
     setIsModalOpen(false); // Close the modal after confirmation
+
+    // Set the state to true to display the AllResourcesTable component
+    setShowAllResourcesTable(true);
   };
 
   const startDateHandler = () => {};
@@ -411,30 +418,6 @@ const ResourceAllocationFormDetails = () => {
                 }}
                 onChange={(e) => setSearchData(e.target.value)}
               />
-              {/* <Box
-                display={"flex"}
-                gap={2}
-                justifyContent={"flex-start"}
-                alignItems={"center"}
-                p={1}
-              >
-                {skillsCheckedData?.map((selectedSkills) => {
-                  return (
-                    <Box
-                      sx={{
-                        background: "lightgray",
-                        padding: "5px",
-                        borderRadius: "5px",
-                        display: "flex",
-                        alignItems: "center",
-                      }}
-                      key={selectedSkills.skillId}
-                    >
-                      <Typography>{selectedSkills?.skillName}</Typography>
-                    </Box>
-                  );
-                })}
-              </Box> */}
             </Grid>
             <Grid item xs={12} sm={8} md={3} lg={3}>
               <FormControl style={{ marginLeft: "15px", width: "90%" }}>
@@ -636,7 +619,7 @@ const ResourceAllocationFormDetails = () => {
           )}
         </Grid>
       </Grid>
-
+      {showAllResourcesTable && <AllResourcesTable />}
       {/* Resource Allocation */}
       <div
         className="Heading"

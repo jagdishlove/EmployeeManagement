@@ -46,8 +46,12 @@ import {
   SAVE_CREATE_RESOURCES_SUCCESS,
   SAVE_CREATE_RESOURCES_REQUEST,
   SAVE_CREATE_RESOURCES_FAIL,
+  FETCH_ALL_RESOURCE_REQUEST,
+  FETCH_ALL_RESOURCE__SUCCESS,
+  FETCH_ALL_RESOURCE__FAILURE,
 } from "./projectsActionTypes.js";
 import { getRefreshToken } from "../../login/loginAction.js";
+import { errorMessage } from "../../errors/errorsAction.js";
 
 const getAllProjectsRequest = () => {
   return {
@@ -301,6 +305,29 @@ const getResourceDetailsPopupSuccess = (data) => {
     payload: data,
   };
 };
+const getResourceDetailsPopupFailure = () => {
+  return {
+    type: FETCH_RESOURCE_DETAILS_POPUP_FAILURE,
+  };
+};
+
+const getAllResourcesRequest = () => {
+  return {
+    type: FETCH_ALL_RESOURCE_REQUEST,
+  };
+};
+
+const getAllResourcesSuccess = (data) => {
+  return {
+    type: FETCH_ALL_RESOURCE__SUCCESS,
+    payload: data,
+  };
+};
+const getAllResourcesFailure = () => {
+  return {
+    type: FETCH_ALL_RESOURCE__FAILURE,
+  };
+};
 
 const saveCreateResourcesRequest = () => {
   return {
@@ -319,9 +346,19 @@ const saveCreateResourcesFail = () => {
   };
 };
 
-const getResourceDetailsPopupFailure = () => {
+const deleteCostIncurredRequest = () => {
   return {
-    type: FETCH_RESOURCE_DETAILS_POPUP_FAILURE,
+    type: SAVE_CREATE_COST_INCURRED_REQUEST,
+  };
+};
+const deleteCostIncurredSuccess = () => {
+  return {
+    type: SAVE_CREATE_COST_INCURRED_SUCCESS,
+  };
+};
+const deleteCostIncurredFail = () => {
+  return {
+    type: SAVE_CREATE_COST_INCURRED_FAIL,
   };
 };
 
@@ -631,6 +668,47 @@ export const saveCreateResourcesAction = (payload) => {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
+    }
+  };
+};
+
+export const deleteCostIncurredAction = (id, projectId) => {
+  return async (dispatch) => {
+    try {
+      dispatch(deleteCostIncurredRequest());
+      const response = await makeRequest(
+        "DELETE",
+        `/api/costIncurred/delete/${id}`
+      );
+      dispatch(deleteCostIncurredSuccess(response?.token));
+      dispatch(getAllCostIncurredAction(projectId));
+      toast.success("Cost Incurred Deleted Successfully", {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    } catch (err) {
+      if (err.response.data.errorCode === 403) {
+        dispatch(getRefreshToken());
+      }
+      dispatch(deleteCostIncurredFail(err.response.data.errorMessage));
+      dispatch(errorMessage(err.response.data.errorMessage));
+    }
+  };
+};
+
+export const getAllResourcesAction = (data) => {
+  return async (dispatch) => {
+    dispatch(getAllResourcesRequest());
+    try {
+      const response = await makeRequest(
+        "GET",
+        `/api//resources/getAllResources/${data}`
+      );
+      dispatch(getAllResourcesSuccess(response));
+    } catch (err) {
+      dispatch(getAllResourcesFailure());
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
     }
   };
 };

@@ -17,6 +17,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  deleteCostIncurredAction,
   getAllCostIncurredAction,
   saveCreateCostIncurredAction,
 } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
@@ -31,12 +32,17 @@ const CostAllocationFormDetails = () => {
     projectRevenue: "",
     projectBudget: "",
   };
+  const [selectedCostIncurredId, setSelectedCostIncurredId] = useState(null);
 
   const projectId = useSelector(
     (state) => state.nonPersist.projectDetails?.projectId
   );
+
+  // const costIncurredId = useSelector(
+  //   (state) =>
+  //     state.nonPersist.projectDetails?.costIncurredDetails?.costIncurredId
+  // );
   const [formData, setFormData] = useState(intialValues);
-  console.log("formDataCost", formData);
 
   const [errors, setErrors] = useState({
     itemName: "",
@@ -92,10 +98,16 @@ const CostAllocationFormDetails = () => {
       costIncurred: formData.costIncurred,
     };
 
+    if (selectedCostIncurredId !== null) {
+      // Perform Update
+      payload.costIncurredId = selectedCostIncurredId;
+    }
+
     await dispatch(saveCreateCostIncurredAction(payload));
     await dispatch(getAllCostIncurredAction(projectId));
     // Reset the form after dispatching the action
     handleReset();
+    setSelectedCostIncurredId(null);
   };
 
   const allCostIncurredData = useSelector(
@@ -103,20 +115,22 @@ const CostAllocationFormDetails = () => {
   );
 
   const handleEdit = (costIncurredId) => {
-    const payload = {
-      costIncurredId: costIncurredId,
-      projectId: projectId,
-      itemName: formData.itemName,
-      costIncurred: formData.costIncurred,
-    };
+    const selectedCostIncurred = allCostIncurredData.find(
+      (item) => item.costIncurredId === costIncurredId
+    );
 
-    dispatch(saveCreateCostIncurredAction(payload));
-    dispatch(getAllCostIncurredAction(projectId));
+    setFormData({
+      itemName: selectedCostIncurred.itemName,
+      costIncurred: selectedCostIncurred.costIncurred,
+    });
 
-    // Reset the form after dispatching the action
-    handleReset();
+    setSelectedCostIncurredId(costIncurredId);
   };
 
+  // const handleDelete = async (costIncurredId) => {
+  //   await dispatch(deleteCostIncurredAction(costIncurredId));
+  //   await dispatch(getAllCostIncurredAction(projectId));
+  // };
   return (
     <div style={{ marginBottom: "50px" }}>
       {/* Client Details */}
@@ -225,17 +239,30 @@ const CostAllocationFormDetails = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {allCostIncurredData.map((allCostIncurred) => (
-                  <TableRow key={allCostIncurred}>
-                    <TableCell>{allCostIncurred.slNo}</TableCell>
-                    <TableCell>{allCostIncurred.itemName}</TableCell>
-                    <TableCell>{allCostIncurred.costIncurred}</TableCell>
+                {allCostIncurredData.map((costIncurred, index) => (
+                  <TableRow key={costIncurred.costIncurredId}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>{costIncurred.itemName}</TableCell>
+                    <TableCell>{costIncurred.costIncurred}</TableCell>
                     <TableCell>
-                      <IconButton color="primary" onClick={handleEdit}>
+                      <IconButton
+                        color="primary"
+                        onClick={() => handleEdit(costIncurred.costIncurredId)}
+                      >
                         <EditIcon />
                       </IconButton>
+
                       <IconButton color="primary">
-                        <DeleteIcon />
+                        <DeleteIcon
+                          onClick={() =>
+                            dispatch(
+                              deleteCostIncurredAction(
+                                costIncurred.costIncurredId,
+                                projectId
+                              )
+                            )
+                          }
+                        />
                       </IconButton>
                     </TableCell>
                   </TableRow>

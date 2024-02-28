@@ -56,8 +56,7 @@ const Dropdown = ({
               option.employmentType ||
               option.managerName ||
               option.complexityName ||
-              option.projectType  ||
-            
+              option.projectType ||
               option[valueKey]
             }
             sx={{
