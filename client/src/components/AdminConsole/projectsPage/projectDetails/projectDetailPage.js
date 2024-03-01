@@ -36,7 +36,7 @@ const ProjectDetailPage = () => {
   };
 
   const handleEditProject = () => {
-    Navigate(-2);
+    Navigate(`/EditForm/${id}`);
   };
   return (
     <>
@@ -86,7 +86,10 @@ const ProjectDetailPage = () => {
       </Grid>
       <Grid container>
         <Grid item xs={12} md={2}>
-          <img src="path/to/your/logo.png" alt="Logo" />
+          <img
+            src={`data:${projectDetailsData?.fileStorage?.fileType};base64,${projectDetailsData?.fileStorage?.data}`}
+            alt="Logo"
+          />
         </Grid>
 
         <Grid item xs={12} md={8}>

@@ -11,7 +11,7 @@ import {
 import { useTheme } from "@mui/material/styles";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 // import Select from "react-select";
 import { TimesheetStyle } from "../../../../pages/timesheet/timesheetStyle";
 import {
@@ -48,6 +48,7 @@ const CreateProjectFormDetails = () => {
     city: "",
     zipCode: "",
   };
+  const { id } = useParams();
   const [formData, setFormData] = useState(initialValues);
   const [validationErrors, setValidationErrors] = useState({
     clientName: "",
@@ -56,7 +57,6 @@ const CreateProjectFormDetails = () => {
     projectManager: "",
   });
   const [saveButton, setSaveButton] = useState(false);
-  const [createProject, setCreateProject] = useState(1);
   // client Search
   const clientSearchData = useSelector(
     (state) => state.nonPersist?.projectDetails?.clientNameData
@@ -68,15 +68,32 @@ const CreateProjectFormDetails = () => {
 
   const handleChange = (e, name) => {
     console.log("e", e);
+    console.log("name", name);
+
     setFormData((prevData) => ({
       ...prevData,
       [name]: e,
     }));
+
+    if (name === "applicableActivity") {
+      const activitiesIds = e.map((skillObj) => skillObj.activityId);
+      setFormData((prevData) => ({
+        ...prevData,
+        applicableActivity: activitiesIds,
+      }));
+    }
+
     setValidationErrors({
       ...validationErrors,
       [name]: "",
     });
   };
+
+  // const handleChange2 = (value) => {
+  //   const skillIds = value.map((skillObj) => skillObj.skillId);
+  //   console.log('value',value)
+  //   setFormData({ ...formData, skill: skillIds });
+  // };
 
   //client Details like address etc
   const { clientDetailsData } = useSelector(
@@ -184,7 +201,10 @@ const CreateProjectFormDetails = () => {
     if (projectId) {
       dispatch(getProjectDetailsAction(projectId));
     }
-  }, [projectId]);
+    if (id) {
+      dispatch(getProjectDetailsAction(id));
+    }
+  }, [projectId, id]);
 
   useEffect(() => {
     if (projectDetailsData) {
@@ -193,7 +213,7 @@ const CreateProjectFormDetails = () => {
         projectName: projectDetailsData?.projectName || "",
         description: projectDetailsData?.description || "",
         projectCategory: projectDetailsData?.jobType?.jobId || "",
-        applicableActivity: projectDetailsData?.applicableActivity || "",
+        applicableActivity: projectDetailsData?.activities || "",
         projectManager: projectDetailsData?.projectManager || "",
         projectLead: projectDetailsData?.projectLead || "",
         domain: projectDetailsData?.domain?.domainId || "",
@@ -209,8 +229,17 @@ const CreateProjectFormDetails = () => {
       if (projectDetailsData?.client?.clientName) {
         dispatch(getClientNameAction(projectDetailsData?.client?.clientName));
       }
+      if (projectDetailsData?.activities) {
+        const activitiesIds = projectDetailsData?.activities?.map(
+          (skillObj) => skillObj.activityId
+        );
+        setFormData((prevData) => ({
+          ...prevData,
+          applicableActivity: activitiesIds,
+        }));
+      }
     }
-  }, [projectDetailsData]);
+  }, [projectDetailsData, id]);
 
   //Save
   const handleSaveData = async (e, type) => {
@@ -228,10 +257,11 @@ const CreateProjectFormDetails = () => {
     }
 
     const saveProjectStagePayload = {
-      stage: [createProject],
+      stage: 1,
     };
 
     const payload = {
+      id: projectId || id ? projectId || id : "",
       projectName: formData.projectName,
       description: formData.description,
       jobTypeId: formData.projectCategory,
@@ -240,7 +270,7 @@ const CreateProjectFormDetails = () => {
       domainId: formData.domain,
       complexity: formData.complexity,
       clientId: formData.clientName.id,
-      activitiesIds: formData.activityId,
+      activitiesIds: formData.applicableActivity,
     };
 
     await dispatch(saveCreateProjectAction(payload, saveProjectStagePayload));
@@ -647,6 +677,11 @@ const CreateProjectFormDetails = () => {
             getOptionLabel={(option) => option.activityType}
             onChange={(event, value) =>
               handleChange(value, "applicableActivity")
+            }
+            value={
+              masterdataProjectActivityList.filter((s) =>
+                formData.applicableActivity.includes(s.activityId)
+              ) || []
             }
             disableCloseOnSelect
             freeSolo

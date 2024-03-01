@@ -24,15 +24,11 @@ const ProjectList = ({ projectsData }) => {
   const Navigate = useNavigate();
 
   const handleViewInDetail = () => {
-    Navigate(
-      `/projectDetailPage/${projectsData.id}`
-      // ,
-      //  {
-      //   state: {
-      //     projectId: projectsData.id,
-      //   },
-      // }
-    );
+    Navigate(`/projectDetailPage/${projectsData.id}`);
+  };
+
+  const handleEditForm = () => {
+    Navigate(`/EditForm/${projectsData.id}`);
   };
 
   const startDateString = projectsData.startDate;
@@ -64,7 +60,7 @@ const ProjectList = ({ projectsData }) => {
       <CardHeader
         avatar={
           <img
-            src=""
+            src={`data:${projectsData?.fileStorage?.fileType};base64,${projectsData?.fileStorage?.data}`}
             alt="Logo"
             style={{
               width: 40, // Set the width as needed
@@ -87,7 +83,7 @@ const ProjectList = ({ projectsData }) => {
               onClose={() => setMenuAnchor(null)}
             >
               <MenuItem selected={false}>
-                <ListItemIcon>
+                <ListItemIcon onClick={handleEditForm}>
                   <EditIcon fontSize="small" />
                 </ListItemIcon>
                 <ListItemText primary="Edit" />
