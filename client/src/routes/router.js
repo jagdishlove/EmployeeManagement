@@ -205,7 +205,21 @@ const Router = () => {
           )
         }
       />
-
+      <Route
+        path="/EditForm/:id"
+        element={
+          isAuthenticated ? (
+            <ConditionalSidebar>
+              <CreateProjectStepperOne />
+            </ConditionalSidebar>
+          ) : (
+            <>
+              <Navigate to="/" />
+              <Login />
+            </>
+          )
+        }
+      />
       <Route
         path="/projectDetailPage/:id"
         element={

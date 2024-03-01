@@ -28,7 +28,6 @@ import useDebounce from "../../../../utils/useDebounce";
 import {
   getAllResourcesAction,
   getAllocationSearch,
-  getProjectDetailsAction,
   getResourceDetailsPopupAction,
   saveCreateProjectAction,
   saveCreateResourcesAction,
@@ -104,7 +103,6 @@ const ResourceAllocationFormDetails = () => {
   const debouncedValue = useDebounce(searchData);
   console.log("selectedOptions", selectedOptions);
   const [saveButton, setSaveButton] = useState(false);
-  const [resources, setresources] = useState(2);
 
   useEffect(() => {
     const params = {
@@ -132,6 +130,9 @@ const ResourceAllocationFormDetails = () => {
   const [formData, setFormData] = useState({
     projectedimplementationhours: "",
     occupancyHrs: "",
+    startDate: null,
+    endDate: null,
+    actualEndDate: null,
   });
 
   const handleInputChange = (event, data) => {
@@ -176,6 +177,7 @@ const ResourceAllocationFormDetails = () => {
   const projectId = useSelector(
     (state) => state.nonPersist.projectDetails?.projectId
   );
+  console.log("projectId", projectId);
 
   const [employeeId, setEmployeeId] = useState();
 
@@ -198,15 +200,18 @@ const ResourceAllocationFormDetails = () => {
   };
 
   const handleDateChange = (name, date) => {
+    const formattedDate = date.format("YYYY-MM-DD");
+    console.log("name", name);
+    console.log("date", date);
     setFormData({
       ...formData,
-      [name]: date,
+      [name]: formattedDate,
     });
   };
-
+  console.log("formData", formData);
   useEffect(() => {
     if (projectId && saveButton) Navigate(`/projectDetailPage/${projectId}`);
-  }, [projectId]);
+  }, [projectId, saveButton]);
 
   //Save
   const handleSaveData = async (e, type) => {
@@ -218,34 +223,15 @@ const ResourceAllocationFormDetails = () => {
     e.preventDefault();
 
     const getResourcespayload = {
-      stage: resources,
+      stage: 2,
     };
-    const today = new Date();
     const payload = {
       id: projectId,
       projectedImplementationHours: formData.projectName,
-      startDate: formatDate(
-        new Date(today.getFullYear(), today.getMonth() + 1, today.getDate())
-      ),
-      endDate: formatDate(
-        new Date(today.getFullYear(), today.getMonth() + 1, today.getDate())
-      ),
-      actualEndDate: formatDate(
-        new Date(
-          today.getFullYear(),
-          today.getMonth() + 1,
-          today.getDate() + 10
-        )
-      ),
+      startDate: formData?.startDate,
+      endDate: formData?.endDate,
+      actualEndDate: formData?.actualEndDate,
     };
-
-    // Function to format date as "YYYY-MM-DD"
-    function formatDate(date) {
-      const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, "0");
-      const day = date.getDate().toString().padStart(2, "0");
-      return `${year}-${month}-${day}`;
-    }
 
     await dispatch(saveCreateProjectAction(payload, getResourcespayload));
   };
@@ -367,28 +353,28 @@ const ResourceAllocationFormDetails = () => {
   };
 
   //for not clear the form we are calling Projectdetails
-  const projectDetailsData = useSelector(
-    (state) => state.nonPersist.projectDetails?.projectDetailsData
-  );
-  console.log("projectDetailsData", projectDetailsData);
+  // const projectDetailsData = useSelector(
+  //   (state) => state.nonPersist.projectDetails?.projectDetailsData
+  // );
+  // console.log("projectDetailsData", projectDetailsData);
 
-  useEffect(() => {
-    if (projectId) {
-      dispatch(getProjectDetailsAction(projectId));
-    }
-  }, [projectId]);
+  // useEffect(() => {
+  //   if (projectId) {
+  //     dispatch(getProjectDetailsAction(projectId));
+  //   }
+  // }, [projectId]);
 
-  useEffect(() => {
-    if (projectDetailsData) {
-      setFormData({
-        projectedImplementationHours:
-          projectDetailsData?.projectedImplementationHours || "",
-        startDate: projectDetailsData?.startDate || "",
-        endDate: projectDetailsData?.endDate || "",
-        actualEndDate: projectDetailsData?.actualEndDate || "",
-      });
-    }
-  }, [projectDetailsData]);
+  // useEffect(() => {
+  //   if (projectDetailsData) {
+  //     setFormData({
+  //       projectedImplementationHours:
+  //         projectDetailsData?.projectedImplementationHours || "",
+  //       startDate: projectDetailsData?.startDate || "",
+  //       endDate: projectDetailsData?.endDate || "",
+  //       actualEndDate: projectDetailsData?.actualEndDate || "",
+  //     });
+  //   }
+  // }, [projectDetailsData]);
 
   return (
     <div>
@@ -698,8 +684,8 @@ const ResourceAllocationFormDetails = () => {
               <DatePicker
                 name="startDate"
                 format="DD/MM/YYYY"
-                value={formData.toDate} // Set value to null to not display the current date
-                onChange={handleDateChange}
+                value={formData.startDate} // Set value to null to not display the current date
+                onChange={(value) => handleDateChange("startDate", value)}
                 renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>
@@ -722,11 +708,10 @@ const ResourceAllocationFormDetails = () => {
             </Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
-                name="endDate"
-                fullWidth
+                name="startDate"
                 format="DD/MM/YYYY"
-                value={formData.endDate} // Set
-                onChange={handleDateChange}
+                value={formData.endDate} // Set value to null to not display the current date
+                onChange={(value) => handleDateChange("endDate", value)}
                 renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>
@@ -749,11 +734,10 @@ const ResourceAllocationFormDetails = () => {
             </Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
-                name="actualEndDate"
-                fullWidth
+                name="startDate"
                 format="DD/MM/YYYY"
-                value={formData.actualEndDate}
-                onChange={handleDateChange}
+                value={formData.actualEndDate} // Set value to null to not display the current date
+                onChange={(value) => handleDateChange("actualEndDate", value)}
                 renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>

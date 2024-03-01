@@ -34,7 +34,7 @@ const AllResourcesTable = () => {
       <tbody>
         {/* Map through each employee data and render a row for each */}
         {allResourcesData?.map((allResources, index) => (
-          <tr key={allResources.allResourcesId}>
+          <tr key={allResources.resourceId}>
             <td>{index + 1}</td>
             <td>{allResources.employeeName}</td>
             <td>{allResources.designation}</td>

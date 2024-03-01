@@ -19,7 +19,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   deleteCostIncurredAction,
   getAllCostIncurredAction,
-  getProjectDetailsAction,
   saveCreateCostIncurredAction,
   saveCreateProjectAction,
 } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
@@ -35,16 +34,11 @@ const CostAllocationFormDetails = () => {
     projectBudget: "",
   };
   const [selectedCostIncurredId, setSelectedCostIncurredId] = useState(null);
-  const [costIncurred, setCostIncurred] = useState(3);
   const [saveButton, setSaveButton] = useState(false);
   const projectId = useSelector(
     (state) => state.nonPersist.projectDetails?.projectId
   );
 
-  // const costIncurredId = useSelector(
-  //   (state) =>
-  //     state.nonPersist.projectDetails?.costIncurredDetails?.costIncurredId
-  // );
   const [formData, setFormData] = useState(intialValues);
 
   const [errors, setErrors] = useState({
@@ -62,6 +56,10 @@ const CostAllocationFormDetails = () => {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
+
+    // if (name === "costIncurred") {
+    //   setCostIncurred(value);
+    // }
     setFormData({
       ...formData,
       [name]: value,
@@ -77,10 +75,25 @@ const CostAllocationFormDetails = () => {
       newErrors.itemName = "Item Name is required.";
     }
 
+    // Add validation for Cost Incurred
     if (!formData.costIncurred) {
       newErrors.costIncurred = "Cost Incurred is required.";
     } else if (!/^\d+$/.test(formData.costIncurred)) {
       newErrors.costIncurred = "Cost Incurred must contain only digits.";
+    }
+
+    // Add validation for Project Budget
+    if (!formData.projectBudget) {
+      newErrors.projectBudget = "Project Budget is required.";
+    } else if (!/^\d+$/.test(formData.projectBudget)) {
+      newErrors.projectBudget = "Project Budget must contain only digits.";
+    }
+
+    // Add validation for Project Revenue
+    if (!formData.projectRevenue) {
+      newErrors.projectRevenue = "Project Revenue is required.";
+    } else if (!/^\d+$/.test(formData.projectRevenue)) {
+      newErrors.projectRevenue = "Project Revenue must contain only digits.";
     }
 
     // Update the error state
@@ -128,7 +141,7 @@ const CostAllocationFormDetails = () => {
 
   useEffect(() => {
     if (projectId && saveButton) Navigate(`/projectDetailPage/${projectId}`);
-  }, [projectId]);
+  }, [projectId, saveButton]);
   //Save
   const handleSaveData = async (e, type) => {
     if (type === "save") {
@@ -139,7 +152,7 @@ const CostAllocationFormDetails = () => {
     e.preventDefault();
 
     const getResourcespayload = {
-      stage: costIncurred,
+      stage: 3,
     };
     const payload = {
       id: projectId,
@@ -150,26 +163,6 @@ const CostAllocationFormDetails = () => {
     await dispatch(saveCreateProjectAction(payload, getResourcespayload));
   };
 
-  //for not clear the form we are calling Projectdetails
-  // const projectDetailsData = useSelector(
-  //   (state) => state.nonPersist.projectDetails?.projectDetailsData
-  // );
-  // console.log("projectDetailsData", projectDetailsData);
-
-  // useEffect(() => {
-  //   if (projectId) {
-  //     dispatch(getProjectDetailsAction(projectId));
-  //   }
-  // }, [projectId]);
-
-  // useEffect(() => {
-  //   if (projectDetailsData) {
-  //     setFormData({
-  //       projectBudget: projectDetailsData?.projectBudget || "",
-  //       projectRevenue: projectDetailsData?.projectRevenue || "",
-  //     });
-  //   }
-  // }, [projectDetailsData]);
   return (
     <div style={{ marginBottom: "50px" }}>
       {/* Client Details */}
@@ -354,6 +347,9 @@ const CostAllocationFormDetails = () => {
             fullWidth
             InputProps={{ classes: { focused: "green-border" } }}
           />
+          <Typography variant="body2" color="error">
+            {errors.projectBudget}
+          </Typography>
           <Typography
             variant="body1"
             fontWeight="bold"
@@ -416,7 +412,9 @@ const CostAllocationFormDetails = () => {
             fullWidth
             InputProps={{ classes: { focused: "green-border" } }}
           />
-
+          <Typography variant="body2" color="error">
+            {errors.projectRevenue}
+          </Typography>
           <Typography
             variant="body1"
             fontWeight="bold"
