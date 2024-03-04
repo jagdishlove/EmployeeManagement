@@ -69,4 +69,12 @@ export const formatDateForApi = (selectedDate) => {
   }
 };
 
+export const adminTimeOptions = () => {
+  const options = [];
 
+  for (let i = 1; i <= 60; i++) {
+    options.push({ label: i, value: i });
+  }
+
+  return options;
+};

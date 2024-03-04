@@ -60,7 +60,7 @@ const ProjectList = ({ projectsData }) => {
       <CardHeader
         avatar={
           <img
-            src={`data:${projectsData?.fileStorage?.fileType};base64,${projectsData?.fileStorage?.data}`}
+            src={`data:${projectsData?.client?.fileStorage?.fileType};base64,${projectsData?.client?.fileStorage?.data}`}
             alt="Logo"
             style={{
               width: 40, // Set the width as needed

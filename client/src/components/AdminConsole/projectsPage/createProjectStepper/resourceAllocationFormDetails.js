@@ -28,12 +28,15 @@ import useDebounce from "../../../../utils/useDebounce";
 import {
   getAllResourcesAction,
   getAllocationSearch,
+  // getProjectDetailsAction,
   getResourceDetailsPopupAction,
   saveCreateProjectAction,
   saveCreateResourcesAction,
 } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import AllResourcesTable from "./allResourcesTable";
+import Dropdown from "../../../forms/dropdown/dropdown";
+import { adminTimeOptions } from "../../../../utils/dateOptions";
 
 const InputOption = ({
   getStyles,
@@ -97,12 +100,13 @@ const ResourceAllocationFormDetails = () => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [searchData, setSearchData] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [timeInput, setTimeInput] = useState("");
+  // const [timeInput, setTimeInput] = useState("");
   const [skillsCheckedData, setSkillsCheckedData] = useState([]);
   const [descCheckedData, setDescCheckedData] = useState([]);
   const debouncedValue = useDebounce(searchData);
   console.log("selectedOptions", selectedOptions);
   const [saveButton, setSaveButton] = useState(false);
+  // const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const params = {
@@ -119,21 +123,21 @@ const ResourceAllocationFormDetails = () => {
   const masterDesigData = useSelector(
     (state) => state?.persistData?.masterData?.designation
   );
-  console.log("masterSkillData", masterSkillData);
 
   const theme = useTheme();
   const style = TimesheetStyle(theme);
   const [showAllResourcesTable, setShowAllResourcesTable] = useState(false);
-
   const Navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     projectedimplementationhours: "",
-    occupancyHrs: "",
+    occupancyHours: "",
+    occupancyMinutes: "",
     startDate: null,
     endDate: null,
     actualEndDate: null,
   });
+  console.log("formData", formData);
+  const [selectedOccupancyHours, setSelectedOccupancyHours] = useState(null);
 
   const handleInputChange = (event, data) => {
     setSelectedOptions(data);
@@ -159,19 +163,13 @@ const ResourceAllocationFormDetails = () => {
   };
 
   const handleTimeInputChange = (event) => {
-    const input = event.target.value;
     const { name, value } = event.target;
+    console.log("name", name);
+    console.log("value", value);
     setFormData({
       ...formData,
       [name]: value,
     });
-    const numericInput = input.replace(/\D/g, ""); // Remove non-numeric characters
-
-    // Format the numeric input to HH:MM format
-    const formattedInput = numericInput.replace(/(\d{2})(\d{2})/, "$1:$2");
-
-    // Set the formatted input to state
-    setTimeInput(formattedInput);
   };
 
   const projectId = useSelector(
@@ -186,17 +184,84 @@ const ResourceAllocationFormDetails = () => {
     const payload = {
       employeeId: employeeId,
       projectId: projectId,
-      occupancyHours: formData.occupancyHrs,
+      occupancyHours: formData.occupancyHours * 60 + formData.occupancyMinutes,
     };
+    console.log("payload", payload);
 
-    await dispatch(saveCreateResourcesAction(payload));
-    await dispatch(getAllResourcesAction(projectId));
-    // Add your logic for handling the confirmation with the timeInput value
-    console.log("Selected time:", timeInput);
+    if (selectedOccupancyHours !== null) {
+      // Perform Update
+      payload.resourceId = selectedOccupancyHours;
+    }
+
+    try {
+      await dispatch(saveCreateResourcesAction(payload));
+    } finally {
+      await dispatch(getAllResourcesAction(projectId));
+    }
+
+    // setTimeInput("");
+    setSelectedOccupancyHours(null);
+    setFormData({
+      occupancyHours: "",
+    });
     setIsModalOpen(false); // Close the modal after confirmation
 
     // Set the state to true to display the AllResourcesTable component
     setShowAllResourcesTable(true);
+  };
+
+  //for displaying the table after confirm
+  useEffect(() => {
+    dispatch(getAllResourcesAction(projectId));
+    setShowAllResourcesTable(true);
+  }, [projectId]);
+
+  //Edit
+  const allResourcesData = useSelector(
+    (state) => state.nonPersist.projectDetails?.allResourcesData
+  );
+
+  const handleEdit = (employeeId, resourceId) => {
+    // setIsEditing(true);
+    setEmployeeId(employeeId);
+    dispatch(getResourceDetailsPopupAction(employeeId));
+    setIsModalOpen(true);
+
+    const selectedOccupancyHours = allResourcesData.find(
+      (item) => item.resourceId === resourceId
+    );
+    console.log("selectedOccupancyHours", selectedOccupancyHours);
+
+    const durationString = `${selectedOccupancyHours?.occupancyHours}`;
+    console.log("durationString", durationString);
+    // Function to parse the duration and return hours and minutes
+    const parseDuration = (durationString) => {
+      const regex = /(\d+)Hrs (\d+)mins/;
+      const match = durationString.match(regex);
+      console.log("match", match);
+
+      if (match) {
+        const hours = parseInt(match[1], 10);
+        const minutes = parseInt(match[2], 10);
+        return { hours, minutes };
+      }
+
+      // Return default values or handle invalid input
+      return { hours: 0, minutes: 0 };
+    };
+
+    // Example usage
+    const { hours, minutes } = parseDuration(durationString);
+
+    // Now you can use 'hours' and 'minutes' in your UI fields (occupancyHours and occupancyMins)
+    console.log("Hours:", hours);
+    console.log("Minutes:", minutes);
+
+    setFormData({
+      occupancyHours: hours,
+      occupancyMinutes: minutes,
+    });
+    setSelectedOccupancyHours(resourceId);
   };
 
   const handleDateChange = (name, date) => {
@@ -208,7 +273,7 @@ const ResourceAllocationFormDetails = () => {
       [name]: formattedDate,
     });
   };
-  console.log("formData", formData);
+
   useEffect(() => {
     if (projectId && saveButton) Navigate(`/projectDetailPage/${projectId}`);
   }, [projectId, saveButton]);
@@ -232,15 +297,19 @@ const ResourceAllocationFormDetails = () => {
       endDate: formData?.endDate,
       actualEndDate: formData?.actualEndDate,
     };
-
+    console.log("payloadddd", payload);
     await dispatch(saveCreateProjectAction(payload, getResourcespayload));
   };
+
+  useEffect(() => {
+    if (projectId && saveButton) Navigate(`/projectDetailPage/${projectId}`);
+  }, [projectId, saveButton]);
 
   const handleSaveAndNext = async (e) => {
     e.preventDefault();
     // Save data first
     await handleSaveData(e, "next");
-    Navigate("/costallocation");
+    Navigate("/projects");
   };
 
   const CustomMenu = (props) => {
@@ -298,7 +367,9 @@ const ResourceAllocationFormDetails = () => {
   const CustomMenuDesc = (props) => {
     const { innerProps, children } = props;
     const applySkillFilterHandler = () => {
-      const getSkillId = descCheckedData?.map((item) => item.skillId).join(",");
+      const getSkillId = descCheckedData
+        ?.map((item) => item.designationId)
+        .join(",");
       const params = {
         query: searchData || "",
         designationIds: getSkillId,
@@ -352,7 +423,7 @@ const ResourceAllocationFormDetails = () => {
     setDescCheckedData(selected);
   };
 
-  //for not clear the form we are calling Projectdetails
+  // for not clear the form we are calling Projectdetails
   // const projectDetailsData = useSelector(
   //   (state) => state.nonPersist.projectDetails?.projectDetailsData
   // );
@@ -496,7 +567,7 @@ const ResourceAllocationFormDetails = () => {
           </Grid>
         </Grid>
         <Grid item xs={12} sm={8} md={10} lg={10}>
-          {allocationSearchData.length > 0 && (
+          {allocationSearchData?.length > 0 && (
             <TableContainer component={Paper}>
               <Table>
                 <TableBody>
@@ -512,7 +583,7 @@ const ResourceAllocationFormDetails = () => {
                       <TableCell>{option.employeeName}</TableCell>
                       <TableCell>{option.employeeDesignation}</TableCell>
                       <TableCell>
-                        {option.skills.length > 0 && (
+                        {option.skills?.length > 0 && (
                           <Grid
                             container
                             sx={{
@@ -581,15 +652,28 @@ const ResourceAllocationFormDetails = () => {
                     </div>
                   ))}
                   {/* Content of your modal */}
-                  <div style={{ marginTop: "20px" }}>
+                  <div
+                    display="inline-flex"
+                    direction="row"
+                    style={{ marginTop: "20px" }}
+                  >
                     {/* Add time input field */}
                     <TextField
-                      placeholder="Enter Occupancy Hrs ( HH : MM )"
-                      value={timeInput}
+                      placeholder="Enter Occupancy Hours"
+                      value={formData?.occupancyHours}
                       onChange={handleTimeInputChange}
                       fullWidth
                       margin="normal"
-                      name="occupancyHrs"
+                      name="occupancyHours"
+                    />
+                    <Dropdown
+                      options={[...adminTimeOptions()]}
+                      placeholder="Enter Occupancy Minutes"
+                      value={formData?.occupancyMinutes}
+                      onChange={handleTimeInputChange}
+                      fullWidth
+                      margin="normal"
+                      name="occupancyMinutes"
                     />
 
                     {/* Add Confirm and Cancel buttons */}
@@ -620,8 +704,13 @@ const ResourceAllocationFormDetails = () => {
             </TableContainer>
           )}
         </Grid>
+        <Grid item xs={12} sm={8} md={10} lg={10}>
+          {showAllResourcesTable && (
+            <AllResourcesTable handleEdit={handleEdit} />
+          )}
+        </Grid>
       </Grid>
-      {showAllResourcesTable && <AllResourcesTable />}
+
       {/* Resource Allocation */}
       <div
         className="Heading"
@@ -684,7 +773,7 @@ const ResourceAllocationFormDetails = () => {
               <DatePicker
                 name="startDate"
                 format="DD/MM/YYYY"
-                value={formData.startDate} // Set value to null to not display the current date
+                value={formData.startDate || null} // Set value to null to not display the current date
                 onChange={(value) => handleDateChange("startDate", value)}
                 renderInput={(params) => <TextField {...params} />}
               />
@@ -710,7 +799,7 @@ const ResourceAllocationFormDetails = () => {
               <DatePicker
                 name="startDate"
                 format="DD/MM/YYYY"
-                value={formData.endDate} // Set value to null to not display the current date
+                value={formData.endDate || null} // Set value to null to not display the current date
                 onChange={(value) => handleDateChange("endDate", value)}
                 renderInput={(params) => <TextField {...params} />}
               />
@@ -736,7 +825,7 @@ const ResourceAllocationFormDetails = () => {
               <DatePicker
                 name="startDate"
                 format="DD/MM/YYYY"
-                value={formData.actualEndDate} // Set value to null to not display the current date
+                value={formData.actualEndDate || null} // Set value to null to not display the current date
                 onChange={(value) => handleDateChange("actualEndDate", value)}
                 renderInput={(params) => <TextField {...params} />}
               />

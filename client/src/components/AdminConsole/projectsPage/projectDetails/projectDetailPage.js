@@ -87,7 +87,7 @@ const ProjectDetailPage = () => {
       <Grid container>
         <Grid item xs={12} md={2}>
           <img
-            src={`data:${projectDetailsData?.fileStorage?.fileType};base64,${projectDetailsData?.fileStorage?.data}`}
+            src={`data:${projectDetailsData?.client?.fileStorage?.fileType};base64,${projectDetailsData?.client?.fileStorage?.data}`}
             alt="Logo"
           />
         </Grid>

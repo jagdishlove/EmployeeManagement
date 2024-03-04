@@ -125,7 +125,7 @@ const CostAllocationFormDetails = () => {
   const allCostIncurredData = useSelector(
     (state) => state.nonPersist.projectDetails?.allCostIncurredData
   );
-
+  console.log("allCostIncurredData", allCostIncurredData);
   const handleEdit = (costIncurredId) => {
     const selectedCostIncurred = allCostIncurredData.find(
       (item) => item.costIncurredId === costIncurredId
@@ -271,15 +271,15 @@ const CostAllocationFormDetails = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {allCostIncurredData.map((costIncurred, index) => (
-                  <TableRow key={costIncurred.costIncurredId}>
+                {allCostIncurredData?.map((costIncurred, index) => (
+                  <TableRow key={costIncurred?.costIncurredId}>
                     <TableCell>{index + 1}</TableCell>
-                    <TableCell>{costIncurred.itemName}</TableCell>
-                    <TableCell>{costIncurred.costIncurred}</TableCell>
+                    <TableCell>{costIncurred?.itemName}</TableCell>
+                    <TableCell>{costIncurred?.costIncurred}</TableCell>
                     <TableCell>
                       <IconButton
                         color="primary"
-                        onClick={() => handleEdit(costIncurred.costIncurredId)}
+                        onClick={() => handleEdit(costIncurred?.costIncurredId)}
                       >
                         <EditIcon />
                       </IconButton>

@@ -36,7 +36,7 @@ const CreateProjectFormDetails = () => {
     projectName: "",
     description: "",
     projectCategory: "",
-    applicableActivity: "",
+    applicableActivity: [],
     projectManager: "",
     projectLead: "",
     domain: "",
@@ -57,14 +57,11 @@ const CreateProjectFormDetails = () => {
     projectManager: "",
   });
   const [saveButton, setSaveButton] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
   // client Search
   const clientSearchData = useSelector(
     (state) => state.nonPersist?.projectDetails?.clientNameData
   );
-
-  useEffect(() => {
-    dispatch(getClientNameAction());
-  }, []);
 
   const handleChange = (e, name) => {
     console.log("e", e);
@@ -88,12 +85,6 @@ const CreateProjectFormDetails = () => {
       [name]: "",
     });
   };
-
-  // const handleChange2 = (value) => {
-  //   const skillIds = value.map((skillObj) => skillObj.skillId);
-  //   console.log('value',value)
-  //   setFormData({ ...formData, skill: skillIds });
-  // };
 
   //client Details like address etc
   const { clientDetailsData } = useSelector(
@@ -149,10 +140,6 @@ const CreateProjectFormDetails = () => {
     (state) => state.nonPersist?.projectDetails?.employeeSearchData
   );
 
-  useEffect(() => {
-    dispatch(getEmployeeSearchAction());
-  }, []);
-
   //doomain
   const allDomainData = useSelector(
     (state) => state?.nonPersist?.projectDetails?.allDomainData
@@ -205,8 +192,10 @@ const CreateProjectFormDetails = () => {
       dispatch(getProjectDetailsAction(id));
     }
   }, [projectId, id]);
-
+  console.log("isEdit", isEdit);
   useEffect(() => {
+    setIsEdit(true);
+
     if (projectDetailsData) {
       setFormData({
         clientName: projectDetailsData?.client?.clientName || "",
@@ -239,7 +228,7 @@ const CreateProjectFormDetails = () => {
         }));
       }
     }
-  }, [projectDetailsData, id]);
+  }, [id]);
 
   //Save
   const handleSaveData = async (e, type) => {
@@ -268,10 +257,13 @@ const CreateProjectFormDetails = () => {
       projectManagerId: formData.projectManager?.id,
       projectTechLeadId: formData.projectLead?.id,
       domainId: formData.domain,
-      complexity: formData.complexity,
       clientId: formData.clientName.id,
-      activitiesIds: formData.applicableActivity,
+      activitiesIds: formData.applicableActivity || [],
     };
+
+    if (formData.complexity) {
+      payload.complexity = formData.complexity;
+    }
 
     await dispatch(saveCreateProjectAction(payload, saveProjectStagePayload));
 
@@ -679,8 +671,8 @@ const CreateProjectFormDetails = () => {
               handleChange(value, "applicableActivity")
             }
             value={
-              masterdataProjectActivityList.filter((s) =>
-                formData.applicableActivity.includes(s.activityId)
+              masterdataProjectActivityList?.filter((s) =>
+                formData.applicableActivity?.includes(s.activityId)
               ) || []
             }
             disableCloseOnSelect
@@ -706,45 +698,61 @@ const CreateProjectFormDetails = () => {
           </Typography>
 
           <Box>
-            {/* <AsyncSelect
-              cacheOptions
-              value={formData.projectManager}
-              name="projectManager"
-              onChange={(data) => handleChange(data, "projectManager")}
-              loadOptions={loadOptions}
-              placeholder="Search..."
-              noOptionsMessage={() => "No results"}
-              styles={{
-                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                control: (baseStyles) => ({
-                  ...baseStyles,
-
-                  height: "55px",
-                }),
-              }}
-            /> */}
-            <Autocomplete
-              options={employeeSearchData?.result || []}
-              sx={{
-                borderRadius: "8px",
-              }}
-              getOptionLabel={(option) => option.name}
-              getOptionSelected={(option, value) => option.id === value.id}
-              onChange={(event, data) => {
-                handleChange(data, "projectManager");
-              }}
-              isSearchable={true}
-              getOptionValue={(option) => option.id}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  variant="outlined"
-                  placeholder="Search by Manager"
-                  onChange={handleInputChange}
+            {isEdit ? (
+              <>
+                {" "}
+                <Autocomplete
+                  options={employeeSearchData?.result || []}
+                  sx={{
+                    borderRadius: "8px",
+                  }}
+                  getOptionLabel={(option) => option.name}
+                  getOptionSelected={(option, value) => option.id === value.id}
+                  onChange={(event, data) => {
+                    handleChange(data, "projectManager");
+                  }}
+                  value={formData.projectManager}
+                  isSearchable={true}
+                  getOptionValue={(option) => option.id}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      placeholder="Search by Manager"
+                      onChange={handleInputChange}
+                    />
+                  )}
                 />
-              )}
-            />
+              </>
+            ) : (
+              <>
+                {" "}
+                <Autocomplete
+                  options={employeeSearchData?.result || []}
+                  sx={{
+                    borderRadius: "8px",
+                  }}
+                  getOptionLabel={(option) => option.name}
+                  getOptionSelected={(option, value) => option.id === value.id}
+                  onChange={(event, data) => {
+                    handleChange(data, "projectManager");
+                  }}
+                  isSearchable={true}
+                  getOptionValue={(option) => option.id}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      placeholder="Search by Manager"
+                      onChange={handleInputChange}
+                      value={formData.projectManager}
+                    />
+                  )}
+                />
+              </>
+            )}
           </Box>
+
           {validationErrors.projectManager && (
             <Typography variant="caption" color="error">
               {validationErrors.projectManager}
@@ -759,6 +767,7 @@ const CreateProjectFormDetails = () => {
               sx={{
                 borderRadius: "8px",
               }}
+              // value={formData?.projectLead || null}
               getOptionLabel={(option) => option.name}
               getOptionSelected={(option, value) => option.id === value.id}
               onChange={(event, data) => {
