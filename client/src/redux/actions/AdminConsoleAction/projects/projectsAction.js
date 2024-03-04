@@ -702,7 +702,7 @@ export const getAllResourcesAction = (data) => {
     try {
       const response = await makeRequest(
         "GET",
-        `/api//resources/getAllResources/${data}`
+        `/api/resources/getAllResources/${data}`
       );
       dispatch(getAllResourcesSuccess(response));
     } catch (err) {

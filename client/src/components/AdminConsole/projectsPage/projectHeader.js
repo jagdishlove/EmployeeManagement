@@ -14,7 +14,6 @@ import { useNavigate } from "react-router-dom";
 import { adminHeaderStyle } from "../../admin/approvalTimesheets/adminHeaderStyle";
 import Dropdown from "../../forms/dropdown/dropdown";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
 import { getClientProjectNameSearchAction } from "../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 // import { components } from "react-select";
 // import SearchIcon from "@mui/icons-material/Search";
@@ -48,10 +47,6 @@ export default function ProjectHeader({
   const clientProjectSearchData = useSelector(
     (state) => state?.nonPersist?.projectDetails?.clientProjectNameSearchData
   );
-
-  useEffect(() => {
-    dispatch(getClientProjectNameSearchAction());
-  }, []);
 
   const handleInputChangeClientSearch = (e) => {
     const inputValue = e.target.value;
