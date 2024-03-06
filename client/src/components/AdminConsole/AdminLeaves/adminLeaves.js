@@ -6,8 +6,9 @@ import dayjs from "dayjs";
 import { Box, Typography } from "@mui/material";
 import InfiniteScroll from "react-infinite-scroll-component";
 import DataCard from "../../admin/approvalLeaves/DataCard";
+import { approveRejectLeavesAction } from "../../../redux/actions/leaves/approvalLeaveAction";
 
-const AdminLeaves = ({ approveRejectLeavesHandler }) => {
+const AdminLeaves = () => {
   const dispatch = useDispatch();
   const [selectedSearchOption, setSelectedSearchOption] = useState("");
   const SUBMITTED = "SUBMITTED";
@@ -52,14 +53,17 @@ const AdminLeaves = ({ approveRejectLeavesHandler }) => {
       approverId: approver === "All" ? "" : approver,
     };
 
-    dispatch(
-      getAllLeavesForAdminAction(
-        nextPagePayload,
-        getPayload,
-        selectedSearchOption
-      )
-    );
+    dispatch(getAllLeavesForAdminAction(selectedSearchOption, nextPagePayload));
     setPageCounter((counter) => counter + 1);
+  };
+
+  const approveRejectLeavesHandler = async (id, status, approverComment) => {
+    const payload = {
+      leaveRequestId: id,
+      approverComment: approverComment || "APPROVED",
+      status,
+    };
+    await dispatch(approveRejectLeavesAction(payload));
   };
 
   return (
@@ -82,14 +86,16 @@ const AdminLeaves = ({ approveRejectLeavesHandler }) => {
           hasMore={true}
           next={fetchMore}
         >
-          {adminLeavesData?.content?.map((cardData) => (
-            <DataCard
-              key={cardData.leaveRequestId}
-              cardData={cardData}
-              // index={cardData.leaveRequestId}
-              approveRejectLeavesHandler={approveRejectLeavesHandler}
-            />
-          ))}
+          {adminLeavesData?.content?.map((cardData) => {
+            return (
+              <DataCard
+                key={cardData.leaveRequestId}
+                cardData={cardData}
+                index={cardData.leaveRequestId}
+                approveRejectLeavesHandler={approveRejectLeavesHandler}
+              />
+            );
+          })}
         </InfiniteScroll>
       )}
     </div>

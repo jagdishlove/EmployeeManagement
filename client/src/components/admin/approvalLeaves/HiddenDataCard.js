@@ -39,6 +39,7 @@ const HiddenDataCard = ({
   const handleDownload = (file) => {
     dispatch(downloadFileAction(file, cardData.fileName));
   };
+
   return (
     <Grid container spacing={2} style={{ padding: "10px" }}>
       <div
@@ -191,7 +192,11 @@ const HiddenDataCard = ({
               justifyContent: "center",
             }}
           >
-            { getLeaveType(cardData.leaveMasterId) === "Adoption Leave For Female" || getLeaveType(cardData.leaveMasterId) === "Adoption Leave For Male" ? "Adoption Leave" : getLeaveType(cardData.leaveMasterId)}
+            {getLeaveType(cardData.leaveMasterId) ===
+              "Adoption Leave For Female" ||
+            getLeaveType(cardData.leaveMasterId) === "Adoption Leave For Male"
+              ? "Adoption Leave"
+              : getLeaveType(cardData.leaveMasterId)}
           </Typography>
         </Grid>
         {cardData.fileName && (
@@ -353,7 +358,7 @@ const HiddenDataCard = ({
                     lineHeight: "20px",
                   }}
                 >
-                  {error[index]}
+                  {error?.[index]}
                 </p>
               </Grid>
             }
