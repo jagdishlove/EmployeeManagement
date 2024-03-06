@@ -15,7 +15,6 @@ const mainApi = axios.create({
   withCredentials: true,
 });
 
-
 const addApi = axios.create({
   baseURL,
   headers: {
@@ -29,8 +28,7 @@ mainApi.interceptors.response.use(
     return response;
   },
   async (error) => {
-    console.log("error", error);
-    if (error.response?.status === 403 || error.code === 'ERR_NETWORK') {
+    if (error.response?.status === 403 || error.code === "ERR_NETWORK") {
       localStorage.removeItem("selectedItem");
       persistor.purge(["login"]);
       window.location.href = "/";
@@ -56,7 +54,6 @@ const makeRequest = async (method, url, data, queryParams) => {
       url: queryParams ? `${url}?${new URLSearchParams(queryParams)}` : url,
       data,
       headers,
-
     });
 
     return response.data;
@@ -104,7 +101,7 @@ export const downloadApi = async (method, url, data, queryParams) => {
       url: queryParams ? `${url}?${new URLSearchParams(queryParams)}` : url,
       data,
       headers,
-      responseType:'blob'
+      responseType: "blob",
     });
 
     return response.data;
@@ -112,4 +109,3 @@ export const downloadApi = async (method, url, data, queryParams) => {
     throw error;
   }
 };
-

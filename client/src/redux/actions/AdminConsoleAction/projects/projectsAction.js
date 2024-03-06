@@ -362,6 +362,22 @@ const deleteCostIncurredFail = () => {
   };
 };
 
+const deleteResourcesRequest = () => {
+  return {
+    type: SAVE_CREATE_RESOURCES_REQUEST,
+  };
+};
+const deleteResourcesSuccess = () => {
+  return {
+    type: SAVE_CREATE_RESOURCES_SUCCESS,
+  };
+};
+const deleteResourcesFail = () => {
+  return {
+    type: SAVE_CREATE_RESOURCES_FAIL,
+  };
+};
+
 export const getAllProjects = (payload, getProjectpayload) => {
   return async (dispatch) => {
     dispatch(getAllProjectsRequest());
@@ -443,7 +459,6 @@ export const getAllDomainAction = (data) => {
 };
 
 export const getAllocationSearch = (data) => {
-  console.log("this is data", data);
   return async (dispatch) => {
     dispatch(getAllocationSearchRqst());
     try {
@@ -710,6 +725,29 @@ export const getAllResourcesAction = (data) => {
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
+    }
+  };
+};
+
+export const deleteResourcesAction = (id, projectId) => {
+  return async (dispatch) => {
+    try {
+      dispatch(deleteResourcesRequest());
+      const response = await makeRequest(
+        "DELETE",
+        `/api/resources/delete/${id}`
+      );
+      dispatch(deleteResourcesSuccess(response?.token));
+      dispatch(getAllResourcesAction(projectId));
+      toast.success("Resources Deleted Successfully", {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    } catch (err) {
+      if (err.response.data.errorCode === 403) {
+        dispatch(getRefreshToken());
+      }
+      dispatch(deleteResourcesFail(err.response.data.errorMessage));
+      dispatch(errorMessage(err.response.data.errorMessage));
     }
   };
 };

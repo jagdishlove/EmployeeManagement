@@ -30,7 +30,6 @@ function Chart() {
         sx={{
           display: "flex",
           justifyContent: "center",
-          //  alignItems: "center",
           height: "100%",
           border: "3px dotted  rgba(0, 128, 128, 0.4)",
           padding: "10px",

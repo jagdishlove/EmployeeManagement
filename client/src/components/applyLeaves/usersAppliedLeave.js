@@ -36,7 +36,6 @@ const UsersAppliedLeave = ({ color }) => {
   const searchAPIData = useSelector(
     (state) => state?.nonPersist?.leavesData?.allEmployeesSearchData
   );
-  console.log("searchAPIData", searchAPIData)
 
   const leaveTypesData = useSelector(
     (state) => state.persistData.masterData?.leaveTypes
@@ -95,7 +94,6 @@ const UsersAppliedLeave = ({ color }) => {
   const iconColor = color ? "#FFFFFF" : "#008080";
 
   const handleInputChange = (data) => {
-    console.log('hello')
     setSelectedSearchOption(data);
     dispatch(getAllLeaveRequestsOfEmployeesAction(15, filterData, null, data));
     setSelectedOptions(data);
@@ -123,10 +121,6 @@ const UsersAppliedLeave = ({ color }) => {
       [name]: newValue.format("YYYY-MM-DD"),
     }));
   };
-
-  // useEffect(() => {
-  //   dispatch(getAllLeaveRequestsOfEmployeesAction(15, filterData, null));
-  // }, [filterData.fromDate, filterData.toDate]);
 
   const tableHead = { backgroundColor: "#008080" };
 

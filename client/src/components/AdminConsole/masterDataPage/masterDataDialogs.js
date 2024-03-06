@@ -385,7 +385,7 @@ export default function MasterDataDialogs({
             options={country}
             getOptionLabel={(option) => option.dataValue}
             onChange={(e, value) => handleOfficeChange("country", e, value)}
-            value={country.find((c) => c.id === officeData?.countryId) || null}
+            value={country?.find((c) => c.id === officeData?.countryId) || null}
             renderInput={(params) => (
               <TextField {...params} placeholder="Country" />
             )}
@@ -401,7 +401,7 @@ export default function MasterDataDialogs({
             options={state}
             getOptionLabel={(option) => option.dataValue}
             onChange={(e, value) => handleOfficeChange("state", e, value)}
-            value={state.find((c) => c.id === officeData?.stateId) || null}
+            value={state?.find((c) => c.id === officeData?.stateId) || null}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -421,7 +421,7 @@ export default function MasterDataDialogs({
             options={city}
             getOptionLabel={(option) => option.dataValue}
             onChange={(e, value) => handleOfficeChange("city", e, value)}
-            value={city.find((c) => c.id === officeData?.cityId) || null}
+            value={city?.find((c) => c.id === officeData?.cityId) || null}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -802,7 +802,7 @@ export default function MasterDataDialogs({
               onChange={handleFileChange}
             />
           </label>
-          <Typography>Clinet Name</Typography>
+          <Typography>Client Name</Typography>
           <TextField
             placeholder="Enter Client Name"
             name="clinetName"
@@ -830,7 +830,7 @@ export default function MasterDataDialogs({
               <Typography color="error"> {errors.addressLine1}</Typography>
             </Box>
           )}
-          <Typography>Address Line 1</Typography>
+          <Typography>Address Line 2</Typography>
           <TextField
             placeholder="Enter Client Address"
             name="addressLine2"
@@ -872,7 +872,7 @@ export default function MasterDataDialogs({
             getOptionLabel={(option) => option.dataValue}
             onChange={(e, value) => handleClinetDetails("country", e, value)}
             value={
-              country.find((c) => c.id === clinetDetails?.countryId) || null
+              country?.find((c) => c.id === clinetDetails?.countryId) || null
             }
             renderInput={(params) => (
               <TextField {...params} placeholder="Country" />
@@ -889,7 +889,7 @@ export default function MasterDataDialogs({
             options={state}
             getOptionLabel={(option) => option.dataValue}
             onChange={(e, value) => handleClinetDetails("state", e, value)}
-            value={state.find((c) => c.id === clinetDetails?.stateId) || null}
+            value={state?.find((c) => c.id === clinetDetails?.stateId) || null}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -909,7 +909,7 @@ export default function MasterDataDialogs({
             options={city}
             getOptionLabel={(option) => option.dataValue}
             onChange={(e, value) => handleClinetDetails("city", e, value)}
-            value={city.find((c) => c.id === clinetDetails?.stateId) || null}
+            value={city?.find((c) => c.id === clinetDetails?.stateId) || null}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -991,7 +991,7 @@ export default function MasterDataDialogs({
         <DialogContent
           sx={{ display: "flex", flexDirection: "column", gap: 1 }}
         >
-          <Typography>Clinet Name</Typography>
+          <Typography>Client Name</Typography>
           <TextField
             placeholder="Office Address"
             name="addressName"
@@ -1021,7 +1021,7 @@ export default function MasterDataDialogs({
               <Typography color="error"> {errors.addressLine1}</Typography>
             </Box>
           )}
-          <Typography>Address Line 1</Typography>
+          <Typography>Address Line 2</Typography>
           <TextField
             placeholder="Office Address"
             name="addressLine2"
@@ -1061,7 +1061,7 @@ export default function MasterDataDialogs({
             getOptionLabel={(option) => option.dataValue}
             onChange={(e, value) => handleOnsiteLocation("countryId", e, value)}
             value={
-              country.find((c) => c.id === clientLocationData?.countryId) ||
+              country?.find((c) => c.id === clientLocationData?.countryId) ||
               null
             }
             renderInput={(params) => (
@@ -1080,7 +1080,7 @@ export default function MasterDataDialogs({
             getOptionLabel={(option) => option.dataValue}
             onChange={(e, value) => handleOnsiteLocation("state", e, value)}
             value={
-              state.find((c) => c.id === clientLocationData?.stateId) || null
+              state?.find((c) => c.id === clientLocationData?.stateId) || null
             }
             renderInput={(params) => (
               <TextField
@@ -1102,7 +1102,7 @@ export default function MasterDataDialogs({
             getOptionLabel={(option) => option.dataValue}
             onChange={(e, value) => handleOnsiteLocation("city", e, value)}
             value={
-              city.find((c) => c.id === clientLocationData?.cityId) || null
+              city?.find((c) => c.id === clientLocationData?.cityId) || null
             }
             renderInput={(params) => (
               <TextField

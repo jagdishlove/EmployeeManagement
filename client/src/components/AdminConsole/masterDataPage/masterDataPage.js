@@ -722,7 +722,7 @@ export default function MasterDataPage({
                               onClick={() =>
                                 handleDesignation(
                                   "holiday",
-                                  `${holiday.holidayType} ${holiday.name}`,
+                                  `${holiday.name} ,${holiday.holidayType} `,
                                   holiday.id,
                                   holiday.status
                                 )

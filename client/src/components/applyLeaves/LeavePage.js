@@ -60,7 +60,6 @@ const LeavePage = () => {
 
   const [saveSubmitStatus, setSaveSubmitStatus] = useState(false);
   console.log(saveSubmitStatus);
-
   const dispatch = useDispatch();
 
   const leaveHistory = useSelector(

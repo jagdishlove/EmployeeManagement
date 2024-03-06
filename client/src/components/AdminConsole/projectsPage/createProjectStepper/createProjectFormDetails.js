@@ -12,7 +12,7 @@ import { useTheme } from "@mui/material/styles";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-// import Select from "react-select";
+
 import { TimesheetStyle } from "../../../../pages/timesheet/timesheetStyle";
 import {
   GetAllCountryCityStateAction,
@@ -24,7 +24,6 @@ import {
   saveCreateProjectAction,
 } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import Dropdown from "../../../forms/dropdown/dropdown";
-// import AsyncSelect from "react-select/async";
 
 const CreateProjectFormDetails = () => {
   const theme = useTheme();
@@ -37,8 +36,8 @@ const CreateProjectFormDetails = () => {
     description: "",
     projectCategory: "",
     applicableActivity: [],
-    projectManager: "",
-    projectLead: "",
+    projectManager: { id: 0, name: "", type: "employee" },
+    projectLead: { id: 0, name: "", type: "employee" },
     domain: "",
     complexity: "",
     clientAddress: "",
@@ -64,9 +63,6 @@ const CreateProjectFormDetails = () => {
   );
 
   const handleChange = (e, name) => {
-    console.log("e", e);
-    console.log("name", name);
-
     setFormData((prevData) => ({
       ...prevData,
       [name]: e,
@@ -168,8 +164,6 @@ const CreateProjectFormDetails = () => {
     DataValue[location.id] = location.dataValue;
   });
 
-  console.log("formData", formData);
-
   const projectId = useSelector(
     (state) => state.nonPersist.projectDetails?.projectId
   );
@@ -182,8 +176,6 @@ const CreateProjectFormDetails = () => {
   const projectDetailsData = useSelector(
     (state) => state.nonPersist.projectDetails?.projectDetailsData
   );
-  console.log("projectDetailsData", projectDetailsData);
-
   useEffect(() => {
     if (projectId) {
       dispatch(getProjectDetailsAction(projectId));
@@ -192,19 +184,27 @@ const CreateProjectFormDetails = () => {
       dispatch(getProjectDetailsAction(id));
     }
   }, [projectId, id]);
-  console.log("isEdit", isEdit);
+
   useEffect(() => {
     setIsEdit(true);
 
-    if (projectDetailsData) {
+    if (id) {
       setFormData({
         clientName: projectDetailsData?.client?.clientName || "",
         projectName: projectDetailsData?.projectName || "",
         description: projectDetailsData?.description || "",
         projectCategory: projectDetailsData?.jobType?.jobId || "",
         applicableActivity: projectDetailsData?.activities || "",
-        projectManager: projectDetailsData?.projectManager || "",
-        projectLead: projectDetailsData?.projectLead || "",
+        projectManager: projectDetailsData?.projectManager || {
+          id: 0,
+          name: "",
+          type: "employee",
+        },
+        projectLead: projectDetailsData?.projectTechLead || {
+          id: 0,
+          name: "",
+          type: "employee",
+        },
         domain: projectDetailsData?.domain?.domainId || "",
         complexity: projectDetailsData?.complexity || "",
         clientAddress: projectDetailsData?.clientAddress || "",
@@ -215,10 +215,10 @@ const CreateProjectFormDetails = () => {
         zipCode: projectDetailsData?.zipCode || "",
       });
 
-      if (projectDetailsData?.client?.clientName) {
+      if (id) {
         dispatch(getClientNameAction(projectDetailsData?.client?.clientName));
       }
-      if (projectDetailsData?.activities) {
+      if (id) {
         const activitiesIds = projectDetailsData?.activities?.map(
           (skillObj) => skillObj.activityId
         );
@@ -300,15 +300,15 @@ const CreateProjectFormDetails = () => {
     if (!formData.projectManager) {
       errors.projectManager = "Project Manager is required";
     }
-
     return errors;
   };
 
   const handleInputChange = (e) => {
     const inputValue = e.target.value;
+    const p = { id: 0, name: inputValue, type: "employee" };
     setFormData((prevFormData) => ({
       ...prevFormData,
-      projectManager: inputValue,
+      projectManager: p,
     }));
     if (inputValue.length >= 3) {
       dispatch(getEmployeeSearchAction(inputValue));
@@ -316,9 +316,10 @@ const CreateProjectFormDetails = () => {
   };
   const handleInputChangeOne = (e) => {
     const inputValue = e.target.value;
+    const pl = { id: 0, name: inputValue, type: "employee" };
     setFormData((prevFormData) => ({
       ...prevFormData,
-      projectLead: inputValue,
+      projectLead: pl,
     }));
     if (inputValue.length >= 3) {
       dispatch(getEmployeeSearchAction(inputValue));
@@ -329,13 +330,7 @@ const CreateProjectFormDetails = () => {
     const inputValue = e.target.value;
     // Check if clientSearchData?.result is available
     if (clientSearchData?.result) {
-      // const matchingClients = clientSearchData.result.filter((client) =>
-      //   client.name.toLowerCase().includes(inputValue.toLowerCase())
-      // );
-      // setFormData((prevFormData) => ({
-      //   ...prevFormData,
-      //   clientName: matchingClients[0] || { name: inputValue },
-      // }));
+      //
     } else {
       // If clientSearchData?.result is not available, set only the name
       setFormData((prevFormData) => ({
@@ -349,7 +344,6 @@ const CreateProjectFormDetails = () => {
   };
 
   const selectedClientId = projectDetailsData?.client?.clientId;
-  console.log("selectedClientId", selectedClientId);
 
   // Find the corresponding client object based on clientID
   const selectedClient = clientSearchData?.result?.find(
@@ -363,7 +357,6 @@ const CreateProjectFormDetails = () => {
     }));
   }, [selectedClient]);
 
-  console.log("selectedClient", selectedClient);
   return (
     <div style={{ marginBottom: "50px" }}>
       {/* Client Details */}
@@ -635,7 +628,6 @@ const CreateProjectFormDetails = () => {
             rows={4}
             fullWidth
           />
-
           <Typography variant="body1" style={{ marginTop: "15px" }}>
             Project Category
           </Typography>
@@ -738,6 +730,7 @@ const CreateProjectFormDetails = () => {
                     handleChange(data, "projectManager");
                   }}
                   isSearchable={true}
+                  value={formData.projectManager}
                   getOptionValue={(option) => option.id}
                   renderInput={(params) => (
                     <TextField
@@ -745,7 +738,6 @@ const CreateProjectFormDetails = () => {
                       variant="outlined"
                       placeholder="Search by Manager"
                       onChange={handleInputChange}
-                      value={formData.projectManager}
                     />
                   )}
                 />
@@ -762,29 +754,61 @@ const CreateProjectFormDetails = () => {
             Project Lead
           </Typography>
           <Box>
-            <Autocomplete
-              options={employeeSearchData?.result || []}
-              sx={{
-                borderRadius: "8px",
-              }}
-              // value={formData?.projectLead || null}
-              getOptionLabel={(option) => option.name}
-              getOptionSelected={(option, value) => option.id === value.id}
-              onChange={(event, data) => {
-                handleChange(data, "projectLead");
-              }}
-              isSearchable={true}
-              getOptionValue={(option) => option.id}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  variant="outlined"
-                  placeholder="Search by Project Lead"
-                  onChange={handleInputChangeOne}
+            {isEdit ? (
+              <Autocomplete
+                options={employeeSearchData?.result || []}
+                sx={{
+                  borderRadius: "8px",
+                }}
+                value={formData.projectLead}
+                getOptionLabel={(option) => option.name}
+                getOptionSelected={(option, value) => option.id === value.id}
+                onChange={(event, data) => {
+                  handleChange(data, "projectLead");
+                }}
+                isSearchable={true}
+                getOptionValue={(option) => option.id}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    placeholder="Search by Project Lead"
+                    onChange={handleInputChangeOne}
+                  />
+                )}
+              />
+            ) : (
+              <>
+                <Autocomplete
+                  options={employeeSearchData?.result || []}
+                  sx={{
+                    borderRadius: "8px",
+                  }}
+                  value={formData.projectLead}
+                  getOptionLabel={(option) => option.name}
+                  getOptionSelected={(option, value) => option.id === value.id}
+                  onChange={(event, data) => {
+                    handleChange(data, "projectLead");
+                  }}
+                  isSearchable={true}
+                  getOptionValue={(option) => option.id}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      placeholder="Search by Project Lead"
+                      onChange={handleInputChangeOne}
+                    />
+                  )}
                 />
-              )}
-            />
+              </>
+            )}
           </Box>
+          {validationErrors.projectLead && (
+            <Typography variant="caption" color="error">
+              {validationErrors.projectLead}
+            </Typography>
+          )}
           <Typography variant="body1" style={{ marginTop: "15px" }}>
             Domain
           </Typography>
@@ -804,7 +828,6 @@ const CreateProjectFormDetails = () => {
             labelKey="domainName"
             name="domain"
           />
-
           <Typography variant="body1" style={{ marginTop: "15px" }}>
             Complexity
           </Typography>

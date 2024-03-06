@@ -28,7 +28,6 @@ const ProjectAccordion = () => {
   const { projectDetailsData } = useSelector(
     (state) => state.nonPersist?.projectDetails
   );
-  console.log("projectDetailsData", projectDetailsData);
 
   useEffect(() => {
     dispatch(getProjectDetailsAction(id));

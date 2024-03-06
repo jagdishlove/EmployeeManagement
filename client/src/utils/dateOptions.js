@@ -14,6 +14,22 @@ export const dateOptions = () => {
   return dateOptions;
 };
 
+
+
+export const admindateOptions = () => {
+  const today = new Date();
+  const dateOptions = [];
+
+  for (let i = 0; i < 3; i++) {
+    const date = subDays(today, i);
+    const label = format(date, "MMM dd, yyyy");
+    const value = format(date, "EEEE, MMMM d, yyyy");
+    dateOptions.push({ label, value });
+  }
+  return dateOptions;
+};
+
+
 const parseTime = (timeStr) => {
   const [hours, minutes] = timeStr.split(":");
   return new Date(0, 0, 0, parseInt(hours), parseInt(minutes));

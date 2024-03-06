@@ -9,14 +9,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-// import Select from "react-select";
+
 import { useNavigate } from "react-router-dom";
 import { adminHeaderStyle } from "../../admin/approvalTimesheets/adminHeaderStyle";
 import Dropdown from "../../forms/dropdown/dropdown";
 import { useDispatch, useSelector } from "react-redux";
 import { getClientProjectNameSearchAction } from "../../../redux/actions/AdminConsoleAction/projects/projectsAction";
-// import { components } from "react-select";
-// import SearchIcon from "@mui/icons-material/Search";
 
 export default function ProjectHeader({
   projectsData,
@@ -28,7 +26,6 @@ export default function ProjectHeader({
   const style = adminHeaderStyle(theme);
   const Navigate = useNavigate();
   const dispatch = useDispatch();
-  //  const [formData, setFormData] = useState("");
 
   const projectStatus = useSelector(
     (state) => state.persistData.masterData?.projectStatus

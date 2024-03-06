@@ -79,7 +79,7 @@ export default function MasterData() {
   const [edit, setEdit] = useState(false);
   const [countyCode, setCountryCode] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
-
+  const [file, setFile] = useState(null);
   const dispatch = useDispatch();
   const [officeData, setOfficeData] = useState({
     officeAddress: "",
@@ -224,8 +224,8 @@ export default function MasterData() {
     setIsOpenCalender(false);
   };
 
-  const cancleHandlerAccepentc = () => {
-    setSelectedDate(dayjs());
+  const cancleHandlerAccepentc = (e) => {
+    setSelectedDate(e);
   };
 
   const handleExpand = (type) => {
@@ -391,10 +391,11 @@ export default function MasterData() {
   };
 
   const handleFileChange = (event) => {
-    const selectedFile = event.target.files[0];
+    const file = event.target.files[0];
 
-    if (selectedFile) {
-      setSelectedImage(URL.createObjectURL(selectedFile));
+    if (file) {
+      setSelectedImage(URL.createObjectURL(file));
+      setFile(file);
     }
   };
 
@@ -796,17 +797,15 @@ export default function MasterData() {
         } else if (type === "clinetDetails") {
           const payload = {
             clientId: id ? id : "",
+            file: file ? file : "",
             clientName: clinetDetails.clinetName,
-            phone: clinetDetails.phone,
-            address: {
-              name: clinetDetails.clinetName,
-              addressLine1: clinetDetails.addressLine1,
-              addressLine2: clinetDetails.addressLine2,
-              postalCode: clinetDetails.postalCode,
-              countryId: clinetDetails.countryId,
-              stateId: clinetDetails.stateId,
-              cityId: clinetDetails.cityId,
-            },
+            phone: "24536765467",
+            "address.addressLine1": clinetDetails.addressLine1,
+            "address.addressLine2": clinetDetails.addressLine2,
+            "address.postalCode": clinetDetails.postalCode,
+            "address.countryId": clinetDetails.countryId,
+            "address.cityId": clinetDetails.cityId,
+            "address.stateId": clinetDetails.stateId,
           };
           if (status) {
             payload.status = status;
@@ -911,7 +910,7 @@ export default function MasterData() {
           }
           await dispatch(UpdateManageHoliday(payload));
           await dispatch(GetAllHolidays());
-        } else if (type === "domine") {
+        } else if (type === "Domine") {
           const payload = {
             domainId: id ? id : "",
             domainName: value,

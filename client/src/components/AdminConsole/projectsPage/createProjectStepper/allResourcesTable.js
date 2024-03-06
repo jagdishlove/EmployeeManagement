@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import React from "react";
 import {
   Grid,
@@ -13,16 +13,21 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-// import { getAllResourcesAction } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
+import { deleteResourcesAction } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 
 const AllResourcesTable = ({ handleEdit }) => {
+  const dispatch = useDispatch();
   const allResourcesData = useSelector(
     (state) => state.nonPersist.projectDetails?.allResourcesData
   );
-  console.log("allResourcesData", allResourcesData);
+
   if (!allResourcesData || !Array.isArray(allResourcesData)) {
     return <p>No resources available</p>;
   }
+
+  const projectId = useSelector(
+    (state) => state.nonPersist.projectDetails?.projectId
+  );
 
   return (
     <Grid container spacing={2} justifyContent={"center"}>
@@ -68,14 +73,14 @@ const AllResourcesTable = ({ handleEdit }) => {
 
                     <IconButton color="primary">
                       <DeleteIcon
-                      // onClick={() =>
-                      //   dispatch(
-                      //     deleteCostIncurredAction(
-                      //       costIncurred.costIncurredId,
-                      //       projectId
-                      //     )
-                      //   )
-                      // }
+                        onClick={() =>
+                          dispatch(
+                            deleteResourcesAction(
+                              allResources.resourceId,
+                              projectId
+                            )
+                          )
+                        }
                       />
                     </IconButton>
                   </TableCell>

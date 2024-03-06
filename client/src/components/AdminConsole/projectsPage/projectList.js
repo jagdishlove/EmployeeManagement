@@ -60,7 +60,7 @@ const ProjectList = ({ projectsData }) => {
       <CardHeader
         avatar={
           <img
-            src={`data:${projectsData?.client?.fileStorage?.fileType};base64,${projectsData?.client?.fileStorage?.data}`}
+            src={`data:${projectsData?.fileStorage?.fileType};base64,${projectsData?.fileStorage?.data}`}
             alt="Logo"
             style={{
               width: 40, // Set the width as needed
@@ -96,7 +96,7 @@ const ProjectList = ({ projectsData }) => {
             variant="body2"
             sx={{ color: "#1D1B20", fontSize: "16px" }}
           >
-            {projectsData?.projectName}
+            {projectsData?.clientName}
           </Typography>
         }
         subheader={
@@ -104,7 +104,7 @@ const ProjectList = ({ projectsData }) => {
             variant="body2"
             sx={{ color: "#1D1B20", fontSize: "12px" }}
           >
-            {projectsData?.description}
+            {projectsData?.projectName}
           </Typography>
         }
       />

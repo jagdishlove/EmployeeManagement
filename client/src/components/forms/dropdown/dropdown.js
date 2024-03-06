@@ -1,4 +1,4 @@
-import { InputLabel } from "@mui/material";
+import { Grid, InputLabel } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
@@ -51,6 +51,12 @@ const Dropdown = ({
               option.sessionName ||
               option.leaveMasterId ||
               option.skillName ||
+              option.genderId ||
+              option.bandId ||
+              option.empTypeId ||
+              option.manager||
+              option.locationId||
+              option.designationId ||
               option.gender ||
               option.bandName ||
               option.employmentType ||
@@ -75,10 +81,36 @@ const Dropdown = ({
               option.gender ||
               option.bandName ||
               option.employmentType ||
+              option.manager||
+              option.locationName||
+              option.designationName||
+              option.name ||
               option.managerName ||
               option.complexityName ||
               option.projectType ||
+              (option.approverName && option.submittedCount ? (
+                <Grid container>
+                  <Grid item xs={10}>
+                    {option.approverName}
+                  </Grid>
+                  <Grid item xs={2}>
+                    <div
+                      style={{
+                        color: "#fff",
+                        textAlign: "center",
+                        backgroundColor: "red",
+                        borderRadius: "50%",
+                      }}
+                    >
+                      {option.submittedCount}
+                    </div>
+                  </Grid>
+                </Grid>
+              ) : (
+                ""
+              )) ||
               option[labelKey]}
+
           </MenuItem>
         ))}
       </Select>
