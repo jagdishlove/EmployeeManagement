@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Box, Grid, IconButton, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import UserHerders from "./userHeaders";
 import UserListPage from "./userListPage";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllUsers } from "../../../redux/actions/AdminConsoleAction/users/usersAction";
 import InfiniteScroll from "react-infinite-scroll-component";
-import CloseIcon from "@mui/icons-material/Close"; // Added CloseIcon
 import { masterDataAction } from "../../../redux/actions/masterData/masterDataAction";
 
 export default function User() {
@@ -14,6 +13,7 @@ export default function User() {
   const [pageCounter, setPageCounter] = useState(2);
   const [skillsCheckedData, setSkillsCheckedData] = useState([]);
   const [designationId, setDesignationId] = useState("All");
+  const [selectedSearchOption, setSelectedSearchOption] = useState("");
 
   const userData = useSelector(
     (state) => state?.nonPersist?.userDetails?.usersData
@@ -25,13 +25,18 @@ export default function User() {
     );
   };
 
+  const skillIds = skillsCheckedData.map((skill) => skill.skillId);
+  const skillIdsString = skillIds.join(",");
+
   const payload = {
     size: 5 * 2,
+    designationId: designationId === "All" ? "" : designationId,
+    skillIds: skillIdsString,
   };
 
   useEffect(() => {
-    dispatch(getAllUsers(payload));
-  }, [users]);
+    dispatch(getAllUsers(payload, selectedSearchOption));
+  }, [users, selectedSearchOption, designationId, skillsCheckedData]);
 
   useEffect(() => {
     dispatch(masterDataAction());
@@ -42,6 +47,8 @@ export default function User() {
     const nextPage = 10 * pageCounter;
     const nextPagePayload = {
       size: nextPage,
+      designationId: designationId === "All" ? "" : designationId,
+      skillIds: skillIdsString,
     };
 
     dispatch(getAllUsers(nextPagePayload));
@@ -68,6 +75,8 @@ export default function User() {
           skillsCheckedData={skillsCheckedData}
           designationId={designationId}
           setDesignationId={setDesignationId}
+          setSelectedSearchOption={setSelectedSearchOption}
+          selectedSearchOption={selectedSearchOption}
         />
         <Box
           display={"flex"}
@@ -102,16 +111,6 @@ export default function User() {
                 }}
                 key={selectedSkills.skillId}
               >
-                <IconButton
-                  onClick={() => removeSkill(selectedSkills)}
-                  size="small"
-                >
-                  <CloseIcon
-                    sx={{
-                      width: "15px",
-                    }}
-                  />
-                </IconButton>
                 <Typography
                   sx={{
                     padding: "6px, 10px, 6px, 10px",

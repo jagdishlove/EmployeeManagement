@@ -52,8 +52,11 @@ const TimesheetRow = ({
   isHistory,
   setDisabledWhileEditing,
   timesheetForm,
+  superAdmin
 }) => {
   const theme = useTheme();
+
+  console.log('data',data)
 
   const dispatch = useDispatch();
   const masterData = useSelector((state) => state.persistData.masterData);
@@ -489,7 +492,7 @@ const TimesheetRow = ({
             : "2px solid #008080",
       }}
     >
-      {approval && data ? (
+      {((approval && data) || superAdmin) ? (
         <div
           style={{
             position: "absolute",
@@ -512,7 +515,7 @@ const TimesheetRow = ({
         </div>
       ) : null}
 
-      {approval && data ? (
+      {((approval && data) || superAdmin) ? (
         <div
           style={{
             position: "absolute",
@@ -559,7 +562,7 @@ const TimesheetRow = ({
                     : selectedValues.fromTime
                 }
                 onChangeHandler={(e) => onChangeTimeHandler(e, "fromTime")}
-                disabled={disabled || approval || isHistory}
+                disabled={disabled || approval || isHistory || superAdmin}
               />
             </DemoItem>
             <DemoItem>
@@ -570,7 +573,7 @@ const TimesheetRow = ({
                   selectedValues.toTime === "" ? null : selectedValues.toTime
                 }
                 onChangeHandler={(e) => onChangeTimeHandler(e, "toTime")}
-                disabled={disabled || approval}
+                disabled={disabled || approval || superAdmin}
               />
             </DemoItem>
           </Grid>
@@ -597,7 +600,7 @@ const TimesheetRow = ({
                   border: "1px solid #8897ad87",
                   borderRadius: "10px",
                 }}
-                disabled={disabled || approval}
+                disabled={disabled || approval || superAdmin}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={6} lg={6}>
@@ -612,7 +615,7 @@ const TimesheetRow = ({
                   border: "1px solid #8897ad87",
                   borderRadius: "10px",
                 }}
-                disabled={disabled || approval}
+                disabled={disabled || approval || superAdmin}
               />
             </Grid>
             <Grid item xs={12} sm={12} md={12} lg={12}>
@@ -627,7 +630,7 @@ const TimesheetRow = ({
                   border: "1px solid #8897ad87",
                   borderRadius: "10px",
                 }}
-                disabled={disabled || approval}
+                disabled={disabled || approval || superAdmin}
               />
             </Grid>
           </Grid>
@@ -653,7 +656,7 @@ const TimesheetRow = ({
                 sx={style.TimesheetTextField1}
                 inputProps={{ maxLength: 250 }}
                 onChange={(e) => onChangeHandler(e, "comments")}
-                disabled={disabled || approval || disableSubmit}
+                disabled={disabled || approval || disableSubmit || superAdmin}
               />
             </Grid>
           ) : null}
@@ -675,9 +678,9 @@ const TimesheetRow = ({
                   sx={style.TimesheetManagerTextField}
                   inputProps={{ maxLength: 250 }}
                   onChange={(e) => onChangeHandler(e, "adminComment")}
-                  disabled={!approval}
+                  disabled={(!approval)}
                   InputLabelProps={
-                    approval
+                    (approval || superAdmin)
                       ? {
                           shrink: true,
                           htmlFor: "manager-comments",
@@ -756,7 +759,7 @@ const TimesheetRow = ({
                   display={"flex"}
                   sx={style.starSec}
                 >
-                  {!approval ? (
+{(!approval || ((superAdmin && !data.status === "SUBMITTED"))) ? (
                     <>
                       <Button
                         sx={style.GreenButton}
@@ -886,7 +889,7 @@ const TimesheetRow = ({
               )}
             </Grid>
           </Grid>
-          {approval ? null : (
+          {(approval || superAdmin) ? null : (
             <Grid item xs={12} sm={12} md={1} lg={1} sx={style.iconDesign}>
               {data ? (
                 <IconButton
@@ -942,7 +945,7 @@ const TimesheetRow = ({
                 ""
               )}
 
-              {data ? (
+              {data  ? (
                 <IconButton
                   disabled={disabled}
                   onClick={() => handleEditData(id)}

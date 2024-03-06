@@ -67,7 +67,6 @@ const initialState = {
 };
 
 const projectsReducer = (state = initialState, action) => {
-  console.log("action.payload", action.payload);
   switch (action.type) {
     case FETCH_ALL_PROJECTS_REQUEST:
       return {

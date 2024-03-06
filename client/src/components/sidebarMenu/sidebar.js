@@ -18,12 +18,12 @@ import { styled, useTheme } from "@mui/material/styles";
 import * as React from "react";
 import { useState } from "react";
 import kairos_logo from "../../assets/kairos_logo.png";
-import HolidayVillageIcon from '@mui/icons-material/HolidayVillage';
+import HolidayVillageIcon from "@mui/icons-material/HolidayVillage";
 import Header from "../header/header";
 import { SidebarStyle } from "./sidebarStyle";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import { useSelector } from "react-redux";
 
 const drawerWidth = 240;
@@ -163,7 +163,6 @@ const Sidebar = ({ children }) => {
     setAdminMenuOpen(!adminMenuOpen);
   };
 
-
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -279,7 +278,7 @@ const Sidebar = ({ children }) => {
               </Link>
             </ListItem>
           ))}
-          {(superAdmin || admin)  && (
+          {(superAdmin || admin) && (
             <ListItem
               key="Admin Console"
               disablePadding
@@ -319,52 +318,58 @@ const Sidebar = ({ children }) => {
               {/* Submenu items for the Admin Menu */}
               <Collapse in={adminMenuOpen} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
-                {[
-              { text: "Projects", url: "/projects" },
-              { text: "Users", url: "/users" },
-              { text: "Timesheet", url: "/timesheet"},
-              { text: "Leaves", url: "/leaves"},
-              { text: "MasterData", url: "/masterData"},
-            ].map((item) => (
-              <ListItem key={item.text} disablePadding sx={{ display: "block" }}>
-                <Link
-                  to={item.url}
-                  style={{ textDecoration: "none", color: "#ffffff" }}
-                >
-                  <ListItemButton
-                    sx={{
-                      minHeight: 48,
-                      justifyContent: open ? "initial" : "center",
-                      px: 2.5,
-                    }}
-                    onClick={() => handleItemClick(item.text)}
-                    selected={selectedItem === item.text}
-                  >
-                    <ListItemIcon
-                      sx={{
-                        minWidth: 0,
-                        mr: open ? 3 : "auto",
-                        justifyContent: "center",
-                        color: "white",
-                      }}
+                  {[
+                    { text: "Projects", url: "/projects" },
+                    { text: "Users", url: "/users" },
+                    { text: "Timesheet", url: "/timesheets" },
+                    { text: "Adminleaves", url: "/adminLeaves" },
+                    { text: "MasterData", url: "/masterData" },
+                  ].map((item) => (
+                    <ListItem
+                      key={item.text}
+                      disablePadding
+                      sx={{ display: "block" }}
                     >
-                      {item.icon}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary=<Typography
-                        variant="body1"
-                        fontWeight="bold"
-                        sx={style.sidebarItem}
-                        style={{textAlign:'end'}}
+                      <Link
+                        to={item.url}
+                        style={{ textDecoration: "none", color: "#ffffff" }}
                       >
-                        {item.text}
-                      </Typography>
-                      sx={{ opacity: open ? 1 : 0 }}
-                    />
-                  </ListItemButton>
-                </Link>
-              </ListItem>
-            ))}
+                        <ListItemButton
+                          sx={{
+                            minHeight: 48,
+                            justifyContent: open ? "initial" : "center",
+                            px: 2.5,
+                          }}
+                          onClick={() => handleItemClick(item.text)}
+                          selected={selectedItem === item.text}
+                        >
+                          <ListItemIcon
+                            sx={{
+                              minWidth: 0,
+                              mr: open ? 3 : "auto",
+                              justifyContent: "center",
+                              color: "white",
+                            }}
+                          >
+                            {item.icon}
+                          </ListItemIcon>
+                          <ListItemText
+                            primary=<Typography
+                              variant="body1"
+                              fontWeight="bold"
+                              sx={style.sidebarItem}
+                              style={{ textAlign: "end" }}
+                            >
+                              {item.text === "Adminleaves"
+                                ? "Leaves"
+                                : item.text}
+                            </Typography>
+                            sx={{ opacity: open ? 1 : 0 }}
+                          />
+                        </ListItemButton>
+                      </Link>
+                    </ListItem>
+                  ))}
                 </List>
               </Collapse>
             </ListItem>
@@ -380,4 +385,3 @@ const Sidebar = ({ children }) => {
 };
 
 export default Sidebar;
-

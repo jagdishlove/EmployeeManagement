@@ -6,6 +6,7 @@ import {
   Typography,
   Checkbox,
   TextField,
+  Autocomplete,
 } from "@mui/material";
 import Dropdown from "../../forms/dropdown/dropdown";
 import { useTheme } from "@emotion/react";
@@ -26,7 +27,6 @@ const InputOption = ({
   isSelected,
   children,
   innerProps,
-  skillsCheckedData,
   ...rest
 }) => {
   const [isActive, setIsActive] = useState(false);
@@ -34,7 +34,6 @@ const InputOption = ({
   const onMouseUp = () => setIsActive(false);
   const onMouseLeave = () => setIsActive(false);
 
-  // styles
   let bg = "transparent";
   if (isFocused) bg = "#eee";
   if (isActive) bg = "#B2D4FF";
@@ -46,7 +45,6 @@ const InputOption = ({
     display: "flex ",
   };
 
-  // prop assignment
   const props = {
     ...innerProps,
     onMouseDown,
@@ -73,7 +71,7 @@ const InputOption = ({
         }}
       >
         <Box>{children}</Box>
-        <Checkbox checked={skillsCheckedData?.includes(rest.data)} />
+        <Checkbox color="primary" checked={isSelected} />
       </Box>
     </components.Option>
   );
@@ -84,6 +82,8 @@ export default function UserHerders({
   skillsCheckedData,
   setSkillsCheckedData,
   designationId,
+  setDesignationId,
+  setSelectedSearchOption,
 }) {
   const theme = useTheme();
   const style = adminHeaderStyle(theme);
@@ -91,34 +91,29 @@ export default function UserHerders({
   const Navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [selectedSearchOption, setSelectedSearchOption] = useState();
-  const [selectedOptions, setSelectedOptions] = useState([]);
-
   const [filterData, setFilterData] = useState({
     searchTerm: "",
   });
+
   const debouncedValue = useDebounce(filterData.searchTerm);
 
-  console.log("selectedSearchOption", selectedSearchOption);
-
   useEffect(() => {
-    // dispatch(SearchEmployeeAndProject(payload))
+    dispatch(SearchEmployeeAndProject(filterData));
   }, [debouncedValue]);
 
-  const handleChange = (data) => {
-    console.log("hello");
-    setSelectedSearchOption(data);
-    setSelectedOptions(data);
-  };
-
   const handleInputChange = (e) => {
-    console.log("object");
-    console.log("e", e);
+    const inputValue = e.target.value;
     setFilterData((prevFormData) => ({
       ...prevFormData,
-      searchName: e.target.value,
+      searchName: inputValue,
     }));
-    dispatch(SearchEmployeeAndProject(filterData));
+    if (inputValue.length >= 3) {
+      dispatch(SearchEmployeeAndProject(filterData));
+    }
+  };
+
+  const handleDesignationChnage = (e) => {
+    setDesignationId(e.target.value);
   };
   const skills = useSelector((state) => state.persistData.masterData?.skill);
 
@@ -178,17 +173,6 @@ export default function UserHerders({
     );
   };
 
-  const CustomSelectControl = (props) => {
-    return (
-      <components.Control {...props}>
-        <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
-          <SearchIcon sx={{ marginLeft: "10px" }} />
-          {props.children}
-        </div>
-      </components.Control>
-    );
-  };
-
   const handleAddUser = () => {
     Navigate("/userForm");
   };
@@ -198,33 +182,33 @@ export default function UserHerders({
       <Grid container justifyContent="space-between">
         <Grid item xs={12} sm={12} md={4} lg={5}>
           <Box>
-            <Select
-              styles={{
-                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                control: (baseStyles) => ({
-                  ...baseStyles,
-                  borderRadius: "20px",
-                  height: "55px",
-                  maxWidth: "800px",
-                  width: "400px",
-                }),
+            <Autocomplete
+              options={searchData?.result || []}
+              sx={{
+                borderRadius: "8px",
+              }}
+              getOptionLabel={(option) => option.name}
+              getOptionSelected={(option, value) => option.id === value.id}
+              onChange={(event, data) => {
+                setSelectedSearchOption(data);
               }}
               isSearchable={true}
-              menuPortalTarget={document.body}
-              value={selectedOptions}
-              components={{ Control: CustomSelectControl }}
-              onChange={handleChange}
               getOptionValue={(option) => option.id}
-              getOptionLabel={(option) => option.name}
-              options={searchData?.result}
-              isLoading={searchData?.length === 0}
-              placeholder="Search by Name or Leave Type"
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  variant="standard"
+                  variant="outlined"
                   placeholder="Search by User Name, Project Name"
                   onChange={handleInputChange}
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: (
+                      <>
+                        <SearchIcon />
+                        {params.InputProps.startAdornment}
+                      </>
+                    ),
+                  }}
                 />
               )}
             />
@@ -263,6 +247,7 @@ export default function UserHerders({
               title="Designation"
               style={style.DateTimesheetDateTextField}
               valueKey="designationId"
+              onChange={handleDesignationChnage}
               labelKey="designationName"
             />
           </Grid>
@@ -279,10 +264,11 @@ export default function UserHerders({
                 isMulti
                 closeMenuOnSelect={false}
                 hideSelectedOptions={false}
-                onChange={(options) => {
-                  setSkillsCheckedData(options.map((opt) => opt));
+                onChange={(selectedOptions) => {
+                  setSkillsCheckedData(selectedOptions);
                 }}
                 options={skills}
+                value={skillsCheckedData}
                 components={{
                   Option: (props) => (
                     <InputOption

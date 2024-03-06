@@ -15,19 +15,23 @@ import {
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Edit as EditIcon } from "@mui/icons-material";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const UserDataListPage = ({ userData }) => {
   const [menuAnchor, setMenuAnchor] = useState(null);
-  const managerData = useSelector(
-    (state) => state.persistData.masterData?.skill
-  );
 
-  const skillIdToName = {};
-  managerData?.forEach((skill) => {
-    skillIdToName[skill?.skillId] = skill?.skillName;
-  });
+
+
+  const Navigate = useNavigate();
+
+  const handleViewInDetail = () => {
+    Navigate("/userDetailPage");
+  };
+
+  const handleEditProfile = (id) => {
+    Navigate(`/editUser/${id}`);
+  };
+
 
   return (
     <>
@@ -42,14 +46,22 @@ const UserDataListPage = ({ userData }) => {
       >
         <CardHeader
           avatar={
-            <Avatar
-              sx={{
-                bgcolor: userData?.status === "ACTIVE" ? "#008080" : "#808080",
-                color: "#fff",
-              }}
-            >
-              {userData?.firstName.charAt(0)}
-            </Avatar>
+            userData?.fileStorage ? (
+              <Avatar
+                src={`data:${userData.fileStorage.fileType};base64,${userData.fileStorage.data}`}
+                alt={userData.firstName}
+              />
+            ) : (
+              <Avatar
+                sx={{
+                  bgcolor:
+                    userData?.status === "ACTIVE" ? "#008080" : "#808080",
+                  color: "#fff",
+                }}
+              >
+                {userData?.firstName.charAt(0)}
+              </Avatar>
+            )
           }
           action={
             <>
@@ -68,7 +80,10 @@ const UserDataListPage = ({ userData }) => {
                   <ListItemIcon>
                     <EditIcon fontSize="small" />
                   </ListItemIcon>
-                  <ListItemText primary="Edit" />
+                  <ListItemText primary="Edit"
+                    onClick={() => handleEditProfile(userData?.id)}
+
+                  />
                 </MenuItem>
               </Menu>
             </>
@@ -83,27 +98,35 @@ const UserDataListPage = ({ userData }) => {
             <Typography
               variant="body2"
               sx={{ color: "#1D1B20", fontSize: "12px" }}
-            >{`${userData?.designation?.designationName}`}</Typography>
+            >{`${userData?.designation}`}</Typography>
           }
         />
         <CardContent>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Typography variant="body2" color="textSecondary">
-                <b style={{ color: "black" }}>Current Projects : </b>
+                <Typography variant="body1">
+                  <b>Current Projects :</b>{" "}
+                  {userData.projectName.length > 0 && (
+                    <>
+                      {userData.projectName[0]} |{" "}
+                      {userData.projectName.slice(1).join(" | ")}
+                    </>
+                  )}
+                </Typography>{" "}
               </Typography>
             </Grid>
             <Grid item xs={12}>
               <Typography variant="body2" color="textSecondary">
                 <b style={{ color: "black" }}>Skill Set : </b>
-                {userData.skillId && userData.skillId.length > 0
-                  ? userData.skillId.map((skill, id) => (
-                      <React.Fragment key={id}>
-                        {id > 0 && " | "}
-                        {skillIdToName[skill]}
-                      </React.Fragment>
-                    ))
-                  : skillIdToName[userData.skillId]}
+                {userData.skills && userData.skills.length > 0
+                  ? userData?.skills?.map((skill, id) => (
+                    <React.Fragment key={id}>
+                      {id > 0 && " | "}
+                      {skill}
+                    </React.Fragment>
+                  ))
+                  : null}
               </Typography>
             </Grid>
             <Grid item xs={12}>
@@ -117,7 +140,7 @@ const UserDataListPage = ({ userData }) => {
         <Grid padding={1} ml={25}>
           <Box display="flex" justifyContent="space-between" alignItems="end">
             <Link
-              to={`/userDetailPage/${userData.id}`}
+              to={`/userDetailPage/${userData?.id}`}
               style={{
                 textDecoration: "none",
               }}
@@ -141,6 +164,7 @@ const UserDataListPage = ({ userData }) => {
                   fontWeight: "bold",
                   textAlign: "end",
                 }}
+                onClick={handleViewInDetail}
               >
                 View in detail
               </Typography>

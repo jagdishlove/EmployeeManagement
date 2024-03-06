@@ -1,4 +1,4 @@
-import { IconButton, Typography, Grid } from "@mui/material";
+import { IconButton, Typography, Grid, Avatar } from "@mui/material";
 import React, { useEffect } from "react";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
@@ -18,7 +18,6 @@ const ProjectDetailPage = () => {
   const { projectDetailsData } = useSelector(
     (state) => state.nonPersist?.projectDetails
   );
-  console.log("projectDetailsData", projectDetailsData);
 
   useEffect(() => {
     dispatch(getProjectDetailsAction(id));
@@ -86,10 +85,33 @@ const ProjectDetailPage = () => {
       </Grid>
       <Grid container>
         <Grid item xs={12} md={2}>
-          <img
-            src={`data:${projectDetailsData?.client?.fileStorage?.fileType};base64,${projectDetailsData?.client?.fileStorage?.data}`}
-            alt="Logo"
-          />
+          <Avatar
+            alt="Profile Picture"
+            src={`data:image/png;base64,${projectDetailsData?.client?.fileStorage?.data}`}
+            sx={{
+              width: "100px",
+              height: "100px",
+              border: "2px solid #A4A4A4",
+              borderRadius: "4px", // Adjust the border radius for a square shape
+            }}
+          >
+            {!projectDetailsData?.client?.fileStorage?.data &&
+              projectDetailsData?.client?.firstName && (
+                <Typography
+                  variant="h1"
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#A4A4A4",
+                  }}
+                >
+                  {projectDetailsData?.client?.clientName[0].toUpperCase()}
+                </Typography>
+              )}
+          </Avatar>
         </Grid>
 
         <Grid item xs={12} md={8}>
@@ -198,7 +220,7 @@ const ProjectDetailPage = () => {
           </Grid>
           <Grid item xs={8}>
             <Typography variant="body1">
-              {projectDetailsData?.projectManager}
+              {projectDetailsData?.projectManager?.name}
             </Typography>
           </Grid>
         </Grid>
@@ -211,7 +233,7 @@ const ProjectDetailPage = () => {
           </Grid>
           <Grid item xs={8}>
             <Typography variant="body1">
-              {projectDetailsData?.projectTechLead}
+              {projectDetailsData?.projectTechLead?.name}
             </Typography>
           </Grid>
         </Grid>

@@ -6,12 +6,14 @@ import StepLabel from "@mui/material/StepLabel";
 import Stepper from "@mui/material/Stepper";
 import React from "react";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useNavigate } from "react-router-dom";
 
 const steps = ["Create Project", "Resource Allocation", "Cost Allocation"];
 
 const CreateProject = () => {
+  const navigate = useNavigate();
   const handleBackClick = () => {
-    console.log("Handle back clicked!");
+    navigate(-1);
   };
   return (
     <div style={{ margin: "auto", display: "flex", justifyContent: "center" }}>

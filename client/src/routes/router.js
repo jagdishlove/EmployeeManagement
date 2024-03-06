@@ -21,6 +21,8 @@ import Timesheet from "../pages/timesheet/timesheet";
 import CostAllocationStepperFinal from "../components/AdminConsole/projectsPage/createProjectStepper/costAllocationStepperFinal";
 import MasterData from "../components/AdminConsole/masterDataPage/masterData";
 import ProjectDetailPage from "../components/AdminConsole/projectsPage/projectDetails/projectDetailPage";
+import AdminTimeSheet from "../components/AdminConsole/timesheetPage/adminTimeSheet";
+import AdminLeaves from "../components/AdminConsole/AdminLeaves/adminLeaves";
 
 const Router = () => {
   const isAuthenticated = useSelector(
@@ -242,6 +244,37 @@ const Router = () => {
           isAuthenticated ? (
             <ConditionalSidebar>
               <MasterData />
+            </ConditionalSidebar>
+          ) : (
+            <>
+              <Navigate to="/" />
+              <Login />
+            </>
+          )
+        }
+      />
+      <Route
+        path="/timesheets"
+        element={
+          isAuthenticated ? (
+            <ConditionalSidebar>
+              <AdminTimeSheet />
+            </ConditionalSidebar>
+          ) : (
+            <>
+              <Navigate to="/" />
+              <Login />
+            </>
+          )
+        }
+      />
+
+      <Route
+        path="/adminLeaves"
+        element={
+          isAuthenticated ? (
+            <ConditionalSidebar>
+              <AdminLeaves />
             </ConditionalSidebar>
           ) : (
             <>

@@ -1,5 +1,6 @@
 import { toast } from "react-toastify";
 import makeRequest, { addRequest } from "../../../../api/api";
+import { errorMessage } from "../../errors/errorsAction";
 import {
   FETCH_ALL_USERS_FAILURE,
   FETCH_ALL_USERS_REQUEST,
@@ -10,12 +11,96 @@ import {
   CREATE_USER_FAIL,
   CREATE_USER_REQUEST,
   CREATE_USER_SUCCESS,
+  SEARCH_EMPLOYEE_REQUEST,
+  SEARCH_EMPLOYEE_SUCCESS,
+  SEARCH_EMPLOYEE_FAIL,
+  FETCH_COUNTRIES_REQUEST,
+  FETCH_COUNTRIES_SUCCESS,
+  FETCH_COUNTRIES_FAILURE,
+  FETCH_CITIES_REQUEST,
+  FETCH_CITIES_SUCCESS,
+  FETCH_CITIES_FAILURE,
+  FETCH_STATES_REQUEST,
+  FETCH_STATES_SUCCESS,
+  FETCH_STATES_FAILURE,
+  FETCH_LOCATION_DATA_SUCCESS,
+  SET_SELECTED_COUNTRY_ID,
   GET_ALL_CITYS,
   SEARCH_EMPLOYEEANDPROJECT_FAILURE,
   SEARCH_EMPLOYEEANDPROJECT_REQUEST,
   SEARCH_EMPLOYEEANDPROJECT_SUCCESS,
 } from "./usersActionTypes";
 import { getRefreshToken } from "../../login/loginAction";
+
+//country state city
+export const fetchCountriesRequest = () => ({
+  type: FETCH_COUNTRIES_REQUEST,
+});
+
+export const fetchCountriesSuccess = (countries) => ({
+  type: FETCH_COUNTRIES_SUCCESS,
+  payload: countries,
+});
+
+export const fetchCountriesFailure = () => ({
+  type: FETCH_COUNTRIES_FAILURE,
+});
+
+export const fetchStatesRequest = () => ({
+  type: FETCH_STATES_REQUEST,
+});
+
+export const fetchStatesSuccess = (states) => ({
+  type: FETCH_STATES_SUCCESS,
+  payload: states,
+});
+
+export const fetchStatesFailure = () => ({
+  type: FETCH_STATES_FAILURE,
+});
+
+export const fetchCitiesRequest = () => ({
+  type: FETCH_CITIES_REQUEST,
+});
+
+export const fetchCitiesSuccess = (cities) => ({
+  type: FETCH_CITIES_SUCCESS,
+  payload: cities,
+});
+
+export const fetchCitiesFailure = () => ({
+  type: FETCH_CITIES_FAILURE,
+});
+//location id
+
+export const fetchLocationDataSuccess = (locationData) => ({
+  type: FETCH_LOCATION_DATA_SUCCESS,
+  payload: locationData,
+});
+
+export const setSelectedCountryId = (countryId) => ({
+  type: SET_SELECTED_COUNTRY_ID,
+  payload: countryId,
+});
+
+const SearchEmployeeRequest = () => {
+  return {
+    type: SEARCH_EMPLOYEE_REQUEST,
+  };
+};
+
+const SearchEmployeeSuccess = (response) => {
+  return {
+    type: SEARCH_EMPLOYEE_SUCCESS,
+    payload: response,
+  };
+};
+
+const SearchEmployeeFail = () => {
+  return {
+    type: SEARCH_EMPLOYEE_FAIL,
+  };
+};
 
 const getAllUsersRequest = () => {
   return {
@@ -98,11 +183,18 @@ const searchEmployeeAndProjectFail = () => {
   };
 };
 
-export const getAllUsers = (data) => {
+export const getAllUsers = (data, request) => {
   return async (dispatch) => {
     dispatch(getAllUsersRequest());
     try {
-      const response = await makeRequest("GET", "/employee/getAll", null, data);
+      const response = await makeRequest(
+        "POST",
+        "/employee/getAll",
+        {
+          result: request ? [request] : [],
+        },
+        data
+      );
       dispatch(getAllUsersSuccess(response));
     } catch (err) {
       dispatch(getAllUsersFailure());
@@ -117,7 +209,7 @@ export const getUserById = (data) => {
   return async (dispatch) => {
     dispatch(getUserByIdRequest());
     try {
-      const response = await makeRequest("GET", `/employee/${data}`);
+      const response = await makeRequest("GET", `/employee/getById/${data}`);
       dispatch(getUserByIdSuccess(response));
     } catch (err) {
       dispatch(getUserByIdFailure());
@@ -138,12 +230,13 @@ export const CreateUserForm = (data) => {
         formData.append(key, data[key]);
       }
     }
-
     try {
       dispatch(createUserRequest());
       const response = await addRequest("POST", "/employee/create", formData);
       dispatch(createUserSuccess(response));
-      return response;
+      toast.success("Create User is  Successfully.", {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
     } catch (err) {
       if (
         err.response &&
@@ -161,6 +254,91 @@ export const CreateUserForm = (data) => {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
+    }
+  };
+};
+
+export const SearchEmployeeAction = (searchQuery) => {
+  return async (dispatch) => {
+    try {
+      dispatch(SearchEmployeeRequest());
+      const response = await makeRequest(
+        "GET",
+        `api/projects/employees/search?empSearch=${searchQuery}`,
+        null
+      );
+      dispatch(SearchEmployeeSuccess(response));
+    } catch (err) {
+      if (err.response.data.errorCode === 403) {
+        dispatch(getRefreshToken());
+      }
+      dispatch(SearchEmployeeFail(err.response.data.errorMessage));
+      dispatch(errorMessage(err.response.data.errorMessage));
+    }
+  };
+};
+
+export const fetchCountriesAction = async (setCountries) => {
+  try {
+    const response = await makeRequest(
+      "GET",
+      "/api/masterData/getAll?dataType=country"
+    );
+    const formattedCountries = response.map((country) => ({
+      id: country.id,
+      label: country.dataValue,
+      value: country,
+    }));
+    setCountries(formattedCountries);
+  } catch (error) {
+    console.error("Error fetching countries:", error);
+  }
+};
+
+export const fetchStatesAction = async (countryId, setStates) => {
+  try {
+    const response = await makeRequest(
+      "GET",
+      `/api/masterData/getAll?parentId=${countryId}&dataType=state`
+    );
+    const formattedStates = response.map((state) => ({
+      id: state.id,
+      label: state.dataValue,
+      value: state,
+    }));
+    setStates(formattedStates);
+  } catch (error) {
+    console.error("Error fetching states:", error);
+  }
+};
+
+export const fetchCitiesAction = async (stateId, setCities) => {
+  try {
+    const response = await makeRequest(
+      "GET",
+      `/api/masterData/getAll?parentId=${stateId}&dataType=city`
+    );
+    const formattedCities = response.map((city) => ({
+      id: city.id,
+      label: city.dataValue,
+      value: city,
+    }));
+    setCities(formattedCities);
+  } catch (error) {
+    console.error("Error fetching cities:", error);
+  }
+};
+
+export const fetchLocationData = () => {
+  return async (dispatch) => {
+    try {
+      const response = await makeRequest("GET", `api/masterData/getAll`);
+      dispatch(fetchLocationDataSuccess(response));
+    } catch (err) {
+      if (err.response.data.errorCode === 403) {
+        dispatch(getRefreshToken());
+      }
+      dispatch(errorMessage(err.response.data.errorMessage));
     }
   };
 };

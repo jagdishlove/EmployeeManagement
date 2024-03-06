@@ -57,9 +57,6 @@ const CostAllocationFormDetails = () => {
   const handleInputChange = (event) => {
     const { name, value } = event.target;
 
-    // if (name === "costIncurred") {
-    //   setCostIncurred(value);
-    // }
     setFormData({
       ...formData,
       [name]: value,
@@ -80,20 +77,6 @@ const CostAllocationFormDetails = () => {
       newErrors.costIncurred = "Cost Incurred is required.";
     } else if (!/^\d+$/.test(formData.costIncurred)) {
       newErrors.costIncurred = "Cost Incurred must contain only digits.";
-    }
-
-    // Add validation for Project Budget
-    if (!formData.projectBudget) {
-      newErrors.projectBudget = "Project Budget is required.";
-    } else if (!/^\d+$/.test(formData.projectBudget)) {
-      newErrors.projectBudget = "Project Budget must contain only digits.";
-    }
-
-    // Add validation for Project Revenue
-    if (!formData.projectRevenue) {
-      newErrors.projectRevenue = "Project Revenue is required.";
-    } else if (!/^\d+$/.test(formData.projectRevenue)) {
-      newErrors.projectRevenue = "Project Revenue must contain only digits.";
     }
 
     // Update the error state
@@ -125,7 +108,7 @@ const CostAllocationFormDetails = () => {
   const allCostIncurredData = useSelector(
     (state) => state.nonPersist.projectDetails?.allCostIncurredData
   );
-  console.log("allCostIncurredData", allCostIncurredData);
+
   const handleEdit = (costIncurredId) => {
     const selectedCostIncurred = allCostIncurredData.find(
       (item) => item.costIncurredId === costIncurredId
@@ -327,6 +310,68 @@ const CostAllocationFormDetails = () => {
       />
       <Grid container spacing={2} justifyContent={"center"}>
         <Grid item xs={12} sm={8} md={10} lg={10}>
+          <Typography
+            variant="body1"
+            fontWeight="bold"
+            style={{ marginTop: "15px" }}
+          >
+            Project Budget
+          </Typography>
+          <TextField
+            placeholder="Project Implementation Cost"
+            name="projectBudget"
+            value={formData.projectBudget}
+            onChange={handleInputChange}
+            style={{
+              ...style.TimesheetTextField,
+              borderRadius: "15px",
+              marginTop: "5px",
+            }}
+            fullWidth
+            InputProps={{ classes: { focused: "green-border" } }}
+          />
+          <Typography
+            variant="body1"
+            fontWeight="bold"
+            style={{ marginTop: "15px" }}
+          >
+            Other Costs Incurred
+          </Typography>
+          <TextField
+            placeholder=" Other Costs Incurred"
+            name="otherCostsIncurred"
+            value={formData.projectImplimentationCost}
+            onChange={handleInputChange}
+            style={{
+              ...style.TimesheetTextField,
+              borderRadius: "15px",
+              marginTop: "5px",
+            }}
+            disabled
+            fullWidth
+            InputProps={{ classes: { focused: "green-border" } }}
+          />
+          <Typography
+            variant="body1"
+            fontWeight="bold"
+            style={{ marginTop: "15px" }}
+          >
+            Project Implementation Cost
+          </Typography>
+          <TextField
+            placeholder="Project Implementation Cost"
+            name="projectImplimentationCost"
+            value={formData.projectImplimentationCost}
+            onChange={handleInputChange}
+            disabled
+            style={{
+              ...style.TimesheetTextField,
+              borderRadius: "15px",
+              marginTop: "5px",
+            }}
+            fullWidth
+            InputProps={{ classes: { focused: "green-border" } }}
+          />
           <Typography
             variant="body1"
             fontWeight="bold"

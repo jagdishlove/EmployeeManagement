@@ -41,6 +41,7 @@ export const login = (data, navigate) => {
         jwtAccessToken: response.jwtAccessToken,
         role: decoder.role,
         userName: response.userName,
+        empId:decoder?.empId,
       };
       dispatch(loginSuccess(auth));
       navigate("/");
