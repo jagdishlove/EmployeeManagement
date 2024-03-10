@@ -132,6 +132,21 @@ const Router = () => {
         }
       />
       <Route
+        path="/editUser/:id"
+        element={
+          isAuthenticated ? (
+            <ConditionalSidebar>
+              <CreateUser />
+            </ConditionalSidebar>
+          ) : (
+            <>
+              <Navigate to="/" />
+              <Login />
+            </>
+          )
+        }
+      />
+      <Route
         path="/userDetailPage/:id"
         element={
           isAuthenticated ? (

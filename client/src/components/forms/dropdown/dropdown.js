@@ -55,7 +55,6 @@ const Dropdown = ({
               option.bandId ||
               option.empTypeId ||
               option.manager||
-              option.locationId||
               option.designationId ||
               option.gender ||
               option.bandName ||
@@ -82,9 +81,7 @@ const Dropdown = ({
               option.bandName ||
               option.employmentType ||
               option.manager||
-              option.locationName||
               option.designationName||
-              option.name ||
               option.managerName ||
               option.complexityName ||
               option.projectType ||

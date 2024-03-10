@@ -29,8 +29,23 @@ import {
   SEARCH_EMPLOYEEANDPROJECT_FAILURE,
   SEARCH_EMPLOYEEANDPROJECT_REQUEST,
   SEARCH_EMPLOYEEANDPROJECT_SUCCESS,
+  SAVE_SKILLS_REQUEST,
+  SAVE_SKILLS_FAILURE,
+  SAVE_SKILLS_SUCCESS,
 } from "./usersActionTypes";
 import { getRefreshToken } from "../../login/loginAction";
+
+//Save Skills
+const saveSkillsSuccess = (data) => ({
+  type: SAVE_SKILLS_SUCCESS,
+  payload: data,
+});
+const saveSkillsRequest = () => ({
+  type: SAVE_SKILLS_REQUEST,
+});
+const saveSkillsFailure = () => ({
+  type: SAVE_SKILLS_FAILURE,
+});
 
 //country state city
 export const fetchCountriesRequest = () => ({
@@ -377,6 +392,40 @@ export const SearchEmployeeAndProject = (data) => {
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
+    }
+  };
+};
+export const saveSkills = (data) => {
+  return async (dispatch) => {
+    try {
+      dispatch(saveSkillsRequest());
+      const response = await makeRequest(
+        "POST",
+        "employee/addAndUpdateSkills",
+        data,
+        null
+      );
+      dispatch(saveSkillsSuccess(response));
+      toast.success("skill edit is  Successfully.", {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    } catch (err) {
+      if (
+        err.response &&
+        err.response.data &&
+        err.response.data.errorCode === 403
+      ) {
+        dispatch(getRefreshToken());
+      } else if (
+        err.response &&
+        err.response.data &&
+        err.response.data.errorCode === 500
+      ) {
+        dispatch(saveSkillsFailure(err.response.data.errorMessage));
+        toast.error(err.response.data.errorMessage, {
+          position: toast.POSITION.BOTTOM_CENTER,
+        });
+      }
     }
   };
 };

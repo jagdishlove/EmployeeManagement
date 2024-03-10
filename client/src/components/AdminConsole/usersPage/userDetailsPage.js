@@ -14,10 +14,11 @@ import {
 } from "@mui/material";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { useNavigate, useParams } from "react-router-dom";
+import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { useDispatch, useSelector } from "react-redux";
-import { getUserById } from "../../../redux/actions/AdminConsoleAction/users/usersAction";
+import { getUserById, saveSkills } from "../../../redux/actions/AdminConsoleAction/users/usersAction";
 import StarOutlinedIcon from "@mui/icons-material/StarOutlined";
 import {
   GetOfficeLocation,
@@ -30,7 +31,6 @@ import {
   getClientDetailsAction,
   getProjectDetailsAction,
 } from "../../../redux/actions/AdminConsoleAction/projects/projectsAction";
-import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
 import { ClearIcon } from "@mui/x-date-pickers";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
@@ -50,15 +50,16 @@ export default function UserDetailsPage() {
   const isUser = role?.includes("USER");
   const isSuperAdmin = role?.includes("SUPERADMIN");
 
+
   const handleAddSkillClick = () => {
- 
+
     setShowAddSkills(!showAddSkills);
   }
   const skills = useSelector((state) => state.persistData.masterData?.skill);
   const onResetSkillFilterHandler = () => {
 
     setSelectedSkills([]);
-  
+
   };
 
   const InputOption = ({
@@ -79,18 +80,18 @@ export default function UserDetailsPage() {
     const onMouseDown = () => setIsActive(true);
     const onMouseUp = () => setIsActive(false);
     const onMouseLeave = () => setIsActive(false);
-  
+
     let bg = "transparent";
     if (isFocused) bg = "#eee";
     if (isActive) bg = "#B2D4FF";
-  
+
     const style = {
       alignItems: "center",
       backgroundColor: bg,
       color: "inherit",
       display: "flex ",
     };
-  
+
     const props = {
       ...innerProps,
       onMouseDown,
@@ -98,7 +99,7 @@ export default function UserDetailsPage() {
       onMouseLeave,
       style,
     };
-  
+
     return (
       <components.Option
         {...rest}
@@ -117,15 +118,15 @@ export default function UserDetailsPage() {
           }}
         >
           <Box>{children}</Box>
-          <Checkbox color="primary" checked={isSelected}  onClick={handleCheckboxClick}/>
+          <Checkbox color="primary" checked={isSelected} onClick={handleCheckboxClick} />
         </Box>
       </components.Option>
     );
   };
 
 
-  const applySkillFilterHandler = () => {  
-   
+  const applySkillFilterHandler = () => {
+
   };
   const CustomMenu = (props) => {
     return (
@@ -169,7 +170,7 @@ export default function UserDetailsPage() {
       </components.Menu>
     );
   };
- 
+
   const handleAccordionToggle = (projectId) => {
     setExpanded(expanded === projectId ? null : projectId);
     dispatch(getProjectDetailsAction(projectId));
@@ -214,6 +215,9 @@ export default function UserDetailsPage() {
     (state) => state?.nonPersist?.userDetails?.userByIdData
   );
 
+    const [selectedSkills, setSelectedSkills] = useState(userData?.employeeSkill);
+
+
   useEffect(() => {
     if (userData?.officeLocationId) {
       dispatch(GetOfficeLocation(userData?.officeLocationId));
@@ -226,7 +230,7 @@ export default function UserDetailsPage() {
   const managerData = useSelector((state) => state.persistData.masterData);
 
   const skillIdToName = {};
-  managerData.skill.forEach((skill) => {
+  managerData.skill?.forEach((skill) => {
     skillIdToName[skill.skillId] = skill?.skillName;
   });
 
@@ -259,12 +263,12 @@ export default function UserDetailsPage() {
 
   const skillItemStyle = {
     backgroundColor: "#ffff",
-    borderRadius: "50px",
+    borderRadius: "10px",
     padding: "8px",
     display: "flex",
     marginBottom: "8px",
     marginRight: "8px",
-    border: "1px solid #1D192B",
+    border: "1px solid silver",
   };
 
   const editedSkillItemStyle = {
@@ -277,8 +281,10 @@ export default function UserDetailsPage() {
   };
 
   const [isEditing, setIsEditing] = useState(false);
-const [showAddSkills, setShowAddSkills] = useState(false);
-const [selectedSkills, setSelectedSkills] = useState([userData?.skillId]);
+  const [showAddSkills, setShowAddSkills] = useState(false);
+  const[addSkills,setAddSkills]= useState()
+  // const [value, setValue] = useState(0); 
+  const [skillValues, setSkillValues] = useState({});
 
 
   const handleEditButtonClick = () => {
@@ -286,12 +292,22 @@ const [selectedSkills, setSelectedSkills] = useState([userData?.skillId]);
     setShowAddSkills(false);
   };
 
-  const handleSliderChange = (id, newValue) => {
-    setValue(newValue);
-
-    const updatedSkills = [...selectedSkills];
-    updatedSkills[id] = newValue;
+  const handleSliderChange = (skillId, newValue) => {
+    setSkillValues((prevValues) => ({
+      ...prevValues,
+      [skillId]: newValue,
+    }));
+  
+    // setValue(newValue);
+    const updatedSkills = selectedSkills.map((skill) =>
+      skill.skillId === skillId ? { ...skill, rating: newValue } : skill
+    );
     setSelectedSkills(updatedSkills);
+    const updatedAddSkills = updatedSkills.map(({ skillId, rating }) => ({
+      skillId,
+      rating,
+    }));
+    setAddSkills(updatedAddSkills)
   };
 
   const handleRemoveSkill = (skillIndex) => {
@@ -300,7 +316,7 @@ const [selectedSkills, setSelectedSkills] = useState([userData?.skillId]);
     updatedSkills.splice(skillIndex, 1);
     setSelectedSkills(updatedSkills);
   };
-  const [value, setValue] = useState(5); // Set an initial value
+ 
   const ValueLabelComponent = (props) => {
     const { children, open, value } = props;
 
@@ -315,34 +331,50 @@ const [selectedSkills, setSelectedSkills] = useState([userData?.skillId]);
       </Tooltip>
     );
   };
+  const handleCancel = () => {
+    setIsEditing(false);
+  };
+  const handleSave = () => {
+    setIsEditing(false);
+    dispatch(saveSkills(addSkills));
 
+  };
   const renderSkills = () => {
     return selectedSkills?.map((skill, id) => (
       <div key={id} style={isEditing ? editedSkillItemStyle : skillItemStyle}>
-        <Typography variant="body1" sx={{ width: "100%" }}>
-          {skillIdToName[skill]}
-        </Typography>
+        {!isEditing && (
+          <Typography variant="body1" sx={{ width: "100%" }}>
+        {skill.skillName}
+          </Typography>
+        )}
         {isEditing && (
           <>
+                    <Typography variant="body1" sx={{ width: "100%" }}>
+        {skill.skillName}
+          </Typography>
+          <LightTooltip title={`${skillValues[skill.skillId]}`} >
             <Slider
-              value={value}
-              onChange={(event, newValue) => handleSliderChange(id, newValue)}
+              value={skillValues[skill.skillId] || 0}
+              onChange={(event, newValue) => handleSliderChange(skill.skillId, newValue)}
               min={0}
               max={10}
               step={1} // Optional: Set the step to 1 if you want to allow only integer values
               sx={{
                 width: "500px",
                 color:
-                  value < 5
-                    ? "#90DC90"
-                    : value >= 5 && value <= 7
-                      ? "#E6E62C"
-                      : "#E38F75",
+                skillValues[skill.skillId] < 5
+                  ? "#90DC90"
+                  : skillValues[skill.skillId] >= 5 &&
+                    skillValues[skill.skillId] <= 7
+                  ? "#E6E62C"
+                  : "#E38F75",
+              
               }}
               components={{
                 ValueLabel: ValueLabelComponent,
               }}
             />
+            </LightTooltip>
             <IconButton onClick={() => handleRemoveSkill(id)}>
               <ClearIcon
                 sx={{
@@ -353,12 +385,13 @@ const [selectedSkills, setSelectedSkills] = useState([userData?.skillId]);
           </>
         )}
         {!isEditing && (
+          <>
           <StarOutlinedIcon
             style={{
               backgroundColor:
-                value < 5
+              skillValues[skill.skillId] < 5
                   ? "#90DC90"
-                  : value >= 5 && value <= 7
+                  : skillValues[skill.skillId]>= 5 && skillValues[skill.skillId] <= 7
                     ? "#E6E62C"
                     : "#E38F75",
               color: "#ffff",
@@ -369,10 +402,39 @@ const [selectedSkills, setSelectedSkills] = useState([userData?.skillId]);
               marginLeft: 5,
             }}
           />
+          <Typography variant="body1" sx={{ marginLeft: 1 }}>
+          {skillValues[skill.skillId]}
+        </Typography>
+          </>
         )}
+       
       </div>
     ));
   };
+
+  const LightTooltip = styled(({ className, ...props }) => (
+    <Tooltip {...props} classes={{ popper: className }} placement="top" />
+  ))(({ theme }) => ({
+    [`& .${tooltipClasses.tooltip}`]: {
+      backgroundColor: theme.palette.common.white,
+      color: 'rgba(0, 0, 0, 0.87)',
+      boxShadow: theme.shadows[1],
+      fontSize: 11,
+      position: 'relative',
+    '&::before': {
+      content: '""',
+      position: 'absolute',
+      width: 0,
+      height: 0,
+      borderStyle: 'solid',
+      borderWidth: '6px 6px 0',
+      borderColor: `${theme.palette.common.white} transparent transparent transparent`,
+      bottom: '-6px',
+      left: '50%',
+      transform: 'translateX(-50%)',
+    },
+    },
+  }));
 
   const HtmlTooltip = styled(({ className, ...props }) => (
     <Tooltip {...props} classes={{ popper: className }} />
@@ -887,38 +949,38 @@ const [selectedSkills, setSelectedSkills] = useState([userData?.skillId]);
                                     />
                                   </Button>
                                   {showAddSkills && (
-                                  <Select
-                                    isSearchable={false}
-                                    isMulti
-                                    closeMenuOnSelect={false}
-                                    hideSelectedOptions={false}
-                                    onChange={(selectedOptions) => {
-                                      setSelectedSkills(selectedOptions);
-                                    }}
-                                    options={skills}
-                                    value={selectedSkills}
-                                    components={{
-                                      Option: (props) => (
-                                        <InputOption
-                                          {...props}
-                                          skillsCheckedData={selectedSkills}
-                                        />
-                                      ),
-                                      Menu: CustomMenu,
-                                    }}
-                                    isClearable={false}
-                                    controlShouldRenderValue={true}
-                                    getOptionValue={(option) => option.skillId}
-                                    getOptionLabel={(option) => option.skillName}
-                                    isLoading={skills?.length === 0}
-                                    styles={{
-                                      menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                                      control: (baseStyles) => ({
-                                        ...baseStyles,
-                                        height: "auto",
-                                      }),
-                                    }}
-                                  />
+                                    <Select
+                                      isSearchable={false}
+                                      isMulti
+                                      closeMenuOnSelect={false}
+                                      hideSelectedOptions={false}
+                                      onChange={(selectedOptions) => {
+                                        setSelectedSkills(selectedOptions);
+                                      }}
+                                      options={skills}
+                                      value={selectedSkills}
+                                      components={{
+                                        Option: (props) => (
+                                          <InputOption
+                                            {...props}
+                                            skillsCheckedData={selectedSkills}
+                                          />
+                                        ),
+                                        Menu: CustomMenu,
+                                      }}
+                                      isClearable={false}
+                                      controlShouldRenderValue={true}
+                                      getOptionValue={(option) => option.skillId}
+                                      getOptionLabel={(option) => option.skillName}
+                                      isLoading={skills?.length === 0}
+                                      styles={{
+                                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                                        control: (baseStyles) => ({
+                                          ...baseStyles,
+                                          height: "auto",
+                                        }),
+                                      }}
+                                    />
                                   )}
                                 </>
                               )}
@@ -943,6 +1005,26 @@ const [selectedSkills, setSelectedSkills] = useState([userData?.skillId]);
                           <div style={skillsContainerStyle}>
                             {renderSkills()}
                           </div>
+                          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
+                          {isEditing && (
+                            <Grid item>
+                            <Button
+                              variant="outlined"
+                              sx={{ color: 'black', bgcolor: 'white', marginRight: '10px' }}
+                              onClick={handleCancel}
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              variant="contained"
+                              sx={{ color: 'white', bgcolor: '#008080' }}
+                              onClick={handleSave}
+                            >
+                              Save
+                            </Button>
+                            </Grid>
+                          )}
+                          </div>
                         </Grid>
                       </Grid>
                     </Grid>
@@ -950,7 +1032,7 @@ const [selectedSkills, setSelectedSkills] = useState([userData?.skillId]);
                 </>
               )}
             </Accordion>
-          </Grid> 
+          </Grid>
         </Grid>
       </Grid>
 

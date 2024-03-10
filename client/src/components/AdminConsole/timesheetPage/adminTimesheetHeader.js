@@ -14,7 +14,8 @@ export default function AdminTimesheetHeader({
   states,
   selectedDate,
   setSelectedDate,
-  setSelectedSearchOption
+  setSelectedSearchOption,
+  setStatus,
 }) {
   const theme = useTheme();
   const style = adminHeaderStyle(theme);
@@ -25,13 +26,21 @@ export default function AdminTimesheetHeader({
   };
 
   const handleApproveChange = (e) => {
-
     setApprover(e.target.value);
   };
 
   const handleDateChnage = (e) => {
     setSelectedDate(e.target.value);
-  }
+  };
+
+  const handleStatusChnage = (e) => {
+    setStatus(e.target.value);
+    setApprover("All");
+  };
+
+  const status = useSelector(
+    (state) => state.persistData.masterData?.timeSheetEntryStatus
+  );
 
   const userData = useSelector(
     (state) => state?.nonPersist?.adminTimeSheet?.searchUserData?.result
@@ -56,9 +65,9 @@ export default function AdminTimesheetHeader({
           options={userData || []}
           getOptionLabel={(option) => option.name}
           getOptionSelected={(option, value) => option.id === value.id}
-            onChange={(event, data) => {
-              setSelectedSearchOption(data);
-            }}
+          onChange={(event, data) => {
+            setSelectedSearchOption(data);
+          }}
           isSearchable={true}
           getOptionValue={(option) => option.id}
           renderInput={(params) => (
@@ -108,13 +117,15 @@ export default function AdminTimesheetHeader({
 
           <Grid item xs={12} sm={4} md={3} lg={2}>
             <Dropdown
-              options={[{ id: "Submitted", value: "Submitted" }]}
+              options={status}
               value={states}
-              //   onChange={handleTeamMemberChange} // Pass the onChange function
+              onChange={handleStatusChnage}
               title="Status"
               dropdownName="Status" // Pass the dropdown name
               style={style.TimesheetDateTextField} // Pass any additional style
               approve={true}
+              labelKey="name"
+              valueKey="value"
             />
           </Grid>
           <Grid item xs={12} sm={12} md={4} lg={4} margin={"auto"}>
@@ -132,7 +143,9 @@ export default function AdminTimesheetHeader({
                   ? adminTimeSheetData.numberOfElements
                   : "0"}
                 /
-                {adminTimeSheetData?.totalElements ? adminTimeSheetData.totalElements : "0"}
+                {adminTimeSheetData?.totalElements
+                  ? adminTimeSheetData.totalElements
+                  : "0"}
               </b>
             </Typography>
           </Grid>

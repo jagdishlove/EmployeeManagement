@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from "react";
 import {
-  Autocomplete, Box, Button, Grid, IconButton, TextField, Typography, RadioGroup, FormControl, FormControlLabel, Radio, Avatar,
+  Autocomplete,
+  Box,
+  Button,
+  Grid,
+  IconButton,
+  TextField,
+  Typography,
+  RadioGroup,
+  FormControl,
+  FormControlLabel,
+  Radio,
+  Avatar,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AccountCircleTwoToneIcon from "@mui/icons-material/AccountCircleTwoTone";
@@ -13,7 +24,13 @@ import { postcodeValidator } from "postcode-validator";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  CreateUserForm, SearchEmployeeAction, fetchCountriesAction, fetchStatesAction, fetchCitiesAction, fetchLocationData, getUserById,
+  CreateUserForm,
+  SearchEmployeeAction,
+  fetchCountriesAction,
+  fetchStatesAction,
+  fetchCitiesAction,
+  fetchLocationData,
+  getUserById,
 } from "../../../redux/actions/AdminConsoleAction/users/usersAction";
 
 export default function CreateUser() {
@@ -22,33 +39,99 @@ export default function CreateUser() {
   const dispatch = useDispatch();
   const [selectedImage, setSelectedImage] = useState("");
 
-  const { id } = useParams()
+  const { id } = useParams();
 
   useEffect(() => {
-    dispatch(getUserById(id))
-  }, [id])
+    dispatch(getUserById(id));
+  }, [id]);
 
   const [validationErrors, setValidationErrors] = useState({});
   const [formData, setFormData] = useState({
-    firstName: "", email: "", number: "", gender: "", lastName: "", DOB: "", DOJ: "", CTC: "", Status: "", skill: "", UANNo: "", address1: "",
-    address2: "", country: "", state: "", city: "", Zip: "", currentAddress1: "", currentAddress2: "", currentcountry: "", currentcity: "",
-    currentstate: "", currentZIP: "", AadhaarNo: "", workMode: "", ManagerName: "", designation: "", ACNo: "", Bank: "", IFSCCode: "",
-    employeeType: "", employeeID: "", file: "", employeeCoordinates: "", employedBy: "", Client_loc: "", productType: "", Bank_Name: "",
+    firstName: "",
+    email: "",
+    number: "",
+    gender: "",
+    lastName: "",
+    DOB: "",
+    DOJ: "",
+    CTC: "",
+    Status: "",
+    skill: "",
+    UANNo: "",
+    address1: "",
+    address2: "",
+    country: "",
+    state: "",
+    city: "",
+    Zip: "",
+    currentAddress1: "",
+    currentAddress2: "",
+    currentcountry: "",
+    currentcity: "",
+    currentstate: "",
+    currentZIP: "",
+    AadhaarNo: "",
+    workMode: "",
+    ManagerName: { id: 0, name: "", type: "employee" },
+    designation: "",
+    ACNo: "",
+    Bank: "",
+    IFSCCode: "",
+    employeeType: "",
+    employeeID: "",
+    file: "",
+    employeeCoordinates: "",
+    employedBy: "",
+    Client_loc: "",
+    productType: "",
+    Bank_Name: "",
   });
- 
+
   const handleClearAll = () => {
     setFormData({
-      firstName: "", email: "", number: "", gender: "", lastName: "", DOB: "", DOJ: "", CTC: "", Status: "", skill: "", UANNo: "", address1: "",
-      address2: "", country: "", state: "", city: "", Zip: "", currentAddress1: "", currentAddress2: "", currentcountry: "", currentcity: "",
-      currentstate: "", currentZIP: "", AadhaarNo: "", workMode: "", ManagerName: "", designation: "", ACNo: "", Bank: "", IFSCCode: "",
-      employeeType: "", employeeID: "", file: "", employeeCoordinates: "", employedBy: "", Client_loc: "", productType: "", Bank_Name: "",
+      firstName: "",
+      email: "",
+      number: "",
+      gender: "",
+      lastName: "",
+      DOB: "",
+      DOJ: "",
+      CTC: "",
+      Status: "",
+      skill: "",
+      UANNo: "",
+      address1: "",
+      address2: "",
+      country: "",
+      state: "",
+      city: "",
+      Zip: "",
+      currentAddress1: "",
+      currentAddress2: "",
+      currentcountry: "",
+      currentcity: "",
+      currentstate: "",
+      currentZIP: "",
+      AadhaarNo: "",
+      workMode: "",
+      ManagerName: "",
+      designation: "",
+      ACNo: "",
+      Bank: "",
+      IFSCCode: "",
+      employeeType: "",
+      employeeID: "",
+      file: "",
+      employeeCoordinates: "",
+      employedBy: "",
+      Client_loc: "",
+      productType: "",
+      Bank_Name: "",
     });
 
     setValidationErrors({});
   };
-
   const [isChecked, setIsChecked] = useState(false);
-
   const handleCheckboxChange = async () => {
     // Toggle the checkbox state
     const newIsChecked = !isChecked;
@@ -56,23 +139,23 @@ export default function CreateUser() {
     // Copy data from Permanent Address to Current Address if checkbox is checked
     const updatedFormData = newIsChecked
       ? {
-        ...formData,
-        currentAddress1: formData.address1,
-        currentAddress2: formData.address2,
-        currentZIP: formData.Zip,
-        currentcountry: formData.country,
-        currentstate: formData.state,
-        currentcity: formData.city,
-      }
+          ...formData,
+          currentAddress1: formData.address1,
+          currentAddress2: formData.address2,
+          currentZIP: formData.Zip,
+          currentcountry: formData.country,
+          currentstate: formData.state,
+          currentcity: formData.city,
+        }
       : {
-        ...formData,
-        currentAddress1: "",
-        currentAddress2: "",
-        currentZIP: "",
-        currentcountry: "",
-        currentstate: "",
-        currentcity: "",
-      };
+          ...formData,
+          currentAddress1: "",
+          currentAddress2: "",
+          currentZIP: "",
+          currentcountry: "",
+          currentstate: "",
+          currentcity: "",
+        };
 
     // Update the form data
     setFormData(updatedFormData);
@@ -97,9 +180,9 @@ export default function CreateUser() {
   const LocationData = useSelector(
     (state) => state?.nonPersist?.userDetails?.locationData
   );
-  
+
   const countryCode = {};
-  
+
   if (LocationData && Array.isArray(LocationData)) {
     LocationData.forEach((location) => {
       countryCode[location.id] = location.code;
@@ -107,7 +190,6 @@ export default function CreateUser() {
   } else {
     console.error("LocationData is undefined or not an array");
   }
-  
 
   const handlezipChange = (event) => {
     const { name, value } = event.target;
@@ -132,8 +214,6 @@ export default function CreateUser() {
     });
   };
 
-
-
   useEffect(() => {
     dispatch(masterDataAction());
   }, [dispatch]);
@@ -141,7 +221,6 @@ export default function CreateUser() {
   const masterdata1 = useSelector(
     (state) => state.persistData.masterData?.gender
   );
-
 
   const employeeStatus = useSelector(
     (state) => state.persistData.masterData?.employeeStatus
@@ -154,17 +233,17 @@ export default function CreateUser() {
     (state) => state.persistData.masterData?.designation
   );
 
-  
   const employeeBy = useSelector(
     (state) => state.persistData.masterData?.employedBy
   );
   const Client_location = useSelector(
     (state) => state.persistData.masterData?.clientLocation
   );
+
   const work_mode = useSelector(
     (state) => state.persistData.masterData?.workMode
   );
-  
+
   const managerName = useSelector(
     (state) => state?.nonPersist?.userDetails?.employees.result
   );
@@ -177,17 +256,18 @@ export default function CreateUser() {
     if (employeeDetails) {
       setFormData((prevData) => ({
         ...prevData,
+        file: employeeDetails?.file || "",
         firstName: employeeDetails.firstName || "",
         email: employeeDetails.email || "",
         number: employeeDetails.phoneNumber || "",
         gender: employeeDetails?.genderId || "",
         lastName: employeeDetails.lastName || "",
-        DOB: employeeDetails.dob || "",
-        DOJ: employeeDetails.joiningDate || "",
+        DOB: employeeDetails?.dob || "",
+        DOJ: employeeDetails?.joiningDate || "",
         CTC: employeeDetails.ctc || "",
         Status: employeeDetails.status || "",
-        skill: employeeDetails?.skillId || "",
-        UANNo: employeeDetails.uanNo || "",
+        skill: employeeDetails?.employeeSkill?.map((s) => s.skillId) || [],
+        UANNo: employeeDetails?.uanNo || "",
         address1: employeeDetails.permanentAddress?.addressLine1 || "",
         address2: employeeDetails.permanentAddress?.addressLine2 || "",
         country: employeeDetails.permanentAddress?.countryId || "",
@@ -202,33 +282,33 @@ export default function CreateUser() {
         currentZIP: employeeDetails.presentAddress?.postalCode || "",
         AadhaarNo: employeeDetails.aadhaarNo || "",
         workMode: employeeDetails.workMode || "",
-        ManagerName: employeeDetails?.managerId || "",
+        ManagerName: employeeDetails?.manager || "",
         designation: employeeDetails?.designationId || "",
         ACNo: employeeDetails.acNo || "",
         Bank: employeeDetails.nameAsOnBank || "",
         IFSCCode: employeeDetails.ifscCode || "",
         employeeType: employeeDetails?.empTypeId || "",
         employeeID: employeeDetails?.empId || "",
-        file: employeeDetails.file || "",
         employedBy: employeeDetails?.officeLocationId || "",
         Client_loc: employeeDetails?.clientLocationId || "",
         productType: employeeDetails.employeeCoordinates || "",
         Bank_Name: employeeDetails.bankName || "",
       }));
+      setSelectedImage(
+        `data:image/png;base64,${employeeDetails?.fileStorage?.data}`
+      );
       if (
-        employeeDetails.permanentAddress?.addressLine1 || "",
+        (employeeDetails.permanentAddress?.addressLine1 || "",
         employeeDetails.permanentAddress?.addressLine2 || "",
         employeeDetails.permanentAddress?.postalCode || "",
         employeeDetails.permanentAddress?.countryId || "",
         employeeDetails.permanentAddress?.stateId || "",
-        employeeDetails.permanentAddress?.cityId || ""
+        employeeDetails.permanentAddress?.cityId || "")
       ) {
         setIsChecked(true);
       }
     }
   }, [employeeDetails]);
-
-  
 
   const navigate = useNavigate();
   const handleBackClick = () => {
@@ -333,13 +413,12 @@ export default function CreateUser() {
     setFormData({ ...formData, skill: skillIds });
   };
 
-
   useEffect(() => {
     dispatch(SearchEmployeeAction(formData.ManagerName));
   }, [dispatch]);
 
   const handleManagerNameChange = (value) => {
-    setFormData({ ...formData, ManagerName: value?.id });
+    setFormData({ ...formData, ManagerName: value });
   };
   const handleManagerNameChange2 = (event) => {
     dispatch(SearchEmployeeAction(event.target.value));
@@ -396,13 +475,11 @@ export default function CreateUser() {
     }
   }, [formData.state]);
 
-
   const handleCountryChange = (type, event, value) => {
     if (type === "country") {
       setFormData((prevData) => ({
         ...prevData,
         country: value?.id || "",
-
       }));
     }
     if (type === "currentcountry") {
@@ -620,13 +697,13 @@ export default function CreateUser() {
     }
 
     if (!workMode?.trim()) {
-      errors.workMode = '*Select your Work Mode..it is required';
+      errors.workMode = "*Select your Work Mode..it is required";
     }
     if (!employeeType) {
-      errors.employeeType = '*Employee Type is required';
-    }
-    else {
-      const payload = ({
+      errors.employeeType = "*Employee Type is required";
+    } else {
+      const payload = {
+        id: id ? id : "",
         file: formData.file,
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -634,9 +711,9 @@ export default function CreateUser() {
         dob: formData.DOB,
         phoneNumber: formData.number,
         email: formData.email,
-        employeeSkills : formData.skill,
+        employeeSkills: formData.skill,
         empTypeId: formData.employeeType,
-        managerId: formData.ManagerName,
+        managerId: formData.ManagerName.id,
         ctc: formData.CTC,
         joiningDate: formData.DOJ,
         acNo: formData.ACNo,
@@ -644,7 +721,7 @@ export default function CreateUser() {
         nameAsOnBank: formData.Bank,
         ifscCode: formData.IFSCCode,
         aadhaarNo: formData.AadhaarNo,
-        unaNo: formData.UANNo,
+        uanNo: formData.UANNo,
         workMode: formData.workMode,
         employeeCoordinates: formData.productType,
         empId: formData.employeeID,
@@ -652,24 +729,21 @@ export default function CreateUser() {
         officeLocationId: formData.employedBy,
         designationId: formData.designation,
         status: formData.Status,
-        'presentAddress.addressLine1': formData.currentAddress1,
-        ' presentAddress.addressLine2': formData.currentAddress2,
-        'presentAddress.countryId': formData.currentcountry,
-        'presentAddress.stateId': formData.currentstate,
-        'presentAddress.cityId': formData.currentcity,
-        'presentAddress.postalCode': formData.currentZIP,
-        'permanentAddress.addressLine1': formData.address1,
-        'permanentAddress.addressLine2': formData.address2,
-        'permanentAddress.countryId': formData.country,
-        'permanentAddress.stateId': formData.state,
-        'permanentAddress.cityId': formData.city,
-        'permanentAddress.postalCode': formData.Zip,
+        "presentAddress.addressLine1": formData.currentAddress1,
+        " presentAddress.addressLine2": formData.currentAddress2,
+        "presentAddress.countryId": formData.currentcountry,
+        "presentAddress.stateId": formData.currentstate,
+        "presentAddress.cityId": formData.currentcity,
+        "presentAddress.postalCode": formData.currentZIP,
+        "permanentAddress.addressLine1": formData.address1,
+        "permanentAddress.addressLine2": formData.address2,
+        "permanentAddress.countryId": formData.country,
+        "permanentAddress.stateId": formData.state,
+        "permanentAddress.cityId": formData.city,
+        "permanentAddress.postalCode": formData.Zip,
+      };
 
-      })
-
-      await dispatch(
-        CreateUserForm(payload)
-      )
+      await dispatch(CreateUserForm(payload));
     }
     setValidationErrors(errors);
   };
@@ -848,7 +922,12 @@ export default function CreateUser() {
               <Dropdown
                 value={formData.gender}
                 onChange={handleGenderChange}
-                title="gender"
+                title={
+                  <Typography>
+                    <span style={{ color: "red", width: "100%" }}>*</span>
+                    Gender
+                  </Typography>
+                }
                 dropdownName="gender"
                 options={masterdata1}
                 style={{
@@ -919,6 +998,7 @@ export default function CreateUser() {
                   }
                   type="date"
                   id="DOB"
+                  value={formData.DOB}
                   name="DOB"
                   fullWidth
                   margin="normal"
@@ -954,6 +1034,7 @@ export default function CreateUser() {
                   name="DOJ"
                   fullWidth
                   margin="normal"
+                  value={formData.DOJ}
                   onChange={handleInputChange}
                   style={{
                     ...style.TimesheetTextField,
@@ -1079,7 +1160,10 @@ export default function CreateUser() {
             <Autocomplete
               freeSolo
               id="country"
-              value={countries.find((country) => country.id === formData.country) || null}
+              value={
+                countries.find((country) => country.id === formData.country) ||
+                null
+              }
               options={countries || []}
               getOptionLabel={(option) => option.label}
               getOptionValue={(option) => option.id}
@@ -1109,7 +1193,9 @@ export default function CreateUser() {
               freeSolo
               id="state"
               options={states || []}
-              value={states.find((state) => state.id === formData.state) || null}
+              value={
+                states.find((state) => state.id === formData.state) || null
+              }
               getOptionLabel={(option) => option.label}
               getOptionValue={(option) => option.id}
               style={{ fontSize: "16px", borderRadius: "10px" }}
@@ -1432,7 +1518,7 @@ export default function CreateUser() {
                 <FormControlLabel
                   value="PRAKAT_LOCATION"
                   control={<Radio />}
-                  label="Prakat Product"
+                  label="Prakat Location"
                 />
               </RadioGroup>
             </FormControl>
@@ -1447,7 +1533,7 @@ export default function CreateUser() {
                 <FormControlLabel
                   value="CLIENT_LOCATION"
                   control={<Radio />}
-                  label="Client Product"
+                  label="Client Location"
                 />
               </RadioGroup>
             </FormControl>
@@ -1464,7 +1550,6 @@ export default function CreateUser() {
                 </Typography>
               }
               dropdownName="WorkMode"
-
               name="workMode"
               style={{
                 ...style.TimesheetTextField,
@@ -1487,7 +1572,9 @@ export default function CreateUser() {
       </div>
       <div style={{ width: "100%", margin: "20px" }}>
         <Typography variant="h6">
-          <b>Professional Data</b>
+          <b>
+            Professional Data<span style={{ color: "red" }}>*</span>
+          </b>
         </Typography>
         <div
           style={{
@@ -1524,14 +1611,14 @@ export default function CreateUser() {
                 style={{ marginTop: "8px", marginBottom: "20px" }}
                 sx={{ width: "100%" }}
               >
-              <Autocomplete
+                <Autocomplete
                   freeSolo
                   id="Manager_Name"
                   options={managerName || []}
                   getOptionLabel={(option) => option.name}
                   getOptionValue={(option) => option.id}
                   onChange={(event, value) => handleManagerNameChange(value)}
-                 
+                  value={formData.ManagerName}
                   style={{
                     ...style.TimesheetTextField,
                     borderRadius: "10px",
@@ -1601,6 +1688,8 @@ export default function CreateUser() {
                 dropdownName="Employee by"
                 name="EMPby"
                 options={employeeBy || []}
+                labelKey="name"
+                valueKey="locationId"
                 style={{
                   ...style.TimesheetTextField,
                   border: "1px solid silver",
@@ -1692,7 +1781,9 @@ export default function CreateUser() {
                 onChange={(_, value) => handleChange2(value)}
                 getOptionLabel={(option) => option.skillName}
                 getOptionValue={(option) => option.skillId}
-                value={skill.filter((s) => formData.skill.includes(s.skillId))}
+                value={skill.filter((s) =>
+                  formData.skill?.includes(s?.skillId)
+                )}
                 renderOption={(props, option) => (
                   <li {...props} key={option.skillId}>
                     {option.skillName}
@@ -1707,7 +1798,6 @@ export default function CreateUser() {
                           <span style={{ color: "red", width: "100%" }}>*</span>
                           Skills
                         </Typography>
-
                       }
                       InputProps={{
                         ...params.InputProps,
@@ -1747,6 +1837,8 @@ export default function CreateUser() {
                   borderRadius: "5px",
                 }}
                 options={Client_location || []}
+                labelKey="name"
+                valueKey="locationId"
               />
               {validationErrors.Client_loc && (
                 <Box>
@@ -1894,7 +1986,6 @@ export default function CreateUser() {
                 }}
                 fullWidth
                 margin="normal"
-
               />
               {validationErrors.Bank && (
                 <Box>
@@ -1917,7 +2008,6 @@ export default function CreateUser() {
                 }}
                 fullWidth
                 margin="normal"
-
               />
               {validationErrors.IFSCCode && (
                 <Box>
