@@ -15,6 +15,7 @@ const LeavesHeader = ({
   approver,
   setApprover,
   leaveStatus,
+  setLeaveStatus,
 }) => {
   const theme = useTheme();
   const style = adminHeaderStyle(theme);
@@ -37,12 +38,22 @@ const LeavesHeader = ({
   };
 
   const approverList = useSelector(
-    (state) => state?.nonPersist?.adminTimeSheet?.approversData
+    (state) => state?.nonPersist?.adminLeaves?.leavesApproversData
   );
 
   const adminLeavesData = useSelector(
     (state) => state?.nonPersist?.adminLeaves?.allLeavesForAdmin
   );
+
+  const handleStatusChnage = (e) => {
+    setLeaveStatus(e.target.value);
+    setApprover("All");
+  };
+
+  const status = useSelector(
+    (state) => state.persistData.masterData?.timeSheetEntryStatus
+  );
+
   return (
     <div>
       {" "}
@@ -119,13 +130,15 @@ const LeavesHeader = ({
 
             <Grid item xs={12} sm={4} md={3} lg={2}>
               <Dropdown
-                options={[{ id: "Submitted", value: "Submitted" }]}
+                options={status}
                 value={leaveStatus}
-                //   onChange={handleTeamMemberChange} // Pass the onChange function
+                onChange={handleStatusChnage}
                 title="Status"
                 dropdownName="Status" // Pass the dropdown name
                 style={style.TimesheetDateTextField} // Pass any additional style
                 approve={true}
+                labelKey="name"
+                valueKey="value"
               />
             </Grid>
             <Grid item xs={12} sm={12} md={4} lg={4} margin={"auto"}>

@@ -18,7 +18,7 @@ import {
   FETCH_STATES_REQUEST,
   FETCH_STATES_SUCCESS,
   FETCH_LOCATION_DATA_SUCCESS,
-   SET_SELECTED_COUNTRY_ID
+  SET_SELECTED_COUNTRY_ID
 
 } from '../../actions/AdminConsoleAction/users/usersActionTypes';
 

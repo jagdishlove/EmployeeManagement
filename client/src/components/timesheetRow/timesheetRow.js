@@ -52,11 +52,13 @@ const TimesheetRow = ({
   isHistory,
   setDisabledWhileEditing,
   timesheetForm,
-  superAdmin
+  superAdmin,
+  onCommentChange,
+  onRatingChange,
+  comments,
+  ratings,
 }) => {
   const theme = useTheme();
-
-  console.log('data',data)
 
   const dispatch = useDispatch();
   const masterData = useSelector((state) => state.persistData.masterData);
@@ -250,6 +252,13 @@ const TimesheetRow = ({
       ...prevSelectedValues,
       [dropdownName]: value,
     }));
+
+    if (superAdmin) {
+      if (dropdownName === "adminComment") {
+        const comment = value;
+        onCommentChange(comment);
+      }
+    }
   };
 
   const validationForm = () => {
@@ -446,6 +455,9 @@ const TimesheetRow = ({
 
   const starHandler = (e) => {
     setStarRating(e);
+    if (superAdmin) {
+      onRatingChange(e);
+    }
   };
 
   // Define the tooltip message based on the data.status value
@@ -492,7 +504,7 @@ const TimesheetRow = ({
             : "2px solid #008080",
       }}
     >
-      {((approval && data) || superAdmin) ? (
+      {(approval && data) || superAdmin ? (
         <div
           style={{
             position: "absolute",
@@ -515,7 +527,7 @@ const TimesheetRow = ({
         </div>
       ) : null}
 
-      {((approval && data) || superAdmin) ? (
+      {(approval && data) || superAdmin ? (
         <div
           style={{
             position: "absolute",
@@ -615,7 +627,7 @@ const TimesheetRow = ({
                   border: "1px solid #8897ad87",
                   borderRadius: "10px",
                 }}
-                disabled={disabled || approval || superAdmin}
+                disabled={disabled || approval}
               />
             </Grid>
             <Grid item xs={12} sm={12} md={12} lg={12}>
@@ -674,13 +686,15 @@ const TimesheetRow = ({
                   rows={4}
                   variant="outlined"
                   fullWidth
-                  value={managerStatusData?.comment}
+                  value={managerStatusData?.comment || comments}
                   sx={style.TimesheetManagerTextField}
                   inputProps={{ maxLength: 250 }}
                   onChange={(e) => onChangeHandler(e, "adminComment")}
-                  disabled={(!approval)}
+                  disabled={
+                    !approval || (superAdmin && !(data.status === "SUBMITTED"))
+                  }
                   InputLabelProps={
-                    (approval || superAdmin)
+                    approval
                       ? {
                           shrink: true,
                           htmlFor: "manager-comments",
@@ -727,7 +741,8 @@ const TimesheetRow = ({
               role === "manager" ||
               role === "employee" ||
               role === "supervisor" ||
-              role === "admin" ? (
+              role === "admin" ||
+              role === "superAdmin" ? (
                 <Grid
                   container
                   item
@@ -741,7 +756,8 @@ const TimesheetRow = ({
                   <Star
                     onClick={starHandler}
                     approval={approval}
-                    value={managerStatusData?.rating}
+                    data={data}
+                    value={managerStatusData?.rating || ratings}
                   />
                 </Grid>
               ) : (
@@ -759,7 +775,8 @@ const TimesheetRow = ({
                   display={"flex"}
                   sx={style.starSec}
                 >
-{(!approval || ((superAdmin && !data.status === "SUBMITTED"))) ? (
+                  {!approval ||
+                  (superAdmin && !(data.status === "SUBMITTED")) ? (
                     <>
                       <Button
                         sx={style.GreenButton}
@@ -889,7 +906,7 @@ const TimesheetRow = ({
               )}
             </Grid>
           </Grid>
-          {(approval || superAdmin) ? null : (
+          {approval || superAdmin ? null : (
             <Grid item xs={12} sm={12} md={1} lg={1} sx={style.iconDesign}>
               {data ? (
                 <IconButton
@@ -945,7 +962,7 @@ const TimesheetRow = ({
                 ""
               )}
 
-              {data  ? (
+              {data ? (
                 <IconButton
                   disabled={disabled}
                   onClick={() => handleEditData(id)}
@@ -1000,7 +1017,7 @@ const TimesheetRow = ({
             </span>
           )}
         </Grid>
-        {approval && (
+        {(approval || superAdmin) && (
           <>
             <Grid item xs={12} sm={12} md={12} lg={12} sx={style.timesheetCol4}>
               <span style={{ color: "red" }}>

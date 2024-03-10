@@ -321,7 +321,7 @@ const Sidebar = ({ children }) => {
                   {[
                     { text: "Projects", url: "/projects" },
                     { text: "Users", url: "/users" },
-                    { text: "Timesheet", url: "/timesheets" },
+                    { text: "Timesheets", url: "/timesheet" },
                     { text: "Adminleaves", url: "/adminLeaves" },
                     { text: "MasterData", url: "/masterData" },
                   ].map((item) => (

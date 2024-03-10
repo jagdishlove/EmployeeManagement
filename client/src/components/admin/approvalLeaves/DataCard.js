@@ -21,14 +21,23 @@ const DataCard = ({
   leaveRequest,
   error,
   index,
+  superAdmin,
+  onCommentChange,
+  adminComments,
 }) => {
   const [expanded, setExpanded] = useState(false);
-  const [comments, setComments] = useState('');
+  const [comments, setComments] = useState("");
 
   const handleApproval = (status, leaveRequestId) => {
     approveRejectLeavesHandler(leaveRequestId, status, comments);
   };
 
+  const handleCommentInputChange = (e) => {
+    setComments(e.target.value);
+    if (superAdmin) {
+      onCommentChange(e.target.value);
+    }
+  };
   const masterData = useSelector((state) => state?.persistData?.masterData);
 
   const handleAccordionToggle = () => {
@@ -156,12 +165,12 @@ const DataCard = ({
                   label="Comments"
                   placeholder="APPROVED"
                   variant="outlined"
-                  value={comments}
+                  value={comments || adminComments}
                   InputLabelProps={{
                     shrink: true,
                     htmlFor: "comments",
                   }}
-                  onChange={(e) => setComments(e.target.value)}
+                  onChange={handleCommentInputChange}
                   sx={{ width: "70%" }}
                 />
                 <Button
