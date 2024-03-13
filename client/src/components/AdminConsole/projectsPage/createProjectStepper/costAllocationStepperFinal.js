@@ -8,12 +8,21 @@ import Stepper from "@mui/material/Stepper";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import CostAllocationFormDetails from "./costAllocationFormDetails";
+import { useSelector } from "react-redux";
 
 const CostAllocationStepperFinal = () => {
   const steps = ["Create Project", "Resource Allocation", "Cost Allocation"];
   const Navigate = useNavigate();
+  const projectId = useSelector(
+    (state) => state.nonPersist.projectDetails?.projectId
+  );
+
   const handleBackClick = () => {
-    Navigate("/resourceallocation");
+    if (window.location.pathname === "/resourceallocation") {
+      Navigate(`/EditForm/${projectId}`);
+    } else {
+      Navigate(`/EditResourcesForm/${projectId}`);
+    }
   };
   return (
     <div>
@@ -87,7 +96,7 @@ const CostAllocationStepperFinal = () => {
           </Stepper>
         </Box>
       </div>
-      <CostAllocationFormDetails/>
+      <CostAllocationFormDetails />
     </div>
   );
 };

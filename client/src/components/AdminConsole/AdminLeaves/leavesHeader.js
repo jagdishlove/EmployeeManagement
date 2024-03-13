@@ -97,6 +97,7 @@ const LeavesHeader = ({
                       {params.InputProps.startAdornment}
                     </>
                   ),
+                  style: { borderRadius: "20px" },
                 }}
               />
             )}

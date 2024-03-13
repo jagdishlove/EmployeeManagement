@@ -73,6 +73,10 @@ export default function ProjectHeader({
                   variant="outlined"
                   placeholder="Search by  Client and Project Name"
                   onChange={handleInputChangeClientSearch}
+                  InputProps={{
+                    ...params.InputProps,
+                    style: { borderRadius: "20px" },
+                  }}
                 />
               )}
             />

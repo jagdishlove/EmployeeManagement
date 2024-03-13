@@ -671,7 +671,7 @@ export const saveCreateResourcesAction = (payload) => {
         payload
       );
       dispatch(saveCreateResourcesSuccess(response));
-      toast.success("Recorces Created Successfully", {
+      toast.success("Resources Created Successfully", {
         position: toast.POSITION.BOTTOM_CENTER,
       });
       return response;

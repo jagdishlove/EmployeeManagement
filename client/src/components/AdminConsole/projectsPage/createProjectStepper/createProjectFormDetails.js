@@ -20,6 +20,7 @@ import {
   getClientDetailsAction,
   getClientNameAction,
   getEmployeeSearchAction,
+  getProjectDetailsAction,
   saveCreateProjectAction,
 } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import Dropdown from "../../../forms/dropdown/dropdown";
@@ -33,7 +34,7 @@ const CreateProjectFormDetails = () => {
     (state) => state.nonPersist.projectDetails?.projectDetailsData
   );
   const initialValues = {
-    clientName: "",
+    clientName: { id: 0, name: "", type: "client" },
     projectName: "",
     description: "",
     projectCategory: "",
@@ -177,21 +178,22 @@ const CreateProjectFormDetails = () => {
     if (projectId && saveButton) navigate(`/projectDetailPage/${projectId}`);
   }, [projectId]);
 
+  useEffect(() => {
+    if (id) {
+      dispatch(getProjectDetailsAction(id));
+    }
+  }, [id]);
   //for not clear the form we are calling Projectdetails
-  // useEffect(() => {
-  //   if (projectId) {
-  //     dispatch(getProjectDetailsAction(projectId));
-  //   }
-  //   if (id) {
-  //     dispatch(getProjectDetailsAction(id));
-  //   }
-  // }, [projectId, id]);
 
   useEffect(() => {
     setIsEdit(true);
     if (id) {
       setFormData({
-        clientName: projectDetailsData?.client?.clientId || "",
+        clientName: projectDetailsData?.clientSearch || {
+          id: 0,
+          name: "",
+          type: "client",
+        },
         projectName: projectDetailsData?.projectName || "",
         description: projectDetailsData?.description || "",
         projectCategory: projectDetailsData?.jobType?.jobId || "",
@@ -257,7 +259,8 @@ const CreateProjectFormDetails = () => {
       description: formData.description,
       jobTypeId: formData.projectCategory,
       projectManagerId: formData.projectManager?.id,
-      projectTechLeadId: formData.projectLead?.id,
+      projectTechLeadId:
+        formData.projectLead?.id === 0 ? "" : formData.projectLead?.id,
       domainId: formData.domain,
       clientId: formData.clientName.id,
       activitiesIds: formData.applicableActivity || [],
@@ -330,16 +333,13 @@ const CreateProjectFormDetails = () => {
 
   const handleInputChangeClientSearch = (e) => {
     const inputValue = e.target.value;
-    // Check if clientSearchData?.result is available
-    if (clientSearchData?.result) {
-      //
-    } else {
-      // If clientSearchData?.result is not available, set only the name
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        clientName: { name: inputValue },
-      }));
-    }
+    const cs = { id: 0, name: inputValue, type: "client" };
+    // If clientSearchData?.result is not available, set only the name
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      clientName: cs,
+    }));
+
     if (inputValue.length >= 0) {
       dispatch(getClientNameAction(inputValue));
     }
@@ -401,7 +401,7 @@ const CreateProjectFormDetails = () => {
               }}
               isSearchable={true}
               getOptionValue={(option) => option.id}
-              value={formData?.clientName || ""}
+              value={formData?.clientName}
               renderInput={(params) => (
                 <TextField
                   {...params}

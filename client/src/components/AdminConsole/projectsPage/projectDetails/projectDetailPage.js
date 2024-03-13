@@ -74,10 +74,15 @@ const ProjectDetailPage = () => {
         >
           <Button
             variant="contained"
-            color="primary"
+            color="secondary"
             startIcon={<BorderColorOutlined />}
-            style={{ borderRadius: "10px" }}
             onClick={handleEditProject}
+            style={{
+              padding: "10px 40px",
+              fontWeight: "bold",
+              color: "#008080",
+              border: "1px solid #008080",
+            }}
           >
             Edit
           </Button>

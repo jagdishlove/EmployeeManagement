@@ -28,7 +28,7 @@ const ProjectList = ({ projectsData }) => {
   };
 
   const handleEditForm = () => {
-    Navigate(`/EditForm/${projectsData.id}`);
+    Navigate(`/EditForm/${projectsData?.id}`);
   };
 
   const startDateString = projectsData.startDate;
@@ -83,10 +83,10 @@ const ProjectList = ({ projectsData }) => {
               onClose={() => setMenuAnchor(null)}
             >
               <MenuItem selected={false}>
-                <ListItemIcon onClick={handleEditForm}>
-                  <EditIcon fontSize="small" />
+                <ListItemIcon>
+                  <EditIcon fontSize="small" onClick={handleEditForm} />
                 </ListItemIcon>
-                <ListItemText primary="Edit" />
+                <ListItemText primary="Edit" onClick={handleEditForm} />
               </MenuItem>
             </Menu>
           </>
@@ -132,7 +132,9 @@ const ProjectList = ({ projectsData }) => {
             <Typography variant="body2" color="textSecondary">
               <b style={{ color: "black" }}>Start Date : </b>{" "}
               {projectsData?.startDate}
-              <b style={{ color: "black" }}>End Date : </b>{" "}
+              <b style={{ color: "black", marginLeft: "10px" }}>
+                End Date :{" "}
+              </b>{" "}
               {projectsData?.endDate}
             </Typography>
           </Grid>
