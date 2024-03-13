@@ -20,7 +20,6 @@ import {
   getClientDetailsAction,
   getClientNameAction,
   getEmployeeSearchAction,
-  getProjectDetailsAction,
   saveCreateProjectAction,
 } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import Dropdown from "../../../forms/dropdown/dropdown";
@@ -28,8 +27,11 @@ import Dropdown from "../../../forms/dropdown/dropdown";
 const CreateProjectFormDetails = () => {
   const theme = useTheme();
   const style = TimesheetStyle(theme);
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const projectDetailsData = useSelector(
+    (state) => state.nonPersist.projectDetails?.projectDetailsData
+  );
   const initialValues = {
     clientName: "",
     projectName: "",
@@ -55,6 +57,9 @@ const CreateProjectFormDetails = () => {
     projectCategory: "",
     projectManager: "",
   });
+
+  console.log("formDataformData", formData);
+
   const [saveButton, setSaveButton] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   // client Search
@@ -89,11 +94,11 @@ const CreateProjectFormDetails = () => {
 
   //For autopopulate data added condition
   useEffect(() => {
-    if (formData.clientName) {
+    if (formData?.clientName) {
       const selectedId = formData.clientName.id;
       dispatch(getClientDetailsAction(selectedId));
     }
-  }, [formData.clientName]);
+  }, [formData?.clientName]);
 
   const handleFormChange = (event) => {
     const { name, value } = event.target;
@@ -169,28 +174,24 @@ const CreateProjectFormDetails = () => {
   );
 
   useEffect(() => {
-    if (projectId && saveButton) Navigate(`/projectDetailPage/${projectId}`);
+    if (projectId && saveButton) navigate(`/projectDetailPage/${projectId}`);
   }, [projectId]);
 
   //for not clear the form we are calling Projectdetails
-  const projectDetailsData = useSelector(
-    (state) => state.nonPersist.projectDetails?.projectDetailsData
-  );
-  useEffect(() => {
-    if (projectId) {
-      dispatch(getProjectDetailsAction(projectId));
-    }
-    if (id) {
-      dispatch(getProjectDetailsAction(id));
-    }
-  }, [projectId, id]);
+  // useEffect(() => {
+  //   if (projectId) {
+  //     dispatch(getProjectDetailsAction(projectId));
+  //   }
+  //   if (id) {
+  //     dispatch(getProjectDetailsAction(id));
+  //   }
+  // }, [projectId, id]);
 
   useEffect(() => {
     setIsEdit(true);
-
     if (id) {
       setFormData({
-        clientName: projectDetailsData?.client?.clientName || "",
+        clientName: projectDetailsData?.client?.clientId || "",
         projectName: projectDetailsData?.projectName || "",
         description: projectDetailsData?.description || "",
         projectCategory: projectDetailsData?.jobType?.jobId || "",
@@ -207,28 +208,29 @@ const CreateProjectFormDetails = () => {
         },
         domain: projectDetailsData?.domain?.domainId || "",
         complexity: projectDetailsData?.complexity || "",
-        clientAddress: projectDetailsData?.clientAddress || "",
-        phone: projectDetailsData?.phone || "",
-        country: projectDetailsData?.country || "",
-        state: projectDetailsData?.state || "",
-        city: projectDetailsData?.city || "",
-        zipCode: projectDetailsData?.zipCode || "",
+        clientAddress:
+          `${projectDetailsData?.client?.address?.addressLine1 || " "} ${
+            projectDetailsData?.client?.address?.addressLine1?.addressLine2 ||
+            " "
+          }` || "",
+        phone: projectDetailsData?.client?.phone || "",
+        country: projectDetailsData?.client?.address?.country?.dataValue || "",
+        state: projectDetailsData?.client?.address?.state?.dataValue || "",
+        city: projectDetailsData?.client?.address?.city?.dataValue || "",
+        zipCode: projectDetailsData?.client?.address?.postalCode || "",
       });
-
-      if (id) {
-        dispatch(getClientNameAction(projectDetailsData?.client?.clientName));
-      }
-      if (id) {
-        const activitiesIds = projectDetailsData?.activities?.map(
-          (skillObj) => skillObj.activityId
-        );
-        setFormData((prevData) => ({
-          ...prevData,
-          applicableActivity: activitiesIds,
-        }));
-      }
+      dispatch(getClientNameAction(projectDetailsData?.client?.clientName));
+      const activitiesIds = projectDetailsData?.activities?.map(
+        (skillObj) => skillObj.activityId
+      );
+      setFormData((prevData) => ({
+        ...prevData,
+        applicableActivity: activitiesIds,
+      }));
+    } else {
+      setFormData();
     }
-  }, [id]);
+  }, [id, navigate]);
 
   //Save
   const handleSaveData = async (e, type) => {
@@ -282,8 +284,8 @@ const CreateProjectFormDetails = () => {
     // Save data first
     await handleSaveData(e, "next");
 
-    // Navigate to resource allocation
-    Navigate("/resourceallocation");
+    // navigate to resource allocation
+    navigate("/resourceallocation");
   };
 
   const validateForm = () => {
@@ -343,19 +345,19 @@ const CreateProjectFormDetails = () => {
     }
   };
 
-  const selectedClientId = projectDetailsData?.client?.clientId;
+  // const selectedClientId = projectDetailsData?.client?.clientId;
 
-  // Find the corresponding client object based on clientID
-  const selectedClient = clientSearchData?.result?.find(
-    (client) => client.id === selectedClientId
-  );
+  // // Find the corresponding client object based on clientID
+  // const selectedClient = clientSearchData?.result?.find(
+  //   (client) => client.id === selectedClientId
+  // );
 
-  useEffect(() => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      clientName: selectedClient,
-    }));
-  }, [selectedClient]);
+  // useEffect(() => {
+  //   setFormData((prevFormData) => ({
+  //     ...prevFormData,
+  //     clientName: selectedClient,
+  //   }));
+  // }, [selectedClient]);
 
   return (
     <div style={{ marginBottom: "50px" }}>
@@ -399,7 +401,7 @@ const CreateProjectFormDetails = () => {
               }}
               isSearchable={true}
               getOptionValue={(option) => option.id}
-              value={selectedClient}
+              value={formData?.clientName || ""}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -425,7 +427,9 @@ const CreateProjectFormDetails = () => {
             placeholder="Client Address"
             name="clientAddress"
             value={`${clientDetailsData?.address?.addressLine1 || ""} ${
-              clientDetailsData?.address?.addressLine2 || ""
+              clientDetailsData?.address?.addressLine2 ||
+              formData?.clientAddress ||
+              ""
             }`}
             style={{
               ...style.TimesheetTextField,
@@ -451,7 +455,7 @@ const CreateProjectFormDetails = () => {
           <TextField
             placeholder="Phone"
             name="phone"
-            value={clientDetailsData?.phone}
+            value={clientDetailsData?.phone || formData?.phone}
             style={{
               ...style.TimesheetTextField,
               borderRadius: "10px",
@@ -481,7 +485,11 @@ const CreateProjectFormDetails = () => {
           <TextField
             placeholder="Country"
             name="country"
-            value={DataValue[clientDetailsData?.address?.countryId] || ""}
+            value={
+              DataValue[clientDetailsData?.address?.countryId] ||
+              formData?.country ||
+              ""
+            }
             sx={{
               "& :hover": {
                 cursor: "not-allowed",
@@ -504,7 +512,11 @@ const CreateProjectFormDetails = () => {
           <TextField
             placeholder="State"
             name="state"
-            value={DataValue[clientDetailsData?.address?.stateId] || ""}
+            value={
+              DataValue[clientDetailsData?.address?.stateId] ||
+              formData?.state ||
+              ""
+            }
             sx={{
               "& :hover": {
                 cursor: "not-allowed",
@@ -532,7 +544,11 @@ const CreateProjectFormDetails = () => {
                 cursor: "not-allowed",
               },
             }}
-            value={DataValue[`${clientDetailsData?.address?.cityId}`] || ""}
+            value={
+              DataValue[`${clientDetailsData?.address?.cityId}`] ||
+              formData?.city ||
+              ""
+            }
             style={{
               ...style.TimesheetTextField,
               borderRadius: "10px",
@@ -555,7 +571,9 @@ const CreateProjectFormDetails = () => {
                 cursor: "not-allowed",
               },
             }}
-            value={clientDetailsData?.address?.postalCode}
+            value={
+              clientDetailsData?.address?.postalCode || formData?.zipCode || ""
+            }
             style={{
               ...style.TimesheetTextField,
               borderRadius: "10px",
@@ -596,7 +614,7 @@ const CreateProjectFormDetails = () => {
           <TextField
             placeholder=" Project Name"
             name="projectName"
-            value={formData.projectName}
+            value={formData?.projectName}
             onChange={handleFormChange}
             style={{
               ...style.TimesheetTextField,
@@ -617,7 +635,7 @@ const CreateProjectFormDetails = () => {
           <TextField
             placeholder="Description"
             name="description"
-            value={formData.description}
+            value={formData?.description}
             onChange={handleFormChange}
             style={{
               ...style.TimesheetTextField,
@@ -632,7 +650,7 @@ const CreateProjectFormDetails = () => {
             Project Category
           </Typography>
           <Dropdown
-            value={formData.projectCategory}
+            value={formData?.projectCategory}
             onChange={handleDropdownChange}
             dropdownName="projectCategory"
             options={masterdataProjectJobTypesList}
@@ -664,7 +682,7 @@ const CreateProjectFormDetails = () => {
             }
             value={
               masterdataProjectActivityList?.filter((s) =>
-                formData.applicableActivity?.includes(s.activityId)
+                formData?.applicableActivity?.includes(s.activityId)
               ) || []
             }
             disableCloseOnSelect
@@ -703,7 +721,7 @@ const CreateProjectFormDetails = () => {
                   onChange={(event, data) => {
                     handleChange(data, "projectManager");
                   }}
-                  value={formData.projectManager}
+                  value={formData?.projectManager}
                   isSearchable={true}
                   getOptionValue={(option) => option.id}
                   renderInput={(params) => (
@@ -730,7 +748,7 @@ const CreateProjectFormDetails = () => {
                     handleChange(data, "projectManager");
                   }}
                   isSearchable={true}
-                  value={formData.projectManager}
+                  value={formData?.projectManager}
                   getOptionValue={(option) => option.id}
                   renderInput={(params) => (
                     <TextField
@@ -760,7 +778,7 @@ const CreateProjectFormDetails = () => {
                 sx={{
                   borderRadius: "8px",
                 }}
-                value={formData.projectLead}
+                value={formData?.projectLead}
                 getOptionLabel={(option) => option.name}
                 getOptionSelected={(option, value) => option.id === value.id}
                 onChange={(event, data) => {
@@ -784,7 +802,7 @@ const CreateProjectFormDetails = () => {
                   sx={{
                     borderRadius: "8px",
                   }}
-                  value={formData.projectLead}
+                  value={formData?.projectLead}
                   getOptionLabel={(option) => option.name}
                   getOptionSelected={(option, value) => option.id === value.id}
                   onChange={(event, data) => {
@@ -813,7 +831,7 @@ const CreateProjectFormDetails = () => {
             Domain
           </Typography>
           <Dropdown
-            value={formData.domain}
+            value={formData?.domain}
             onChange={handleDropdownChange}
             dropdownName="domain"
             options={allDomainData}
@@ -833,7 +851,7 @@ const CreateProjectFormDetails = () => {
           </Typography>
 
           <Dropdown
-            value={formData.complexity}
+            value={formData?.complexity}
             onChange={handleDropdownChange}
             dropdownName="complexity"
             style={{
