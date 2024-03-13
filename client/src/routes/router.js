@@ -238,6 +238,36 @@ const Router = () => {
         }
       />
       <Route
+        path="/EditResourcesForm/:id"
+        element={
+          isAuthenticated ? (
+            <ConditionalSidebar>
+              <ResourceAllocationStepperTwo />
+            </ConditionalSidebar>
+          ) : (
+            <>
+              <Navigate to="/" />
+              <Login />
+            </>
+          )
+        }
+      />
+      <Route
+        path="/EditCostForm/:id"
+        element={
+          isAuthenticated ? (
+            <ConditionalSidebar>
+              <CostAllocationStepperFinal />
+            </ConditionalSidebar>
+          ) : (
+            <>
+              <Navigate to="/" />
+              <Login />
+            </>
+          )
+        }
+      />
+      <Route
         path="/projectDetailPage/:id"
         element={
           isAuthenticated ? (

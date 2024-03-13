@@ -20,7 +20,9 @@ import { useParams } from "react-router-dom";
 import { getProjectDetailsAction } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 
 const ProjectAccordion = () => {
-  const [accordionDetails, setAccordionDetails] = useState(false);
+  const [accordionDetails1, setAccordionDetails1] = useState(false);
+  const [accordionDetails2, setAccordionDetails2] = useState(false);
+  const [accordionDetails3, setAccordionDetails3] = useState(false);
   const dispatch = useDispatch();
   const { id } = useParams();
 
@@ -33,8 +35,16 @@ const ProjectAccordion = () => {
     dispatch(getProjectDetailsAction(id));
   }, [id]);
 
-  const handleExpand = () => {
-    setAccordionDetails(!accordionDetails);
+  const handleExpand1 = () => {
+    setAccordionDetails1(!accordionDetails1);
+  };
+
+  const handleExpand2 = () => {
+    setAccordionDetails2(!accordionDetails2);
+  };
+
+  const handleExpand3 = () => {
+    setAccordionDetails3(!accordionDetails3);
   };
 
   return (
@@ -43,8 +53,9 @@ const ProjectAccordion = () => {
         sx={{
           border: "1px solid #898989",
           width: "100%",
+          position: "relative",
         }}
-        onChange={handleExpand}
+        onChange={handleExpand1}
       >
         <AccordionSummary
           sx={{
@@ -54,12 +65,27 @@ const ProjectAccordion = () => {
             },
             width: "100%",
             backgroundColor: "#008080",
+            position: "relative",
           }}
         >
-          {accordionDetails ? (
-            <RemoveIcon color="secondary" />
+          {accordionDetails1 ? (
+            <RemoveIcon
+              color="secondary"
+              sx={{
+                position: "absolute", // Position the icon absolutely
+                top: "10px", // Adjust the top position as needed
+                right: "15px", // Adjust the right position as needed
+              }}
+            />
           ) : (
-            <AddIcon color="secondary" />
+            <AddIcon
+              color="secondary"
+              sx={{
+                position: "absolute", // Position the icon absolutely
+                top: "10px", // Adjust the top position as needed
+                right: "15px", // Adjust the right position as needed
+              }}
+            />
           )}
           <Typography variant="h6" color="secondary" ml={3}>
             Project Description
@@ -71,8 +97,9 @@ const ProjectAccordion = () => {
         sx={{
           border: "1px solid #898989",
           width: "100%",
+          position: "relative",
         }}
-        onChange={handleExpand}
+        onChange={handleExpand2}
       >
         <AccordionSummary
           sx={{
@@ -82,12 +109,27 @@ const ProjectAccordion = () => {
             },
             width: "100%",
             backgroundColor: "#008080",
+            position: "relative",
           }}
         >
-          {accordionDetails ? (
-            <RemoveIcon color="secondary" />
+          {accordionDetails2 ? (
+            <RemoveIcon
+              color="secondary"
+              sx={{
+                position: "absolute", // Position the icon absolutely
+                top: "10px", // Adjust the top position as needed
+                right: "15px", // Adjust the right position as needed
+              }}
+            />
           ) : (
-            <AddIcon color="secondary" />
+            <AddIcon
+              color="secondary"
+              sx={{
+                position: "absolute", // Position the icon absolutely
+                top: "10px", // Adjust the top position as needed
+                right: "15px", // Adjust the right position as needed
+              }}
+            />
           )}
           <Typography variant="h6" color="secondary" ml={3}>
             Project Resources
@@ -143,8 +185,9 @@ const ProjectAccordion = () => {
         sx={{
           border: "1px solid #898989",
           width: "100%",
+          position: "relative",
         }}
-        onChange={handleExpand}
+        onChange={handleExpand3}
       >
         <AccordionSummary
           sx={{
@@ -154,12 +197,27 @@ const ProjectAccordion = () => {
             },
             width: "100%",
             backgroundColor: "#008080",
+            position: "relative",
           }}
         >
-          {accordionDetails ? (
-            <RemoveIcon color="secondary" />
+          {accordionDetails3 ? (
+            <RemoveIcon
+              color="secondary"
+              sx={{
+                position: "absolute", // Position the icon absolutely
+                top: "10px", // Adjust the top position as needed
+                right: "15px", // Adjust the right position as needed
+              }}
+            />
           ) : (
-            <AddIcon color="secondary" />
+            <AddIcon
+              color="secondary"
+              sx={{
+                position: "absolute", // Position the icon absolutely
+                top: "10px", // Adjust the top position as needed
+                right: "15px", // Adjust the right position as needed
+              }}
+            />
           )}
           <Typography variant="h6" color="secondary" ml={3}>
             Project Cost Allocation
@@ -174,6 +232,20 @@ const ProjectAccordion = () => {
             borderRadius={"10px"}
             border={"1px solid #898989"}
           >
+            <Grid
+              container
+              item
+              sm={12}
+              md={10}
+              style={{ paddingBottom: "20px" }}
+            >
+              <Grid item xs={6}>
+                <Typography variant="h5">
+                  <strong>Cost Incurred Details:</strong>
+                </Typography>
+              </Grid>
+            </Grid>
+
             <Grid item sm={12} md={10}>
               <TableContainer component={Paper}>
                 <Table>
@@ -207,7 +279,7 @@ const ProjectAccordion = () => {
             <Grid container item sm={12} md={10} style={{ paddingTop: "20px" }}>
               <Grid item xs={4}>
                 <Typography variant="h5">
-                  <strong>Project Cost Incurred :</strong>
+                  <strong>Project Cost Allocation :</strong>
                 </Typography>
               </Grid>
             </Grid>

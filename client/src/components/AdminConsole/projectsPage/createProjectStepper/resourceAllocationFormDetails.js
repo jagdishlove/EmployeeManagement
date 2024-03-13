@@ -20,7 +20,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Select, { components } from "react-select";
 import { TimesheetStyle } from "../../../../pages/timesheet/timesheetStyle";
 import ProjectResourcesModal from "./projectResourcesModal";
@@ -29,6 +29,7 @@ import {
   getAllResourcesAction,
   getAllocationSearch,
   getProjectDetailsAction,
+  // getProjectDetailsAction,
   getResourceDetailsPopupAction,
   saveCreateProjectAction,
   saveCreateResourcesAction,
@@ -135,9 +136,9 @@ const ResourceAllocationFormDetails = () => {
     endDate: null,
     actualEndDate: null,
   });
-
+  console.log("formDataaaa", formData);
   const [selectedOccupancyHours, setSelectedOccupancyHours] = useState(null);
-
+  const { id } = useParams();
   const handleInputChange = (event, data) => {
     setSelectedOptions(data);
     const { name, value } = event.target;
@@ -164,10 +165,11 @@ const ResourceAllocationFormDetails = () => {
   const handleTimeInputChange = (event) => {
     const { name, value } = event.target;
 
-    setFormData({
-      ...formData,
+    setFormData((data) => ({
+      ...data,
+
       [name]: value,
-    });
+    }));
   };
 
   const projectId = useSelector(
@@ -194,7 +196,7 @@ const ResourceAllocationFormDetails = () => {
     } finally {
       await dispatch(getAllResourcesAction(projectId));
     }
-
+    console.log("projectId", projectId);
     // setTimeInput("");
 
     setFormData({
@@ -232,6 +234,8 @@ const ResourceAllocationFormDetails = () => {
   );
 
   const handleEdit = (employeeId, resourceId) => {
+    console.log("employeeId", employeeId);
+    console.log("resourceId", resourceId);
     // setIsEditing(true);
     setEmployeeId(employeeId);
     dispatch(getResourceDetailsPopupAction(employeeId));
@@ -240,7 +244,7 @@ const ResourceAllocationFormDetails = () => {
     const selectedOccupancyHours = allResourcesData.find(
       (item) => item.resourceId === resourceId
     );
-
+    console.log("isModalOpen", isModalOpen);
     const durationString = `${selectedOccupancyHours?.occupancyHours}`;
 
     // Function to parse the duration and return hours and minutes
@@ -261,10 +265,11 @@ const ResourceAllocationFormDetails = () => {
     // Example usage
     const { hours, minutes } = parseDuration(durationString);
 
-    setFormData({
+    setFormData((data) => ({
+      ...data,
       occupancyHours: hours,
       occupancyMinutes: minutes,
-    });
+    }));
     setSelectedOccupancyHours(resourceId);
   };
 
@@ -324,6 +329,9 @@ const ResourceAllocationFormDetails = () => {
         skillIds: getSkillId,
       };
       dispatch(getAllocationSearch(params));
+
+      // Close the dropdown when the "Apply" button is clicked
+      props.selectProps.onMenuClose();
     };
 
     const onResetSkillFilterHandler = () => {
@@ -342,23 +350,35 @@ const ResourceAllocationFormDetails = () => {
             background: "white",
             border: "1px solid lightgray",
             display: "flex",
-            justifyContent: "space-between",
+            justifyContent: "flex-end",
           }}
           {...innerProps}
         >
           <Button
             variant="contained"
-            color="primary"
-            onClick={applySkillFilterHandler}
+            color="secondary"
+            onClick={onResetSkillFilterHandler}
+            style={{
+              border: "1px solid #008080",
+              borderRadius: "20px",
+              color: "#008080",
+              "&:hover": {
+                backgroundColor: "#008080",
+                color: "white",
+              },
+            }}
           >
-            Apply
+            Clear All
           </Button>
           <Button
             variant="contained"
             color="primary"
-            onClick={onResetSkillFilterHandler}
+            onClick={applySkillFilterHandler}
+            style={{
+              borderRadius: "20px",
+            }}
           >
-            Reset
+            Apply
           </Button>
         </Box>
       </components.Menu>
@@ -376,6 +396,9 @@ const ResourceAllocationFormDetails = () => {
         designationIds: getSkillId,
       };
       dispatch(getAllocationSearch(params));
+
+      // Close the dropdown when the "Apply" button is clicked
+      props.selectProps.onMenuClose();
     };
 
     const onResetSkillFilterHandler = () => {
@@ -394,23 +417,35 @@ const ResourceAllocationFormDetails = () => {
             background: "white",
             border: "1px solid lightgray",
             display: "flex",
-            justifyContent: "space-between",
+            justifyContent: "flex-end",
           }}
           {...innerProps}
         >
           <Button
             variant="contained"
-            color="primary"
-            onClick={applySkillFilterHandler}
+            color="secondary"
+            onClick={onResetSkillFilterHandler}
+            style={{
+              border: "1px solid #008080",
+              borderRadius: "20px",
+              color: "#008080",
+              "&:hover": {
+                backgroundColor: "#008080",
+                color: "white",
+              },
+            }}
           >
-            Apply
+            clear All
           </Button>
           <Button
             variant="contained"
             color="primary"
-            onClick={onResetSkillFilterHandler}
+            onClick={applySkillFilterHandler}
+            style={{
+              borderRadius: "20px",
+            }}
           >
-            Reset
+            Apply
           </Button>
         </Box>
       </components.Menu>
@@ -430,13 +465,13 @@ const ResourceAllocationFormDetails = () => {
   );
 
   useEffect(() => {
-    if (projectId) {
-      dispatch(getProjectDetailsAction(projectId));
+    if (id) {
+      dispatch(getProjectDetailsAction(id));
     }
-  }, [projectId]);
+  }, [id]);
 
   useEffect(() => {
-    if (projectDetailsData) {
+    if (id) {
       setFormData((prevData) => ({
         ...prevData,
         projectedImplementationHours:
@@ -452,7 +487,7 @@ const ResourceAllocationFormDetails = () => {
           : null,
       }));
     }
-  }, [projectDetailsData]);
+  }, [id]);
 
   return (
     <div>
@@ -487,7 +522,7 @@ const ResourceAllocationFormDetails = () => {
             <Grid item xs={12} sm={8} md={6} lg={6}>
               <TextField
                 value={searchData}
-                sx={{ width: "100%" }}
+                className="custom-search-field"
                 placeholder="Search by Name"
                 InputProps={{
                   startAdornment: (
@@ -495,6 +530,7 @@ const ResourceAllocationFormDetails = () => {
                       <SearchIcon />
                     </InputAdornment>
                   ),
+                  style: { borderRadius: "20px" },
                 }}
                 onChange={(e) => setSearchData(e.target.value)}
               />
@@ -641,8 +677,9 @@ const ResourceAllocationFormDetails = () => {
                                             borderRadius: "50%",
                                             width: 15,
                                             height: 15,
-                                            marginTop: 4.4,
-                                            marginLeft: 5,
+                                            marginTop: 0,
+                                            marginLeft: 2,
+                                            marginRight: 2,
                                           }}
                                         />
                                         {employeeSkill.rating}
@@ -784,7 +821,7 @@ const ResourceAllocationFormDetails = () => {
           <TextField
             placeholder="Projected Implementation Hours"
             name="projectedimplementationhours"
-            value={formData.projectedimplementationhours}
+            value={formData.projectedImplementationHours}
             onChange={handleInputChange}
             style={{
               ...style.TimesheetTextField,

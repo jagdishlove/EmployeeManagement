@@ -489,6 +489,7 @@ const CostAllocationFormDetails = () => {
               variant="contained"
               color="primary"
               type="submit"
+              style={{ padding: "10px 50px", fontWeight: "bold" }}
             >
               Save
             </Button>

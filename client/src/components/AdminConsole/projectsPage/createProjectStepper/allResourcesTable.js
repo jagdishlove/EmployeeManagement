@@ -57,7 +57,16 @@ const AllResourcesTable = ({ handleEdit }) => {
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{allResources.employeeName}</TableCell>
                   <TableCell>{allResources.designation}</TableCell>
-                  <TableCell>{allResources.employeeSkills.skillName}</TableCell>
+                  <TableCell>
+                    {" "}
+                    {allResources.employeeSkills?.map((skill, skillIndex) => (
+                      <span key={skillIndex}>
+                        {skill.skillName}
+                        {skillIndex < allResources.employeeSkills.length - 1 &&
+                          ", "}
+                      </span>
+                    ))}
+                  </TableCell>
                   <TableCell>{allResources.occupancyHours}</TableCell>
                   <TableCell>
                     <IconButton color="primary">
