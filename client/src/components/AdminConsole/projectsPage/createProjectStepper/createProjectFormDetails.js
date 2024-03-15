@@ -286,14 +286,17 @@ const CreateProjectFormDetails = () => {
     }
     // Save data first
     await handleSaveData(e, "next");
-
-    // navigate to resource allocation
-    navigate("/resourceallocation");
+    if (id) {
+      navigate(`/EditResourcesForm/${id}`);
+    } else {
+      // navigate to resource allocation
+      navigate("/resourceallocation");
+    }
   };
 
   const validateForm = () => {
     const errors = {};
-    if (!formData.clientName) {
+    if (!formData.client) {
       errors.clientName = "Client Name is required";
     }
     if (!formData.projectName) {
