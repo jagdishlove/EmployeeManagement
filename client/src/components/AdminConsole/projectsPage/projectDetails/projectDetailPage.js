@@ -2,13 +2,14 @@ import { IconButton, Typography, Grid, Avatar } from "@mui/material";
 import React, { useEffect } from "react";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
-import GaugeChart from "react-gauge-chart";
+// import GaugeChart from "react-gauge-chart";
 import ProjectAccordion from "./projectAccordion";
 import { Button } from "@mui/material";
 import { BorderColorOutlined } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { getProjectDetailsAction } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import { useParams } from "react-router-dom/dist";
+import GradientGaugeMeter from "./gradientGaugeMeter";
 
 const ProjectDetailPage = () => {
   const dispatch = useDispatch();
@@ -130,14 +131,15 @@ const ProjectDetailPage = () => {
         </Grid>
 
         <Grid item xs={12} md={2}>
-          <GaugeChart
+          <GradientGaugeMeter lowValue="Low" highValue="High" />
+          {/* <GaugeChart
             id="gauge-chart1"
             arcPadding={0.1}
             cornerRadius={0.2}
             percent={0.7}
             textColor="#333"
             formatTextValue={(value) => `${Math.round(value * 100)}%`}
-          />
+          /> */}
         </Grid>
       </Grid>
 
