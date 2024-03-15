@@ -10,7 +10,7 @@ import ResourceAllocationFormDetails from "./resourceAllocationFormDetails";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-const ResourceAllocationStepperTwo = ({ projectsData }) => {
+const ResourceAllocationStepperTwo = () => {
   const steps = ["Create Project", "Resource Allocation", "Cost Allocation"];
   const Navigate = useNavigate();
 
@@ -19,13 +19,9 @@ const ResourceAllocationStepperTwo = ({ projectsData }) => {
   );
 
   const handleBackClick = () => {
-    if (window.location.pathname === "/resourceallocation") {
-      Navigate(`/EditForm/${projectId}`);
-    } else {
-      Navigate(`/EditResourcesForm/${projectId}`);
-    }
+    Navigate(`/EditForm/${projectId}`);
   };
-  console.log("projectsData", projectsData);
+
   return (
     <>
       <div
