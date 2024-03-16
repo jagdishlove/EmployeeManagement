@@ -230,9 +230,9 @@ const CreateProjectFormDetails = () => {
         applicableActivity: activitiesIds,
       }));
     } else {
-      setFormData();
+      setFormData(initialValues);
     }
-  }, [id, navigate]);
+  }, [id]);
 
   //Save
   const handleSaveData = async (e, type) => {
@@ -296,7 +296,7 @@ const CreateProjectFormDetails = () => {
 
   const validateForm = () => {
     const errors = {};
-    if (!formData.client) {
+    if (!formData.clientName.name) {
       errors.clientName = "Client Name is required";
     }
     if (!formData.projectName) {
