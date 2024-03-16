@@ -205,10 +205,13 @@ const ResourceAllocationFormDetails = () => {
     });
     setSelectedOccupancyHours(null);
     setIsModalOpen(false); // Close the modal after confirmation
-
-    // Set the state to true to display the AllResourcesTable component
-    setShowAllResourcesTable(true);
   };
+
+  //for displaying the table after confirm
+  useEffect(() => {
+    dispatch(getAllResourcesAction(projectId));
+    setShowAllResourcesTable(true);
+  }, [projectId]);
 
   const handleCancel = () => {
     // Reset the values when the user clicks on "Cancel"
@@ -221,12 +224,6 @@ const ResourceAllocationFormDetails = () => {
     setSelectedOccupancyHours(null);
     setIsModalOpen(false); // Close the modal after canceling
   };
-
-  //for displaying the table after confirm
-  useEffect(() => {
-    dispatch(getAllResourcesAction(projectId));
-    setShowAllResourcesTable(true);
-  }, [projectId]);
 
   //Edit
   const allResourcesData = useSelector(
