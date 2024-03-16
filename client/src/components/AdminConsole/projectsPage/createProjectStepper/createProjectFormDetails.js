@@ -59,7 +59,6 @@ const CreateProjectFormDetails = () => {
     projectManager: "",
   });
 
-  console.log("formDataformData", formData);
 
   const [saveButton, setSaveButton] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -254,7 +253,7 @@ const CreateProjectFormDetails = () => {
     };
 
     const payload = {
-      id: projectId || id ? projectId || id : "",
+      id: id || "",
       projectName: formData.projectName,
       description: formData.description,
       jobTypeId: formData.projectCategory,

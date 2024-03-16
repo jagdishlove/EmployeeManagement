@@ -486,6 +486,7 @@ const ResourceAllocationFormDetails = () => {
     }
   }, [id]);
 
+
   return (
     <div>
       {/* Resource Allocation */}
@@ -607,7 +608,7 @@ const ResourceAllocationFormDetails = () => {
           </Grid>
         </Grid>
         <Grid item xs={12} sm={8} md={10} lg={10}>
-          {allocationSearchData?.length > 0 && (
+          {
             <TableContainer component={Paper}>
               <Table>
                 <TableBody>
@@ -697,40 +698,40 @@ const ResourceAllocationFormDetails = () => {
                   open={isModalOpen}
                   onClose={() => setIsModalOpen(false)}
                 >
-                  {resourceDetailsPopupData.map((resource, index) => (
-                    <div key={index} style={{ marginTop: "20px" }}>
-                      {/* Display project details */}
-                      <Grid container>
-                        <Grid item xs={2}></Grid>
-                        <Grid item xs={10}>
-                          <Typography variant="h5">
-                            {resource.employeeName}
-                          </Typography>
-                          <Typography variant="paragraph">
-                            <b> Current Projects :</b>
-                          </Typography>
-                          <Typography variant="h6">
-                            {resource.projectName}
-                          </Typography>
-                          <Typography variant="h6">
-                            <b>Start Date:</b> {resource.startDate}
-                            <b> End Date: </b> {resource.endDate}
-                          </Typography>
-                          <Typography variant="h6">
-                            <b> Occupancy Hrs:</b>
-                            {resource.occupancyHours}
-                          </Typography>
+                  {resourceDetailsPopupData?.map((resource, index) => {
+                    return (
+                      <div key={index} style={{ marginTop: "20px" }}>
+                        <Grid container>
+                          <Grid item xs={2}></Grid>
+                          <Grid item xs={10}>
+                            <Typography variant="h5">
+                              {resource.employeeName}
+                            </Typography>
+                            <Typography variant="paragraph">
+                              <b> Current Projects :</b>
+                            </Typography>
+                            <Typography variant="h6">
+                              {resource.projectName}
+                            </Typography>
+                            <Typography variant="h6">
+                              <b>Start Date:</b> {resource.startDate}
+                              <b> End Date: </b> {resource.endDate}
+                            </Typography>
+                            <Typography variant="h6">
+                              <b> Occupancy Hrs:</b>
+                              {resource.occupancyHours}
+                            </Typography>
+                          </Grid>
                         </Grid>
-                      </Grid>
-                    </div>
-                  ))}
-                  {/* Content of your modal */}
+                      </div>
+                    );
+                  })}
+
                   <div
                     display="inline-flex"
                     direction="row"
                     style={{ marginTop: "20px" }}
                   >
-                    {/* Add time input field */}
                     <TextField
                       label="Enter Occupancy Hours"
                       value={formData?.occupancyHours}
@@ -756,7 +757,6 @@ const ResourceAllocationFormDetails = () => {
                       }}
                     />
 
-                    {/* Add Confirm and Cancel buttons */}
                     <Box
                       display="flex"
                       justifyContent="flex-end"
@@ -779,7 +779,7 @@ const ResourceAllocationFormDetails = () => {
                 </ProjectResourcesModal>
               </Table>
             </TableContainer>
-          )}
+          }
         </Grid>
         <Grid item xs={12} sm={8} md={10} lg={10}>
           {showAllResourcesTable && (
