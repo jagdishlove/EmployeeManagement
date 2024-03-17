@@ -608,7 +608,7 @@ export const saveCreateCostIncurredAction = (payload) => {
         payload
       );
       dispatch(saveCreateCostIncurredSuccess());
-      toast.success("Project Created Successfully", {
+      toast.success("Cost Incurred Details added sucessfully", {
         position: toast.POSITION.BOTTOM_CENTER,
       });
       return response;

@@ -232,7 +232,16 @@ const AdminLeaves = () => {
           )}
         </InfiniteScroll>
       )}
-      <Dialog open={openPopup} onClose={handleClosePopup}>
+      <Dialog
+        open={openPopup}
+        onClose={handleClosePopup}
+        PaperProps={{
+          style: {
+            borderRadius: 20,
+            padding: 10,
+          },
+        }}
+      >
         <DialogTitle>
           {" "}
           <img src={icon} /> Approve 500 Timesheets
@@ -244,6 +253,17 @@ const AdminLeaves = () => {
           </p>
         </DialogContent>
         <DialogActions>
+          <Button
+            onClick={handleClosePopup}
+            sx={{
+              color: "#000",
+              borderRadius: "8px",
+              border: "1px solid #D0D5DD",
+              textTransform: "capitalize",
+            }}
+          >
+            Cancel
+          </Button>
           <Button
             onClick={bulkApproveHandler}
             sx={{
@@ -257,17 +277,6 @@ const AdminLeaves = () => {
             }}
           >
             Approve
-          </Button>
-          <Button
-            onClick={handleClosePopup}
-            sx={{
-              color: "#000",
-              borderRadius: "8px",
-              border: "1px solid #D0D5DD",
-              textTransform: "capitalize",
-            }}
-          >
-            Cancel
           </Button>
         </DialogActions>
       </Dialog>
