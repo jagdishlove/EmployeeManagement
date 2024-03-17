@@ -361,6 +361,15 @@ const ResourceAllocationFormDetails = () => {
 
     const onResetSkillFilterHandler = () => {
       setSkillsCheckedData([]);
+      // Call API here
+      const params = {
+        query: searchData || "",
+        skillIds: "", // Assuming you want to clear all selected skill IDs
+      };
+
+      dispatch(getAllocationSearch(params));
+      // Close the dropdown when the "Apply" button is clicked
+      props.selectProps.onMenuClose();
     };
     return (
       <components.Menu {...props}>
@@ -428,6 +437,16 @@ const ResourceAllocationFormDetails = () => {
 
     const onResetSkillFilterHandler = () => {
       setDescCheckedData([]);
+      // Call API here
+      const params = {
+        query: searchData || "",
+        designationIds: "", // Assuming you want to clear all selected skill IDs
+      };
+
+      dispatch(getAllocationSearch(params));
+
+      // Close the dropdown when the "Apply" button is clicked
+      props.selectProps.onMenuClose();
     };
     return (
       <components.Menu {...props}>
