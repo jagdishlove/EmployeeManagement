@@ -486,7 +486,6 @@ const ResourceAllocationFormDetails = () => {
     }
   }, [id]);
 
-
   return (
     <div>
       {/* Resource Allocation */}
@@ -528,7 +527,6 @@ const ResourceAllocationFormDetails = () => {
                       <SearchIcon />
                     </InputAdornment>
                   ),
-                  style: { borderRadius: "20px" },
                 }}
                 onChange={(e) => setSearchData(e.target.value)}
               />

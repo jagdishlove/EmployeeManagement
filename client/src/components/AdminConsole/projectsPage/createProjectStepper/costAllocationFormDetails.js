@@ -105,6 +105,11 @@ const CostAllocationFormDetails = () => {
     setSelectedCostIncurredId(null);
   };
 
+  //for displaying the table after confirm
+  useEffect(() => {
+    dispatch(getAllCostIncurredAction(projectId));
+  }, [projectId]);
+
   const allCostIncurredData = useSelector(
     (state) => state.nonPersist.projectDetails?.allCostIncurredData
   );
