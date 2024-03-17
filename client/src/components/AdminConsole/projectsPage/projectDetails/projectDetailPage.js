@@ -278,11 +278,31 @@ const ProjectDetailPage = () => {
             </Typography>
           </Grid>
           <Grid item xs={8}>
-            {projectDetailsData?.activities?.map((activity) => (
-              <Typography variant="body1" key={activity.activityId}>
-                {activity.activityType}
-              </Typography>
-            ))}
+            <div style={{ whiteSpace: "nowrap" }}>
+              {projectDetailsData?.activities?.map((activity, index) => (
+                <Typography
+                  variant="body1"
+                  key={activity.activityId}
+                  sx={{
+                    border: "1px solid #008080",
+                    borderRadius: "8px",
+                    padding: "4px",
+                    margin: "5px",
+                    alignItems: "center",
+                    justifyContent: "flex-end",
+                    color: "#000000",
+                    backgroundColor: "#ffffff",
+                    display: "inline-block",
+                    marginRight:
+                      index !== projectDetailsData.activities.length - 1
+                        ? "5px"
+                        : "0px",
+                  }}
+                >
+                  {activity.activityType}
+                </Typography>
+              ))}
+            </div>
           </Grid>
         </Grid>
       </Grid>

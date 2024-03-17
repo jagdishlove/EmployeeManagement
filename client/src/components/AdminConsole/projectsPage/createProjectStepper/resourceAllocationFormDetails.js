@@ -127,7 +127,7 @@ const ResourceAllocationFormDetails = () => {
   const theme = useTheme();
   const style = TimesheetStyle(theme);
   const [showAllResourcesTable, setShowAllResourcesTable] = useState(false);
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     projectedimplementationhours: "",
     occupancyHours: "",
@@ -136,6 +136,13 @@ const ResourceAllocationFormDetails = () => {
     endDate: null,
     actualEndDate: null,
   });
+
+  // Define state variables for errors
+  const [errors, setErrors] = useState({
+    occupancyHours: "",
+    occupancyMinutes: "",
+  });
+
   console.log("formDataaaa", formData);
   const [selectedOccupancyHours, setSelectedOccupancyHours] = useState(null);
   const { id } = useParams();
@@ -180,6 +187,26 @@ const ResourceAllocationFormDetails = () => {
 
   const handleConfirm = async (e) => {
     e.preventDefault();
+
+    // Check for validation errors
+    const newErrors = {};
+
+    if (!formData.occupancyHours) {
+      newErrors.occupancyHours = "Please enter Occupancy Hours.";
+    }
+
+    if (!formData.occupancyMinutes) {
+      newErrors.occupancyMinutes = "Please select Occupancy Minutes.";
+    }
+
+    // Update the error state
+    setErrors(newErrors);
+
+    // If there are validation errors, do not dispatch the action
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+
     const payload = {
       employeeId: employeeId,
       projectId: projectId,
@@ -279,7 +306,7 @@ const ResourceAllocationFormDetails = () => {
   };
 
   useEffect(() => {
-    if (projectId && saveButton) Navigate(`/projectDetailPage/${projectId}`);
+    if (projectId && saveButton) navigate(`/projectDetailPage/${projectId}`);
   }, [projectId, saveButton]);
 
   //Save
@@ -304,15 +331,16 @@ const ResourceAllocationFormDetails = () => {
     await dispatch(saveCreateProjectAction(payload, getResourcespayload));
   };
 
-  useEffect(() => {
-    if (projectId && saveButton) Navigate(`/projectDetailPage/${projectId}`);
-  }, [projectId, saveButton]);
-
   const handleSaveAndNext = async (e) => {
     e.preventDefault();
     // Save data first
     await handleSaveData(e, "next");
-    Navigate("/costallocation");
+    if (id) {
+      navigate(`/EditCostForm/${id}`);
+    } else {
+      // navigate to resource allocation
+      navigate("/costallocation");
+    }
   };
 
   const CustomMenu = (props) => {
@@ -738,9 +766,14 @@ const ResourceAllocationFormDetails = () => {
                       margin="normal"
                       name="occupancyHours"
                     />
+                    {errors.occupancyHours && (
+                      <Typography variant="body2" color="error">
+                        {errors.occupancyHours}
+                      </Typography>
+                    )}
                     <Dropdown
                       options={[...adminTimeOptions()]}
-                      title="Enter Occupancy Minutes"
+                      title="Select Occupancy Minutes"
                       value={formData?.occupancyMinutes}
                       onChange={handleTimeInputChange}
                       fullWidth
@@ -754,7 +787,11 @@ const ResourceAllocationFormDetails = () => {
                         marginTop: "10px",
                       }}
                     />
-
+                    {errors.occupancyMinutes && (
+                      <Typography variant="body2" color="error">
+                        {errors.occupancyMinutes}
+                      </Typography>
+                    )}
                     <Box
                       display="flex"
                       justifyContent="flex-end"

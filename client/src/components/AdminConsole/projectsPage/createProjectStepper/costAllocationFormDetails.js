@@ -1,7 +1,7 @@
 import { useTheme } from "@emotion/react";
 import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { TimesheetStyle } from "../../../../pages/timesheet/timesheetStyle";
 import {
   Table,
@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   deleteCostIncurredAction,
   getAllCostIncurredAction,
+  getProjectDetailsAction,
   saveCreateCostIncurredAction,
   saveCreateProjectAction,
 } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
@@ -27,6 +28,7 @@ const CostAllocationFormDetails = () => {
   const style = TimesheetStyle(theme);
   const Navigate = useNavigate();
   const dispatch = useDispatch();
+  const { id } = useParams();
   const intialValues = {
     itemName: "",
     costIncurred: "",
@@ -150,6 +152,27 @@ const CostAllocationFormDetails = () => {
 
     await dispatch(saveCreateProjectAction(payload, getResourcespayload));
   };
+
+  // for not clear the form we are calling Projectdetails
+  const projectDetailsData = useSelector(
+    (state) => state.nonPersist.projectDetails?.projectDetailsData
+  );
+
+  useEffect(() => {
+    if (id) {
+      dispatch(getProjectDetailsAction(id));
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      setFormData((prevData) => ({
+        ...prevData,
+        projectBudget: projectDetailsData?.projectBudget || "",
+        projectRevenue: projectDetailsData?.projectRevenue || "",
+      }));
+    }
+  }, [id]);
 
   return (
     <div style={{ marginBottom: "50px" }}>
@@ -335,71 +358,10 @@ const CostAllocationFormDetails = () => {
             fullWidth
             InputProps={{ classes: { focused: "green-border" } }}
           />
-          <Typography
-            variant="body1"
-            fontWeight="bold"
-            style={{ marginTop: "15px" }}
-          >
-            Other Costs Incurred
-          </Typography>
-          <TextField
-            placeholder=" Other Costs Incurred"
-            name="otherCostsIncurred"
-            value={formData.projectImplimentationCost}
-            onChange={handleInputChange}
-            style={{
-              ...style.TimesheetTextField,
-              borderRadius: "15px",
-              marginTop: "5px",
-            }}
-            disabled
-            fullWidth
-            InputProps={{ classes: { focused: "green-border" } }}
-          />
-          <Typography
-            variant="body1"
-            fontWeight="bold"
-            style={{ marginTop: "15px" }}
-          >
-            Project Implementation Cost
-          </Typography>
-          <TextField
-            placeholder="Project Implementation Cost"
-            name="projectImplimentationCost"
-            value={formData.projectImplimentationCost}
-            onChange={handleInputChange}
-            disabled
-            style={{
-              ...style.TimesheetTextField,
-              borderRadius: "15px",
-              marginTop: "5px",
-            }}
-            fullWidth
-            InputProps={{ classes: { focused: "green-border" } }}
-          />
-          <Typography
-            variant="body1"
-            fontWeight="bold"
-            style={{ marginTop: "15px" }}
-          >
-            Project Budget
-          </Typography>
-          <TextField
-            placeholder="Project Implementation Cost"
-            name="projectBudget"
-            value={formData.projectBudget}
-            onChange={handleInputChange}
-            style={{
-              ...style.TimesheetTextField,
-              borderRadius: "15px",
-              marginTop: "5px",
-            }}
-            fullWidth
-            InputProps={{ classes: { focused: "green-border" } }}
-          />
+          {/* 
           <Typography variant="body2" color="error">
             {errors.projectBudget}
-          </Typography>
+          </Typography> */}
           <Typography
             variant="body1"
             fontWeight="bold"
@@ -410,7 +372,7 @@ const CostAllocationFormDetails = () => {
           <TextField
             placeholder=" Other Costs Incurred"
             name="otherCostsIncurred"
-            value={formData.projectImplimentationCost}
+            value={formData.otherCostsIncurred}
             onChange={handleInputChange}
             style={{
               ...style.TimesheetTextField,
@@ -442,6 +404,7 @@ const CostAllocationFormDetails = () => {
             fullWidth
             InputProps={{ classes: { focused: "green-border" } }}
           />
+
           <Typography
             variant="body1"
             fontWeight="bold"
@@ -462,15 +425,15 @@ const CostAllocationFormDetails = () => {
             fullWidth
             InputProps={{ classes: { focused: "green-border" } }}
           />
-          <Typography variant="body2" color="error">
+          {/* <Typography variant="body2" color="error">
             {errors.projectRevenue}
-          </Typography>
+          </Typography> */}
           <Typography
             variant="body1"
             fontWeight="bold"
             style={{ marginTop: "15px" }}
           >
-            Percentage of revenue
+            Project Profit
           </Typography>
           <TextField
             placeholder=" Percentage of revenue"

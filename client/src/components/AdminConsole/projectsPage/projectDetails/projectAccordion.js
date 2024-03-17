@@ -18,6 +18,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { getProjectDetailsAction } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
+import StarOutlinedIcon from "@mui/icons-material/StarOutlined";
 
 const ProjectAccordion = () => {
   const [accordionDetails1, setAccordionDetails1] = useState(false);
@@ -91,7 +92,27 @@ const ProjectAccordion = () => {
             Project Description
           </Typography>
         </AccordionSummary>
-        <AccordionDetails>{projectDetailsData?.description}</AccordionDetails>
+        <AccordionDetails>
+          <Grid
+            container
+            justifyContent={"center"}
+            py={4}
+            backgroundColor={"#F4FCF2"}
+            borderRadius={"10px"}
+            border={"1px solid #898989"}
+            marginTop={"10px"}
+          >
+            <Grid
+              container
+              item
+              sm={12}
+              md={10}
+              style={{ paddingBottom: "20px" }}
+            >
+              {projectDetailsData?.description}
+            </Grid>
+          </Grid>
+        </AccordionDetails>
       </Accordion>
       <Accordion
         sx={{
@@ -169,7 +190,75 @@ const ProjectAccordion = () => {
                           <TableCell>{index + 1}</TableCell>
                           <TableCell>{resources?.employeeName}</TableCell>
                           <TableCell>{resources?.designation}</TableCell>
-                          <TableCell>{resources?.skills?.join(", ")}</TableCell>
+                          <TableCell>
+                            {" "}
+                            {resources.employeeSkills?.length > 0 && (
+                              <Grid
+                                container
+                                sx={{
+                                  border: "1px solid ##F3F3F3",
+                                  borderRadius: "5px",
+                                  backgroundColor: "#F3F3F3",
+                                  overflow: "auto",
+                                }}
+                              >
+                                {resources.employeeSkills.map(
+                                  (employeeSkill, index) => (
+                                    <Grid
+                                      item
+                                      key={index}
+                                      sx={{
+                                        border: "1px solid #AEAEAE",
+                                        borderRadius: "8px",
+                                        padding: "4px",
+                                        margin: "5px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "flex-end",
+                                        color: "#000000",
+                                        backgroundColor: "#ffffff",
+                                      }}
+                                    >
+                                      <React.Fragment key={index}>
+                                        {index > 0 && ", "}
+                                        <span
+                                          style={{
+                                            color: "black",
+                                          }}
+                                        >
+                                          {employeeSkill.skillName}
+                                        </span>{" "}
+                                        {employeeSkill.rating && (
+                                          <>
+                                            <StarOutlinedIcon
+                                              style={{
+                                                backgroundColor:
+                                                  employeeSkill.rating < 5
+                                                    ? "#90DC90"
+                                                    : employeeSkill.rating >=
+                                                        5 &&
+                                                      employeeSkill.rating <= 7
+                                                    ? "#E6E62C"
+                                                    : "#E38F75",
+                                                color: "#ffff",
+                                                borderRadius: "50%",
+                                                width: 15,
+                                                height: 15,
+                                                marginTop: 0,
+                                                marginLeft: 2,
+                                                marginRight: 2,
+                                              }}
+                                            />
+                                            {employeeSkill.rating}
+                                          </>
+                                        )}
+                                      </React.Fragment>
+                                    </Grid>
+                                  )
+                                )}
+                              </Grid>
+                            )}
+                          </TableCell>
                           <TableCell>{resources?.occupancyHours}</TableCell>
                         </TableRow>
                       )
@@ -247,7 +336,10 @@ const ProjectAccordion = () => {
             </Grid>
 
             <Grid item sm={12} md={10}>
-              <TableContainer component={Paper}>
+              <TableContainer
+                component={Paper}
+                style={{ border: "1px solid #008080" }}
+              >
                 <Table>
                   <TableHead>
                     <TableRow

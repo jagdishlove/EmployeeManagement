@@ -271,3 +271,7 @@ input::-webkit-inner-spin-button {
 .css-1u9des2-indicatorSeparator{
   display: none;
 }
+
+.dialogContainer {
+  border-radius: 50px !important;
+}

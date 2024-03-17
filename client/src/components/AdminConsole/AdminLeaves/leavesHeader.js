@@ -51,7 +51,7 @@ const LeavesHeader = ({
   };
 
   const status = useSelector(
-    (state) => state.persistData.masterData?.timeSheetEntryStatus
+    (state) => state.persistData.masterData?.approverStatus
   );
 
   return (

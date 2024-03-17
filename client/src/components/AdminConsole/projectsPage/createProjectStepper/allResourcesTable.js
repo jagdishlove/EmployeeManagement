@@ -14,6 +14,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { deleteResourcesAction } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
+import StarOutlinedIcon from "@mui/icons-material/StarOutlined";
 
 const AllResourcesTable = ({ handleEdit }) => {
   const dispatch = useDispatch();
@@ -58,15 +59,69 @@ const AllResourcesTable = ({ handleEdit }) => {
                   <TableCell>{allResources.employeeName}</TableCell>
                   <TableCell>{allResources.designation}</TableCell>
                   <TableCell>
-                    {" "}
-                    {allResources.employeeSkills?.map((skill, skillIndex) => (
-                      <span key={skillIndex}>
-                        {skill.skillName}
-                        {skillIndex < allResources.employeeSkills.length - 1 &&
-                          ", "}
-                      </span>
-                    ))}
+                    {allResources.employeeSkills?.length > 0 && (
+                      <Grid
+                        container
+                        sx={{
+                          border: "1px solid #F3F3F3",
+                          borderRadius: "5px",
+                          backgroundColor: "#F3F3F3",
+                          overflow: "auto",
+                        }}
+                      >
+                        {allResources.employeeSkills.map(
+                          (employeeSkill, index) => (
+                            <Grid
+                              item
+                              key={index}
+                              sx={{
+                                border: "1px solid #AEAEAE",
+                                borderRadius: "8px",
+                                padding: "4px",
+                                margin: "5px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "flex-end",
+                                color: "#000000",
+                                backgroundColor: "#ffffff",
+                              }}
+                            >
+                              <React.Fragment key={index}>
+                                {index > 0 && ", "}
+                                <span style={{ color: "black" }}>
+                                  {employeeSkill.skillName}
+                                </span>{" "}
+                                {employeeSkill.rating && (
+                                  <>
+                                    <StarOutlinedIcon
+                                      style={{
+                                        backgroundColor:
+                                          employeeSkill.rating < 5
+                                            ? "#90DC90"
+                                            : employeeSkill.rating >= 5 &&
+                                              employeeSkill.rating <= 7
+                                            ? "#E6E62C"
+                                            : "#E38F75",
+                                        color: "#ffff",
+                                        borderRadius: "50%",
+                                        width: 15,
+                                        height: 15,
+                                        marginTop: 0,
+                                        marginLeft: 2,
+                                        marginRight: 2,
+                                      }}
+                                    />
+                                    {employeeSkill.rating}
+                                  </>
+                                )}
+                              </React.Fragment>
+                            </Grid>
+                          )
+                        )}
+                      </Grid>
+                    )}
                   </TableCell>
+
                   <TableCell>{allResources.occupancyHours}</TableCell>
                   <TableCell>
                     <IconButton color="primary">
