@@ -104,10 +104,7 @@ const CreateProjectFormDetails = () => {
     // Limit the input to 2800 characters
     const truncatedValue = value.slice(0, 2800);
     setFormData({ ...formData, [name]: truncatedValue });
-    // setFormData({
-    //   ...formData,
-    //   [name]: value,
-    // });
+
     // Clear validation error when user starts typing
     setValidationErrors({
       ...validationErrors,
@@ -653,17 +650,9 @@ const CreateProjectFormDetails = () => {
             rows={8}
             fullWidth
           />
-          <div
-            style={{
-              textAlign: "right",
-              color: "gray",
-              marginTop: "-21px",
-              marginRight: "15px",
-            }}
-          >
+          <div style={{ textAlign: "right", color: "gray", marginTop: "5px" }}>
             {`Max 400 words`}
           </div>
-
           <Typography variant="body1" style={{ marginTop: "15px" }}>
             Project Category
           </Typography>
