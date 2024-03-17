@@ -59,7 +59,6 @@ const CreateProjectFormDetails = () => {
     projectManager: "",
   });
 
-
   const [saveButton, setSaveButton] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   // client Search
@@ -102,10 +101,13 @@ const CreateProjectFormDetails = () => {
 
   const handleFormChange = (event) => {
     const { name, value } = event.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    // Limit the input to 2800 characters
+    const truncatedValue = value.slice(0, 2800);
+    setFormData({ ...formData, [name]: truncatedValue });
+    // setFormData({
+    //   ...formData,
+    //   [name]: value,
+    // });
     // Clear validation error when user starts typing
     setValidationErrors({
       ...validationErrors,
@@ -644,10 +646,24 @@ const CreateProjectFormDetails = () => {
               borderRadius: "10px",
               marginTop: "5px",
             }}
+            inputProps={{
+              maxLength: 2800,
+            }}
             multiline
-            rows={4}
+            rows={8}
             fullWidth
           />
+          <div
+            style={{
+              textAlign: "right",
+              color: "gray",
+              marginTop: "-21px",
+              marginRight: "15px",
+            }}
+          >
+            {`Max 400 words`}
+          </div>
+
           <Typography variant="body1" style={{ marginTop: "15px" }}>
             Project Category
           </Typography>
