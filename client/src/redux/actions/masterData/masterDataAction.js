@@ -428,7 +428,7 @@ export const CreateSkillData = (data) => {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       } else {
-        toast.success("Skill has been Created successfully", {
+        toast.success("Skill added successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
@@ -498,7 +498,7 @@ export const CreateBandlData = (data) => {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       } else {
-        toast.success("Band has been Created successfully", {
+        toast.success("Band added successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
@@ -583,7 +583,7 @@ export const CreateDesignationData = (data) => {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       } else {
-        toast.success("Designation has been Created successfully", {
+        toast.success("Designation added successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
@@ -653,7 +653,7 @@ export const CreateOfficeLocationnData = (data) => {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       } else {
-        toast.success("OfficeLocation has been Created successfully", {
+        toast.success("OfficeLocation added successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
@@ -726,7 +726,7 @@ export const CreateManageHoliday = (data) => {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       } else {
-        toast.success("Holiday has been Created successfully", {
+        toast.success("Holiday added successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
@@ -796,7 +796,7 @@ export const CreateDomine = (data) => {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       } else {
-        toast.success("Domain has been added successfully", {
+        toast.success("Domain added successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
@@ -851,7 +851,7 @@ export const CreateJobTypeData = (data) => {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       } else {
-        toast.success("JobType has been Created successfully", {
+        toast.success("JobType added successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
@@ -952,7 +952,7 @@ export const CreateClinetDetails = (data) => {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       } else {
-        toast.success("client has been Created successfully", {
+        toast.success("client added successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
@@ -966,8 +966,15 @@ export const CreateClinetDetails = (data) => {
 
 export const UpdateClinetDetails = (data) => {
   return async () => {
+    const formData = new FormData();
+    formData.append("file", data.file);
+    for (const key in data) {
+      if (key !== "file") {
+        formData.append(key, data[key]);
+      }
+    }
     try {
-      await makeRequest("POST", "api/client/create", data);
+      await addRequest("POST", "api/client/create", formData);
       toast.success("client has been Update successfully", {
         position: toast.POSITION.BOTTOM_CENTER,
       });
@@ -1059,12 +1066,9 @@ export const CreateOnsiteOfficeLocation = (data) => {
           }
         );
       } else {
-        toast.success(
-          "clientOnsiteOfficeLocation has been Created successfully",
-          {
-            position: toast.POSITION.BOTTOM_CENTER,
-          }
-        );
+        toast.success("clientOnsiteOfficeLocation added successfully", {
+          position: toast.POSITION.BOTTOM_CENTER,
+        });
       }
     } catch (err) {
       toast.error(err.response.data.errorMessage, {

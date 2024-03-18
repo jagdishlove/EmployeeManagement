@@ -23,6 +23,8 @@ import {
   saveCreateCostIncurredAction,
   saveCreateProjectAction,
 } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
+import { toast } from "react-toastify";
+
 const CostAllocationFormDetails = () => {
   const theme = useTheme();
   const style = TimesheetStyle(theme);
@@ -151,6 +153,11 @@ const CostAllocationFormDetails = () => {
     };
 
     await dispatch(saveCreateProjectAction(payload, getResourcespayload));
+
+    // Display toast message only if it's stage 3
+    toast.success("Project Created Successfully", {
+      position: toast.POSITION.BOTTOM_CENTER,
+    });
   };
 
   // for not clear the form we are calling Projectdetails

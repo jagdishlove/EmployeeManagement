@@ -39,11 +39,11 @@ export default function AdminTimesheetHeader({
   };
 
   const status = useSelector(
-    (state) => state.persistData.masterData?.timeSheetEntryStatus
+    (state) => state.persistData.masterData?.approverStatus
   );
 
   const userData = useSelector(
-    (state) => state?.nonPersist?.adminTimeSheet?.searchUserData?.result
+    (state) => state?.nonPersist?.adminTimeSheet?.searchUserData
   );
 
   const approverList = useSelector(
@@ -56,39 +56,55 @@ export default function AdminTimesheetHeader({
 
   return (
     <Grid>
-      <Box>
-        <Autocomplete
-          sx={{
-            borderRadius: "8px",
-            width: "40%",
-          }}
-          options={userData || []}
-          getOptionLabel={(option) => option.name}
-          getOptionSelected={(option, value) => option.id === value.id}
-          onChange={(event, data) => {
-            setSelectedSearchOption(data);
-          }}
-          isSearchable={true}
-          getOptionValue={(option) => option.id}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant="outlined"
-              placeholder="Search by User Name"
-              onChange={handleChange}
-              InputProps={{
-                ...params.InputProps,
-                startAdornment: (
-                  <>
-                    <SearchIcon />
-                    {params.InputProps.startAdornment}
-                  </>
-                ),
-              }}
-            />
-          )}
-        />
-      </Box>
+      {" "}
+      <Typography variant="h4" gutterBottom fontWeight="bold">
+        TIMESHEET
+      </Typography>
+      <div
+        style={{
+          width: "100%",
+          margin: "auto",
+          marginBottom: "18px",
+          border: "1px solid #008080",
+        }}
+      />
+      <Grid item xs={12} sm={12} md={4} lg={5}>
+        <Box>
+          <Autocomplete
+            isMulti={true}
+            isSearchable={true}
+            options={userData?.result || []}
+            getOptionValue={(option) => option.id}
+            getOptionLabel={(option) => option.name}
+            getOptionSelected={(option, value) => option.id === value.id}
+            onChange={(e, data) => setSelectedSearchOption(data)}
+            name="UserName"
+            sx={{
+              width: "40%",
+            }}
+            isLoading={userData?.length === 0}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="outlined"
+                placeholder="Search by User Name"
+                onChange={handleChange}
+                InputProps={{
+                  ...params.InputProps,
+                  style: { borderRadius: "50px" },
+                  startAdornment: (
+                    <>
+                      <SearchIcon />
+                      {params.InputProps.startAdornment}
+                    </>
+                  ),
+                  endAdornment: null,
+                }}
+              />
+            )}
+          />
+        </Box>
+      </Grid>
       <Box style={{ ...style.adminSubHeader }}>
         <Grid container gap={{ sm: 0, md: 0, lg: 2, xs: 2 }}>
           <Grid item xs={12} sm={4} md={2} lg={3}>

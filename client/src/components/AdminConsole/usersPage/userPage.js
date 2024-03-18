@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Grid, IconButton, Typography } from "@mui/material";
 import UserHerders from "./userHeaders";
 import UserListPage from "./userListPage";
 import { useDispatch, useSelector } from "react-redux";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { getAllUsers } from "../../../redux/actions/AdminConsoleAction/users/usersAction";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { useNavigate } from "react-router-dom";
 import { masterDataAction } from "../../../redux/actions/masterData/masterDataAction";
+import CloseIcon from "@mui/icons-material/Close";
 
 export default function User() {
   const dispatch = useDispatch();
@@ -14,6 +17,7 @@ export default function User() {
   const [skillsCheckedData, setSkillsCheckedData] = useState([]);
   const [designationId, setDesignationId] = useState("All");
   const [selectedSearchOption, setSelectedSearchOption] = useState("");
+  const navigate = useNavigate();
 
   const userData = useSelector(
     (state) => state?.nonPersist?.userDetails?.usersData
@@ -55,10 +59,17 @@ export default function User() {
     setPageCounter((counter) => counter + 1);
   };
 
+  const handleBack = () => {
+    navigate(-1);
+  };
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>
-        Users
+      <Typography variant="h2" gutterBottom>
+        <KeyboardBackspaceIcon
+          style={{ fontSize: 30, cursor: "pointer" }}
+          onClick={() => handleBack()}
+        />
+        USERS
       </Typography>
       <div
         style={{
@@ -78,12 +89,25 @@ export default function User() {
           setSelectedSearchOption={setSelectedSearchOption}
           selectedSearchOption={selectedSearchOption}
         />
-        <Box
+        <Grid>
+          {skillsCheckedData.length > 0 ? (
+            <>
+              <Typography
+                variant="subtitle1"
+                sx={{ fontWeight: "bold", fontSize: "25px" }}
+              >
+                Filters
+              </Typography>
+            </>
+          ) : (
+            <></>
+          )}
+        </Grid>
+        <Grid
           display={"flex"}
           gap={2}
           justifyContent={"flex-start"}
           alignItems={"center"}
-          p={1}
           sx={{
             flexDirection: "row",
             width: "100%",
@@ -92,16 +116,18 @@ export default function User() {
           {skillsCheckedData.length > 0 ? (
             <>
               <Grid>
-                <Typography variant="subtitle1">Filter</Typography>
+                <Typography>
+                  {userData?.totalElements ? userData.totalElements : "0"}{" "}
+                  result for
+                </Typography>
               </Grid>
-              <Typography>{skillsCheckedData.length} result for</Typography>
             </>
           ) : (
             <></>
           )}
           {skillsCheckedData?.map((selectedSkills) => {
             return (
-              <Box
+              <Grid
                 sx={{
                   padding: "3px",
                   borderRadius: "10px",
@@ -111,6 +137,9 @@ export default function User() {
                 }}
                 key={selectedSkills.skillId}
               >
+                <IconButton disabled sx={{ padding: "6px" }} size="small">
+                  <CloseIcon />
+                </IconButton>
                 <Typography
                   sx={{
                     padding: "6px, 10px, 6px, 10px",
@@ -118,10 +147,10 @@ export default function User() {
                 >
                   {selectedSkills?.skillName}
                 </Typography>
-              </Box>
+              </Grid>
             );
           })}
-        </Box>
+        </Grid>
       </Grid>
       {userData?.content?.length === 0 ? (
         <Box mt={5} sx={{ display: "flex", justifyContent: "center" }}>
@@ -133,18 +162,27 @@ export default function User() {
           next={fetchMore}
           hasMore={userData?.totalElements > userData?.numberOfElements}
         >
-          <div style={{ display: "flex", flexWrap: "wrap", overflow: "auto" }}>
+          <Grid
+            container
+            spacing={2}
+            style={{
+              display: "flex",
+            }}
+          >
+            {" "}
             {userData?.content?.map((user) => (
-              <UserListPage
-                key={user.id}
-                index={user.id}
-                SetUsers={setUsers}
-                userData={user}
-                skillsCheckedData={skillsCheckedData}
-                removeSkill={removeSkill}
-              />
+              <Grid key={user.id} item xs={12} sm={6} md={4} lg={4}>
+                <UserListPage
+                  key={user.id}
+                  index={user.id}
+                  SetUsers={setUsers}
+                  userData={user}
+                  skillsCheckedData={skillsCheckedData}
+                  removeSkill={removeSkill}
+                />
+              </Grid>
             ))}
-          </div>
+          </Grid>
         </InfiniteScroll>
       )}
     </Box>

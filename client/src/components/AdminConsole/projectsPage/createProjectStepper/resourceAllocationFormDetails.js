@@ -40,6 +40,7 @@ import Dropdown from "../../../forms/dropdown/dropdown";
 import { adminTimeOptions } from "../../../../utils/dateOptions";
 import dayjs from "dayjs";
 import StarOutlinedIcon from "@mui/icons-material/StarOutlined";
+import icon from "../../../../assets/Featured icon.svg";
 
 const InputOption = ({
   getStyles,
@@ -143,7 +144,6 @@ const ResourceAllocationFormDetails = () => {
     occupancyMinutes: "",
   });
 
-  console.log("formDataaaa", formData);
   const [selectedOccupancyHours, setSelectedOccupancyHours] = useState(null);
   const { id } = useParams();
   const handleInputChange = (event, data) => {
@@ -223,7 +223,6 @@ const ResourceAllocationFormDetails = () => {
     } finally {
       await dispatch(getAllResourcesAction(projectId));
     }
-    console.log("projectId", projectId);
     // setTimeInput("");
 
     setFormData({
@@ -258,8 +257,6 @@ const ResourceAllocationFormDetails = () => {
   );
 
   const handleEdit = (employeeId, resourceId) => {
-    console.log("employeeId", employeeId);
-    console.log("resourceId", resourceId);
     // setIsEditing(true);
     setEmployeeId(employeeId);
     dispatch(getResourceDetailsPopupAction(employeeId));
@@ -268,7 +265,7 @@ const ResourceAllocationFormDetails = () => {
     const selectedOccupancyHours = allResourcesData.find(
       (item) => item.resourceId === resourceId
     );
-    console.log("isModalOpen", isModalOpen);
+
     const durationString = `${selectedOccupancyHours?.occupancyHours}`;
 
     // Function to parse the duration and return hours and minutes
@@ -311,6 +308,27 @@ const ResourceAllocationFormDetails = () => {
 
   //Save
   const handleSaveData = async (e, type) => {
+    e.preventDefault();
+
+    // Check for validation errors
+    const newErrors = {};
+
+    if (formData.startDate && formData.endDate) {
+      const startDate = dayjs(formData.startDate);
+      const endDate = dayjs(formData.endDate);
+
+      if (startDate.isAfter(endDate)) {
+        newErrors.startDate = "Start date must be before the end date.";
+      }
+    }
+
+    // Update the error state
+    setErrors(newErrors);
+
+    // If there are validation errors, do not proceed further
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
     if (type === "save") {
       setSaveButton(true);
     } else if (type === "next") {
@@ -333,6 +351,25 @@ const ResourceAllocationFormDetails = () => {
 
   const handleSaveAndNext = async (e) => {
     e.preventDefault();
+    // Check for validation errors
+    const newErrors = {};
+
+    if (formData.startDate && formData.endDate) {
+      const startDate = dayjs(formData.startDate);
+      const endDate = dayjs(formData.endDate);
+
+      if (startDate.isAfter(endDate)) {
+        newErrors.startDate = "Start date must be before the end date.";
+      }
+    }
+
+    // Update the error state
+    setErrors(newErrors);
+
+    // If there are validation errors, do not proceed further
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
     // Save data first
     await handleSaveData(e, "next");
     if (id) {
@@ -745,91 +782,132 @@ const ResourceAllocationFormDetails = () => {
                 >
                   {resourceDetailsPopupData?.map((resource, index) => {
                     return (
-                      <div key={index} style={{ marginTop: "20px" }}>
-                        <Grid container>
-                          <Grid item xs={2}></Grid>
-                          <Grid item xs={10}>
-                            <Typography variant="h5">
-                              {resource.employeeName}
-                            </Typography>
-                            <Typography variant="paragraph">
-                              <b> Current Projects :</b>
-                            </Typography>
-                            <Typography variant="h6">
-                              {resource.projectName}
-                            </Typography>
-                            <Typography variant="h6">
-                              <b>Start Date:</b> {resource.startDate}
-                              <b> End Date: </b> {resource.endDate}
-                            </Typography>
-                            <Typography variant="h6">
-                              <b> Occupancy Hrs:</b>
-                              {resource.occupancyHours}
-                            </Typography>
+                      <div key={index}>
+                        <Grid container justifyContent={"center"}>
+                          <Grid container item xs={10}>
+                            <Grid item xs={12}>
+                              {/* Grid for employee name and icon */}
+                              {index === 0 && (
+                                <>
+                                  <div
+                                    style={{
+                                      display: "inline-flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <img
+                                      src={icon}
+                                      alt="Icon"
+                                      style={{
+                                        marginRight: "5px",
+                                        marginLeft: "-10px",
+                                      }}
+                                    />
+                                    <Typography variant="h5">
+                                      {resource.employeeName}
+                                    </Typography>
+                                  </div>
+                                </>
+                              )}
+                            </Grid>
+                            <Grid item xs={12}>
+                              {/* Grid for "Current Projects" */}
+                              {index === 0 && (
+                                <Typography
+                                  variant="paragraph"
+                                  textAlign="left"
+                                  sx={{ paddingBottom: "50px" }}
+                                >
+                                  <b>Current Projects:</b>
+                                </Typography>
+                              )}
+                            </Grid>
+                          </Grid>
+                          <Grid
+                            container
+                            item
+                            xs={10}
+                            sx={{ marginTop: "20px" }}
+                          >
+                            <Grid item xs={12}>
+                              {/* Grid for project details */}
+                              <Typography variant="h6">
+                                {index + 1}. {resource.projectName}
+                              </Typography>
+                              <Typography variant="h6">
+                                <b>Start Date:</b> {resource.startDate}
+                                <b> End Date: </b> {resource.endDate}
+                              </Typography>
+                              <Typography variant="h6">
+                                <b>Occupancy Hrs:</b>
+                                {resource.occupancyHours}
+                              </Typography>
+                            </Grid>
                           </Grid>
                         </Grid>
                       </div>
                     );
                   })}
-
-                  <div
-                    display="inline-flex"
-                    direction="row"
-                    style={{ marginTop: "20px" }}
-                  >
-                    <TextField
-                      label="Enter Occupancy Hours"
-                      value={formData?.occupancyHours}
-                      onChange={handleTimeInputChange}
-                      fullWidth
-                      margin="normal"
-                      name="occupancyHours"
-                    />
-                    {errors.occupancyHours && (
-                      <Typography variant="body2" color="error">
-                        {errors.occupancyHours}
-                      </Typography>
-                    )}
-                    <Dropdown
-                      options={[...adminTimeOptions()]}
-                      title="Select Occupancy Minutes"
-                      value={formData?.occupancyMinutes}
-                      onChange={handleTimeInputChange}
-                      fullWidth
-                      margin="normal"
-                      name="occupancyMinutes"
-                      style={{
-                        ...style.TimesheetTextField,
-                        border: "1px solid silver",
-                        borderRadius: "5px",
-                        marginBottom: "10px",
-                        marginTop: "10px",
-                      }}
-                    />
-                    {errors.occupancyMinutes && (
-                      <Typography variant="body2" color="error">
-                        {errors.occupancyMinutes}
-                      </Typography>
-                    )}
-                    <Box
-                      display="flex"
-                      justifyContent="flex-end"
-                      mt={2}
-                      gap={2}
-                    >
-                      <Button variant="outlined" onClick={() => handleCancel()}>
-                        Cancel
-                      </Button>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleConfirm}
-                        ml={2}
+                  <Grid container justifyContent={"center"}>
+                    <Grid container item xs={10}>
+                      <TextField
+                        label="Enter Occupancy Hours"
+                        value={formData?.occupancyHours}
+                        onChange={handleTimeInputChange}
+                        fullWidth
+                        margin="normal"
+                        name="occupancyHours"
+                      />
+                      {errors.occupancyHours && (
+                        <Typography variant="body2" color="error">
+                          {errors.occupancyHours}
+                        </Typography>
+                      )}
+                      <Dropdown
+                        options={[...adminTimeOptions()]}
+                        title="Select Occupancy Minutes"
+                        value={formData?.occupancyMinutes}
+                        onChange={handleTimeInputChange}
+                        fullWidth
+                        margin="normal"
+                        name="occupancyMinutes"
+                        style={{
+                          ...style.TimesheetTextField,
+                          border: "1px solid silver",
+                          borderRadius: "5px",
+                          marginBottom: "10px",
+                          marginTop: "10px",
+                        }}
+                      />
+                      {errors.occupancyMinutes && (
+                        <Typography variant="body2" color="error">
+                          {errors.occupancyMinutes}
+                        </Typography>
+                      )}
+                      <Box
+                        display="flex"
+                        justifyContent="flex-end"
+                        mt={2}
+                        gap={2}
+                        width="100%"
                       >
-                        Confirm
-                      </Button>
-                    </Box>
-                  </div>
+                        <Button
+                          variant="outlined"
+                          onClick={() => handleCancel()}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={handleConfirm}
+                          ml={2}
+                        >
+                          Confirm
+                        </Button>
+                      </Box>
+                    </Grid>
+                  </Grid>
                 </ProjectResourcesModal>
               </Table>
             </TableContainer>
@@ -909,6 +987,11 @@ const ResourceAllocationFormDetails = () => {
                 renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>
+            {errors.startDate && (
+              <Typography variant="caption" color="error">
+                {errors.startDate}
+              </Typography>
+            )}
           </Grid>
           <Grid
             container

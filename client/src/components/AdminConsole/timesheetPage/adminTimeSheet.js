@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
+  IconButton,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
@@ -13,6 +14,9 @@ import AdminTimesheetHeader from "./adminTimesheetHeader";
 import TimesheetRow from "../../timesheetRow/timesheetRow";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  adminApproveTimesheet,
+  adminBulkApproveTimesheet,
+  adminRejectTimesheet,
   getAllTimeSheetApprovers,
   getAllTimeSheetForAdmin,
 } from "../../../redux/actions/AdminConsoleAction/timeSheet/adminTimesheetAction";
@@ -20,6 +24,7 @@ import dayjs from "dayjs";
 import InfiniteScroll from "react-infinite-scroll-component";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import icon from "../../../assets/Featured icon.svg";
+import CloseIcon from "@mui/icons-material/Close";
 
 function AdminTimeSheet() {
   const [approver, setApprover] = useState("All");
@@ -45,9 +50,13 @@ function AdminTimeSheet() {
 
   const params = {
     status: states,
+    date:
+      selectedDate !== "All"
+        ? dayjs(selectedDate, { format: "YYYY-MM-DD" }).format("YYYY-MM-DD")
+        : "",
   };
 
-  const data = {
+  const payload = {
     status: states,
     date:
       selectedDate !== "All"
@@ -59,10 +68,10 @@ function AdminTimeSheet() {
 
   useEffect(() => {
     dispatch(getAllTimeSheetApprovers(params));
-  }, [states]);
+  }, [states, selectedDate]);
 
   useEffect(() => {
-    dispatch(getAllTimeSheetForAdmin(data, selectedSearchOption));
+    dispatch(getAllTimeSheetForAdmin(payload, selectedSearchOption));
   }, [selectedDate, selectedSearchOption, approver, states]);
 
   const adminTimeSheetData = useSelector(
@@ -110,11 +119,24 @@ function AdminTimeSheet() {
   const approveSubmitHandler = async (data, rating, comment) => {
     const newErrors = validationForm(rating, comment, data, "approved");
     if (Object.keys(newErrors).length === 0) {
-      try {
-        setErrorValidation({});
-      } finally {
-        console.log("hello");
-      }
+      const adminPayload = [
+        {
+          timesheetEntryId: data.timesheetEntryId,
+          comment: comment || "APPROVED",
+          rating: rating,
+          approvalStatus: "APPROVED",
+        },
+      ];
+
+      await dispatch(
+        adminApproveTimesheet(
+          adminPayload,
+          payload,
+          selectedSearchOption,
+          params
+        )
+      );
+      setErrorValidation({});
     } else {
       setErrorValidation({
         [data.timesheetEntryId]: newErrors,
@@ -123,32 +145,36 @@ function AdminTimeSheet() {
   };
 
   const rejectButtonHandler = async (data, rating, comment) => {
-    try {
-      const activity = masterData.activity.find(
-        (activity) => activity.activityId === data.activityId
-      );
+    const activity = masterData.activity.find(
+      (activity) => activity.activityId === data.activityId
+    );
 
-      if (activity && activity.approvalCommentRequired && !comment) {
-        setErrorValidation({
-          [data.timesheetEntryId]: {
-            adminCommentError: "Please add details in the comments section.",
-          },
-        });
-        return;
-      }
-      setErrorValidation({});
-    } finally {
-      console.log("hello");
+    if (activity && activity.approvalCommentRequired && !comment) {
+      setErrorValidation({
+        [data.timesheetEntryId]: {
+          adminCommentError: "Please add details in the comments section.",
+        },
+      });
+      return;
     }
+
+    const adminPayload = [
+      {
+        timesheetEntryId: data.timesheetEntryId,
+        comment: comment || "",
+        rating: rating,
+        approvalStatus: "REJECTED",
+      },
+    ];
+
+    await dispatch(
+      adminRejectTimesheet(adminPayload, payload, selectedSearchOption, params)
+    );
+    setErrorValidation({});
   };
 
   const bulkApproveHandler = async () => {
     const entriesToApprove = adminTimeSheetData?.content || [];
-
-    if (entriesToApprove.length === 0) {
-      console.log("No entries to approve");
-      return;
-    }
 
     const errors = {};
     const approvedEntries = [];
@@ -174,16 +200,18 @@ function AdminTimeSheet() {
       }
     }
 
-    console.log("approvedEntries", approvedEntries);
-
     if (Object.keys(errors).length === 0) {
       try {
         // Dispatch the bulk approval action with the updated comments
-
+        await dispatch(
+          adminBulkApproveTimesheet(
+            approvedEntries,
+            payload,
+            selectedSearchOption,
+            params
+          )
+        );
         setErrorValidation({});
-        console.log("Bulk approval successful");
-      } catch (error) {
-        console.error("Error during bulk approval:", error);
       } finally {
         setOpenPopup(false);
       }
@@ -220,7 +248,9 @@ function AdminTimeSheet() {
         setStatus={setStatus}
         setSelectedSearchOption={setSelectedSearchOption}
       />
-      {states === "SUBMITTED" && !(approver === "All") ? (
+      {states === "SUBMITTED" &&
+      adminTimeSheetData?.content?.length > 0 &&
+      approver !== "All" ? (
         <>
           <Box display="flex" justifyContent="flex-end" mt={2} mr={2}>
             <Typography mr={2}>Select All</Typography>
@@ -274,17 +304,54 @@ function AdminTimeSheet() {
         </InfiniteScroll>
       )}
       <Dialog open={openPopup} onClose={handleClosePopup}>
+        <IconButton
+          edge="end"
+          color="inherit"
+          onClick={handleClosePopup}
+          aria-label="close"
+          sx={{
+            position: "absolute",
+            right: 10,
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
         <DialogTitle>
           {" "}
-          <img src={icon} /> Approve 500 Timesheets
+          <img src={icon} /> Approve{" "}
+          {
+            <b>
+              {" "}
+              {adminTimeSheetData?.numberOfElements
+                ? adminTimeSheetData.numberOfElements
+                : "0"}
+              /
+              {adminTimeSheetData?.totalElements
+                ? adminTimeSheetData.totalElements
+                : "0"}
+            </b>
+          }{" "}
+          Timesheets
         </DialogTitle>
         <DialogContent>
+          {/* 'Amit’s Workspace' ? */}
           <p>
             Are you sure you want to approve all the submitted timesheets from
             &apos;{approverNameMapping[approver]} workspace&apos; ?
           </p>
         </DialogContent>
         <DialogActions>
+          <Button
+            onClick={handleClosePopup}
+            sx={{
+              color: "#000",
+              borderRadius: "8px",
+              border: "1px solid #D0D5DD",
+              textTransform: "capitalize",
+            }}
+          >
+            Cancel
+          </Button>
           <Button
             onClick={bulkApproveHandler}
             sx={{
@@ -298,17 +365,6 @@ function AdminTimeSheet() {
             }}
           >
             Approve
-          </Button>
-          <Button
-            onClick={handleClosePopup}
-            sx={{
-              color: "#000",
-              borderRadius: "8px",
-              border: "1px solid #D0D5DD",
-              textTransform: "capitalize",
-            }}
-          >
-            Cancel
           </Button>
         </DialogActions>
       </Dialog>

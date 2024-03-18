@@ -76,7 +76,7 @@ export default function MasterDataPage({
               justifyContent: "space-between",
             }}
           >
-            <Grid container alignItems="center">
+            <Grid container alignItems="center" sx={{ color: "#fff" }}>
               <Grid item xs={11.5}>
                 <Typography variant="h6" ml={3}>
                   Designation
@@ -189,7 +189,7 @@ export default function MasterDataPage({
               backgroundColor: "#008080",
             }}
           >
-            <Grid container alignItems="center">
+            <Grid container alignItems="center" sx={{ color: "#fff" }}>
               <Grid item xs={11.5}>
                 <Typography variant="h6" ml={3}>
                   Skill
@@ -297,7 +297,7 @@ export default function MasterDataPage({
               backgroundColor: "#008080",
             }}
           >
-            <Grid container alignItems="center">
+            <Grid container alignItems="center" sx={{ color: "#fff" }}>
               <Grid item xs={11.5}>
                 <Typography variant="h6" ml={3}>
                   Office Location
@@ -372,7 +372,9 @@ export default function MasterDataPage({
                               onClick={() =>
                                 handleDesignation(
                                   "officeLocation",
-                                  officeLocation.address.name,
+                                  `${officeLocation.address.name},${
+                                    DataValue[officeLocation?.address?.cityId]
+                                  }`,
                                   officeLocation.locationId,
                                   officeLocation.status
                                 )
@@ -381,6 +383,8 @@ export default function MasterDataPage({
                                 textAlign: "center",
                               }}
                             >
+                              {`${officeLocation?.address?.name}`}
+                              <br />
                               {`${officeLocation?.address?.addressLine1} ${
                                 officeLocation?.address?.addressLine2
                               },${
@@ -419,7 +423,7 @@ export default function MasterDataPage({
               backgroundColor: "#008080",
             }}
           >
-            <Grid container alignItems="center">
+            <Grid container alignItems="center" sx={{ color: "#fff" }}>
               <Grid item xs={11.5}>
                 <Typography variant="h6" ml={3}>
                   Client Onsite Office Location
@@ -503,6 +507,8 @@ export default function MasterDataPage({
                                 textAlign: "center",
                               }}
                             >
+                              {`${onsiteLocation?.address?.name}`}
+                              <br />
                               {` ${onsiteLocation?.address?.addressLine1} -${
                                 onsiteLocation?.address?.addressLine2
                               }, ${DataValue[onsiteLocation.address?.cityId]} ${
@@ -541,7 +547,7 @@ export default function MasterDataPage({
               backgroundColor: "#008080",
             }}
           >
-            <Grid container alignItems="center">
+            <Grid container alignItems="center" sx={{ color: "#fff" }}>
               <Grid item xs={11.5}>
                 <Typography variant="h6" ml={3}>
                   JobType
@@ -648,7 +654,7 @@ export default function MasterDataPage({
               backgroundColor: "#008080",
             }}
           >
-            <Grid container alignItems="center">
+            <Grid container alignItems="center" sx={{ color: "#fff" }}>
               <Grid item xs={11.5}>
                 <Typography variant="h6" ml={3}>
                   Manage Holiday
@@ -766,7 +772,7 @@ export default function MasterDataPage({
               backgroundColor: "#008080",
             }}
           >
-            <Grid container alignItems="center">
+            <Grid container alignItems="center" sx={{ color: "#fff" }}>
               <Grid item xs={11.5}>
                 <Typography variant="h6" ml={3}>
                   Client Details
@@ -876,7 +882,7 @@ export default function MasterDataPage({
             width: "100%",
             marginBottom: "2px",
           }}
-          onChange={() => handleExpand("domine")}
+          onChange={() => handleExpand("domain")}
         >
           <AccordionSummary
             sx={{
@@ -888,7 +894,7 @@ export default function MasterDataPage({
               backgroundColor: "#008080",
             }}
           >
-            <Grid container alignItems="center">
+            <Grid container alignItems="center" sx={{ color: "#fff" }}>
               <Grid item xs={11.5}>
                 <Typography variant="h6" ml={3}>
                   Domain
@@ -915,7 +921,7 @@ export default function MasterDataPage({
                       <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => handleAdd("Domine")}
+                        onClick={() => handleAdd("Domain")}
                         sx={{
                           width: "100px",
                           height: "46px",
@@ -958,7 +964,7 @@ export default function MasterDataPage({
                             <Typography
                               onClick={() =>
                                 handleDesignation(
-                                  "Domine",
+                                  "Domain",
                                   domine.domainName,
                                   domine.domainId,
                                   domine?.status

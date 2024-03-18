@@ -9,8 +9,8 @@ import { BorderColorOutlined } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { getProjectDetailsAction } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import { useParams } from "react-router-dom/dist";
-import GradientGaugeMeter from "./gradientGaugeMeter";
-
+// import GradientGaugeMeter from "./gradientGaugeMeter";
+import ReactSpeedometer from "react-d3-speedometer";
 const ProjectDetailPage = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
@@ -38,6 +38,7 @@ const ProjectDetailPage = () => {
   const handleEditProject = () => {
     Navigate(`/EditForm/${id}`);
   };
+
   return (
     <>
       <div
@@ -131,15 +132,15 @@ const ProjectDetailPage = () => {
         </Grid>
 
         <Grid item xs={12} md={2}>
-          <GradientGaugeMeter lowValue="Low" highValue="High" />
-          {/* <GaugeChart
-            id="gauge-chart1"
-            arcPadding={0.1}
-            cornerRadius={0.2}
-            percent={0.7}
-            textColor="#333"
-            formatTextValue={(value) => `${Math.round(value * 100)}%`}
-          /> */}
+          <ReactSpeedometer
+            needleHeightRatio={0.7}
+            maxSegmentLabels={1}
+            segments={555}
+            needleColor={"#86D26B"}
+            // value={}
+            width={200}
+            height={200}
+          />
         </Grid>
       </Grid>
 
@@ -278,7 +279,7 @@ const ProjectDetailPage = () => {
             </Typography>
           </Grid>
           <Grid item xs={8}>
-            <div style={{ whiteSpace: "nowrap" }}>
+            <div>
               {projectDetailsData?.activities?.map((activity, index) => (
                 <Typography
                   variant="body1"
