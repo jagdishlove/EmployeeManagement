@@ -64,6 +64,7 @@ const initialState = {
   resourceDetailsPopupDataLoading: false,
   allResourcesData: [],
   allResourcesDataLoading: false,
+  getProjectData: [],
 };
 
 const projectsReducer = (state = initialState, action) => {
@@ -209,6 +210,7 @@ const projectsReducer = (state = initialState, action) => {
       return {
         ...state,
         projectId: action.payload.id,
+        getProjectData: action.payload,
       };
     case FETCH_PROJECT_DETAILS_REQUEST:
       return {
