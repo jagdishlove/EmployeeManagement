@@ -124,6 +124,10 @@ const ResourceAllocationFormDetails = () => {
   const masterDesigData = useSelector(
     (state) => state?.persistData?.masterData?.designation
   );
+  const { getProjectData } = useSelector(
+    (state) => state?.nonPersist?.projectDetails
+  );
+
 
   const theme = useTheme();
   const style = TimesheetStyle(theme);
@@ -137,6 +141,8 @@ const ResourceAllocationFormDetails = () => {
     endDate: null,
     actualEndDate: null,
   });
+
+  console.log("formData", formData);
 
   // Define state variables for errors
   const [errors, setErrors] = useState({
@@ -545,6 +551,8 @@ const ResourceAllocationFormDetails = () => {
     (state) => state.nonPersist.projectDetails?.projectDetailsData
   );
 
+  console.log("projectDetailsData", projectDetailsData);
+
   useEffect(() => {
     if (id) {
       dispatch(getProjectDetailsAction(id));
@@ -950,7 +958,7 @@ const ResourceAllocationFormDetails = () => {
           <TextField
             placeholder="Projected Implementation Hours"
             name="projectedimplementationhours"
-            value={formData.projectedImplementationHours}
+            value={getProjectData.projectedImplementationHours}
             onChange={handleInputChange}
             style={{
               ...style.TimesheetTextField,
@@ -982,7 +990,11 @@ const ResourceAllocationFormDetails = () => {
               <DatePicker
                 name="startDate"
                 format="DD/MM/YYYY"
-                value={formData.startDate ? dayjs(formData.startDate) : null} // Set value to null to not display the current date
+                value={
+                  getProjectData.startDate
+                    ? dayjs(getProjectData.startDate)
+                    : null
+                } // Set value to null to not display the current date
                 onChange={(value) => handleDateChange("startDate", value)}
                 renderInput={(params) => <TextField {...params} />}
               />
@@ -1013,7 +1025,9 @@ const ResourceAllocationFormDetails = () => {
               <DatePicker
                 name="endDate"
                 format="DD/MM/YYYY"
-                value={formData.endDate ? dayjs(formData.endDate) : null} // Set value to null to not display the current date
+                value={
+                  getProjectData.endDate ? dayjs(getProjectData.endDate) : null
+                } // Set value to null to not display the current date
                 onChange={(value) => handleDateChange("endDate", value)}
                 renderInput={(params) => <TextField {...params} />}
               />
@@ -1040,7 +1054,9 @@ const ResourceAllocationFormDetails = () => {
                 name="actualEndDate"
                 format="DD/MM/YYYY"
                 value={
-                  formData.actualEndDate ? dayjs(formData.actualEndDate) : null
+                  getProjectData.actualEndDate
+                    ? dayjs(getProjectData.actualEndDate)
+                    : null
                 } // Set value to null to not display the current date
                 onChange={(value) => handleDateChange("actualEndDate", value)}
                 renderInput={(params) => <TextField {...params} />}
