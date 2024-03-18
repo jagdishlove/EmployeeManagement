@@ -15,6 +15,8 @@ const CreateProjectStepperOne = () => {
   const handleBackClick = () => {
     Navigate("/projects");
   };
+
+  console.log("Pathname:", window.location.pathname);
   return (
     <>
       <div

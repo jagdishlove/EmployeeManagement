@@ -4,7 +4,6 @@ import {
   Button,
   Checkbox,
   Grid,
-  InputAdornment,
   TextField,
   Typography,
 } from "@mui/material";
@@ -12,7 +11,7 @@ import { useTheme } from "@mui/material/styles";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-
+import { MuiTelInput as MuiPhoneNumber } from "mui-tel-input";
 import { TimesheetStyle } from "../../../../pages/timesheet/timesheetStyle";
 import {
   GetAllCountryCityStateAction,
@@ -346,20 +345,6 @@ const CreateProjectFormDetails = () => {
     }
   };
 
-  // const selectedClientId = projectDetailsData?.client?.clientId;
-
-  // // Find the corresponding client object based on clientID
-  // const selectedClient = clientSearchData?.result?.find(
-  //   (client) => client.id === selectedClientId
-  // );
-
-  // useEffect(() => {
-  //   setFormData((prevFormData) => ({
-  //     ...prevFormData,
-  //     clientName: selectedClient,
-  //   }));
-  // }, [selectedClient]);
-
   return (
     <div style={{ marginBottom: "50px" }}>
       {/* Client Details */}
@@ -453,30 +438,16 @@ const CreateProjectFormDetails = () => {
           >
             Phone
           </Typography>
-          <TextField
-            placeholder="Phone"
+          <MuiPhoneNumber
+            defaultCountry={"IN"}
             name="phone"
+            placeholder="Enter Phone Number"
             value={clientDetailsData?.phone || formData?.phone}
-            style={{
-              ...style.TimesheetTextField,
-              borderRadius: "10px",
-              marginTop: "5px",
-            }}
-            sx={{
-              "& :hover": {
-                cursor: "not-allowed",
-              },
-            }}
+            sx={{ marginBottom: 1 }}
             fullWidth
             disabled
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  {/* Add your phone icon here */}
-                </InputAdornment>
-              ),
-            }}
           />
+
           <Typography
             variant="body1"
             style={{ marginTop: "15px", color: "  #000000" }}

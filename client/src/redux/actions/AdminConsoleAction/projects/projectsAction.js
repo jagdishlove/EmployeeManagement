@@ -581,9 +581,9 @@ export const saveCreateProjectAction = (payload, saveProjectStagePayload) => {
         saveProjectStagePayload
       );
       dispatch(saveCreateProjectSuccess(response));
-      toast.success("Project Created Successfully", {
-        position: toast.POSITION.BOTTOM_CENTER,
-      });
+      // toast.success("Project Created Successfully", {
+      //   position: toast.POSITION.BOTTOM_CENTER,
+      // });
       return response;
     } catch (err) {
       if (err.response.data.errorCode === 403) {

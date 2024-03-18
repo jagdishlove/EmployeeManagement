@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Autocomplete,
   Avatar,
   Box,
   Button,
@@ -14,25 +13,23 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { LocalizationProvider, StaticDatePicker } from "@mui/x-date-pickers";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import icon from "../../../assets/Featured icon.svg";
-import dayjs from "dayjs";
 import Dropdown from "../../forms/dropdown/dropdown";
 import { TimesheetStyle } from "../../../pages/timesheet/timesheetStyle";
 import { useTheme } from "@mui/material/styles";
 import { MuiTelInput as MuiPhoneNumber } from "mui-tel-input";
 import InsertPhotoOutlinedIcon from "@mui/icons-material/InsertPhotoOutlined";
+import dayjs from "dayjs";
 
 export default function MasterDataDialogs({
   openDialog,
   dialog,
   open,
   enable,
-  isOpenCalender,
   bandDialog,
   holidayDialog,
   desginationEdit,
@@ -60,19 +57,19 @@ export default function MasterDataDialogs({
   edit,
   officeData,
   clinetDetails,
-  setSelectedDate,
-  selectedDate,
+  // setSelectedDate,
+  // selectedDate,
   value,
   setValue,
   handleEditDesignation,
   handlechange,
   bandFormData,
-  setIsOpenCalender,
   holidayFormData,
   city,
   holidayType,
   selectedImage,
   handleFileChange,
+  editHeading,
 }) {
   const theme = useTheme();
   const style = TimesheetStyle(theme);
@@ -87,7 +84,6 @@ export default function MasterDataDialogs({
           sx={{
             position: "absolute",
             right: 10,
-            top: 8,
           }}
         >
           <CloseIcon />
@@ -99,7 +95,7 @@ export default function MasterDataDialogs({
             </>
           ) : (
             <>
-              <img src={icon} /> {changeData}
+              <img src={icon} /> {editHeading}
             </>
           )}
         </DialogTitle>
@@ -144,7 +140,8 @@ export default function MasterDataDialogs({
                     Are you sure you want to edit/disable the {chnageDataType}
                   </DialogContentText>
                   <DialogContentText>
-                    &apos;{changeData}&apos; from the Master Data?
+                    <strong>&apos;{changeData}&apos;</strong> from the Master
+                    Data?
                   </DialogContentText>
                 </DialogContent>
               </>
@@ -262,7 +259,6 @@ export default function MasterDataDialogs({
           sx={{
             position: "absolute",
             right: 10,
-            top: 8,
           }}
         >
           <CloseIcon />
@@ -312,7 +308,6 @@ export default function MasterDataDialogs({
           sx={{
             position: "absolute",
             right: 10,
-            top: 8,
           }}
         >
           <CloseIcon />
@@ -327,9 +322,7 @@ export default function MasterDataDialogs({
           <TextField
             placeholder="Enter Office Name"
             value={officeData.officeAddress}
-            onChange={(e) =>
-              handleOfficeChange("officeAddress", e.target.value)
-            }
+            onChange={(e) => handleOfficeChange("officeAddress", e)}
             sx={{ marginBottom: 1 }}
           />
           {errors.officeAddress && (
@@ -341,7 +334,7 @@ export default function MasterDataDialogs({
           <TextField
             placeholder="Enter Office Address"
             value={officeData.addressLine1}
-            onChange={(e) => handleOfficeChange("addressLine1", e.target.value)}
+            onChange={(e) => handleOfficeChange("addressLine1", e)}
             sx={{ marginBottom: 1 }}
           />
           {errors.addressLine2 && (
@@ -353,7 +346,7 @@ export default function MasterDataDialogs({
           <TextField
             placeholder="Enter Office Address"
             value={officeData.addressLine2}
-            onChange={(e) => handleOfficeChange("addressLine2", e.target.value)}
+            onChange={(e) => handleOfficeChange("addressLine2", e)}
             sx={{ marginBottom: 1 }}
           />
           {errors.addressLine1 && (
@@ -364,12 +357,12 @@ export default function MasterDataDialogs({
           <Typography>Phone Number</Typography>
           <MuiPhoneNumber
             defaultCountry={"IN"}
-            name="phone"
+            name="phoneNumber"
             placeholder="Enter Phone Number"
             value={officeData.phone}
             onChange={(value) => {
               const cleanedPhoneNumber = value.replace(/\s/g, "");
-              handleOfficeChange("phone", cleanedPhoneNumber);
+              handleOfficeChange("phoneNumber", cleanedPhoneNumber);
             }}
             sx={{ marginBottom: 1 }}
           />
@@ -379,16 +372,19 @@ export default function MasterDataDialogs({
             </Box>
           )}
           <Typography>Country</Typography>
-          <Autocomplete
-            freeSolo
-            id="country"
-            options={country}
-            getOptionLabel={(option) => option.dataValue}
+          <Dropdown
+            options={country} // Pass any additional options if needed
+            value={officeData.countryId}
             onChange={(e, value) => handleOfficeChange("country", e, value)}
-            value={country?.find((c) => c.id === officeData?.countryId) || null}
-            renderInput={(params) => (
-              <TextField {...params} placeholder="Country" />
-            )}
+            title="country"
+            dropdownName="country" // Pass the dropdown name
+            style={{
+              ...style.TimesheetTextField,
+              border: "1px solid #8897ad87",
+              borderRadius: "5px",
+            }}
+            valueKey="id"
+            labelKey="dataValue"
           />
           {errors.country && (
             <Box>
@@ -396,19 +392,19 @@ export default function MasterDataDialogs({
             </Box>
           )}
           <Typography>State</Typography>
-          <Autocomplete
-            freeSolo
-            options={state}
-            getOptionLabel={(option) => option.dataValue}
+          <Dropdown
+            options={state} // Pass any additional options if needed
+            value={officeData.stateId}
             onChange={(e, value) => handleOfficeChange("state", e, value)}
-            value={state?.find((c) => c.id === officeData?.stateId) || null}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                value={officeData.state}
-                placeholder="State"
-              />
-            )}
+            title="State"
+            dropdownName="State" // Pass the dropdown name
+            style={{
+              ...style.TimesheetTextField,
+              border: "1px solid #8897ad87",
+              borderRadius: "5px",
+            }}
+            valueKey="id"
+            labelKey="dataValue"
           />
           {errors.state && (
             <Box>
@@ -416,19 +412,19 @@ export default function MasterDataDialogs({
             </Box>
           )}
           <Typography>City</Typography>
-          <Autocomplete
-            freeSolo
-            options={city}
-            getOptionLabel={(option) => option.dataValue}
+          <Dropdown
+            options={city} // Pass any additional options if needed
+            value={officeData.cityId}
             onChange={(e, value) => handleOfficeChange("city", e, value)}
-            value={city?.find((c) => c.id === officeData?.cityId) || null}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                value={officeData.state}
-                placeholder="City"
-              />
-            )}
+            title="City"
+            dropdownName="City" // Pass the dropdown name
+            style={{
+              ...style.TimesheetTextField,
+              border: "1px solid #8897ad87",
+              borderRadius: "5px",
+            }}
+            valueKey="id"
+            labelKey="dataValue"
           />
           {errors.city && (
             <Box>
@@ -439,7 +435,7 @@ export default function MasterDataDialogs({
           <TextField
             placeholder="Zip / Postal Code"
             value={officeData.postalCode}
-            onChange={(e) => handleOfficeChange("postalCode", e.target.value)}
+            onChange={(e) => handleOfficeChange("postalCode", e)}
             sx={{ marginBottom: 1 }}
           />
           {errors.postalCode && (
@@ -494,13 +490,12 @@ export default function MasterDataDialogs({
           sx={{
             position: "absolute",
             right: 10,
-            top: 8,
           }}
         >
           <CloseIcon />
         </IconButton>
         <DialogTitle sx={{ width: "400px" }}>
-          <img src={icon} /> Enable
+          <img src={icon} /> {changeData}
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -551,7 +546,6 @@ export default function MasterDataDialogs({
           sx={{
             position: "absolute",
             right: 10,
-            top: 8,
           }}
         >
           <CloseIcon />
@@ -645,7 +639,6 @@ export default function MasterDataDialogs({
           sx={{
             position: "absolute",
             right: 10,
-            top: 8,
           }}
         >
           <CloseIcon />
@@ -656,32 +649,41 @@ export default function MasterDataDialogs({
         <DialogContent
           sx={{ display: "flex", flexDirection: "column", gap: 1 }}
         >
-          <TextField
-            id="outlined-basic"
-            type="calander"
-            placeholder="Choose Date"
-            onClick={() => setIsOpenCalender(true)}
-            value={selectedDate ? dayjs(selectedDate).format("DD-MM-YYYY") : ""}
-            InputProps={{
-              endAdornment: (
-                <IconButton>
-                  <CalendarMonthIcon />
-                </IconButton>
-              ),
-            }}
-          />
+          <Grid
+            container
+            item
+            xs={12}
+            sm={12}
+            md={12}
+            lg={12}
+            direction="column"
+            mt={2}
+          >
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                name="actualEndDate"
+                format="DD/MM/YYYY"
+                label="Choose Date"
+                value={
+                  holidayFormData.date ? dayjs(holidayFormData.date) : null
+                }
+                onChange={(value) => handleHolidayChnage("date", value)}
+                renderInput={(params) => <TextField {...params} />}
+              />
+            </LocalizationProvider>
+          </Grid>
           {errors.selectedDate && (
             <Box>
               <Typography color="error"> {errors.selectedDate}</Typography>
             </Box>
           )}
-          <Typography>Enter Holiday Type</Typography>
+          <Typography>Holiday Type</Typography>
           <Dropdown
             options={holidayType} // Pass any additional options if needed
             value={holidayFormData.holidayType}
             onChange={(e) => handleHolidayChnage("holidayType", e.target.value)}
-            title=""
-            dropdownName="holiday Type" // Pass the dropdown name
+            title="holidayType"
+            placeholder="holidayType"
             style={{
               ...style.TimesheetTextField,
               border: "1px solid #8897ad87",
@@ -742,22 +744,6 @@ export default function MasterDataDialogs({
           </Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={isOpenCalender} onClose={() => setIsOpenCalender(false)}>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <StaticDatePicker
-            sx={{
-              overflow: "scroll",
-              display: "flex",
-              flexDirection: "column",
-            }}
-            defaultValue={dayjs()}
-            value={selectedDate}
-            onChange={(date) => setSelectedDate(date)}
-            onAccept={() => setIsOpenCalender(false)}
-            onCancel={() => setIsOpenCalender(false)}
-          />
-        </LocalizationProvider>
-      </Dialog>
       <Dialog open={clientDialog} onClose={handleCloseDialog}>
         <IconButton
           edge="end"
@@ -767,7 +753,6 @@ export default function MasterDataDialogs({
           sx={{
             position: "absolute",
             right: 10,
-            top: 8,
           }}
         >
           <CloseIcon />
@@ -807,7 +792,7 @@ export default function MasterDataDialogs({
             placeholder="Enter Client Name"
             name="clinetName"
             value={clinetDetails.clinetName}
-            onChange={(e) => handleClinetDetails("clinetName", e.target.value)}
+            onChange={(e) => handleClinetDetails("clinetName", e)}
             sx={{ marginBottom: 1 }}
           />
           {errors.clinetName && (
@@ -820,9 +805,7 @@ export default function MasterDataDialogs({
             placeholder="Enter Client Address"
             name="addressLine1"
             value={clinetDetails.addressLine1}
-            onChange={(e) =>
-              handleClinetDetails("addressLine1", e.target.value)
-            }
+            onChange={(e) => handleClinetDetails("addressLine1", e)}
             sx={{ marginBottom: 1 }}
           />
           {errors.addressLine1 && (
@@ -835,9 +818,7 @@ export default function MasterDataDialogs({
             placeholder="Enter Client Address"
             name="addressLine2"
             value={clinetDetails.addressLine2}
-            onChange={(e) =>
-              handleClinetDetails("addressLine2", e.target.value)
-            }
+            onChange={(e) => handleClinetDetails("addressLine2", e)}
             sx={{ marginBottom: 1 }}
           />
           {errors.addressLine2 && (
@@ -853,7 +834,7 @@ export default function MasterDataDialogs({
             value={clinetDetails.phone}
             onChange={(value) => {
               const cleanedPhoneNumber = value.replace(/\s/g, "");
-              handleClinetDetails("phone", cleanedPhoneNumber);
+              handleClinetDetails("phoneNumber", cleanedPhoneNumber);
             }}
             sx={{ marginBottom: 1 }}
           />
@@ -864,19 +845,19 @@ export default function MasterDataDialogs({
             </Box>
           )}
           <Typography>Country</Typography>
-          <Autocomplete
-            freeSolo
-            id="country"
-            placeholder="Enter Client Address"
-            options={country}
-            getOptionLabel={(option) => option.dataValue}
+          <Dropdown
+            options={country} // Pass any additional options if needed
+            value={clinetDetails.countryId}
             onChange={(e, value) => handleClinetDetails("country", e, value)}
-            value={
-              country?.find((c) => c.id === clinetDetails?.countryId) || null
-            }
-            renderInput={(params) => (
-              <TextField {...params} placeholder="Country" />
-            )}
+            title="country"
+            dropdownName="country" // Pass the dropdown name
+            style={{
+              ...style.TimesheetTextField,
+              border: "1px solid #8897ad87",
+              borderRadius: "5px",
+            }}
+            valueKey="id"
+            labelKey="dataValue"
           />
           {errors.countryId && (
             <Box>
@@ -884,19 +865,19 @@ export default function MasterDataDialogs({
             </Box>
           )}
           <Typography>State</Typography>
-          <Autocomplete
-            freeSolo
-            options={state}
-            getOptionLabel={(option) => option.dataValue}
+          <Dropdown
+            options={state} // Pass any additional options if needed
+            value={clinetDetails.stateId}
             onChange={(e, value) => handleClinetDetails("state", e, value)}
-            value={state?.find((c) => c.id === clinetDetails?.stateId) || null}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                value={officeData.state}
-                placeholder="State"
-              />
-            )}
+            title="State"
+            dropdownName="State" // Pass the dropdown name
+            style={{
+              ...style.TimesheetTextField,
+              border: "1px solid #8897ad87",
+              borderRadius: "5px",
+            }}
+            valueKey="id"
+            labelKey="dataValue"
           />
           {errors.stateId && (
             <Box>
@@ -904,19 +885,20 @@ export default function MasterDataDialogs({
             </Box>
           )}
           <Typography>City</Typography>
-          <Autocomplete
-            freeSolo
-            options={city}
-            getOptionLabel={(option) => option.dataValue}
+
+          <Dropdown
+            options={city} // Pass any additional options if needed
+            value={clinetDetails.cityId}
             onChange={(e, value) => handleClinetDetails("city", e, value)}
-            value={city?.find((c) => c.id === clinetDetails?.stateId) || null}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                value={officeData.state}
-                placeholder="City"
-              />
-            )}
+            title="City"
+            dropdownName="City" // Pass the dropdown name
+            style={{
+              ...style.TimesheetTextField,
+              border: "1px solid #8897ad87",
+              borderRadius: "5px",
+            }}
+            valueKey="id"
+            labelKey="dataValue"
           />
           {errors.cityId && (
             <Box>
@@ -927,7 +909,7 @@ export default function MasterDataDialogs({
           <TextField
             placeholder="Zip / Postal Code"
             value={clinetDetails.postalCode}
-            onChange={(e) => handleClinetDetails("postalCode", e.target.value)}
+            onChange={(e) => handleClinetDetails("postalCode", e)}
             sx={{ marginBottom: 1 }}
           />
           {errors.postalCode && (
@@ -937,18 +919,20 @@ export default function MasterDataDialogs({
           )}
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={handleAddDesignationCancle}
-            sx={{
-              color: "#000",
-              width: "100px",
-              marginTop: "-10px",
-              border: "1px solid #AEAEAE",
-              textTransform: "capitalize",
-            }}
-          >
-            cancle
-          </Button>
+          {edit ? (
+            <Button
+              onClick={handleAddDesignationCancle}
+              sx={{
+                color: "#000",
+                width: "100px",
+                marginTop: "-10px",
+                border: "1px solid #AEAEAE",
+                textTransform: "capitalize",
+              }}
+            >
+              Cancel
+            </Button>
+          ) : null}
           <Button
             onClick={() =>
               edit === false
@@ -980,7 +964,6 @@ export default function MasterDataDialogs({
           sx={{
             position: "absolute",
             right: 10,
-            top: 8,
           }}
         >
           <CloseIcon />
@@ -996,9 +979,7 @@ export default function MasterDataDialogs({
             placeholder="Office Address"
             name="addressName"
             value={clientLocationData.addressName}
-            onChange={(e) =>
-              handleOnsiteLocation("addressName", e.target.value)
-            }
+            onChange={(e) => handleOnsiteLocation("addressName", e)}
             sx={{ marginBottom: 1 }}
           />
           {errors.clinetName && (
@@ -1011,9 +992,7 @@ export default function MasterDataDialogs({
             placeholder="Office Address"
             name="addressLine1"
             value={clientLocationData.addressLine1}
-            onChange={(e) =>
-              handleOnsiteLocation("addressLine1", e.target.value)
-            }
+            onChange={(e) => handleOnsiteLocation("addressLine1", e)}
             sx={{ marginBottom: 1 }}
           />
           {errors.addressLine1 && (
@@ -1026,9 +1005,7 @@ export default function MasterDataDialogs({
             placeholder="Office Address"
             name="addressLine2"
             value={clientLocationData.addressLine2}
-            onChange={(e) =>
-              handleOnsiteLocation("addressLine2", e.target.value)
-            }
+            onChange={(e) => handleOnsiteLocation("addressLine2", e)}
             sx={{ marginBottom: 1 }}
           />
           {errors.addressLine2 && (
@@ -1043,8 +1020,7 @@ export default function MasterDataDialogs({
             placeholder="Enter Phone Number"
             value={clientLocationData.phone}
             onChange={(value) => {
-              const cleanedPhoneNumber = value.replace(/\s/g, "");
-              handleOnsiteLocation("phone", cleanedPhoneNumber);
+              handleOnsiteLocation("phoneNumber", value);
             }}
             sx={{ marginBottom: 1 }}
           />
@@ -1054,41 +1030,42 @@ export default function MasterDataDialogs({
             </Box>
           )}
           <Typography>Country</Typography>
-          <Autocomplete
-            freeSolo
-            id="country"
-            options={country}
-            getOptionLabel={(option) => option.dataValue}
-            onChange={(e, value) => handleOnsiteLocation("countryId", e, value)}
-            value={
-              country?.find((c) => c.id === clientLocationData?.countryId) ||
-              null
+          <Dropdown
+            options={country} // Pass any additional options if needed
+            value={clientLocationData.countryId}
+            onChange={(e, value) =>
+              handleOnsiteLocation("country", e.target.value, value)
             }
-            renderInput={(params) => (
-              <TextField {...params} placeholder="Country" />
-            )}
+            title="country"
+            dropdownName="country" // Pass the dropdown name
+            style={{
+              ...style.TimesheetTextField,
+              border: "1px solid #8897ad87",
+              borderRadius: "5px",
+            }}
+            valueKey="id"
+            labelKey="dataValue"
           />
+
           {errors.countryId && (
             <Box>
               <Typography color="error"> {errors.countryId}</Typography>
             </Box>
           )}
           <Typography>State</Typography>
-          <Autocomplete
-            freeSolo
-            options={state}
-            getOptionLabel={(option) => option.dataValue}
+          <Dropdown
+            options={state} // Pass any additional options if needed
+            value={clientLocationData.stateId}
             onChange={(e, value) => handleOnsiteLocation("state", e, value)}
-            value={
-              state?.find((c) => c.id === clientLocationData?.stateId) || null
-            }
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                value={officeData.state}
-                placeholder="State"
-              />
-            )}
+            title="state"
+            dropdownName="state" // Pass the dropdown name
+            style={{
+              ...style.TimesheetTextField,
+              border: "1px solid #8897ad87",
+              borderRadius: "5px",
+            }}
+            valueKey="id"
+            labelKey="dataValue"
           />
           {errors.stateId && (
             <Box>
@@ -1096,21 +1073,19 @@ export default function MasterDataDialogs({
             </Box>
           )}
           <Typography>City</Typography>
-          <Autocomplete
-            freeSolo
-            options={city}
-            getOptionLabel={(option) => option.dataValue}
+          <Dropdown
+            options={city} // Pass any additional options if needed
+            value={clientLocationData.cityId}
             onChange={(e, value) => handleOnsiteLocation("city", e, value)}
-            value={
-              city?.find((c) => c.id === clientLocationData?.cityId) || null
-            }
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                value={officeData.state}
-                placeholder="City"
-              />
-            )}
+            title="city"
+            dropdownName="city" // Pass the dropdown name
+            style={{
+              ...style.TimesheetTextField,
+              border: "1px solid #8897ad87",
+              borderRadius: "5px",
+            }}
+            valueKey="id"
+            labelKey="dataValue"
           />
           {errors.cityId && (
             <Box>
@@ -1121,7 +1096,7 @@ export default function MasterDataDialogs({
           <TextField
             placeholder="Zip / Postal Code"
             value={clientLocationData.postalCode}
-            onChange={(e) => handleOnsiteLocation("postalCode", e.target.value)}
+            onChange={(e) => handleOnsiteLocation("postalCode", e)}
             sx={{ marginBottom: 1 }}
           />
           {errors.postalCode && (
@@ -1131,18 +1106,20 @@ export default function MasterDataDialogs({
           )}
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={handleAddDesignationCancle}
-            sx={{
-              color: "#000",
-              width: "100px",
-              marginTop: "-10px",
-              border: "1px solid #AEAEAE",
-              textTransform: "capitalize",
-            }}
-          >
-            cancle
-          </Button>
+          {edit ? (
+            <Button
+              onClick={handleAddDesignationCancle}
+              sx={{
+                color: "#000",
+                width: "100px",
+                marginTop: "-10px",
+                border: "1px solid #AEAEAE",
+                textTransform: "capitalize",
+              }}
+            >
+              Cancel
+            </Button>
+          ) : null}
           <Button
             onClick={() =>
               edit === false

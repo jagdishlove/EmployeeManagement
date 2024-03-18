@@ -262,7 +262,47 @@ export const CreateUserForm = (data) => {
       } else if (
         err.response &&
         err.response.data &&
-        err.response.data.errorCode === 500
+        err.response.data.errorCode === 400
+      ) {
+        dispatch(createUserFail(err.response.data.errorMessage));
+        toast.error(err.response.data.errorMessage, {
+          position: toast.POSITION.BOTTOM_CENTER,
+        });
+      }
+    }
+  };
+};
+
+export const EditUserForm = (data) => {
+  return async (dispatch) => {
+    let formData = new FormData();
+    formData.append("file", data.file);
+
+    for (const key in data) {
+      if (key !== "file") {
+        formData.append(key, data[key]);
+      }
+    }
+    dispatch(createUserRequest());
+
+    try {
+      const response = await addRequest("POST", "/employee/create", formData);
+      dispatch(createUserSuccess(response));
+
+      toast.success("User Updated  Successfully.", {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    } catch (err) {
+      if (
+        err.response &&
+        err.response.data &&
+        err.response.data.errorCode === 403
+      ) {
+        dispatch(getRefreshToken());
+      } else if (
+        err.response &&
+        err.response.data &&
+        err.response.data.errorCode === 400
       ) {
         dispatch(createUserFail(err.response.data.errorMessage));
         toast.error(err.response.data.errorMessage, {
@@ -384,7 +424,9 @@ export const SearchEmployeeAndProject = (data) => {
         "GET",
         "/employee/searchByemployeeAndProjectName",
         null,
-        data
+        {
+          searchTerm: data || "",
+        }
       );
       dispatch(searchEmployeeAndProjectSuccess(response));
     } catch (err) {
@@ -426,6 +468,24 @@ export const saveSkills = (data) => {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
+    }
+  };
+};
+
+export const getAllCitysAction = (data) => {
+  return async (dispatch) => {
+    try {
+      const response = await makeRequest(
+        "GET",
+        "/api/masterData/getAll",
+        null,
+        data
+      );
+      dispatch(getAllCitys(response));
+    } catch (err) {
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
     }
   };
 };

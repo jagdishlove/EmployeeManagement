@@ -15,6 +15,7 @@ import { adminHeaderStyle } from "../../admin/approvalTimesheets/adminHeaderStyl
 import Dropdown from "../../forms/dropdown/dropdown";
 import { useDispatch, useSelector } from "react-redux";
 import { getClientProjectNameSearchAction } from "../../../redux/actions/AdminConsoleAction/projects/projectsAction";
+import SearchIcon from "@mui/icons-material/Search";
 
 export default function ProjectHeader({
   projectsData,
@@ -76,6 +77,13 @@ export default function ProjectHeader({
                   InputProps={{
                     ...params.InputProps,
                     style: { borderRadius: "20px" },
+                    startAdornment: (
+                      <>
+                        <SearchIcon />
+                        {params.InputProps.startAdornment}
+                      </>
+                    ),
+                    endAdornment: null,
                   }}
                 />
               )}

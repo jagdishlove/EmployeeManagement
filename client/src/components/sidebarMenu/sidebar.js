@@ -321,7 +321,7 @@ const Sidebar = ({ children }) => {
                   {[
                     { text: "Projects", url: "/projects" },
                     { text: "Users", url: "/users" },
-                    { text: "Timesheets", url: "/timesheet" },
+                    { text: "Admintimesheet", url: "/Admintimesheet" },
                     { text: "Adminleaves", url: "/adminLeaves" },
                     { text: "MasterData", url: "/masterData" },
                   ].map((item) => (
@@ -362,6 +362,8 @@ const Sidebar = ({ children }) => {
                             >
                               {item.text === "Adminleaves"
                                 ? "Leaves"
+                                : item.text === "Admintimesheet"
+                                ? "Timesheet"
                                 : item.text}
                             </Typography>
                             sx={{ opacity: open ? 1 : 0 }}

@@ -22,7 +22,10 @@ import { useTheme } from "@mui/material/styles";
 import { TimesheetStyle } from "../../../pages/timesheet/timesheetStyle";
 import { postcodeValidator } from "postcode-validator";
 import { useDispatch, useSelector } from "react-redux";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { useNavigate, useParams } from "react-router-dom";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import {
   CreateUserForm,
   SearchEmployeeAction,
@@ -31,23 +34,29 @@ import {
   fetchCitiesAction,
   fetchLocationData,
   getUserById,
+  EditUserForm,
 } from "../../../redux/actions/AdminConsoleAction/users/usersAction";
+import dayjs from "dayjs";
 
 export default function CreateUser() {
   const theme = useTheme();
   const style = TimesheetStyle(theme);
   const dispatch = useDispatch();
   const [selectedImage, setSelectedImage] = useState("");
+  const [errors, setErrors] = useState({});
 
   const { id } = useParams();
 
   useEffect(() => {
-    dispatch(getUserById(id));
+    if (id) {
+      dispatch(getUserById(id));
+    }
   }, [id]);
 
   const [validationErrors, setValidationErrors] = useState({});
   const [formData, setFormData] = useState({
     firstName: "",
+    id: "",
     email: "",
     number: "",
     gender: "",
@@ -102,6 +111,7 @@ export default function CreateUser() {
       UANNo: "",
       address1: "",
       address2: "",
+      id: "",
       country: "",
       state: "",
       city: "",
@@ -131,6 +141,7 @@ export default function CreateUser() {
 
     setValidationErrors({});
   };
+
   const [isChecked, setIsChecked] = useState(false);
   const handleCheckboxChange = async () => {
     // Toggle the checkbox state
@@ -140,21 +151,21 @@ export default function CreateUser() {
     const updatedFormData = newIsChecked
       ? {
           ...formData,
-          currentAddress1: formData.address1,
-          currentAddress2: formData.address2,
-          currentZIP: formData.Zip,
-          currentcountry: formData.country,
-          currentstate: formData.state,
-          currentcity: formData.city,
+          address1: formData.currentAddress1,
+          address2: formData.currentAddress2,
+          Zip: formData.currentZIP,
+          country: formData.currentcountry,
+          state: formData.currentstate,
+          city: formData.currentcity,
         }
       : {
           ...formData,
-          currentAddress1: "",
-          currentAddress2: "",
-          currentZIP: "",
-          currentcountry: "",
-          currentstate: "",
-          currentcity: "",
+          address1: "",
+          address2: "",
+          Zip: "",
+          country: "",
+          state: "",
+          city: "",
         };
 
     // Update the form data
@@ -253,9 +264,10 @@ export default function CreateUser() {
   );
 
   useEffect(() => {
-    if (employeeDetails) {
+    if (id) {
       setFormData((prevData) => ({
         ...prevData,
+        id: employeeDetails?.id,
         file: employeeDetails?.file || "",
         firstName: employeeDetails.firstName || "",
         email: employeeDetails.email || "",
@@ -307,6 +319,50 @@ export default function CreateUser() {
       ) {
         setIsChecked(true);
       }
+    } else {
+      setFormData({
+        firstName: "",
+        id: "",
+        email: "",
+        number: "",
+        gender: "",
+        lastName: "",
+        DOB: "",
+        DOJ: "",
+        CTC: "",
+        Status: "",
+        skill: "",
+        UANNo: "",
+        address1: "",
+        address2: "",
+        country: "",
+        state: "",
+        city: "",
+        Zip: "",
+        currentAddress1: "",
+        currentAddress2: "",
+        currentcountry: "",
+        currentcity: "",
+        currentstate: "",
+        currentZIP: "",
+        AadhaarNo: "",
+        workMode: "",
+        ManagerName: { id: 0, name: "", type: "employee" },
+        designation: "",
+        ACNo: "",
+        Bank: "",
+        IFSCCode: "",
+        employeeType: "",
+        employeeID: "",
+        file: "",
+        employeeCoordinates: "",
+        employedBy: "",
+        Client_loc: "",
+        productType: "",
+        Bank_Name: "",
+      });
+      setSelectedImage(null);
+      setIsChecked(false);
     }
   }, [employeeDetails]);
 
@@ -413,15 +469,23 @@ export default function CreateUser() {
     setFormData({ ...formData, skill: skillIds });
   };
 
-  useEffect(() => {
-    dispatch(SearchEmployeeAction(formData.ManagerName));
-  }, [dispatch]);
-
   const handleManagerNameChange = (value) => {
     setFormData({ ...formData, ManagerName: value });
   };
   const handleManagerNameChange2 = (event) => {
     dispatch(SearchEmployeeAction(event.target.value));
+  };
+
+  const shouldDisableDate = (date) => {
+    return dayjs(date).isAfter(dayjs(), "day"); // Disable future dates
+  };
+  const handleDateChnage = (name, date) => {
+    const formattedDate = date.format("YYYY-MM-DD");
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: formattedDate,
+    }));
   };
 
   const handleInputChange = (event) => {
@@ -434,7 +498,7 @@ export default function CreateUser() {
         [name]: value,
         currentAddress1: prevData.address1,
         currentAddress2: prevData.address2,
-        currentZIP: prevData.permanentZip,
+        currentZIP: prevData.Zip,
         currentcountry: name === "country" ? value : prevData.currentcountry,
         currentstate: name === "state" ? value : prevData.currentstate,
         currentcity: name === "city" ? value : prevData.currentcity,
@@ -480,31 +544,23 @@ export default function CreateUser() {
       setFormData((prevData) => ({
         ...prevData,
         country: value?.id || "",
+        state: "",
+        city: "",
       }));
     }
     if (type === "currentcountry") {
       setFormData((prevData) => ({
         ...prevData,
         currentcountry: value?.id || "",
+        currentstate: "",
+        currentcity: "",
       }));
     }
 
     fetchStatesAction(value?.id, setStates);
   };
 
-  const handleStateChange = (type, event, value) => {
-    if (type === "state") {
-      setFormData((prevData) => ({
-        ...prevData,
-        state: value?.id || "",
-      }));
-    }
-    if (type === "currentstate") {
-      setFormData((prevData) => ({
-        ...prevData,
-        currentstate: value?.id || "",
-      }));
-    }
+  const handleCity = (type, event, value) => {
     if (type === "city") {
       setFormData((prevData) => ({
         ...prevData,
@@ -517,191 +573,35 @@ export default function CreateUser() {
         currentcity: value?.id || "",
       }));
     }
+  };
+
+  console.log("fomdarta", formData);
+
+  const handleStateChange = (type, event, value) => {
+    if (type === "state") {
+      setFormData((prevData) => ({
+        ...prevData,
+        state: value?.id || "",
+        city: "",
+      }));
+    }
+    if (type === "currentstate") {
+      setFormData((prevData) => ({
+        ...prevData,
+        currentstate: value?.id || "",
+      }));
+      setFormData((prevData) => ({
+        ...prevData,
+        currentcity: "",
+      }));
+    }
+
     fetchCitiesAction(value?.id, setCities);
   };
 
   const handleSave = async () => {
-    const {
-      firstName,
-      email,
-      number,
-      gender,
-      lastName,
-      DOB,
-      DOJ,
-      CTC,
-      Status,
-      skill,
-      address1,
-      country,
-      state,
-      city,
-      Zip,
-      currentAddress1,
-      currentcountry,
-      currentcity,
-      currentstate,
-      AadhaarNo,
-      workMode,
-      ManagerName,
-      Client_loc,
-      designation,
-      ACNo,
-      Bank,
-      IFSCCode,
-      employeeType,
-      employeeID,
-    } = formData;
-    let errors = {};
-
-    if (!firstName?.trim()) {
-      errors.firstName = "*First Name is required";
-    } else if (!/^[a-zA-Z]{3,}$/.test(firstName)) {
-      errors.firstName =
-        "Please enter a valid First Name without special characters, at least 3 characters long";
-    }
-
-    if (!address1?.trim()) {
-      errors.address1 = "*address is required";
-    }
-    if (!country) {
-      errors.Country = "*Country is required";
-    }
-    if (!state) {
-      errors.State = "*State is required";
-    }
-    if (!city) {
-      errors.City = "*City is required";
-    }
-    if (!Zip?.trim()) {
-      errors.Zip = "*zip is required";
-    }
-    if (!currentAddress1) {
-      errors.currentAddress = "*Current Address is required";
-    }
-    if (!currentcountry) {
-      errors.currentcountry = "*Country is required";
-    }
-    if (!currentstate) {
-      errors.currentstate = "*Current State is required";
-    }
-    if (!currentcity) {
-      errors.currentcity = "*Current city is required";
-    }
-
-    if (!formData.currentZIP) {
-      errors.postalCode1 = "Postal code is required";
-    } else {
-      try {
-        const isValid = postcodeValidator(
-          formData.currentZIP,
-          "" || countryCode[formData.currentcountry]
-        );
-        if (!isValid) {
-          errors.postalCode1 = "Invalid postal code";
-        }
-      } catch {
-        errors.postalCode1 = "Error validating postal code";
-      }
-    }
-
-    if (!formData.Zip) {
-      errors.postalCode = "Postal code is required";
-    } else {
-      try {
-        const isValid = postcodeValidator(
-          formData.Zip,
-          "" || countryCode[formData.currentcountry]
-        );
-        if (!isValid) {
-          errors.postalCode = "Invalid postal code";
-        }
-      } catch {
-        errors.postalCode = "Error validating postal code";
-      }
-    }
-
-    if (!gender) {
-      errors.gender = "*Gender is required";
-    }
-    if (!Client_loc) {
-      errors.Client_loc = "*Office Location is required";
-    }
-    if (!designation) {
-      errors.designation = "*Designation is required";
-    }
-    if (!skill) {
-      errors.skill = "*Skills is required";
-    }
-    if (!employeeID || !/^\d+$/.test(employeeID)) {
-      errors.employeeID =
-        "*Employee ID is required and should only contain numbers";
-    }
-
-    if (!ManagerName) {
-      errors.ManagerName = "*Manager Name is required";
-    }
-    if (!Status || !Status.trim()) {
-      errors.Status = "*Status is required";
-    }
-
-    if (!email?.trim()) {
-      errors.email = "*Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errors.email = "Please enter a valid email address";
-    }
-
-    if (!number?.trim()) {
-      errors.number = "*Mobile number is required";
-    } else if (!/^[6-9]\d{9}$/.test(number)) {
-      errors.number = "Please enter a valid Indian mobile number";
-    }
-    if (!DOB?.trim()) {
-      errors.DOB = "*Date of Birth is required";
-    }
-    if (!DOJ?.trim()) {
-      errors.DOJ = "*Date of joining is required";
-    }
-    if (!lastName?.trim()) {
-      errors.lastName = "*Last Name is required";
-    }
-
-    if (!AadhaarNo?.trim()) {
-      errors.AadhaarNo = "*Aadhaar Number is required";
-    }
-    if (!CTC || !CTC?.trim()) {
-      errors.CTC = "*Employee CTC is required";
-    } else if (!/^\d+$/.test(CTC)) {
-      errors.CTC = "Please enter a valid numeric value for Employee CTC";
-    } else {
-      const ctcNumber = parseFloat(CTC);
-      if (isNaN(ctcNumber) || ctcNumber < 0) {
-        errors.CTC =
-          "Please enter a valid non-negative numeric value for Employee CTC";
-      } else {
-        const ctcString = CTC.toString();
-        const decimalIndex = ctcString.indexOf(".");
-        if (decimalIndex !== -1 && ctcString.length - decimalIndex > 3) {
-          errors.CTC = "Employee CTC can have up to two decimal places";
-        }
-      }
-    }
-    if (!ACNo?.trim()) {
-      errors.ACNo = "*Your A/C number is required";
-    }
-    if (!Bank?.trim()) {
-      errors.Bank = "*Your Name as Per Bank is required";
-    }
-    if (!IFSCCode?.trim()) {
-      errors.IFSCCode = "*Your Bank IFSC COde is required";
-    }
-
-    if (!workMode?.trim()) {
-      errors.workMode = "*Select your Work Mode..it is required";
-    }
-    if (!employeeType) {
-      errors.employeeType = "*Employee Type is required";
-    } else {
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length == 0) {
       const payload = {
         id: id ? id : "",
         file: formData.file,
@@ -743,20 +643,240 @@ export default function CreateUser() {
         "permanentAddress.postalCode": formData.Zip,
       };
 
-      await dispatch(CreateUserForm(payload));
+      if (id) {
+        await dispatch(EditUserForm(payload));
+      } else {
+        await dispatch(CreateUserForm(payload));
+      }
+
+      setFormData({
+        firstName: "",
+        id: "",
+        email: "",
+        number: "",
+        gender: "",
+        lastName: "",
+        DOB: "",
+        DOJ: "",
+        CTC: "",
+        Status: "",
+        skill: "",
+        UANNo: "",
+        address1: "",
+        address2: "",
+        country: "",
+        state: "",
+        city: "",
+        Zip: "",
+        currentAddress1: "",
+        currentAddress2: "",
+        currentcountry: "",
+        currentcity: "",
+        currentstate: "",
+        currentZIP: "",
+        AadhaarNo: "",
+        workMode: "",
+        ManagerName: { id: 0, name: "", type: "employee" },
+        designation: "",
+        ACNo: "",
+        Bank: "",
+        IFSCCode: "",
+        employeeType: "",
+        employeeID: "",
+        file: "",
+        employeeCoordinates: "",
+        employedBy: "",
+        Client_loc: "",
+        productType: "",
+        Bank_Name: "",
+      });
+      setErrors({});
+    } else {
+      setErrors(validationErrors);
     }
-    setValidationErrors(errors);
+  };
+
+  const validateForm = () => {
+    const errors = {};
+    if (!formData.firstName) {
+      errors.firstName = "First name is mandatory.";
+    } else if (!/^[a-zA-Z]+$/.test(formData.firstName)) {
+      errors.firstName = "First name should contain only alphabets.";
+    }
+
+    if (!formData.currentZIP) {
+      errors.currentZIP = "*Zip/Pincode is required";
+    } else if (!/^\d+$/.test(formData.currentZIP)) {
+      errors.currentZIP =
+        "Invalid postal code or contains non-numeric characters";
+    } else {
+      try {
+        const isValid = postcodeValidator(
+          formData.currentZIP,
+          "" || countryCode[formData.currentcountry]
+        );
+        if (!isValid) {
+          errors.currentZIP = "Invalid postal code";
+        }
+      } catch (error) {
+        errors.currentZIP = "Error validating postal code";
+      }
+    }
+    if (!formData.Zip) {
+      errors.Zip = "*Postal Code is required";
+    } else if (!/^\d+$/.test(formData.Zip)) {
+      errors.Zip = "Invalid postal code or contains non-numeric characters";
+    } else {
+      try {
+        const isValid = postcodeValidator(
+          formData.Zip,
+          "" || countryCode[formData.currentcountry]
+        );
+        if (!isValid) {
+          errors.Zip = "Invalid postal code";
+        }
+      } catch (error) {
+        errors.Zip = "Error validating postal code";
+      }
+    }
+
+    if (!formData.UANNo) {
+      errors.UANNo = "UANNo number is mandatory";
+    } else if (!/^\d+$/.test(formData.UANNo)) {
+      errors.UANNo = "UANNo number should contain only digits";
+    } else if (!/^[0-9]{12}$/.test(formData.UANNo)) {
+      errors.UANNo = "UANNo number should contains only 12 digits";
+    }
+
+    if (!formData.ACNo && !/^[0-9]+$/.test(formData.ACNo)) {
+      errors.ACNo = "Your A/C number is mandatory";
+    }
+    if (!/^[0-9]+$/.test(formData.ACNo)) {
+      errors.ACNo = "Please provide valid A/C number";
+    }
+    if (!formData.gender) {
+      errors.gender = "Gender is mandatory";
+    }
+    if (!formData.Client_loc) {
+      errors.Client_loc = "*Office Location is required";
+    }
+    if (!formData.employedBy) {
+      errors.Client_loc = "*Office Location is required";
+    }
+
+    if (!formData.designation) {
+      errors.designation = "Designation is mandatory";
+    }
+    if (!formData.skill) {
+      errors.skill = "Skills is mandatory";
+    }
+
+    if (!formData.employeeID) {
+      errors.employeeID = "employeeID number is mandatory";
+    } else if (!/^\d+$/.test(formData.employeeID)) {
+      errors.employeeID = "employeeID number should contain only digits";
+    }
+
+    if (!formData.ManagerName.name) {
+      errors.ManagerName = "Manager name is mandatory";
+    }
+    if (!formData.Status) {
+      errors.Status = "Status is mandatory";
+    }
+
+    if (!formData.email) {
+      errors.email = "Email is mandatory";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = "Please enter a valid email address";
+    }
+    if (!formData.currentAddress1) {
+      errors.currentAddress1 = "*Current Address is required";
+    }
+    if (!formData.currentcountry) {
+      errors.currentcountry = "*Country is required";
+    }
+    if (!formData.currentstate) {
+      errors.currentstate = "*Current State is required";
+    }
+    if (!formData.currentcity) {
+      errors.currentcity = "*Current city is required";
+    }
+
+    if (!formData.number) {
+      errors.number = "Mobile number is mandatory";
+    } else if (!/^\d+$/.test(formData.number)) {
+      errors.number = "Mobile number should contain only digits";
+    }
+    if (!formData.DOB) {
+      errors.DOB = "Date of birth is mandatory";
+    }
+    if (!formData.DOJ) {
+      errors.DOJ = "Date of joining is mandatory";
+    }
+    if (!formData.lastName) {
+      errors.lastName = "Last name is mandatory";
+    } else if (!/^[a-zA-Z]+$/.test(formData.lastName)) {
+      errors.lastName = "Last name should contain only alphabets.";
+    }
+
+    if (!formData.AadhaarNo) {
+      errors.AadhaarNo = "Aadhaar number is mandatory";
+    } else if (!/^\d+$/.test(formData.AadhaarNo)) {
+      errors.AadhaarNo = "Aadhaar number should contain only digits";
+    } else if (!/^[0-9]{12}$/.test(formData.AadhaarNo)) {
+      errors.AadhaarNo = "Aadhaar number should contains only 12 digits";
+    }
+
+    if (!formData.CTC) {
+      errors.CTC = "Employee CTC is mandatory";
+    } else if (
+      !/^\d+$/.test(formData.CTC) ||
+      /\W/.test(formData.CTC) ||
+      /\./.test(formData.CTC)
+    ) {
+      errors.CTC =
+        "Please enter a valid numeric value for Employee CTC without special characters or dots.";
+    } else {
+      const ctcNumber = parseFloat(formData.CTC);
+      if (isNaN(ctcNumber) || ctcNumber < 0) {
+        errors.CTC =
+          "Please enter a valid non-negative numeric value for Employee CTC";
+      } else {
+        const ctcString = formData.CTC.toString();
+        const decimalIndex = ctcString.indexOf(".");
+        if (decimalIndex !== -1 && ctcString.length - decimalIndex > 3) {
+          errors.CTC = "Employee CTC can have up to two decimal places";
+        }
+      }
+    }
+
+    if (!formData.workMode) {
+      errors.workMode = "Work Mode is mandatory";
+    }
+    if (!formData.employeeType) {
+      errors.employeeType = "Employee type is mandatory";
+    }
+    if (!formData.Bank_Name) {
+      errors.BankName = "Your name as per bank is mandatory";
+    }
+    if (!formData.Bank) {
+      errors.Bank = "Your name as per bank is mandatory";
+    }
+    if (!formData.IFSCCode) {
+      errors.IFSCCode = "Your Bank IFSC COde is required";
+    }
+    return errors;
   };
 
   return (
-    <div>
+    <Grid>
       {/* Heading */}
       <div
         className="Heading"
         style={{ display: "flex", alignItems: "center" }}
       >
         <IconButton
-          style={{ color: "silver" }}
+          style={{ color: "black" }}
           onClick={() => handleBackClick()}
         >
           <ArrowBackIcon />
@@ -810,9 +930,26 @@ export default function CreateUser() {
               </IconButton>
             </>
           ) : (
-            <AccountCircleTwoToneIcon
-              style={{ width: "70px", height: "70px", color: "#545454" }}
-            />
+            <>
+              <AccountCircleTwoToneIcon
+                style={{ width: "100px", height: "100px", color: "#545454" }}
+              />
+              <IconButton
+                style={{
+                  position: "absolute",
+                  padding: "1px",
+                  bottom: 10,
+                  right: 8,
+                  color: "#545454",
+                  backgroundColor: "white",
+                  background: "white",
+                }}
+              >
+                <AddCircleOutlineIcon
+                  style={{ width: "25px", height: "25px" }}
+                />
+              </IconButton>
+            </>
           )}
         </Button>
         <input
@@ -825,8 +962,8 @@ export default function CreateUser() {
         />
       </div>
       {/* User Details */}
-      <div style={{ margin: "20px" }}>
-        <Typography variant="h6">
+      <Grid>
+        <Typography variant="h6" sx={{ paddingLeft: "10px" }}>
           <b> Basics details</b>
         </Typography>
         <div
@@ -837,116 +974,233 @@ export default function CreateUser() {
             border: "1px solid silver",
           }}
         />
-        <div
-          className="UserDetails"
-          style={{ display: "flex", marginTop: "20px", marginLeft: "12px" }}
-        >
-          <Grid container spacing={2} style={{ margin: "" }}>
-            {/* Left Side */}
+        <Grid container spacing={2} sx={{ margin: "20px" }}>
+          <Grid container>
             <Grid item xs={6}>
               <TextField
                 label={
-                  <Typography>
-                    <span style={{ color: "red" }}>*</span>
+                  <>
                     Enter User First Name
-                  </Typography>
+                    <span style={{ color: "red" }}>*</span>
+                  </>
                 }
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleInputChange}
                 style={{
                   ...style.TimesheetTextField,
+                  width: "90%",
+                  marginRight: "5%",
                   borderRadius: "10px",
                 }}
                 fullWidth
                 margin="normal"
                 InputProps={{ classes: { focused: "green-border" } }}
               />
-              {validationErrors.firstName && (
+              {errors.firstName && (
                 <Box>
-                  <Typography color="error">
-                    {validationErrors.firstName}
-                  </Typography>
+                  <Typography color="error">{errors.firstName}</Typography>
                 </Box>
               )}
+            </Grid>
+            <Grid item xs={6}>
               <TextField
                 label={
-                  <Typography>
+                  <>
+                    Enter User Last Name
                     <span style={{ color: "red" }}>*</span>
+                  </>
+                }
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleInputChange}
+                style={{
+                  ...style.TimesheetTextField,
+                  borderRadius: "10px",
+                  width: "90%",
+                  marginRight: "5%",
+                }}
+                fullWidth
+                margin="normal"
+                InputProps={{ classes: { focused: "green-border" } }}
+              />
+              {errors.lastName && (
+                <Box>
+                  <Typography color="error">{errors.lastName}</Typography>
+                </Box>
+              )}
+            </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item xs={6}>
+              <TextField
+                label={
+                  <>
                     Enter Email Address
-                  </Typography>
+                    <span style={{ color: "red" }}>*</span>
+                  </>
                 }
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
                 style={{
                   ...style.TimesheetTextField,
+                  width: "90%",
+                  marginRight: "5%",
                   borderRadius: "10px",
                 }}
                 fullWidth
                 margin="normal"
                 InputProps={{ classes: { focused: "green-border" } }}
               />
-              {validationErrors.email && (
+              {errors.email && (
                 <Box>
-                  <Typography color="error">
-                    {validationErrors.email}
-                  </Typography>
+                  <Typography color="error">{errors.email}</Typography>
                 </Box>
               )}
+            </Grid>
+            <Grid item xs={6} mt={1.8}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  sx={{
+                    width: "90%",
+                  }}
+                  label={
+                    <>
+                      DOB
+                      <span style={{ color: "red" }}>*</span>
+                    </>
+                  }
+                  name="DOB"
+                  format="DD/MM/YYYY"
+                  shouldDisableDate={shouldDisableDate}
+                  value={formData.DOB ? dayjs(formData.DOB) : null} // Set value to null to not display the current date
+                  onChange={(value) => handleDateChnage("DOB", value)}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
+              {errors.DOB && (
+                <Box>
+                  <Typography color="error">{errors.DOB}</Typography>
+                </Box>
+              )}
+            </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item xs={6}>
               <TextField
                 label={
-                  <Typography>
-                    <span style={{ color: "red" }}>*</span>
+                  <>
                     Enter Mobile Number
-                  </Typography>
+                    <span style={{ color: "red" }}>*</span>
+                  </>
                 }
                 name="number"
                 value={formData.number}
                 onChange={handleInputChange}
                 style={{
                   ...style.TimesheetTextField,
+                  width: "90%",
+                  marginRight: "5%",
                   borderRadius: "10px",
                 }}
                 fullWidth
                 margin="normal"
                 InputProps={{ classes: { focused: "green-border" } }}
               />
-              {validationErrors.number && (
+              {errors.number && (
                 <Box>
-                  <Typography color="error">
-                    {validationErrors.number}
-                  </Typography>
+                  <Typography color="error">{errors.number}</Typography>
                 </Box>
               )}
+            </Grid>
+            <Grid item xs={6} mt={1.8}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  sx={{
+                    width: "90%",
+                  }}
+                  label={
+                    <>
+                      DOJ
+                      <span style={{ color: "red" }}>*</span>
+                    </>
+                  }
+                  name="DOB"
+                  format="DD/MM/YYYY"
+                  value={formData.DOJ ? dayjs(formData.DOJ) : null} // Set value to null to not display the current date
+                  onChange={(value) => handleDateChnage("DOJ", value)}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
+              {errors.DOJ && (
+                <Box>
+                  <Typography color="error">{errors.DOJ}</Typography>
+                </Box>
+              )}
+            </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item xs={6} mt={2.2}>
               <Dropdown
                 value={formData.gender}
                 onChange={handleGenderChange}
                 title={
-                  <Typography>
-                    <span style={{ color: "red", width: "100%" }}>*</span>
+                  <>
                     Gender
-                  </Typography>
+                    <span style={{ color: "red", width: "100%" }}>*</span>
+                  </>
                 }
                 dropdownName="gender"
                 options={masterdata1}
                 style={{
                   ...style.TimesheetTextField,
                   border: "1px solid silver",
+                  width: "90%",
+                  marginRight: "5%",
                   borderRadius: "5px",
-                  marginBottom: "10px",
-                  marginTop: "10px",
                 }}
               />
-              {validationErrors.gender && (
+              {errors.gender && (
                 <Box>
                   <Typography color="error" style={{}}>
                     {" "}
-                    {validationErrors.gender}
+                    {errors.gender}
                   </Typography>
                 </Box>
               )}
-
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label={
+                  <>
+                    {" "}
+                    Enter Aadhaar Number
+                    <span style={{ color: "red" }}>*</span>
+                  </>
+                }
+                name="AadhaarNo"
+                value={formData.AadhaarNo}
+                onChange={handleInputChange}
+                style={{
+                  ...style.TimesheetTextField,
+                  borderRadius: "10px",
+                  width: "90%",
+                  marginRight: "5%",
+                }}
+                fullWidth
+                margin="normal"
+                InputProps={{ classes: { focused: "green-border" } }}
+              />
+              {errors.AadhaarNo && (
+                <Box>
+                  <Typography color="error">{errors.AadhaarNo}</Typography>
+                </Box>
+              )}
+            </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item xs={6}>
               <TextField
                 label="Enter UAN No."
                 name="UANNo"
@@ -955,342 +1209,248 @@ export default function CreateUser() {
                 style={{
                   ...style.TimesheetTextField,
                   borderRadius: "10px",
+                  width: "90%",
+                  marginRight: "5%",
                 }}
                 fullWidth
                 margin="normal"
-                InputProps={{ classes: { focused: "green-border" } }}
               />
-            </Grid>
-            {/* Right Side */}
-            <Grid item xs={6}>
-              <TextField
-                label={
-                  <Typography>
-                    <span style={{ color: "red" }}>*</span>
-                    Enter User Last Name
-                  </Typography>
-                }
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleInputChange}
-                style={{
-                  ...style.TimesheetTextField,
-                  borderRadius: "10px",
-                }}
-                fullWidth
-                margin="normal"
-                InputProps={{ classes: { focused: "green-border" } }}
-              />
-              {validationErrors.lastName && (
+              {errors.UANNo && (
                 <Box>
-                  <Typography color="error">
-                    {validationErrors.lastName}
+                  <Typography color="error" style={{}}>
+                    {" "}
+                    {errors.UANNo}
                   </Typography>
                 </Box>
               )}
-              <Grid>
-                <TextField
-                  label={
-                    <Typography>
-                      <span style={{ color: "red" }}>*</span>
-                      DOB(DD/MM/YYYY)
-                    </Typography>
-                  }
-                  type="date"
-                  id="DOB"
-                  value={formData.DOB}
-                  name="DOB"
-                  fullWidth
-                  margin="normal"
-                  onChange={handleInputChange}
-                  style={{
-                    ...style.TimesheetTextField,
-
-                    borderRadius: "10px",
-                  }}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  InputProps={{ classes: { focused: "green-border" } }}
-                />
-                {validationErrors.DOB && (
-                  <Box>
-                    <Typography color="error">
-                      {validationErrors.DOB}
-                    </Typography>
-                  </Box>
-                )}
-              </Grid>
-              <Grid>
-                <TextField
-                  label={
-                    <Typography>
-                      <span style={{ color: "red" }}>*</span>
-                      Date Of Joining
-                    </Typography>
-                  }
-                  type="date"
-                  id="DOJ"
-                  name="DOJ"
-                  fullWidth
-                  margin="normal"
-                  value={formData.DOJ}
-                  onChange={handleInputChange}
-                  style={{
-                    ...style.TimesheetTextField,
-
-                    borderRadius: "10px",
-                  }}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  InputProps={{ classes: { focused: "green-border" } }}
-                />
-                {validationErrors.DOJ && (
-                  <Box>
-                    <Typography color="error">
-                      {validationErrors.DOJ}
-                    </Typography>
-                  </Box>
-                )}
-              </Grid>
-              <Grid style={{ marginTop: "-6px" }}>
-                <TextField
-                  label={
-                    <Typography>
-                      <span style={{ color: "red" }}>*</span>
-                      Enter Aadhaar Number
-                    </Typography>
-                  }
-                  name="AadhaarNo"
-                  value={formData.AadhaarNo}
-                  onChange={handleInputChange}
-                  style={{
-                    ...style.TimesheetTextField,
-                    borderRadius: "10px",
-                  }}
-                  fullWidth
-                  margin="normal"
-                  InputProps={{ classes: { focused: "green-border" } }}
-                />
-                {validationErrors.AadhaarNo && (
-                  <Box>
-                    <Typography color="error">
-                      {validationErrors.AadhaarNo}
-                    </Typography>
-                  </Box>
-                )}
-              </Grid>
             </Grid>
+            <Grid item xs={6}></Grid>
           </Grid>
-        </div>
-      </div>{" "}
-      {/* <div> */}
+        </Grid>
+      </Grid>{" "}
       <br />
-      <div className="permanent_Address">
-        <Typography
-          variant="h6"
-          onClick={() => handleBackClick()}
-          style={{ fontSize: "16px" }}
-        >
-          <b>Permanent Address</b>
+      <Grid>
+        <Typography variant="h6" sx={{ paddingLeft: "20px" }}>
+          <b>Present Address</b>
         </Typography>
         <div
           style={{
             width: "100%",
             margin: "auto",
+            marginLeft: "12px",
+            marginBottom: "18px",
             border: "1px solid silver",
           }}
         />
-        <Grid
-          container
-          spacing={2}
-          style={{
-            marginLeft: "12px",
-            display: "flex",
-            flexWrap: "wrap",
-            marginTop: "3%",
-          }}
-        >
-          <div style={{ width: "48%", marginRight: "1%" }}>
-            <TextField
-              label={
-                <Typography>
-                  <span style={{ color: "red" }}>*</span>
-                  Address Line 1
-                </Typography>
-              }
-              name="address1"
-              value={formData.address1}
-              style={{
-                fontSize: "16px",
-                marginBottom: "20px",
-                width: "100%",
-              }}
-              onChange={(e) => handleInputChange(e)}
-            />
-            {validationErrors.address && (
-              <Box>
-                <Typography color="error">
-                  {validationErrors.address}
-                </Typography>
-              </Box>
-            )}
-          </div>
+        <Grid container sx={{ margin: "20px" }}>
+          <Grid container>
+            <Grid item xs={6} mt={0.3}>
+              <TextField
+                label={
+                  <>
+                    Address Line 1<span style={{ color: "red" }}>*</span>
+                  </>
+                }
+                name="currentAddress1"
+                value={formData.currentAddress1}
+                style={{
+                  width: "90%",
+                  borderRadius: "10px",
+                }}
+                onChange={(e) => handleInputChange(e, "currentAddress1")}
+              />
+              {errors.currentAddress1 && (
+                <Box>
+                  <Typography color="error">
+                    {errors.currentAddress1}
+                  </Typography>
+                </Box>
+              )}
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label={<>Address line 2</>}
+                name="currentAddress2"
+                value={formData.currentAddress2}
+                style={{
+                  borderRadius: "10px",
+                  width: "90%",
+                }}
+                onChange={(e) => handleInputChange(e)}
+              />
+            </Grid>
+          </Grid>
+          <Grid container mt={2}>
+            <Grid item xs={6} mt={0.2}>
+              <Autocomplete
+                disableFreeSolo
+                id="currentcountry"
+                options={countries || []}
+                getOptionLabel={(option) => option.label}
+                getOptionValue={(option) => option.id}
+                style={{
+                  borderRadius: "10px",
+                  width: "90%",
+                }}
+                value={
+                  countries.find(
+                    (country) => country.id === formData.currentcountry
+                  ) || null
+                }
+                onChange={(e, value) =>
+                  handleCountryChange("currentcountry", e, value)
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label={
+                      <>
+                        Country <span style={{ color: "red" }}>*</span>
+                      </>
+                    }
+                  />
+                )}
+              />
+              {errors.currentcountry && (
+                <Box>
+                  <Typography color="error">{errors.currentcountry}</Typography>
+                </Box>
+              )}
+            </Grid>
+            <Grid item xs={6}>
+              <Autocomplete
+                disableFreeSolo
+                id="currentstate"
+                options={formData.currentcountry ? states : []}
+                getOptionLabel={(option) => option.label}
+                getOptionValue={(option) => option.id}
+                style={{
+                  borderRadius: "10px",
+                  width: "90%",
+                }}
+                value={
+                  states.find((state) => state.id === formData.currentstate) ||
+                  null
+                }
+                onChange={(e, value) => {
+                  handleStateChange("currentstate", e, value);
+                  // Clear the city field when state changes
+                  setFormData((prevData) => ({
+                    ...prevData,
+                    currentstate: value ? value.id : "",
+                    currentcity: null, // This will clear the city field
+                  }));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label={
+                      <>
+                        State <span style={{ color: "red" }}>*</span>
+                      </>
+                    }
+                  />
+                )}
+              />
 
-          <div style={{ width: "48%", marginRight: "1%" }}>
-            <TextField
-              label={
-                <Typography>
-                  <span style={{ color: "red" }}>*</span>
-                  Address Line 2
-                </Typography>
-              }
-              name="address2"
-              value={formData.address2}
-              style={{
-                fontSize: "16px",
-                marginBottom: "20px",
-                width: "100%",
-              }}
-              onChange={(e) => handleInputChange(e)}
-            />
-          </div>
-          <div style={{ width: "48%", marginRight: "1%" }}>
-            <Autocomplete
-              freeSolo
-              id="country"
-              value={
-                countries.find((country) => country.id === formData.country) ||
-                null
-              }
-              options={countries || []}
-              getOptionLabel={(option) => option.label}
-              getOptionValue={(option) => option.id}
-              style={{ fontSize: "16px", borderRadius: "10px" }}
-              onChange={(e, value) => handleCountryChange("country", e, value)}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label={
-                    <Typography>
-                      <span style={{ color: "red" }}>*</span>Country
-                    </Typography>
-                  }
-                />
+              {errors.currentstate && (
+                <Box>
+                  <Typography color="error">{errors.currentstate}</Typography>
+                </Box>
               )}
-            />
-            {validationErrors.country && (
-              <Box>
-                <Typography color="error">
-                  {validationErrors.country}
-                </Typography>
-              </Box>
-            )}
-          </div>
-          <div style={{ width: "48%", marginRight: "1%" }}>
-            <Autocomplete
-              freeSolo
-              id="state"
-              options={states || []}
-              value={
-                states.find((state) => state.id === formData.state) || null
-              }
-              getOptionLabel={(option) => option.label}
-              getOptionValue={(option) => option.id}
-              style={{ fontSize: "16px", borderRadius: "10px" }}
-              onChange={(e, value) => handleStateChange("state", e, value)}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label={
-                    <Typography>
-                      <span style={{ color: "red" }}>*</span>State
-                    </Typography>
-                  }
-                />
+            </Grid>
+          </Grid>
+          <Grid container mt={2}>
+            <Grid item xs={6} mt={0.3}>
+              <Autocomplete
+                freeSolo
+                id="currentcity"
+                options={formData.currentstate ? cities : []}
+                style={{
+                  borderRadius: "10px",
+                  width: "90%",
+                }}
+                getOptionLabel={(option) => option.label}
+                onChange={(e, value) => {
+                  handleCity("currentcity", e, value);
+                }}
+                value={
+                  formData.currentcity === null
+                    ? null
+                    : cities?.find((city) => city.id === formData.currentcity)
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label={
+                      <>
+                        City<span style={{ color: "red" }}>*</span>
+                      </>
+                    }
+                  />
+                )}
+              />
+              {errors.currentcity && (
+                <Box>
+                  <Typography color="error">{errors.currentcity}</Typography>
+                </Box>
               )}
-            />
-            {validationErrors.state && (
-              <Box>
-                <Typography color="error">{validationErrors.state}</Typography>
-              </Box>
-            )}
-          </div>
-          <div style={{ width: "48%", marginTop: "20px", marginRight: "1%" }}>
-            <Autocomplete
-              freeSolo
-              id="city"
-              value={cities.find((city) => city.id === formData.city) || null}
-              options={cities || []}
-              getOptionLabel={(option) => option.label}
-              getOptionValue={(option) => option.id}
-              style={{ fontSize: "16px", borderRadius: "10px" }}
-              onChange={(e, value) => handleStateChange("city", e, value)}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label={
-                    <Typography>
-                      <span style={{ color: "red" }}>*</span>City
-                    </Typography>
-                  }
-                />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                id="currentZip"
+                name="currentZIP"
+                label={
+                  <>
+                    Zip/Postal Code<span style={{ color: "red" }}>*</span>
+                  </>
+                }
+                value={formData.currentZIP}
+                style={{
+                  borderRadius: "10px",
+                  width: "90%",
+                }}
+                onChange={handlezipChange}
+              />
+              {errors.currentZIP && (
+                <Box>
+                  <Typography color="error">{errors.currentZIP}</Typography>
+                </Box>
               )}
-            />
-            {validationErrors.city && (
-              <Box>
-                <Typography color="error">{validationErrors.city}</Typography>
-              </Box>
-            )}
-          </div>
-          <div style={{ width: "48%", marginRight: "1%" }}>
-            <TextField
-              id="Zip"
-              name="Zip"
-              label={
-                <Typography>
-                  <span style={{ color: "red" }}>*</span>
-                  ZIP/Pincode
-                </Typography>
-              }
-              value={formData.Zip}
-              style={{
-                fontSize: "16px",
-                borderRadius: "10px",
-                marginTop: "20px",
-                width: "100%",
-              }}
-              onChange={handlezipChange}
-            />
-            {validationErrors.postalCode && (
-              <Box>
-                <Typography color="error">
-                  {validationErrors.postalCode}
-                </Typography>
-              </Box>
-            )}
-          </div>
+            </Grid>
+          </Grid>
         </Grid>
-      </div>
-      <div style={{ display: "flex", marginLeft: "80%", marginBottom: "-3px" }}>
-        <input
-          type="checkbox"
-          checked={isChecked}
-          onChange={handleCheckboxChange}
-        />
-        <Typography variant="body2" style={{ marginLeft: "2%" }}>
-          <b>Same as Permanent Address</b>
-        </Typography>
-      </div>
-      <div className="Current_Address">
-        <Typography
-          variant="h6"
-          onClick={() => handleBackClick()}
-          style={{ fontSize: "16px" }}
-        >
-          <b>Current Address</b>
-        </Typography>
+      </Grid>
+      <Grid sx={{ paddingLeft: "20px" }}>
+        <Grid container>
+          <Grid item xs={6}>
+            <Typography
+              variant="h6"
+              style={{
+                display: "inline-block",
+              }}
+            >
+              <b>Permanent Address</b>
+            </Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Grid container>
+              <Grid item xs={6} sx={{ textAlign: "end" }}>
+                <input
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={handleCheckboxChange}
+                />
+              </Grid>
+              <Grid item xs={0.5}></Grid>
+              <Grid item xs={5.5}>
+                <Typography variant="body2">
+                  <b>Same as Permanent Address</b>
+                </Typography>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
         <div
           style={{
             width: "100%",
@@ -1302,201 +1462,112 @@ export default function CreateUser() {
         <Grid
           container
           spacing={2}
-          style={{
-            marginLeft: "12px",
-            display: "flex",
-            flexWrap: "wrap",
-            marginTop: "3%",
-          }}
+          sx={{ marginTop: "15px", marginLeft: "4px" }}
         >
-          <div style={{ width: "48%", marginRight: "1%" }}>
-            <TextField
-              label={
-                <Typography>
-                  <span style={{ color: "red" }}>*</span>
-                  Address Line 1
-                </Typography>
-              }
-              name="currentAddress1"
-              value={formData.currentAddress1}
-              style={{
-                fontSize: "16px",
-                marginBottom: "20px",
-                width: "100%",
-              }}
-              onChange={(e) => handleInputChange(e, "currentAddress1")}
-            />
-            {validationErrors.address && (
-              <Box>
-                <Typography color="error">
-                  {validationErrors.address}
-                </Typography>
-              </Box>
-            )}
-          </div>
-          <div style={{ width: "48%", marginRight: "1%" }}>
-            <TextField
-              label={
-                <Typography>
-                  <span style={{ color: "red" }}>*</span>
-                  Address line 2
-                </Typography>
-              }
-              name="currentAddress2"
-              value={formData.currentAddress2}
-              style={{
-                fontSize: "16px",
-                borderRadius: "10px",
-                width: "100%",
-                marginBottom: "20px",
-              }}
-              onChange={(e) => handleInputChange(e)}
-            />
-          </div>
-          <div style={{ width: "48%", marginRight: "1%" }}>
-            <Autocomplete
-              freeSolo
-              id="currentcountry"
-              options={countries || []}
-              getOptionLabel={(option) => option.label}
-              getOptionValue={(option) => option.id}
-              style={{
-                fontSize: "16px",
-                borderRadius: "10px",
-                width: "100%",
-              }}
-              value={
-                countries.find(
-                  (country) => country.id === formData.currentcountry
-                ) || null
-              }
-              onChange={(e, value) =>
-                handleCountryChange("currentcountry", e, value)
-              }
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label={
-                    <Typography>
-                      <span style={{ color: "red" }}>*</span>Country
-                    </Typography>
-                  }
-                />
+          <Grid container>
+            <Grid item xs={6}>
+              <TextField
+                label={<>Address Line 1</>}
+                name="address1"
+                value={formData.address1}
+                style={{
+                  width: "90%",
+                }}
+                onChange={(e) => handleInputChange(e)}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label={<>Address Line 2</>}
+                name="address2"
+                value={formData.address2}
+                style={{
+                  width: "90%",
+                }}
+                onChange={(e) => handleInputChange(e)}
+              />
+            </Grid>
+          </Grid>
+          <Grid container mt={2}>
+            <Grid item xs={6}>
+              <Autocomplete
+                disableFreeSolo
+                id="country"
+                value={
+                  countries.find(
+                    (country) => country.id === formData.country
+                  ) || null
+                }
+                options={countries || []}
+                getOptionLabel={(option) => option.label}
+                getOptionValue={(option) => option.id}
+                style={{ width: "90%" }}
+                onChange={(e, value) =>
+                  handleCountryChange("country", e, value)
+                }
+                renderInput={(params) => (
+                  <TextField {...params} label={<>Country</>} />
+                )}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <Autocomplete
+                disableFreeSolo
+                id="state"
+                options={formData.country ? states : []}
+                value={
+                  states.find((state) => state.id === formData.state) || null
+                }
+                getOptionLabel={(option) => option.label}
+                getOptionValue={(option) => option.id}
+                style={{ width: "90%" }}
+                onChange={(e, value) => handleStateChange("state", e, value)}
+                renderInput={(params) => (
+                  <TextField {...params} label={<>State</>} />
+                )}
+              />
+            </Grid>
+          </Grid>
+          <Grid container mt={2}>
+            <Grid item xs={6}>
+              <Autocomplete
+                freeSolo
+                id="city"
+                value={
+                  cities?.find((city) => city.id === formData.city) || null
+                }
+                options={formData.state ? cities : []}
+                getOptionLabel={(option) => option.label}
+                getOptionValue={(option) => option.id}
+                style={{ width: "90%" }}
+                onChange={(e, value) => handleCity("city", e, value)}
+                renderInput={(params) => (
+                  <TextField {...params} label={<>City</>} />
+                )}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                id="Zip"
+                name="Zip"
+                label={<>Zip/Postal Code</>}
+                value={formData.Zip}
+                style={{
+                  width: "90%",
+                  borderRadius: "10px",
+                }}
+                onChange={handlezipChange}
+              />
+              {errors.postalCode && (
+                <Box>
+                  <Typography color="error">{errors.postalCode}</Typography>
+                </Box>
               )}
-            />
-
-            {validationErrors.currentcountry && (
-              <Box>
-                <Typography color="error">
-                  {validationErrors.currentcountry}
-                </Typography>
-              </Box>
-            )}
-          </div>
-          <div style={{ width: "48%", marginRight: "1%" }}>
-            <Autocomplete
-              freeSolo
-              id="currentstate"
-              options={states || []}
-              getOptionLabel={(option) => option.label}
-              getOptionValue={(option) => option.id}
-              style={{
-                fontSize: "16px",
-                borderRadius: "10px",
-                width: "100%",
-              }}
-              value={
-                states.find((state) => state.id === formData.currentstate) ||
-                null
-              }
-              onChange={(e, value) =>
-                handleStateChange("currentstate", e, value)
-              }
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label={
-                    <Typography>
-                      <span style={{ color: "red" }}>*</span>State
-                    </Typography>
-                  }
-                />
-              )}
-            />
-            {validationErrors.currentstate && (
-              <Box>
-                <Typography color="error">
-                  {validationErrors.currentstate}
-                </Typography>
-              </Box>
-            )}
-          </div>
-          <div style={{ width: "48%", marginRight: "1%", marginTop: "20px" }}>
-            <Autocomplete
-              freeSolo
-              id="currentcity"
-              options={cities || []}
-              style={{
-                fontSize: "16px",
-                borderRadius: "10px",
-                width: "100%",
-              }}
-              getOptionLabel={(option) => option.label}
-              onChange={(e, value) =>
-                handleStateChange("currentcity", e, value)
-              }
-              value={
-                cities.find((city) => city.id === formData.currentcity) || null
-              }
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label={
-                    <Typography>
-                      <span style={{ color: "red" }}>*</span>City
-                    </Typography>
-                  }
-                />
-              )}
-            />
-            {validationErrors.currentcity && (
-              <Box>
-                <Typography color="error">
-                  {validationErrors.currentcity}
-                </Typography>
-              </Box>
-            )}
-          </div>
-          <div style={{ width: "48%", marginRight: "1%" }}>
-            <TextField
-              id="currentZip"
-              name="currentZIP"
-              label={
-                <Typography>
-                  <span style={{ color: "red" }}>*</span>
-                  ZIP/Pincode
-                </Typography>
-              }
-              value={formData.currentZIP}
-              style={{
-                fontSize: "16px",
-                borderRadius: "10px",
-                marginTop: "20px",
-                width: "100%",
-              }}
-              onChange={handlezipChange}
-            />
-            {validationErrors.postalCode1 && (
-              <Box>
-                <Typography color="error">
-                  {validationErrors.postalCode1}
-                </Typography>
-              </Box>
-            )}
-          </div>
+            </Grid>
+          </Grid>
         </Grid>
-      </div>
-      <div style={{ width: "100%" }}>
+      </Grid>
+      <Grid mt={2} sx={{ paddingLeft: "20px" }}>
         <Typography variant="h6">
           <b>Employee Coordinates</b>
         </Typography>
@@ -1524,7 +1595,7 @@ export default function CreateUser() {
             </FormControl>
           </Grid>
           <Grid item xs={12} md={6}>
-            <FormControl style={{ textAlign: "right", marginLeft: "25px" }}>
+            <FormControl style={{ textAlign: "right" }}>
               <RadioGroup
                 name="productType"
                 value={formData.productType}
@@ -1538,16 +1609,15 @@ export default function CreateUser() {
               </RadioGroup>
             </FormControl>
           </Grid>
-
-          <Grid item xs={12} style={{ marginTop: "20px" }}>
+          <Grid item xs={6}>
             <Dropdown
               value={formData.workMode}
               options={work_mode}
               onChange={handleWorkModeChange}
               title={
-                <Typography>
-                  <span style={{ color: "red" }}>*</span>Work Mode
-                </Typography>
+                <>
+                  Work Mode <span style={{ color: "red" }}>*</span>
+                </>
               }
               dropdownName="WorkMode"
               name="workMode"
@@ -1555,22 +1625,18 @@ export default function CreateUser() {
                 ...style.TimesheetTextField,
                 border: "1px solid #008080",
                 borderRadius: "5px",
-                width: "600px",
-                marginBottom: "2px",
-                marginTop: "3px",
+                width: "90%",
               }}
             />
-            {validationErrors.WorkMode && (
+            {errors.workMode && (
               <Box>
-                <Typography color="error">
-                  {validationErrors.WorkMode}
-                </Typography>
+                <Typography color="error">{errors.workMode}</Typography>
               </Box>
             )}
           </Grid>
         </Grid>
-      </div>
-      <div style={{ width: "100%", margin: "20px" }}>
+      </Grid>
+      <Grid mt={2} sx={{ paddingLeft: "20px" }}>
         <Typography variant="h6">
           <b>
             Professional Data<span style={{ color: "red" }}>*</span>
@@ -1584,198 +1650,106 @@ export default function CreateUser() {
             border: "1px solid silver",
           }}
         />
-
-        <div
-          className="UserDetails"
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Grid container spacing={2}>
-            {/* Left Side */}
-            <Grid
-              item
-              xs={12}
-              lg={6}
-              md={6}
-              sm={12}
-              sx={{
-                marginTop: "8px",
-                marginBottom: "20px",
-                width: { xs: "100%", lg: "50%" },
-              }}
-            >
-              <Grid
-                style={{ marginTop: "8px", marginBottom: "20px" }}
-                sx={{ width: "100%" }}
-              >
-                <Autocomplete
-                  freeSolo
-                  id="Manager_Name"
-                  options={managerName || []}
-                  getOptionLabel={(option) => option.name}
-                  getOptionValue={(option) => option.id}
-                  onChange={(event, value) => handleManagerNameChange(value)}
-                  value={formData.ManagerName}
-                  style={{
-                    ...style.TimesheetTextField,
-                    borderRadius: "10px",
-                    width: "100%",
-                  }}
-                  // onKeyDown={handleEnterKey}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label={
-                        <Typography>
-                          <span style={{ color: "red" }}>*</span>Manager Name
-                        </Typography>
-                      }
-                      onChange={handleManagerNameChange2}
-                    />
-                  )}
-                />
-                {validationErrors.ManagerName && (
-                  <Box>
-                    <Typography color="error">
-                      {validationErrors.ManagerName}
-                    </Typography>
-                  </Box>
+        <Grid container spacing={2} sx={{ margin: "20px" }}>
+          <Grid container>
+            <Grid item xs={6}>
+              <Autocomplete
+                freeSolo
+                id="Manager_Name"
+                options={managerName || []}
+                getOptionLabel={(option) => option.name}
+                getOptionValue={(option) => option.id}
+                onChange={(event, value) => handleManagerNameChange(value)}
+                value={formData.ManagerName}
+                style={{
+                  ...style.TimesheetTextField,
+                  borderRadius: "10px",
+                  width: "90%",
+                }}
+                // onKeyDown={handleEnterKey}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label={
+                      <>
+                        Manager Name<span style={{ color: "red" }}>*</span>
+                      </>
+                    }
+                    onChange={handleManagerNameChange2}
+                  />
                 )}
-              </Grid>
-
+              />
+              {errors.ManagerName && (
+                <Box>
+                  <Typography color="error">{errors.ManagerName}</Typography>
+                </Box>
+              )}
+            </Grid>
+            <Grid item xs={6}>
+              <Dropdown
+                value={formData.designation}
+                onChange={handleDesignationChange}
+                title={
+                  <>
+                    Designation
+                    <span style={{ color: "red", width: "100%" }}>*</span>
+                  </>
+                }
+                dropdownName="designation"
+                name="designation"
+                style={{
+                  ...style.TimesheetTextField,
+                  borderRadius: "5px",
+                  width: "90%",
+                  border: "1px solid silver",
+                }}
+                options={masterdata4}
+              />
+              {errors.designation && (
+                <Box>
+                  <Typography color="error" style={{}}>
+                    {" "}
+                    {errors.designation}
+                  </Typography>
+                </Box>
+              )}
+            </Grid>
+          </Grid>
+          <Grid container mt={2}>
+            <Grid item xs={6}>
               <Dropdown
                 value={formData.employeeType}
                 onChange={handleEmptypeChange}
                 title={
-                  <Typography>
-                    <span style={{ color: "red", width: "100%" }}>*</span>
+                  <>
                     employee Type
-                  </Typography>
+                    <span style={{ color: "red", width: "100%" }}>*</span>
+                  </>
                 }
                 dropdownName="Employee Type"
                 name="EMPType"
                 options={masterdata3 || []}
                 style={{
                   ...style.TimesheetTextField,
-                  border: "1px solid silver",
                   borderRadius: "5px",
-                  marginBottom: "10px",
-                  marginTop: "7px",
-                  width: "100%",
+                  width: "90%",
+                  border: "1px solid silver",
                 }}
               />
-              {validationErrors.employeeType && (
+              {errors.employeeType && (
                 <Box>
                   <Typography color="error" style={{}}>
                     {" "}
-                    {validationErrors.employeeType}
-                  </Typography>
-                </Box>
-              )}
-
-              <Dropdown
-                value={formData.employedBy}
-                onChange={handleEmpByChange}
-                title={
-                  <Typography>
-                    <span style={{ color: "red", width: "100%" }}>*</span>
-                    Employeed By
-                  </Typography>
-                }
-                dropdownName="Employee by"
-                name="EMPby"
-                options={employeeBy || []}
-                labelKey="name"
-                valueKey="locationId"
-                style={{
-                  ...style.TimesheetTextField,
-                  border: "1px solid silver",
-                  borderRadius: "5px",
-                  marginBottom: "10px",
-                  marginTop: "10px",
-                  width: "100%",
-                }}
-              />
-              {validationErrors.employeeType && (
-                <Box>
-                  <Typography color="error" style={{}}>
-                    {" "}
-                    {validationErrors.employeeType}
-                  </Typography>
-                </Box>
-              )}
-
-              <Dropdown
-                value={formData.Status}
-                onChange={handleStatusChange}
-                title={
-                  <Typography>
-                    <span style={{ color: "red", width: "100%" }}>*</span>Status
-                  </Typography>
-                }
-                dropdownName="Status"
-                options={employeeStatus}
-                name="Status"
-                style={{
-                  ...style.TimesheetTextField,
-                  border: "1px solid silver",
-                  borderRadius: "5px",
-                  marginBottom: "10px",
-                  marginTop: "15px",
-                }}
-              />
-              {validationErrors.Status && (
-                <Box>
-                  <Typography color="error" style={{}}>
-                    {" "}
-                    {validationErrors.Status}
+                    {errors.employeeType}
                   </Typography>
                 </Box>
               )}
             </Grid>
-            {/* Right Side */}
-            <Grid
-              item
-              xs={12}
-              lg={6}
-              md={6}
-              sm={12}
-              sx={{ marginTop: "17px", marginBottom: "28px" }}
-            >
-              <Dropdown
-                value={formData.designation}
-                onChange={handleDesignationChange}
-                title={
-                  <Typography>
-                    <span style={{ color: "red", width: "100%" }}>*</span>
-                    Designation
-                  </Typography>
-                }
-                dropdownName="designation"
-                name="designation"
-                style={{
-                  ...style.TimesheetTextField,
-                  border: "1px solid silver",
-                  borderRadius: "5px",
-                }}
-                options={masterdata4}
-              />
-              {validationErrors.designation && (
-                <Box>
-                  <Typography color="error" style={{}}>
-                    {" "}
-                    {validationErrors.designation}
-                  </Typography>
-                </Box>
-              )}
+            <Grid item xs={6}>
               <Autocomplete
                 multiple
                 id="skill"
                 options={skill || []}
-                style={{ marginTop: "25px" }}
                 disableCloseOnSelect
                 filterSelectedOptions
                 onChange={(_, value) => handleChange2(value)}
@@ -1794,17 +1768,17 @@ export default function CreateUser() {
                     <TextField
                       {...params}
                       label={
-                        <Typography>
-                          <span style={{ color: "red", width: "100%" }}>*</span>
+                        <>
                           Skills
-                        </Typography>
+                          <span style={{ color: "red", width: "100%" }}>*</span>
+                        </>
                       }
                       InputProps={{
                         ...params.InputProps,
                       }}
                       style={{
                         borderRadius: "5px",
-                        marginBottom: "20px",
+                        width: "90%",
                       }}
                       onChange={handleChange}
                     />
@@ -1812,48 +1786,117 @@ export default function CreateUser() {
                 )}
               />
 
-              {validationErrors.skill && (
+              {errors.skill && (
                 <Box>
                   <Typography color="error" style={{}}>
                     {" "}
-                    {validationErrors.skill}
+                    {errors.skill}
                   </Typography>
                 </Box>
               )}
+            </Grid>
+          </Grid>
+          <Grid container mt={2}>
+            <Grid item xs={6}>
+              <Dropdown
+                value={formData.employedBy}
+                onChange={handleEmpByChange}
+                title={
+                  <>
+                    Employeed By
+                    <span style={{ color: "red", width: "100%" }}>*</span>
+                  </>
+                }
+                dropdownName="Employee by"
+                name="EMPby"
+                options={employeeBy || []}
+                labelKey="name"
+                valueKey="locationId"
+                style={{
+                  ...style.TimesheetTextField,
+                  borderRadius: "5px",
+                  width: "90%",
+                  border: "1px solid silver",
+                }}
+              />
+              {errors.employeeType && (
+                <Box>
+                  <Typography color="error" style={{}}>
+                    {" "}
+                    {errors.employeeType}
+                  </Typography>
+                </Box>
+              )}
+            </Grid>
+            <Grid item xs={6}>
               <Dropdown
                 value={formData.Client_loc}
                 onChange={handleClientLocationChange}
                 title={
-                  <Typography>
-                    <span style={{ color: "red", width: "100%" }}>*</span>Client
+                  <>
                     Location
-                  </Typography>
+                    <span style={{ color: "red", width: "100%" }}>*</span>Client
+                  </>
                 }
                 dropdownName="Client Location"
                 name="Client_loc"
                 style={{
                   ...style.TimesheetTextField,
-                  border: "1px solid silver",
                   borderRadius: "5px",
+                  width: "90%",
+                  border: "1px solid silver",
                 }}
                 options={Client_location || []}
                 labelKey="name"
                 valueKey="locationId"
               />
-              {validationErrors.Client_loc && (
+              {errors.Client_loc && (
                 <Box>
                   <Typography color="error" style={{}}>
                     {" "}
-                    {validationErrors.Client_loc}
+                    {errors.Client_loc}
                   </Typography>
                 </Box>
               )}
+            </Grid>
+          </Grid>
+          <Grid container mt={1}>
+            <Grid item xs={6} mt={2}>
+              <Dropdown
+                value={formData.Status}
+                onChange={handleStatusChange}
+                title={
+                  <>
+                    Status<span style={{ color: "red", width: "100%" }}>*</span>
+                  </>
+                }
+                dropdownName="Status"
+                options={employeeStatus}
+                name="Status"
+                style={{
+                  ...style.TimesheetTextField,
+                  border: "1px solid silver",
+                  borderRadius: "5px",
+                  width: "90%",
+                }}
+              />
+              {errors.Status && (
+                <Box>
+                  <Typography color="error" style={{}}>
+                    {" "}
+                    {errors.Status}
+                  </Typography>
+                </Box>
+              )}
+            </Grid>
+            <Grid item xs={6}>
               <TextField
                 label={
-                  <Typography>
-                    <span style={{ color: "red", width: "100%" }}>*</span>
+                  <>
+                    {" "}
                     Employee ID
-                  </Typography>
+                    <span style={{ color: "red", width: "100%" }}>*</span>
+                  </>
                 }
                 placeholder="EmployeID"
                 name="employeeID"
@@ -1863,26 +1906,20 @@ export default function CreateUser() {
                 margin="normal"
                 style={{
                   borderRadius: "5px",
-                  marginTop: "25px",
+                  width: "90%",
                 }}
               />
-              {validationErrors.employeeID && (
+              {errors.employeeID && (
                 <Box>
-                  <Typography color="error">
-                    {validationErrors.employeeID}
-                  </Typography>
+                  <Typography color="error">{errors.employeeID}</Typography>
                 </Box>
               )}
             </Grid>
           </Grid>
-        </div>
-      </div>
-      <Grid
-        container
-        spacing={2}
-        style={{ marginLeft: "5px", marginTop: "3px" }}
-      >
-        <Typography variant="h6" onClick={() => handleBackClick()}>
+        </Grid>
+      </Grid>
+      <Grid container mt={2} spacing={2} sx={{ paddingLeft: "30px" }}>
+        <Typography variant="h6">
           <b>Pay Roll</b>
         </Typography>
         <div
@@ -1893,12 +1930,16 @@ export default function CreateUser() {
             border: "1px solid silver",
           }}
         />
-        <Grid item xs={12} sm={6}>
-          {/* Left side */}
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
+        <Grid container spacing={2} mt={2} sx={{ marginLeft: "20px" }}>
+          <Grid container>
+            <Grid item xs={6.2}>
               <TextField
-                label="Employee CTC"
+                label={
+                  <>
+                    Enter CTC
+                    <span style={{ color: "red" }}>*</span>
+                  </>
+                }
                 value={formData.CTC}
                 placeholder="Employee CTC"
                 id="CTC"
@@ -1907,7 +1948,7 @@ export default function CreateUser() {
                 style={{
                   ...style.TimesheetTextField,
                   borderRadius: "10px",
-                  width: "100%",
+                  width: "90%",
                 }}
                 fullWidth
                 margin="normal"
@@ -1915,63 +1956,13 @@ export default function CreateUser() {
                   classes: { focused: "green-border" },
                 }}
               />
-              {validationErrors.CTC && (
+              {errors.CTC && (
                 <Box>
-                  <Typography color="error">{validationErrors.CTC}</Typography>
+                  <Typography color="error">{errors.CTC}</Typography>
                 </Box>
               )}
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                label="A/C No."
-                value={formData.ACNo}
-                placeholder="A/C No."
-                id="ACNo"
-                name="ACNo"
-                onChange={handleInputChange}
-                style={{
-                  ...style.TimesheetTextField,
-                  borderRadius: "10px",
-                  width: "100%",
-                }}
-                fullWidth
-                margin="normal"
-                InputProps={{
-                  classes: { focused: "green-border" },
-                }}
-              />
-              {validationErrors.ACNo && (
-                <Box>
-                  <Typography color="error">{validationErrors.ACNo}</Typography>
-                </Box>
-              )}
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                value={formData.Bank_Name}
-                label="Bank Name"
-                placeholder="Bank Name"
-                id="Bank_Name"
-                name="Bank_Name"
-                onChange={handleInputChange}
-                style={{
-                  ...style.TimesheetTextField,
-                  borderRadius: "10px",
-                  width: "100%",
-                }}
-                fullWidth
-                margin="normal"
-                InputProps={{
-                  classes: { focused: "green-border" },
-                }}
-              />
-            </Grid>
-          </Grid>
-        </Grid>
-        {/* Right Side */}
-        <Grid item xs={12} sm={6}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid item xs={5.8}>
               <TextField
                 label="Name as per Bank"
                 placeholder="Name as per Bank"
@@ -1982,18 +1973,45 @@ export default function CreateUser() {
                 style={{
                   ...style.TimesheetTextField,
                   borderRadius: "10px",
-                  width: "100%",
+                  width: "97%",
                 }}
                 fullWidth
                 margin="normal"
               />
-              {validationErrors.Bank && (
+              {errors.Bank && (
                 <Box>
-                  <Typography color="error">{validationErrors.Bank}</Typography>
+                  <Typography color="error">{errors.Bank}</Typography>
                 </Box>
               )}
             </Grid>
-            <Grid item xs={12}>
+          </Grid>
+          <Grid container>
+            <Grid item xs={6.2}>
+              <TextField
+                label="A/C No."
+                value={formData.ACNo}
+                placeholder="A/C No."
+                id="ACNo"
+                name="ACNo"
+                onChange={handleInputChange}
+                style={{
+                  ...style.TimesheetTextField,
+                  borderRadius: "10px",
+                  width: "90%",
+                }}
+                fullWidth
+                margin="normal"
+                InputProps={{
+                  classes: { focused: "green-border" },
+                }}
+              />
+              {errors.ACNo && (
+                <Box>
+                  <Typography color="error">{errors.ACNo}</Typography>
+                </Box>
+              )}
+            </Grid>
+            <Grid item xs={5.8}>
               <TextField
                 label="IFSC Code"
                 placeholder="IFSC Code"
@@ -2004,19 +2022,45 @@ export default function CreateUser() {
                 style={{
                   ...style.TimesheetTextField,
                   borderRadius: "10px",
-                  width: "100%",
+                  width: "97%",
                 }}
                 fullWidth
                 margin="normal"
               />
-              {validationErrors.IFSCCode && (
+              {errors.IFSCCode && (
                 <Box>
-                  <Typography color="error">
-                    {validationErrors.IFSCCode}
-                  </Typography>
+                  <Typography color="error">{errors.IFSCCode}</Typography>
                 </Box>
               )}
             </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item xs={6.2}>
+              <TextField
+                value={formData.Bank_Name}
+                label="Bank Name"
+                placeholder="Bank Name"
+                id="Bank_Name"
+                name="Bank_Name"
+                onChange={handleInputChange}
+                style={{
+                  ...style.TimesheetTextField,
+                  borderRadius: "10px",
+                  width: "90%",
+                }}
+                fullWidth
+                margin="normal"
+                InputProps={{
+                  classes: { focused: "green-border" },
+                }}
+              />
+              {errors.BankName && (
+                <Box>
+                  <Typography color="error">{errors.BankName}</Typography>
+                </Box>
+              )}
+            </Grid>
+            <Grid item xs={5.8}></Grid>
           </Grid>
         </Grid>
       </Grid>
@@ -2028,7 +2072,11 @@ export default function CreateUser() {
           variant="contained"
           color="primary"
           className="responsive-button"
-          style={{ marginRight: "10px", width: "200px" }}
+          style={{
+            marginRight: "10px",
+            width: "160px",
+            textTransform: "capitalize",
+          }}
           onClick={handleClearAll}
         >
           Clear All
@@ -2037,12 +2085,12 @@ export default function CreateUser() {
           variant="contained"
           color="primary"
           className="responsive-button"
-          style={{ width: "200px" }}
+          style={{ width: "160px", textTransform: "capitalize" }}
           onClick={handleSave}
         >
           Save
         </Button>
       </div>
-    </div>
+    </Grid>
   );
 }

@@ -11,13 +11,12 @@ import {
 import Dropdown from "../../forms/dropdown/dropdown";
 import { useTheme } from "@emotion/react";
 import { adminHeaderStyle } from "../../admin/approvalTimesheets/adminHeaderStyle";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import PersonAddAlt1RoundedIcon from "@mui/icons-material/PersonAddAlt1Rounded";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Select, { components } from "react-select";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { SearchEmployeeAndProject } from "../../../redux/actions/AdminConsoleAction/users/usersAction";
-import useDebounce from "../../../utils/useDebounce";
 import SearchIcon from "@mui/icons-material/Search";
 
 const InputOption = ({
@@ -44,7 +43,6 @@ const InputOption = ({
     color: "inherit",
     display: "flex ",
   };
-
   const props = {
     ...innerProps,
     onMouseDown,
@@ -79,7 +77,7 @@ const InputOption = ({
 
 export default function UserHerders({
   userData,
-  skillsCheckedData,
+  // skillsCheckedData,
   setSkillsCheckedData,
   designationId,
   setDesignationId,
@@ -90,25 +88,11 @@ export default function UserHerders({
 
   const Navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const [filterData, setFilterData] = useState({
-    searchTerm: "",
-  });
-
-  const debouncedValue = useDebounce(filterData.searchTerm);
-
-  useEffect(() => {
-    dispatch(SearchEmployeeAndProject(filterData));
-  }, [debouncedValue]);
-
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const handleInputChange = (e) => {
     const inputValue = e.target.value;
-    setFilterData((prevFormData) => ({
-      ...prevFormData,
-      searchName: inputValue,
-    }));
     if (inputValue.length >= 3) {
-      dispatch(SearchEmployeeAndProject(filterData));
+      dispatch(SearchEmployeeAndProject(inputValue));
     }
   };
 
@@ -124,12 +108,21 @@ export default function UserHerders({
   const searchData = useSelector(
     (state) => state?.nonPersist?.userDetails?.searchData
   );
-
+  const [filteredSkills, setFilteredSkills] = useState([]);
   const onResetSkillFilterHandler = () => {
     setSkillsCheckedData([]);
+    setFilteredSkills([]);
   };
 
-  const applySkillFilterHandler = () => {};
+  const applySkillFilterHandler = () => {
+    setSkillsCheckedData(filteredSkills);
+    setIsDropdownOpen(false);
+  };
+
+  const handleCloseDropdown = () => {
+    setIsDropdownOpen(false);
+  };
+
   const CustomMenu = (props) => {
     return (
       <components.Menu {...props}>
@@ -183,17 +176,15 @@ export default function UserHerders({
         <Grid item xs={12} sm={12} md={4} lg={5}>
           <Box>
             <Autocomplete
+              isMulti={true}
+              isSearchable={true}
               options={searchData?.result || []}
-              sx={{
-                borderRadius: "8px",
-              }}
+              getOptionValue={(option) => option.id}
               getOptionLabel={(option) => option.name}
               getOptionSelected={(option, value) => option.id === value.id}
-              onChange={(event, data) => {
-                setSelectedSearchOption(data);
-              }}
-              isSearchable={true}
-              getOptionValue={(option) => option.id}
+              onChange={(e, data) => setSelectedSearchOption(data)}
+              name="UsernameProjectSearch"
+              isLoading={searchData?.length === 0}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -202,12 +193,14 @@ export default function UserHerders({
                   onChange={handleInputChange}
                   InputProps={{
                     ...params.InputProps,
+                    style: { borderRadius: "20px" },
                     startAdornment: (
                       <>
                         <SearchIcon />
                         {params.InputProps.startAdornment}
                       </>
                     ),
+                    endAdornment: null,
                   }}
                 />
               )}
@@ -226,16 +219,16 @@ export default function UserHerders({
           <Button
             variant="contained"
             color="primary"
-            startIcon={<PersonAddIcon />}
+            startIcon={<PersonAddAlt1RoundedIcon />}
             style={{ borderRadius: "10px" }}
             onClick={handleAddUser}
           >
-            Add New Users
+            <span style={{ textTransform: "none" }}> Add New Users</span>
           </Button>
         </Grid>
       </Grid>
       <Box style={{ ...style.adminSubHeader }}>
-        <Grid container gap={{ sm: 0, md: 0, lg: 2, xs: 2 }}>
+        <Grid container gap={{ sm: 0, md: 0, lg: 2, xs: 3 }}>
           <Grid item xs={12} sm={4} md={2} lg={3}>
             <Dropdown
               options={[
@@ -252,7 +245,7 @@ export default function UserHerders({
             />
           </Grid>
 
-          <Grid item xs={12} sm={4} md={3} lg={2}>
+          <Grid item xs={12} sm={5} md={5} lg={2.5}>
             <Typography
               sx={{ color: "#ffffff", fontSize: "14px", marginTop: "-20px" }}
             >
@@ -265,15 +258,15 @@ export default function UserHerders({
                 closeMenuOnSelect={false}
                 hideSelectedOptions={false}
                 onChange={(selectedOptions) => {
-                  setSkillsCheckedData(selectedOptions);
+                  setFilteredSkills(selectedOptions);
                 }}
                 options={skills}
-                value={skillsCheckedData}
+                value={filteredSkills}
                 components={{
                   Option: (props) => (
                     <InputOption
                       {...props}
-                      skillsCheckedData={skillsCheckedData}
+                      skillsCheckedData={filteredSkills}
                     />
                   ),
                   Menu: CustomMenu,
@@ -290,21 +283,25 @@ export default function UserHerders({
                     height: "55px",
                   }),
                 }}
+                menuIsOpen={isDropdownOpen}
+                onFocus={() => setIsDropdownOpen(true)}
+                onBlur={handleCloseDropdown} // Close dropdown when focus is lost
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={12} md={4} lg={4}></Grid>
+          <Grid item xs={12} sm={12} md={5} lg={4}></Grid>
           <Grid item margin={"auto"} alignItems="flex-end">
             <Typography
               variant="h7"
               color={"secondary"}
               textAlign={"right"}
-              sx={{ textWrap: "nowrap" }}
+              sx={{ textWrap: "nowrap", marginLeft: "30px" }}
               marginTop={4}
+              marginLeft={6}
             >
               <b>
                 {" "}
-                Total Entries{" "}
+                Total Users{" "}
                 {userData?.numberOfElements ? userData.numberOfElements : "0"}/
                 {userData?.totalElements ? userData.totalElements : "0"}
               </b>

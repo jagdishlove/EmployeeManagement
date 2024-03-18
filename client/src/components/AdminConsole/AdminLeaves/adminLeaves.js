@@ -129,11 +129,6 @@ const AdminLeaves = () => {
   const bulkApproveHandler = async () => {
     const entriesToApprove = adminLeavesData?.content || [];
 
-    if (entriesToApprove.length === 0) {
-      console.log("No entries to approve");
-      return;
-    }
-
     const errors = {};
     const approvedEntries = [];
 
@@ -156,14 +151,11 @@ const AdminLeaves = () => {
       }
     }
 
-    console.log("approvedEntries", approvedEntries);
-
     if (Object.keys(errors).length === 0) {
       try {
         // Dispatch the bulk approval action with the updated comments
         dispatch(adminApproveRejectLeavesAction(approvedEntries));
         setErrorValidation({});
-        console.log("Bulk approval successful");
       } catch (error) {
         console.error("Error during bulk approval:", error);
       } finally {
@@ -210,7 +202,7 @@ const AdminLeaves = () => {
           hasMore={true}
           next={fetchMore}
         >
-          {leaveStatus !== "APPROVED" &&
+          {leaveStatus === "SUBMITTED" &&
             adminLeavesData?.content?.map((cardData) => (
               <DataCard
                 key={cardData.leaveRequestId}
@@ -227,7 +219,7 @@ const AdminLeaves = () => {
             ))}
 
           {/* Conditionally render the ApprovedLeavesTable for "APPROVED" status */}
-          {leaveStatus === "APPROVED" && (
+          {leaveStatus !== "SUBMITTED" && (
             <ApprovedLeaveTable leavesData={resultFilterData?.content || []} />
           )}
         </InfiniteScroll>

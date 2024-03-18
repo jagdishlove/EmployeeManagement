@@ -44,7 +44,7 @@ import MasterDataDialogs from "./masterDataDialogs";
 import dayjs from "dayjs";
 import { Box } from "@mui/material";
 import { Button } from "bootstrap";
-import { GetAllCitys } from "../../../redux/actions/AdminConsoleAction/users/usersAction";
+import { getAllCitysAction } from "../../../redux/actions/AdminConsoleAction/users/usersAction";
 
 export default function MasterData() {
   const navigate = useNavigate();
@@ -64,7 +64,7 @@ export default function MasterData() {
   const [chnageDataType, setChangeDataType] = useState("");
   const [chnageDataId, setChnageDataId] = useState("");
   const [value, setValue] = useState("");
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState(null);
   const [designationExpand, setDesignatonExpand] = useState(true);
   const [skillExpand, setSkillExpand] = useState(false);
   const [officeLocationExpand, setOfiiceLocationExpand] = useState(false);
@@ -80,6 +80,8 @@ export default function MasterData() {
   const [countyCode, setCountryCode] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [file, setFile] = useState(null);
+  const [editHeading, setEditHeading] = useState("");
+
   const dispatch = useDispatch();
   const [officeData, setOfficeData] = useState({
     officeAddress: "",
@@ -102,6 +104,7 @@ export default function MasterData() {
   });
 
   const [holidayFormData, setHolidayFormData] = useState({
+    date: null,
     holidayType: "",
     holidayName: "",
   });
@@ -188,7 +191,7 @@ export default function MasterData() {
     (state) => state?.nonPersist?.masterDataDetails?.clientdata
   );
 
-  const clientDetails = useSelector(
+  const clientDetails1 = useSelector(
     (state) => state?.nonPersist?.masterDataDetails?.clientDetails
   );
 
@@ -214,7 +217,7 @@ export default function MasterData() {
     countryCode[location.id] = location.code;
   });
 
-  const city = useSelector((state) => state?.nonPersist?.userDetails?.cityData);
+  const city = useSelector((state) => state?.nonPersist?.userDetails?.cities);
 
   const handleBack = () => {
     navigate(-1);
@@ -250,7 +253,7 @@ export default function MasterData() {
     if (type === "clinetDetails") {
       setClientDetailsExpand(!clientDetailsExpand);
     }
-    if (type === "domine") {
+    if (type === "domain") {
       setDomineExpand(!domineExpand);
     }
     if (type === "jobType") {
@@ -267,6 +270,24 @@ export default function MasterData() {
     );
   };
   useEffect(() => {
+    if (officeLocation?.address?.countryId) {
+      dispatch(
+        getAllState({
+          parentId: officeLocation?.address?.countryId,
+          dataType: "state",
+        })
+      );
+    }
+
+    if (officeLocation?.address?.stateId) {
+      dispatch(
+        getAllCitysAction({
+          parentId: officeLocation?.address?.stateId,
+          dataType: "city",
+        })
+      );
+    }
+
     if (officeLocation) {
       setOfficeData({
         locationId: officeLocation.locationId || "",
@@ -281,23 +302,6 @@ export default function MasterData() {
         type: officeLocation.address?.type || "",
         addressId: officeLocation.address?.addressId || "",
       });
-      if (officeLocation.address?.countryId) {
-        dispatch(
-          getAllState({
-            parentId: officeLocation.address?.countryId,
-            dataType: "state",
-          })
-        );
-      }
-
-      if (officeLocation.address?.stateId) {
-        dispatch(
-          GetAllCitys({
-            parentId: officeLocation.address?.stateId,
-            dataType: "city",
-          })
-        );
-      }
     }
     if (bandByID) {
       setBandFormData({
@@ -308,43 +312,33 @@ export default function MasterData() {
     }
     if (holiday) {
       setHolidayFormData({
+        date: holiday.date || null,
         holidayName: holiday.name || "",
         holidayType: holiday.holidayType || "",
       });
       setSelectedDate(dayjs(holiday.date));
     }
-    if (clientDetails) {
-      setClinetDetails({
-        clinetName: clientDetails.clientName || "",
-        addressLine1: clientDetails.address?.addressLine1 || "",
-        addressLine2: clientDetails.address?.addressLine2 || "",
-        postalCode: clientDetails.address?.postalCode || "",
-        countryId: clientDetails.address?.countryId || "",
-        stateId: clientDetails.address?.stateId || "",
-        cityId: clientDetails.address?.cityId || "",
-        type: clientDetails.address?.type || "",
-        addressId: clientDetails.address?.addressId || "",
-        phone: clientDetails?.phone || "",
-        clinetId: clientDetails?.clientId || "",
-      });
-      if (clientDetails.address?.countryId) {
-        dispatch(
-          getAllState({
-            parentId: clientDetails.address?.countryId,
-            dataType: "state",
-          })
-        );
-      }
+  }, [officeLocation, dispatch, bandByID, holiday]);
 
-      if (clientDetails.address?.stateId) {
-        dispatch(
-          GetAllCitys({
-            parentId: clientDetails.address?.stateId,
-            dataType: "city",
-          })
-        );
-      }
+  useEffect(() => {
+    if (onsiteLocation?.address?.countryId) {
+      dispatch(
+        getAllState({
+          parentId: onsiteLocation?.address?.countryId,
+          dataType: "state",
+        })
+      );
     }
+
+    if (onsiteLocation?.address?.stateId) {
+      dispatch(
+        getAllCitysAction({
+          parentId: onsiteLocation?.address?.stateId,
+          dataType: "city",
+        })
+      );
+    }
+
     if (onsiteLocation) {
       setClientLocationData({
         addressLine1: onsiteLocation.address?.addressLine1 || "",
@@ -359,32 +353,46 @@ export default function MasterData() {
         locationId: onsiteLocation?.locationId,
         addressName: onsiteLocation?.address?.name || "",
       });
-      if (onsiteLocation.address?.countryId) {
-        dispatch(
-          getAllState({
-            parentId: onsiteLocation.address?.countryId,
-            dataType: "state",
-          })
-        );
-      }
-
-      if (onsiteLocation.address?.stateId) {
-        dispatch(
-          GetAllCitys({
-            parentId: onsiteLocation.address?.stateId,
-            dataType: "city",
-          })
-        );
-      }
     }
-  }, [
-    officeLocation,
-    dispatch,
-    bandByID,
-    holiday,
-    clientDetails,
-    onsiteLocation,
-  ]);
+  }, [onsiteLocation]);
+
+  useEffect(() => {
+    if (clientDetails1?.address?.countryId) {
+      dispatch(
+        getAllState({
+          parentId: clientDetails1?.address?.countryId,
+          dataType: "state",
+        })
+      );
+    }
+
+    if (clientDetails1?.address?.stateId) {
+      dispatch(
+        getAllCitysAction({
+          parentId: clientDetails1?.address?.stateId,
+          dataType: "city",
+        })
+      );
+    }
+    if (clientDetails1) {
+      setClinetDetails({
+        clinetName: clientDetails1.clientName || "",
+        addressLine1: clientDetails1.address?.addressLine1 || "",
+        addressLine2: clientDetails1.address?.addressLine2 || "",
+        postalCode: clientDetails1.address?.postalCode || "",
+        countryId: clientDetails1.address?.countryId || "",
+        stateId: clientDetails1.address?.stateId || "",
+        cityId: clientDetails1.address?.cityId || "",
+        type: clientDetails1.address?.type || "",
+        addressId: clientDetails1.address?.addressId || "",
+        phone: clientDetails1?.phone || "",
+        clinetId: clientDetails1?.clientId || "",
+      });
+      setSelectedImage(
+        `data:image/png;base64,${clientDetails1?.fileStorage?.data}`
+      );
+    }
+  }, [clientDetails1]);
 
   const handlechange = (e) => {
     setValue(e.target.value);
@@ -420,7 +428,7 @@ export default function MasterData() {
       setChangeDataType(type);
       setChnageDataId(id);
       setChnageData(data);
-
+      setEditHeading(type);
       setValue(data);
     } else {
       setOpenDialog(true);
@@ -430,6 +438,7 @@ export default function MasterData() {
       setChnageData(data);
       setChangeDataType(type);
       setValue(data);
+      setEditHeading(type);
     }
     setErrors({});
   };
@@ -485,7 +494,7 @@ export default function MasterData() {
       holidayName: "",
       holidayType: "",
     });
-    setSelectedDate(dayjs());
+    setSelectedDate(null);
     setErrors({});
     setClinetDetails("");
     setClientLocationData("");
@@ -493,12 +502,10 @@ export default function MasterData() {
     setValue("");
     setChangeDataType("");
     setChnageDataId("");
-    setSelectedDate(dayjs());
     setEnable(false);
     setErrors({});
     setSelectedImage(null);
   };
-
   const handleDisable = (type) => {
     setDesignationDisable(true);
     if (type === "officeLocation") {
@@ -521,6 +528,11 @@ export default function MasterData() {
   const handleAddDesignationCancle = () => {
     setDesugnationEdit(false);
     setDesignationDisable(false);
+
+    setOpen(false);
+    setHolidayDialog(false);
+    setClientDialog(false);
+    setClientLocationDialog(false);
   };
 
   useEffect(() => {
@@ -578,6 +590,7 @@ export default function MasterData() {
       setHolidayDialog(true);
       setEdit(false);
       setChangeDataType(type);
+      setHolidayFormData({});
     } else if (type === "clinetDetails") {
       setClientDialog(true);
       setChangeDataType(type);
@@ -589,102 +602,120 @@ export default function MasterData() {
     }
   };
   const handleOfficeChange = async (field, data, value) => {
-    setOfficeData((prevFormData) => ({
-      ...prevFormData,
-      [field]: data,
-    }));
-
     if (field === "phoneNumber") {
       setOfficeData((prevFormData) => ({
         ...prevFormData,
-        phoneNumber: data,
+        phone: data,
       }));
-    }
-    if (field === "country") {
+    } else if (field === "country") {
       setOfficeData((prevFormData) => ({
         ...prevFormData,
-        countryId: value?.id,
+        countryId: data.target.value,
       }));
       setCountryCode(value?.code);
-      if (value?.id) {
+      if (officeData.countryId || data.target.value) {
         await dispatch(
-          getAllState({ parentId: value?.id || "", dataType: "state" })
+          getAllState({ parentId: data.target.value || "", dataType: "state" })
         );
       }
     } else if (field === "state") {
       setOfficeData((prevFormData) => ({
         ...prevFormData,
-        stateId: value?.id,
+        stateId: data.target.value,
       }));
-      if (value?.id) {
+      if (officeData.stateId || data.target.value) {
         await dispatch(
-          GetAllCitys({ parentId: value?.id || "", dataType: "city" })
+          getAllCitysAction({
+            parentId: data.target.value || "",
+            dataType: "city",
+          })
         );
       }
     } else if (field === "city") {
       setOfficeData((prevFormData) => ({
         ...prevFormData,
-        cityId: value?.id,
+        cityId: data.target.value,
+      }));
+    } else {
+      setOfficeData((prevFormData) => ({
+        ...prevFormData,
+        [field]: data?.target?.value,
       }));
     }
   };
 
   const handleClinetDetails = async (field, data, value) => {
-    setClinetDetails((prevFormData) => ({
-      ...prevFormData,
-      [field]: data,
-    }));
-
-    if (field === "country") {
+    if (field === "phoneNumber") {
       setClinetDetails((prevFormData) => ({
         ...prevFormData,
-        countryId: value?.id,
+        phone: data,
       }));
+    } else if (field === "country") {
+      setClinetDetails((prevFormData) => ({
+        ...prevFormData,
+        countryId: data.target.value,
+      }));
+      setCountryCode(value?.code);
       await dispatch(
-        getAllState({ parentId: value?.id || "", dataType: "state" })
+        getAllState({ parentId: data.target.value || "", dataType: "state" })
       );
-    }
-    if (field === "state") {
+    } else if (field === "state") {
       setClinetDetails((prevFormData) => ({
         ...prevFormData,
-        stateId: value?.id,
+        stateId: data.target.value,
       }));
-      dispatch(GetAllCitys({ parentId: value?.id || "", dataType: "city" }));
-    }
-    if (field === "city") {
+      dispatch(
+        getAllCitysAction({
+          parentId: data.target.value || "",
+          dataType: "city",
+        })
+      );
+    } else if (field === "city") {
       setClinetDetails((prevFormData) => ({
         ...prevFormData,
-        cityId: value?.id,
+        cityId: data.target.value,
+      }));
+    } else {
+      setClinetDetails((prevFormData) => ({
+        ...prevFormData,
+        [field]: data.target.value,
       }));
     }
   };
 
   const handleOnsiteLocation = async (field, data, value) => {
-    setClientLocationData((prevFormData) => ({
-      ...prevFormData,
-      [field]: data,
-    }));
-
-    if (field === "countryId") {
+    if (field === "phoneNumber") {
       setClientLocationData((prevFormData) => ({
         ...prevFormData,
-        countryId: value?.id,
+        phone: data,
       }));
-      await dispatch(
-        getAllState({ parentId: value?.id || "", dataType: "state" })
+    } else if (field === "country") {
+      setClientLocationData((prevFormData) => ({
+        ...prevFormData,
+        countryId: data,
+      }));
+      setCountryCode(value?.code);
+      await dispatch(getAllState({ parentId: data || "", dataType: "state" }));
+    } else if (field === "state") {
+      setClientLocationData((prevFormData) => ({
+        ...prevFormData,
+        stateId: data.target.value,
+      }));
+      dispatch(
+        getAllCitysAction({
+          parentId: data.target.value || "",
+          dataType: "city",
+        })
       );
-    }
-    if (field === "state") {
+    } else if (field === "city") {
       setClientLocationData((prevFormData) => ({
         ...prevFormData,
-        stateId: value?.id,
+        cityId: data.target.value,
       }));
-      dispatch(GetAllCitys({ parentId: value?.id || "", dataType: "city" }));
-    }
-    if (field === "city") {
+    } else {
       setClientLocationData((prevFormData) => ({
         ...prevFormData,
-        cityId: value?.id,
+        [field]: data.target.value,
       }));
     }
   };
@@ -697,10 +728,19 @@ export default function MasterData() {
   };
 
   const handleHolidayChnage = (field, data) => {
-    setHolidayFormData((prevFormData) => ({
-      ...prevFormData,
-      [field]: data,
-    }));
+    if (field === "date") {
+      const formattedDate = data.format("YYYY-MM-DD");
+
+      setHolidayFormData((prevFormData) => ({
+        ...prevFormData,
+        date: formattedDate,
+      }));
+    } else {
+      setHolidayFormData((prevFormData) => ({
+        ...prevFormData,
+        [field]: data,
+      }));
+    }
   };
 
   const handleSubmit = async (type, id, status) => {
@@ -758,7 +798,6 @@ export default function MasterData() {
             locationId: id ? id : "",
             phoneNumber: officeData.phone,
             address: {
-              name: officeData.officeAddress,
               addressLine1: officeData.addressLine1,
               addressLine2: officeData.addressLine2,
               postalCode: officeData.postalCode,
@@ -767,6 +806,9 @@ export default function MasterData() {
               cityId: officeData.cityId,
             },
           };
+          if (officeData.officeAddress) {
+            payload.address.name = officeData.officeAddress;
+          }
           if (status) {
             payload.status = status;
           }
@@ -775,7 +817,7 @@ export default function MasterData() {
         } else if (type === "holiday") {
           const payload = {
             id: id ? id : "",
-            date: selectedDate,
+            date: holidayFormData.date,
             holidayType: holidayFormData.holidayType,
             name: holidayFormData.holidayName,
           };
@@ -784,7 +826,7 @@ export default function MasterData() {
           }
           await dispatch(CreateManageHoliday(payload));
           await dispatch(GetAllHolidays());
-        } else if (type === "Domine") {
+        } else if (type === "Domain") {
           const payload = {
             domainId: id ? id : "",
             domainName: value,
@@ -910,7 +952,7 @@ export default function MasterData() {
           }
           await dispatch(UpdateManageHoliday(payload));
           await dispatch(GetAllHolidays());
-        } else if (type === "Domine") {
+        } else if (type === "Domain") {
           const payload = {
             domainId: id ? id : "",
             domainName: value,
@@ -920,7 +962,7 @@ export default function MasterData() {
           }
           await dispatch(UpdateDomine(payload));
           await dispatch(GetAllDomines());
-        } else if (type === "jobType") {
+        } else if (type === "Job Type") {
           const payload = {
             jobId: id ? id : "",
             jobType: value,
@@ -933,20 +975,20 @@ export default function MasterData() {
           setValue("");
         } else if (type === "clinetDetails") {
           const payload = {
-            clinetId: id ? id : "",
-            clinetName: clinetDetails.clinetName,
+            clientId: id ? id : "",
+            file: file ? file : "",
+            clientName: clinetDetails.clinetName,
             phone: clinetDetails.phone,
-            address: {
-              addressId: clientDetails.addressId,
-              name: clinetDetails.addressName,
-              addressLine1: clinetDetails.addressLine1,
-              addressLine2: clinetDetails.addressLine2,
-              postalCode: clinetDetails.postalCode,
-              countryId: clinetDetails.countryId,
-              stateId: clinetDetails.stateId,
-              cityId: clinetDetails.cityId,
-            },
+            "address.addressLine1": clinetDetails.addressLine1,
+            "address.addressLine2": clinetDetails.addressLine2,
+            "address.postalCode": clinetDetails.postalCode,
+            "address.countryId": clinetDetails.countryId,
+            "address.cityId": clinetDetails.cityId,
+            "address.stateId": clinetDetails.stateId,
           };
+          if (status) {
+            payload.status = status;
+          }
           await dispatch(UpdateClinetDetails(payload));
           await dispatch(GatAllClinetDetails());
         } else if (type === "clientOfficeLocation") {
@@ -982,10 +1024,10 @@ export default function MasterData() {
 
     if (type === "officeLocation") {
       if (!officeData.officeAddress) {
-        errors.officeAddress = "Office name is a mandatory field.";
+        errors.officeAddress = "Office name is mandatory";
       }
       if (!officeData.phone) {
-        errors.phoneNumber = "Phone number required";
+        errors.phoneNumber = "Please add a phone number";
       }
 
       if (!officeData.countryId) {
@@ -1000,15 +1042,15 @@ export default function MasterData() {
         errors.city = "Please select City";
       }
       if (!officeData.addressLine1) {
-        errors.addressLine1 = "please add Address";
+        errors.addressLine1 = "please add address";
       }
 
       if (!officeData.addressLine2) {
-        errors.addressLine2 = "please add Address";
+        errors.addressLine2 = "please add address";
       }
 
       if (!officeData.postalCode) {
-        errors.postalCode = "Postal code is required";
+        errors.postalCode = "Postal code is mandatory";
       } else {
         try {
           const isValid = postcodeValidator(
@@ -1026,14 +1068,14 @@ export default function MasterData() {
     if (
       type === "Skill" ||
       type === "Designation" ||
-      type === "Domine" ||
+      type === "Domain" ||
       type === "Job Type"
     ) {
       if (!value.match(/^[a-zA-Z\s]+$/)) {
         errors.value = `${type} should only contain letters and spaces`;
       }
       if (!value.trim()) {
-        errors.value = `${type} name is a mandatory field.`;
+        errors.value = `${type} name is mandatory.`;
       }
     }
     if (type === "band") {
@@ -1053,13 +1095,13 @@ export default function MasterData() {
     }
     if (type === "holiday") {
       if (!holidayFormData.holidayName) {
-        errors.holidayName = "please enter holidayName";
+        errors.holidayName = "Please enter holiday name.";
       }
       if (!holidayFormData.holidayType) {
-        errors.holidayType = "please enter holidayType";
+        errors.holidayType = "Please enter holiday type.";
       }
       if (!selectedDate) {
-        errors.holidayDate = "Please Select date";
+        errors.holidayDate = "Please choose a date.";
       }
     }
     if (type === "clinetDetails") {
@@ -1079,7 +1121,7 @@ export default function MasterData() {
         errors.stateId = "please select state";
       }
       if (!clinetDetails.postalCode) {
-        errors.postalCode = "Postal code is required";
+        errors.postalCode = "Postal code is mandatory";
       } else {
         try {
           const isValid = postcodeValidator(
@@ -1094,10 +1136,10 @@ export default function MasterData() {
         }
       }
       if (!clinetDetails.clinetName) {
-        errors.clinetName = "please add ClientName";
+        errors.clinetName = "Please add client name";
       }
       if (!clinetDetails.phone) {
-        errors.phone = "please add phoneNumber";
+        errors.phone = "Please add a phone number";
       }
     }
     if (type === "clientOfficeLocation") {
@@ -1117,7 +1159,7 @@ export default function MasterData() {
         errors.stateId = "please select state";
       }
       if (!clientLocationData.postalCode) {
-        errors.postalCode = "Postal code is required";
+        errors.postalCode = "Postal code is mandatory";
       } else {
         try {
           const isValid = postcodeValidator(
@@ -1132,10 +1174,10 @@ export default function MasterData() {
         }
       }
       if (!clientLocationData.addressName) {
-        errors.clinetName = "please add ClientName";
+        errors.clinetName = "Please add client name";
       }
       if (!clientLocationData.phone) {
-        errors.phone = "please add phoneNumber";
+        errors.phone = "Please add a phone number";
       }
     }
 
@@ -1173,6 +1215,7 @@ export default function MasterData() {
         dialog={dialog}
         open={open}
         enable={enable}
+        editHeading={editHeading}
         isOpenCalender={isOpenCalender}
         bandDialog={bandDialog}
         holidayDialog={holidayDialog}

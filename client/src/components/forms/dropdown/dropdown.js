@@ -54,7 +54,7 @@ const Dropdown = ({
               option.genderId ||
               option.bandId ||
               option.empTypeId ||
-              option.manager||
+              option.manager ||
               option.designationId ||
               option.gender ||
               option.bandName ||
@@ -80,12 +80,12 @@ const Dropdown = ({
               option.gender ||
               option.bandName ||
               option.employmentType ||
-              option.manager||
-              option.designationName||
+              option.manager ||
+              option.designationName ||
               option.managerName ||
               option.complexityName ||
               option.projectType ||
-              (option.approverName && option.submittedCount ? (
+              (option.approverName && option.count ? (
                 <Grid container>
                   <Grid item xs={10}>
                     {option.approverName}
@@ -99,15 +99,15 @@ const Dropdown = ({
                         borderRadius: "50%",
                       }}
                     >
-                      {option.submittedCount}
+                      {option.count}
                     </div>
                   </Grid>
                 </Grid>
               ) : (
                 ""
               )) ||
+              option.dataValue ||
               option[labelKey]}
-
           </MenuItem>
         ))}
       </Select>
