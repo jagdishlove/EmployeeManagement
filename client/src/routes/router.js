@@ -14,7 +14,7 @@ import UserDetailsPage from "../components/AdminConsole/usersPage/userDetailsPag
 import User from "../components/AdminConsole/usersPage/userPage";
 import LeavePage from "../components/applyLeaves/LeavePage";
 import ConditionalSidebar from "../components/bottomNavigation/conditionalSidebar";
-import Dashboard from "../pages/dashboard/dashboard";
+
 import ErrorPage from "../pages/error/errorPage";
 import History from "../pages/records/records";
 import Timesheet from "../pages/timesheet/timesheet";
@@ -23,6 +23,8 @@ import MasterData from "../components/AdminConsole/masterDataPage/masterData";
 import ProjectDetailPage from "../components/AdminConsole/projectsPage/projectDetails/projectDetailPage";
 import AdminTimeSheet from "../components/AdminConsole/timesheetPage/adminTimeSheet";
 import AdminLeaves from "../components/AdminConsole/AdminLeaves/adminLeaves";
+import ProjectProgress from "../pages/projectProgress/projectProgress";
+import WorkSpace from "../pages/workspace/workspace";
 
 const Router = () => {
   const isAuthenticated = useSelector(
@@ -44,11 +46,26 @@ const Router = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/create-new-password" element={<CreateNewPassword />} />
       <Route
-        path="/dashboard"
+        path="/workspace"
         element={
           isAuthenticated ? (
             <ConditionalSidebar>
-              <Dashboard />
+              <WorkSpace />
+            </ConditionalSidebar>
+          ) : (
+            <>
+              <Navigate to="/" />
+              <Login />
+            </>
+          )
+        }
+      />
+      <Route
+        path="/projectProgress"
+        element={
+          isAuthenticated ? (
+            <ConditionalSidebar>
+              <ProjectProgress />
             </ConditionalSidebar>
           ) : (
             <>

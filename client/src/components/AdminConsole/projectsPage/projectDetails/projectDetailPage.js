@@ -2,15 +2,19 @@ import { IconButton, Typography, Grid, Avatar } from "@mui/material";
 import React, { useEffect } from "react";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
-// import GaugeChart from "react-gauge-chart";
+
 import ProjectAccordion from "./projectAccordion";
 import { Button } from "@mui/material";
 import { BorderColorOutlined } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { getProjectDetailsAction } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import { useParams } from "react-router-dom/dist";
-// import GradientGaugeMeter from "./gradientGaugeMeter";
-import ReactSpeedometer from "react-d3-speedometer";
+import GaugeMeter from "./gaugeMeter";
+import OnTimeGreen from "../../../../assets/OnTimeGreen.png";
+import OnGoingBlue from "../../../../assets/OnGoingBlue.png";
+import WithDelayRed from "../../../../assets/WithDelayRed.png";
+import YetToStartGrey from "../../../../assets/YetToStartGrey.png";
+
 const ProjectDetailPage = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
@@ -90,8 +94,8 @@ const ProjectDetailPage = () => {
           </Button>
         </Grid>
       </Grid>
-      <Grid container>
-        <Grid item xs={12} md={2}>
+      <Grid container marginBottom={"40px"}>
+        <Grid item xs={12} md={2} lg={1.5}>
           <Avatar
             alt="Profile Picture"
             src={`data:image/png;base64,${projectDetailsData?.client?.fileStorage?.data}`}
@@ -121,26 +125,23 @@ const ProjectDetailPage = () => {
           </Avatar>
         </Grid>
 
-        <Grid item xs={12} md={8}>
-          <Typography variant="h5">
+        <Grid item xs={12} md={7}>
+          <Typography variant="h4" fontWeight={"bold"}>
             {projectDetailsData?.client?.clientName}
           </Typography>
-          <Typography variant="body2">
+          <Typography fontSize={"22px"}>
             {projectDetailsData?.client?.address?.addressLine1}{" "}
             {projectDetailsData?.client?.address?.addressLine2}
           </Typography>
         </Grid>
 
-        <Grid item xs={12} md={2}>
-          <ReactSpeedometer
-            needleHeightRatio={0.7}
-            maxSegmentLabels={1}
-            segments={555}
-            needleColor={"#86D26B"}
-            // value={}
-            width={200}
-            height={200}
-          />
+        <Grid
+          item
+          xs={12}
+          md={3}
+          sx={{ display: "flex", justifyContent: "right" }}
+        >
+          <GaugeMeter />
         </Grid>
       </Grid>
 
@@ -155,16 +156,39 @@ const ProjectDetailPage = () => {
           p: "20px",
         }}
       >
-        <Grid container spacing={2}>
+        <Grid container spacing={2} sx={{ marginTop: "5px" }}>
           <Grid item xs={4}>
             <Typography variant="body1">
               <strong>Project Name :</strong>
             </Typography>
           </Grid>
-          <Grid item xs={8}>
+          <Grid item xs={4}>
             <Typography variant="body1">
               {projectDetailsData?.projectName}
             </Typography>
+          </Grid>
+          <Grid item xs={4} style={{ textAlign: "right" }}>
+            <img
+              src={
+                projectDetailsData?.status === "Ongoing"
+                  ? OnGoingBlue
+                  : projectDetailsData?.status === "On Time"
+                  ? OnTimeGreen
+                  : projectDetailsData?.status === "With Delay"
+                  ? WithDelayRed
+                  : projectDetailsData?.status === "Yet To Start"
+                  ? YetToStartGrey
+                  : ""
+              }
+              alt="image"
+              width={160}
+              height={40}
+              style={{
+                marginRight: "5px",
+                marginLeft: "-10px",
+                marginTop: "-20px",
+              }}
+            />
           </Grid>
         </Grid>
 
@@ -174,7 +198,7 @@ const ProjectDetailPage = () => {
               <strong>Start Date :</strong>
             </Typography>
           </Grid>
-          <Grid item xs={8}>
+          <Grid item xs={4}>
             <Typography variant="body1">
               {projectDetailsData?.startDate}
             </Typography>

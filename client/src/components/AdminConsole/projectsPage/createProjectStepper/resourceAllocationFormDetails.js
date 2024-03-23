@@ -41,6 +41,8 @@ import { adminTimeOptions } from "../../../../utils/dateOptions";
 import dayjs from "dayjs";
 import StarOutlinedIcon from "@mui/icons-material/StarOutlined";
 import icon from "../../../../assets/Featured icon.svg";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 const InputOption = ({
   getStyles,
@@ -128,7 +130,6 @@ const ResourceAllocationFormDetails = () => {
     (state) => state?.nonPersist?.projectDetails
   );
 
-
   const theme = useTheme();
   const style = TimesheetStyle(theme);
   const [showAllResourcesTable, setShowAllResourcesTable] = useState(false);
@@ -199,6 +200,8 @@ const ResourceAllocationFormDetails = () => {
 
     if (!formData.occupancyHours) {
       newErrors.occupancyHours = "Please enter Occupancy Hours.";
+    } else if (!/^\d+$/.test(formData.occupancyHours)) {
+      newErrors.occupancyHours = "Occupancy Hours must contain only digits.";
     }
 
     if (!formData.occupancyMinutes) {
@@ -551,8 +554,6 @@ const ResourceAllocationFormDetails = () => {
     (state) => state.nonPersist.projectDetails?.projectDetailsData
   );
 
-  console.log("projectDetailsData", projectDetailsData);
-
   useEffect(() => {
     if (id) {
       dispatch(getProjectDetailsAction(id));
@@ -577,6 +578,12 @@ const ResourceAllocationFormDetails = () => {
       }));
     }
   }, [id]);
+
+  const [expanded, setExpanded] = useState(false);
+
+  const toggleExpand = () => {
+    setExpanded(!expanded);
+  };
 
   return (
     <div>
@@ -724,8 +731,14 @@ const ResourceAllocationFormDetails = () => {
                               overflow: "auto",
                             }}
                           >
-                            {option.employeeSkills.map(
-                              (employeeSkill, index) => (
+                            {option.employeeSkills
+                              .slice(
+                                0,
+                                !expanded && option.employeeSkills.length > 5
+                                  ? 5
+                                  : option.employeeSkills.length
+                              )
+                              .map((employeeSkill, index) => (
                                 <Grid
                                   item
                                   key={index}
@@ -742,12 +755,8 @@ const ResourceAllocationFormDetails = () => {
                                   }}
                                 >
                                   <React.Fragment key={index}>
-                                    {index > 0 && ", "}
-                                    <span
-                                      style={{
-                                        color: "black",
-                                      }}
-                                    >
+                                    {index > 0 && " "}
+                                    <span style={{ color: "black" }}>
                                       {employeeSkill.skillName}
                                     </span>{" "}
                                     {employeeSkill.rating && (
@@ -775,7 +784,31 @@ const ResourceAllocationFormDetails = () => {
                                     )}
                                   </React.Fragment>
                                 </Grid>
-                              )
+                              ))}
+                            {option.employeeSkills.length > 5 && (
+                              <Grid
+                                item
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "flex-end",
+                                  marginLeft: "auto", // Pushes the button to the right
+                                }}
+                              >
+                                <Button onClick={toggleExpand}>
+                                  {expanded ? (
+                                    <>
+                                      View Less
+                                      <KeyboardArrowUpIcon />
+                                    </>
+                                  ) : (
+                                    <>
+                                      View More
+                                      <KeyboardArrowDownIcon />
+                                    </>
+                                  )}
+                                </Button>
+                              </Grid>
                             )}
                           </Grid>
                         )}
@@ -840,7 +873,8 @@ const ResourceAllocationFormDetails = () => {
                             <Grid item xs={12}>
                               {/* Grid for project details */}
                               <Typography variant="h6">
-                                {index + 1}. {resource.projectName}
+                                {index + 1}.{" "}
+                                <strong>{resource.projectName}</strong>
                               </Typography>
                               <Typography variant="h6">
                                 <b>Start Date:</b> {resource.startDate}

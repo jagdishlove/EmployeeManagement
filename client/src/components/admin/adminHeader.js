@@ -114,7 +114,7 @@ const AdminHeader = () => {
             <Tab>My space</Tab>
           </TabList>
           <TabPanel>
-            <ProjectsTab />
+            <MySpaceTab />
           </TabPanel>
         </Tabs>
       )}

@@ -25,7 +25,8 @@ import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import { useSelector } from "react-redux";
-
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 const drawerWidth = 240;
 
 const openedMixin = (theme) => ({
@@ -163,6 +164,12 @@ const Sidebar = ({ children }) => {
     setAdminMenuOpen(!adminMenuOpen);
   };
 
+  const handleDashboardMenuClick = () => {
+    setDashboardMenuOpen(!dashboardMenuOpen);
+  };
+
+  const [dashboardMenuOpen, setDashboardMenuOpen] = useState(false);
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -235,8 +242,103 @@ const Sidebar = ({ children }) => {
         </Box>
 
         <List sx={{ color: "secondary.main", marginTop: "50px" }}>
+          <ListItem key="Dashboard" disablePadding sx={{ display: "block" }}>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+              onClick={handleDashboardMenuClick}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                  color: "white",
+                }}
+              >
+                <DashboardIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={
+                  <Typography
+                    variant="body1"
+                    fontWeight="bold"
+                    sx={style.sidebarItem}
+                  >
+                    Dashboard
+                  </Typography>
+                }
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+              {dashboardMenuOpen ? (
+                <KeyboardArrowDownIcon sx={{ color: "white" }} />
+              ) : (
+                <KeyboardArrowRightIcon
+                  sx={{ color: "white", marginLeft: "-5px" }}
+                />
+              )}
+            </ListItemButton>
+            {/* Submenu items for the Dashboard Menu */}
+            <Collapse in={dashboardMenuOpen} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                {[
+                  { text: "ProjectProgress", url: "/projectProgress" },
+                  { text: "Workspace", url: "/workspace" },
+                ].map((item) => (
+                  <ListItem
+                    key={item.text}
+                    disablePadding
+                    sx={{ display: "block" }}
+                  >
+                    <Link
+                      to={item.url}
+                      style={{ textDecoration: "none", color: "#ffffff" }}
+                    >
+                      <ListItemButton
+                        sx={{
+                          minHeight: 48,
+                          justifyContent: open ? "initial" : "center",
+                          px: 2.5,
+                        }}
+                        onClick={() => handleItemClick(item.text)}
+                        selected={selectedItem === item.text}
+                      >
+                        <ListItemIcon
+                          sx={{
+                            minWidth: 0,
+                            mr: open ? 3 : "auto",
+                            justifyContent: "center",
+                            color: "white",
+                          }}
+                        >
+                          {/* Add appropriate icons for Project Progress and Workspace */}
+                          {item.icon}
+                        </ListItemIcon>
+                        <ListItemText
+                          primary=<Typography
+                            variant="body1"
+                            fontWeight="bold"
+                            sx={style.sidebarItem}
+                            style={{ textAlign: "end" }}
+                          >
+                            {item.text === "ProjectProgress"
+                              ? "Project Progress"
+                              : item.text}
+                          </Typography>
+                          sx={{ opacity: open ? 1 : 0 }}
+                        />
+                      </ListItemButton>
+                    </Link>
+                  </ListItem>
+                ))}
+              </List>
+            </Collapse>
+          </ListItem>
+
           {[
-            { text: "Dashboard", url: "/dashboard", icon: <DashboardIcon /> },
             { text: "Timesheet", url: "/timesheet", icon: <AccessTimeIcon /> },
             { text: "Leaves", url: "/leaves", icon: <HolidayVillageIcon /> },
           ].map((item) => (
@@ -314,6 +416,13 @@ const Sidebar = ({ children }) => {
                   }
                   sx={{ opacity: open ? 1 : 0 }}
                 />
+                {adminMenuOpen ? (
+                  <KeyboardArrowDownIcon sx={{ color: "white" }} />
+                ) : (
+                  <KeyboardArrowRightIcon
+                    sx={{ color: "white", marginLeft: "-5px" }}
+                  />
+                )}
               </ListItemButton>
               {/* Submenu items for the Admin Menu */}
               <Collapse in={adminMenuOpen} timeout="auto" unmountOnExit>

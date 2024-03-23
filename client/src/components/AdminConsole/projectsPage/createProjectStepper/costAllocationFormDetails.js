@@ -42,7 +42,7 @@ const CostAllocationFormDetails = () => {
   const projectId = useSelector(
     (state) => state.nonPersist.projectDetails?.projectId
   );
-
+  const [buttonText, setButtonText] = useState("Add");
   const [formData, setFormData] = useState(intialValues);
 
   const [errors, setErrors] = useState({
@@ -69,6 +69,8 @@ const CostAllocationFormDetails = () => {
 
   //Save or ADD Cost inoccured
   const handleAdd = async () => {
+    // Reset button text to "Add" after adding or updating data
+    setButtonText("Add");
     // Check for validation errors
     const newErrors = {};
 
@@ -129,6 +131,7 @@ const CostAllocationFormDetails = () => {
     });
 
     setSelectedCostIncurredId(costIncurredId);
+    setButtonText("Update");
   };
 
   useEffect(() => {
@@ -155,9 +158,15 @@ const CostAllocationFormDetails = () => {
     await dispatch(saveCreateProjectAction(payload, getResourcespayload));
 
     // Display toast message only if it's stage 3
-    toast.success("Project Created Successfully", {
-      position: toast.POSITION.BOTTOM_CENTER,
-    });
+    if (id) {
+      toast.success("Project Updated Successfully", {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    } else {
+      toast.success("Project Created Successfully", {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
   };
 
   // for not clear the form we are calling Projectdetails
@@ -269,57 +278,63 @@ const CostAllocationFormDetails = () => {
               color="primary"
               type="submit"
             >
-              Add
+              {buttonText}
             </Button>
           </Box>
         </Grid>
         <Grid item xs={12} sm={8} md={10} lg={10}>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow
-                  style={{ backgroundColor: "#008080", color: "#ffffff" }}
-                >
-                  <TableCell style={{ color: "#ffffff" }}>SL No.</TableCell>
-                  <TableCell style={{ color: "#ffffff" }}>Item Name</TableCell>
-                  <TableCell style={{ color: "#ffffff" }}>
-                    Cost Incurred
-                  </TableCell>
-                  <TableCell></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {allCostIncurredData?.map((costIncurred, index) => (
-                  <TableRow key={costIncurred?.costIncurredId}>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell>{costIncurred?.itemName}</TableCell>
-                    <TableCell>{costIncurred?.costIncurred}</TableCell>
-                    <TableCell>
-                      <IconButton
-                        color="primary"
-                        onClick={() => handleEdit(costIncurred?.costIncurredId)}
-                      >
-                        <EditIcon />
-                      </IconButton>
-
-                      <IconButton color="primary">
-                        <DeleteIcon
-                          onClick={() =>
-                            dispatch(
-                              deleteCostIncurredAction(
-                                costIncurred.costIncurredId,
-                                projectId
-                              )
-                            )
-                          }
-                        />
-                      </IconButton>
+          {allCostIncurredData?.length > 0 && (
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow
+                    style={{ backgroundColor: "#008080", color: "#ffffff" }}
+                  >
+                    <TableCell style={{ color: "#ffffff" }}>SL No.</TableCell>
+                    <TableCell style={{ color: "#ffffff" }}>
+                      Item Name
                     </TableCell>
+                    <TableCell style={{ color: "#ffffff" }}>
+                      Cost Incurred
+                    </TableCell>
+                    <TableCell></TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {allCostIncurredData?.map((costIncurred, index) => (
+                    <TableRow key={costIncurred?.costIncurredId}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{costIncurred?.itemName}</TableCell>
+                      <TableCell>{costIncurred?.costIncurred}</TableCell>
+                      <TableCell>
+                        <IconButton
+                          color="primary"
+                          onClick={() =>
+                            handleEdit(costIncurred?.costIncurredId)
+                          }
+                        >
+                          <EditIcon />
+                        </IconButton>
+
+                        <IconButton color="primary">
+                          <DeleteIcon
+                            onClick={() =>
+                              dispatch(
+                                deleteCostIncurredAction(
+                                  costIncurred.costIncurredId,
+                                  projectId
+                                )
+                              )
+                            }
+                          />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
         </Grid>
       </Grid>
 
@@ -365,10 +380,7 @@ const CostAllocationFormDetails = () => {
             fullWidth
             InputProps={{ classes: { focused: "green-border" } }}
           />
-          {/* 
-          <Typography variant="body2" color="error">
-            {errors.projectBudget}
-          </Typography> */}
+
           <Typography
             variant="body1"
             fontWeight="bold"
@@ -379,7 +391,7 @@ const CostAllocationFormDetails = () => {
           <TextField
             placeholder=" Other Costs Incurred"
             name="otherCostsIncurred"
-            value={formData.otherCostsIncurred}
+            value={projectDetailsData?.otherCostsIncurred}
             onChange={handleInputChange}
             style={{
               ...style.TimesheetTextField,
@@ -400,7 +412,7 @@ const CostAllocationFormDetails = () => {
           <TextField
             placeholder="Project Implementation Cost"
             name="projectImplimentationCost"
-            value={formData.projectImplimentationCost}
+            value={projectDetailsData?.projectedImplementationCost}
             onChange={handleInputChange}
             disabled
             style={{
@@ -443,9 +455,9 @@ const CostAllocationFormDetails = () => {
             Project Profit
           </Typography>
           <TextField
-            placeholder=" Percentage of revenue"
-            name="percentageOfRevenue"
-            value={formData.percentageOfRevenue}
+            placeholder=" Project Profit"
+            name="projectProfit"
+            value={projectDetailsData?.projectProfit}
             onChange={handleInputChange}
             disabled
             style={{

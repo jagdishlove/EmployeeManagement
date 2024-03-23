@@ -50,6 +50,18 @@ const ProjectList = ({ projectsData }) => {
     Math.min(100, ((totalDuration - remainingDuration) / totalDuration) * 100)
   );
 
+  const progressbarColor = () => {
+    if (projectsData.status === "Ongoing") {
+      return "blue";
+    } else if (projectsData.status === "On Time") {
+      return "primary";
+    } else if (projectsData.status === "With Delay") {
+      return "red";
+    } else {
+      return "secondary";
+    }
+  };
+
   return (
     <Card
       style={{
@@ -139,24 +151,33 @@ const ProjectList = ({ projectsData }) => {
             </Typography>
           </Grid>
           <Grid item xs={12}>
-            <Grid container alignItems="center">
-              <Grid item xs={6}>
-                <Typography variant="body2" fontWeight={"bold"}>
-                  Progress
-                </Typography>
-              </Grid>
-              <Grid item xs={6} textAlign="end">
-                <Typography variant="body2" fontWeight={"bold"}>
-                  {progressPercentage.toFixed(2)}
-                </Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <LinearProgress
-                  variant="determinate"
-                  value={progressPercentage.toFixed(2)}
-                />
-              </Grid>
-            </Grid>
+            {projectsData.status === "Yet To Start" ? (
+              <></>
+            ) : (
+              <>
+                <Grid container alignItems="center">
+                  <Grid item xs={6}>
+                    <Typography variant="body2" fontWeight="bold">
+                      Progress
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6} textAlign="end">
+                    <Typography variant="body2" fontWeight="bold">
+                      {progressPercentage === 100
+                        ? "100%"
+                        : progressPercentage.toFixed(2) + " %"}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <LinearProgress
+                      variant="determinate"
+                      value={progressPercentage.toFixed(2)}
+                      color={progressbarColor()}
+                    />
+                  </Grid>
+                </Grid>
+              </>
+            )}
           </Grid>
           <Grid item xs={12} display="flex" mt={2} justifyContent="flex-end">
             <Button

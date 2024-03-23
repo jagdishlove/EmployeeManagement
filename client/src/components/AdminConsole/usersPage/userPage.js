@@ -137,7 +137,7 @@ export default function User() {
                 }}
                 key={selectedSkills.skillId}
               >
-                <IconButton disabled sx={{ padding: "6px" }} size="small">
+                <IconButton onClick={() => removeSkill(selectedSkills)}  sx={{ padding: "6px" }} size="small">
                   <CloseIcon />
                 </IconButton>
                 <Typography

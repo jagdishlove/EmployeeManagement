@@ -833,8 +833,7 @@ export default function MasterDataDialogs({
             placeholder="Enter Phone Number"
             value={clinetDetails.phone}
             onChange={(value) => {
-              const cleanedPhoneNumber = value.replace(/\s/g, "");
-              handleClinetDetails("phoneNumber", cleanedPhoneNumber);
+              handleClinetDetails("phoneNumber", value);
             }}
             sx={{ marginBottom: 1 }}
           />

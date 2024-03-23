@@ -295,7 +295,8 @@ export default function MasterData() {
         addressLine1: officeLocation.address?.addressLine1 || "",
         addressLine2: officeLocation.address?.addressLine2 || "",
         phone: officeLocation.phoneNumber || "",
-        countryId: officeLocation.address?.countryId || "",
+        
+        Id: officeLocation.address?.countryId || "",
         stateId: officeLocation.address?.stateId || "",
         cityId: officeLocation.address?.cityId || "",
         postalCode: officeLocation.address?.postalCode || "",
@@ -841,7 +842,7 @@ export default function MasterData() {
             clientId: id ? id : "",
             file: file ? file : "",
             clientName: clinetDetails.clinetName,
-            phone: "24536765467",
+            phone: clinetDetails.phone,
             "address.addressLine1": clinetDetails.addressLine1,
             "address.addressLine2": clinetDetails.addressLine2,
             "address.postalCode": clinetDetails.postalCode,
@@ -943,7 +944,7 @@ export default function MasterData() {
         } else if (type === "holiday") {
           const payload = {
             id: id ? id : "",
-            date: selectedDate,
+            date: holidayFormData.date,
             holidayType: holidayFormData.holidayType,
             name: holidayFormData.holidayName,
           };

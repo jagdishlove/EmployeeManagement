@@ -14,8 +14,6 @@ export const dateOptions = () => {
   return dateOptions;
 };
 
-
-
 export const admindateOptions = () => {
   const today = new Date();
   const dateOptions = [];
@@ -28,7 +26,6 @@ export const admindateOptions = () => {
   }
   return dateOptions;
 };
-
 
 const parseTime = (timeStr) => {
   const [hours, minutes] = timeStr.split(":");
@@ -88,8 +85,12 @@ export const formatDateForApi = (selectedDate) => {
 export const adminTimeOptions = () => {
   const options = [];
 
+  // Include "0" as the first option
+  options.push({ label: "0", value: "0" });
+
+  // Add options from 1 to 60
   for (let i = 1; i <= 60; i++) {
-    options.push({ label: i, value: i });
+    options.push({ label: i.toString(), value: i.toString() });
   }
 
   return options;

@@ -33,6 +33,9 @@ let theme = createTheme({
     red: {
       main: "#FF0000",
     },
+    blue:{
+      main:"#7581F2"
+    },
   },
   typography: {
     fontFamily: "Nunito Sans, sans-serif", // Replace 'Your Custom Font Name' with the name of your custom font

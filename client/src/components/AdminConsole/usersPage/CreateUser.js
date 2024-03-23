@@ -575,8 +575,6 @@ export default function CreateUser() {
     }
   };
 
-  console.log("fomdarta", formData);
-
   const handleStateChange = (type, event, value) => {
     if (type === "state") {
       setFormData((prevData) => ({
@@ -648,6 +646,7 @@ export default function CreateUser() {
       } else {
         await dispatch(CreateUserForm(payload));
       }
+      navigate("/user");
 
       setFormData({
         firstName: "",
@@ -722,30 +721,32 @@ export default function CreateUser() {
         errors.currentZIP = "Error validating postal code";
       }
     }
-    if (!formData.Zip) {
-      errors.Zip = "*Postal Code is required";
-    } else if (!/^\d+$/.test(formData.Zip)) {
-      errors.Zip = "Invalid postal code or contains non-numeric characters";
-    } else {
-      try {
-        const isValid = postcodeValidator(
-          formData.Zip,
-          "" || countryCode[formData.currentcountry]
-        );
-        if (!isValid) {
-          errors.Zip = "Invalid postal code";
+    if (formData.Zip) {
+      if (!formData.Zip) {
+        errors.Zip = "*Postal Code is required";
+      } else if (!/^\d+$/.test(formData.Zip)) {
+        errors.Zip = "Invalid postal code or contains non-numeric characters";
+      } else {
+        try {
+          const isValid = postcodeValidator(
+            formData.Zip,
+            "" || countryCode[formData.country]
+          );
+          if (!isValid) {
+            errors.Zip = "Invalid postal code";
+          }
+        } catch (error) {
+          errors.Zip = "Error validating postal code";
         }
-      } catch (error) {
-        errors.Zip = "Error validating postal code";
       }
     }
 
     if (!formData.UANNo) {
-      errors.UANNo = "UANNo number is mandatory";
+      errors.UANNo = "UAN No number is mandatory";
     } else if (!/^\d+$/.test(formData.UANNo)) {
-      errors.UANNo = "UANNo number should contain only digits";
+      errors.UANNo = "UAN No number should contain only digits";
     } else if (!/^[0-9]{12}$/.test(formData.UANNo)) {
-      errors.UANNo = "UANNo number should contains only 12 digits";
+      errors.UANNo = "UAN No number should contains only 12 digits";
     }
 
     if (!formData.ACNo && !/^[0-9]+$/.test(formData.ACNo)) {
@@ -1352,7 +1353,6 @@ export default function CreateUser() {
                   />
                 )}
               />
-
               {errors.currentstate && (
                 <Box>
                   <Typography color="error">{errors.currentstate}</Typography>
@@ -1363,8 +1363,10 @@ export default function CreateUser() {
           <Grid container mt={2}>
             <Grid item xs={6} mt={0.3}>
               <Autocomplete
-                freeSolo
+                disableFreeSolo
                 id="currentcity"
+                disableClearable={true} // Disable clear icon
+                filterOptions={(options) => options}
                 options={formData.currentstate ? cities : []}
                 style={{
                   borderRadius: "10px",
@@ -1375,9 +1377,8 @@ export default function CreateUser() {
                   handleCity("currentcity", e, value);
                 }}
                 value={
-                  formData.currentcity === null
-                    ? null
-                    : cities?.find((city) => city.id === formData.currentcity)
+                  cities?.find((city) => city.id === formData.currentcity) ||
+                  null
                 }
                 renderInput={(params) => (
                   <TextField
@@ -1531,7 +1532,7 @@ export default function CreateUser() {
           <Grid container mt={2}>
             <Grid item xs={6}>
               <Autocomplete
-                freeSolo
+                disableFreeSolo
                 id="city"
                 value={
                   cities?.find((city) => city.id === formData.city) || null
@@ -1558,9 +1559,9 @@ export default function CreateUser() {
                 }}
                 onChange={handlezipChange}
               />
-              {errors.postalCode && (
+              {errors.Zip && (
                 <Box>
-                  <Typography color="error">{errors.postalCode}</Typography>
+                  <Typography color="error">{errors.Zip}</Typography>
                 </Box>
               )}
             </Grid>
