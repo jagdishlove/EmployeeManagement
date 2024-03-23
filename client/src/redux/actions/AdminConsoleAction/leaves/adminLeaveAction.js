@@ -93,6 +93,7 @@ export const adminApproveRejectLeavesAction = (
   newPayload
 ) => {
   return async (dispatch) => {
+    console.log("data", data);
     try {
       await makeRequest(
         "POST",
@@ -100,15 +101,17 @@ export const adminApproveRejectLeavesAction = (
         data
       );
       dispatch(getAllLeavesForAdminAction(newPayload, getDataPayload));
-      if (data.status === "APPROVED") {
-        toast.success("Leaves Approved Successfully.", {
-          position: toast.POSITION.BOTTOM_CENTER,
-        });
-      } else if (data.status === "REJECTED") {
-        toast.success("Leaves Rejected Successfully.", {
-          position: toast.POSITION.BOTTOM_CENTER,
-        });
-      }
+      data?.forEach((item) => {
+        if (item.status === "APPROVED") {
+          toast.success("Leaves Approved Successfully.", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        } else if (item.status === "REJECTED") {
+          toast.success("Leaves Rejected Successfully.", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+      });
     } catch (err) {
       if (err?.response?.data?.errorCode === 403) {
         // Handle 403 error here

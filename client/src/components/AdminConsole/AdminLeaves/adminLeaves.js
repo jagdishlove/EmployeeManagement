@@ -178,7 +178,7 @@ const AdminLeaves = () => {
         approver={approver}
       />
 
-      {leaveStatus === "SUBMITTED" ? (
+      {leaveStatus === "SUBMITTED" && approver !== "All" ? (
         <>
           <Box display="flex" justifyContent="flex-end" mt={2} mr={2}>
             <Typography mr={2}>Select All</Typography>

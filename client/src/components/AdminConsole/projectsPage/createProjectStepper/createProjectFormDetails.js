@@ -15,7 +15,6 @@ import { MuiTelInput as MuiPhoneNumber } from "mui-tel-input";
 import { TimesheetStyle } from "../../../../pages/timesheet/timesheetStyle";
 import {
   GetAllCountryCityStateAction,
-  getAllDomainAction,
   getClientDetailsAction,
   getClientNameAction,
   getEmployeeSearchAction,
@@ -23,6 +22,7 @@ import {
   saveCreateProjectAction,
 } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import Dropdown from "../../../forms/dropdown/dropdown";
+import { masterDataAction } from "../../../../redux/actions/masterData/masterDataAction";
 
 const CreateProjectFormDetails = () => {
   const theme = useTheme();
@@ -139,12 +139,13 @@ const CreateProjectFormDetails = () => {
     (state) => state.nonPersist?.projectDetails?.employeeSearchData
   );
 
-  //doomain
-  const allDomainData = useSelector(
-    (state) => state?.nonPersist?.projectDetails?.allDomainData
+  //domain
+  const domains = useSelector(
+    (state) => state?.persistData.masterData?.domains
   );
+
   useEffect(() => {
-    dispatch(getAllDomainAction());
+    dispatch(masterDataAction());
   }, []);
 
   //complexity
@@ -302,7 +303,7 @@ const CreateProjectFormDetails = () => {
     if (!formData.projectCategory) {
       errors.projectCategory = "Project Category is required";
     }
-    if (!formData.projectManager) {
+    if (!formData.projectManager.name) {
       errors.projectManager = "Project Manager is required";
     }
     return errors;
@@ -399,7 +400,7 @@ const CreateProjectFormDetails = () => {
             />
           </Box>
           {validationErrors.clientName && (
-            <Typography variant="caption" color="error">
+            <Typography variant="caption" color="error" fontSize={"1rem"}>
               {validationErrors.clientName}
             </Typography>
           )}
@@ -597,7 +598,7 @@ const CreateProjectFormDetails = () => {
             InputProps={{ classes: { focused: "green-border" } }}
           />
           {validationErrors.projectName && (
-            <Typography variant="caption" color="error">
+            <Typography variant="caption" color="error" fontSize={"1rem"}>
               {validationErrors.projectName}
             </Typography>
           )}
@@ -638,12 +639,12 @@ const CreateProjectFormDetails = () => {
               ...style.TimesheetTextField,
               border: "1px solid silver",
               borderRadius: "5px",
-              marginBottom: "10px",
+
               marginTop: "10px",
             }}
           />
           {validationErrors.projectCategory && (
-            <Typography variant="caption" color="error">
+            <Typography variant="caption" color="error" fontSize={"1rem"}>
               {validationErrors.projectCategory}
             </Typography>
           )}
@@ -742,7 +743,7 @@ const CreateProjectFormDetails = () => {
           </Box>
 
           {validationErrors.projectManager && (
-            <Typography variant="caption" color="error">
+            <Typography variant="caption" color="error" fontSize={"1rem"}>
               {validationErrors.projectManager}
             </Typography>
           )}
@@ -812,7 +813,7 @@ const CreateProjectFormDetails = () => {
             value={formData?.domain}
             onChange={handleDropdownChange}
             dropdownName="domain"
-            options={allDomainData}
+            options={domains}
             style={{
               ...style.TimesheetTextField,
               border: "1px solid silver",

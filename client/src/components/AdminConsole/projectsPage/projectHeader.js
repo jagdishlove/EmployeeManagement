@@ -112,7 +112,7 @@ export default function ProjectHeader({
       </Grid>
       <Box style={{ ...style.projectSubHeader }}>
         <Grid container gap={{ sm: 0, md: 0, lg: 2, xs: 2 }}>
-          <Grid item xs={12} sm={4} md={2} lg={3}>
+          <Grid item xs={12} sm={6} md={2} lg={3}>
             <Dropdown
               value={projects}
               onChange={handleDropdownChange}
@@ -128,22 +128,22 @@ export default function ProjectHeader({
               name="projectStatus"
             />
           </Grid>
-
+          <Grid item xs={12} sm={12} md={6} lg={5}></Grid>
           <Grid
             item
             xs={12}
             sm={4}
-            md={2}
+            md={3}
             lg={3}
             margin={"auto"}
-            alignItems="flex-end"
+            display={"flex"}
+            justifyContent={"end"}
           >
             <Typography
               variant="h7"
               color={"secondary"}
               textAlign={"right"}
               sx={{ textWrap: "nowrap" }}
-              marginTop={4}
             >
               <b>
                 {" "}
