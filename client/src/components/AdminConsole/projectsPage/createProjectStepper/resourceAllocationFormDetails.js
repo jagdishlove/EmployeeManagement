@@ -227,11 +227,9 @@ const ResourceAllocationFormDetails = () => {
       payload.resourceId = selectedOccupancyHours;
     }
 
-    try {
-      await dispatch(saveCreateResourcesAction(payload));
-    } finally {
-      await dispatch(getAllResourcesAction(projectId));
-    }
+    dispatch(saveCreateResourcesAction(payload));
+    dispatch(getAllResourcesAction(projectId));
+
     // setTimeInput("");
 
     setFormData({
@@ -244,8 +242,10 @@ const ResourceAllocationFormDetails = () => {
 
   //for displaying the table after confirm
   useEffect(() => {
-    dispatch(getAllResourcesAction(projectId));
-    setShowAllResourcesTable(true);
+    if (projectId) {
+      dispatch(getAllResourcesAction(projectId));
+      setShowAllResourcesTable(true);
+    }
   }, [projectId]);
 
   const handleCancel = () => {
