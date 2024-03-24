@@ -1,14 +1,8 @@
 import { useTheme } from "@emotion/react";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Grid,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Grid, TextField, Typography } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
 
 import { useNavigate } from "react-router-dom";
 import { adminHeaderStyle } from "../../admin/approvalTimesheets/adminHeaderStyle";
@@ -16,6 +10,7 @@ import Dropdown from "../../forms/dropdown/dropdown";
 import { useDispatch, useSelector } from "react-redux";
 import { getClientProjectNameSearchAction } from "../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import SearchIcon from "@mui/icons-material/Search";
+import { useEffect } from "react";
 
 export default function ProjectHeader({
   projectsData,
@@ -46,19 +41,46 @@ export default function ProjectHeader({
     (state) => state?.nonPersist?.projectDetails?.clientProjectNameSearchData
   );
 
-  const handleInputChangeClientSearch = (e) => {
-    const inputValue = e.target.value;
+  useEffect(() => {
+    dispatch(getClientProjectNameSearchAction(""));
+  }, []);
 
-    if (inputValue.length >= 0) {
-      dispatch(getClientProjectNameSearchAction(inputValue));
-    }
-  };
   return (
     <div>
       <Grid container justifyContent="space-between">
         <Grid item xs={12} sm={12} md={4} lg={5}>
           <Box>
             <Autocomplete
+              freeSolo
+              options={clientProjectSearchData?.result}
+              onChange={(e, data) => handleChange(data)}
+              renderOption={(props, option) => (
+                <li {...props} key={option.id}>
+                  {option.name}
+                </li>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  InputProps={{
+                    ...params.InputProps,
+                    style: { borderRadius: "20px" },
+                    startAdornment: (
+                      <>
+                        <SearchIcon />
+                        {params.InputProps.startAdornment}
+                      </>
+                    ),
+                    endAdornment: null,
+                  }}
+                  {...params}
+                  label="freeSolo"
+                  margin="normal"
+                  variant="outlined"
+                  fullWidth
+                />
+              )}
+            />
+            {/* <Autocomplete
               isMulti={true}
               isSearchable={true}
               options={clientProjectSearchData?.result || []}
@@ -73,7 +95,7 @@ export default function ProjectHeader({
                   {...params}
                   variant="outlined"
                   placeholder="Search by  Client and Project Name"
-                  onChange={handleInputChangeClientSearch}
+                  // onChange={handleInputChangeClientSearch}
                   InputProps={{
                     ...params.InputProps,
                     style: { borderRadius: "20px" },
@@ -87,7 +109,7 @@ export default function ProjectHeader({
                   }}
                 />
               )}
-            />
+            /> */}
           </Box>
         </Grid>
         <Grid
