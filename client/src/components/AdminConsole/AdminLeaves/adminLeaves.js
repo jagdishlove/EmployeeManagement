@@ -194,7 +194,7 @@ const AdminLeaves = () => {
 
       {resultFilterData?.content?.length === 0 ? (
         <Box mt={5} sx={{ display: "flex", justifyContent: "center" }}>
-          <Typography>No Project Data Found</Typography>
+          <Typography>No Leave Applications Available</Typography>
         </Box>
       ) : (
         <InfiniteScroll

@@ -44,7 +44,7 @@ export default function CreateUser() {
   const dispatch = useDispatch();
   const [selectedImage, setSelectedImage] = useState("");
   const [errors, setErrors] = useState({});
-
+  const [enable, setEnable] = useState(true);
   const { id } = useParams();
 
   useEffect(() => {
@@ -52,6 +52,12 @@ export default function CreateUser() {
       dispatch(getUserById(id));
     }
   }, [id]);
+
+  const { usersDataLoading, userDataError } = useSelector(
+    (state) => state?.nonPersist?.userDetails
+  );
+
+  const userId = useSelector((state) => state?.nonPersist?.userDetails?.userId);
 
   const [validationErrors, setValidationErrors] = useState({});
   const [formData, setFormData] = useState({
@@ -124,7 +130,7 @@ export default function CreateUser() {
       currentZIP: "",
       AadhaarNo: "",
       workMode: "",
-      ManagerName: "",
+      ManagerName: { id: 0, name: "", type: "employee" },
       designation: "",
       ACNo: "",
       Bank: "",
@@ -139,13 +145,20 @@ export default function CreateUser() {
       Bank_Name: "",
     });
 
+    setErrors({});
+    setIsChecked(false);
+
     setValidationErrors({});
+    setSelectedImage(""); // Corrected line to clear selected image
   };
 
   const [isChecked, setIsChecked] = useState(false);
   const handleCheckboxChange = async () => {
     // Toggle the checkbox state
     const newIsChecked = !isChecked;
+
+    // Update the checkbox state
+    setIsChecked(newIsChecked);
 
     // Copy data from Permanent Address to Current Address if checkbox is checked
     const updatedFormData = newIsChecked
@@ -172,15 +185,15 @@ export default function CreateUser() {
     setFormData(updatedFormData);
 
     // Update the checkbox state
-    setIsChecked(newIsChecked);
+    // setIsChecked(newIsChecked);
 
     // Fetch states and cities based on permanent address if country and state are selected
-    if (newIsChecked && formData.country) {
-      await fetchStatesAction(formData?.country, setStates);
+    if (newIsChecked && formData.currentcountry) {
+      await fetchStatesAction(formData?.currentcountry, setStates);
     }
 
-    if (newIsChecked && formData.state) {
-      await fetchCitiesAction(formData.state, setCities);
+    if (newIsChecked && formData.currentstate) {
+      await fetchCitiesAction(formData.currentstate, setCities);
     }
   };
 
@@ -202,23 +215,41 @@ export default function CreateUser() {
     console.error("LocationData is undefined or not an array");
   }
 
-  const handlezipChange = (event) => {
+  const handlezipChange = (event, type) => {
     const { name, value } = event.target;
 
     // Check if the checkbox is checked
-    if (isChecked) {
-      setFormData((prevData) => ({
-        ...prevData,
+    if (type == "Zip") {
+      setFormData((formData) => ({
+        ...formData,
         [name]: value,
-        country: name === "country" ? value : prevData.country,
+        country: name === "country" ? value : formData.country,
       }));
     } else {
-      setFormData((prevData) => ({
-        ...prevData,
+      setFormData((formData) => ({
+        ...formData,
         [name]: value,
       }));
     }
-
+    if (type == "currentZIP") {
+      setFormData((formData) => ({
+        ...formData,
+        [name]: value,
+        currentcountry:
+          name === "currentcountry" ? value : formData.currentcountry,
+      }));
+    } else {
+      setFormData((formData) => ({
+        ...formData,
+        [name]: value,
+      }));
+    }
+    if (isChecked) {
+      setFormData((formData) => ({
+        ...formData,
+        Zip: formData.currentZIP,
+      }));
+    }
     setValidationErrors({
       ...validationErrors,
       [name]: "",
@@ -307,7 +338,9 @@ export default function CreateUser() {
         Bank_Name: employeeDetails.bankName || "",
       }));
       setSelectedImage(
-        `data:image/png;base64,${employeeDetails?.fileStorage?.data}`
+        employeeDetails?.fileStorage?.data
+          ? `data:image/png;base64,${employeeDetails?.fileStorage?.data}`
+          : ""
       );
       if (
         (employeeDetails.permanentAddress?.addressLine1 || "",
@@ -361,8 +394,7 @@ export default function CreateUser() {
         productType: "",
         Bank_Name: "",
       });
-      setSelectedImage(null);
-      setIsChecked(false);
+      setSelectedImage("");
     }
   }, [employeeDetails]);
 
@@ -414,12 +446,16 @@ export default function CreateUser() {
       updatedFormData = {
         ...updatedFormData,
       };
+      setEnable(false);
     }
     if (type === "PRAKAT_LOCATION") {
       updatedFormData = {
         ...updatedFormData,
+        Client_loc: "",
       };
+      setEnable(true);
     }
+
     // setProductType(event.target.value);
     setFormData(updatedFormData);
     // setWorkMode("");
@@ -487,23 +523,23 @@ export default function CreateUser() {
       [name]: formattedDate,
     }));
   };
-
   const handleInputChange = (event) => {
     const { name, value } = event.target;
 
-    // Check if the checkbox is checked
+    // If checkbox is checked, update current address fields only
     if (isChecked) {
-      setFormData((prevData) => ({
-        ...prevData,
+      setFormData((formData) => ({
+        ...formData,
         [name]: value,
-        currentAddress1: prevData.address1,
-        currentAddress2: prevData.address2,
-        currentZIP: prevData.Zip,
-        currentcountry: name === "country" ? value : prevData.currentcountry,
-        currentstate: name === "state" ? value : prevData.currentstate,
-        currentcity: name === "city" ? value : prevData.currentcity,
+        address1: formData.currentAddress1,
+        address2: formData.currentAddress2,
+        city: formData.currentcity,
+        state: formData.currentstate,
+        country: formData.currentcountry,
+        Zip: formData.currentZIP,
       }));
     } else {
+      // If checkbox is not checked, update all fields independently
       setFormData((prevData) => ({
         ...prevData,
         [name]: value,
@@ -541,19 +577,29 @@ export default function CreateUser() {
 
   const handleCountryChange = (type, event, value) => {
     if (type === "country") {
-      setFormData((prevData) => ({
-        ...prevData,
+      setFormData((formData) => ({
+        ...formData,
         country: value?.id || "",
         state: "",
         city: "",
       }));
     }
+
     if (type === "currentcountry") {
-      setFormData((prevData) => ({
-        ...prevData,
+      setFormData((formData) => ({
+        ...formData,
         currentcountry: value?.id || "",
         currentstate: "",
         currentcity: "",
+      }));
+    }
+
+    if (isChecked) {
+      setFormData((formData) => ({
+        ...formData,
+        country: formData.currentcountry,
+        state: "",
+        city: "",
       }));
     }
 
@@ -562,43 +608,59 @@ export default function CreateUser() {
 
   const handleCity = (type, event, value) => {
     if (type === "city") {
-      setFormData((prevData) => ({
-        ...prevData,
+      setFormData((formData) => ({
+        ...formData,
         city: value?.id || "",
       }));
     }
     if (type === "currentcity") {
-      setFormData((prevData) => ({
-        ...prevData,
+      setFormData((formData) => ({
+        ...formData,
         currentcity: value?.id || "",
+      }));
+    }
+    if (isChecked) {
+      setFormData((formData) => ({
+        ...formData,
+        city: formData.currentcity,
       }));
     }
   };
 
   const handleStateChange = (type, event, value) => {
     if (type === "state") {
-      setFormData((prevData) => ({
-        ...prevData,
+      setFormData((formData) => ({
+        ...formData,
         state: value?.id || "",
         city: "",
       }));
     }
+
     if (type === "currentstate") {
-      setFormData((prevData) => ({
-        ...prevData,
+      setFormData((formData) => ({
+        ...formData,
         currentstate: value?.id || "",
       }));
-      setFormData((prevData) => ({
-        ...prevData,
+      setFormData((formData) => ({
+        ...formData,
         currentcity: "",
       }));
     }
-
+    if (isChecked) {
+      setFormData((formData) => ({
+        ...formData,
+        state: formData.currentstate,
+        city: "",
+      }));
+    }
     fetchCitiesAction(value?.id, setCities);
   };
 
+  const [isNaviget, setIsNaviget] = useState(false);
+
   const handleSave = async () => {
     const validationErrors = validateForm();
+
     if (Object.keys(validationErrors).length == 0) {
       const payload = {
         id: id ? id : "",
@@ -642,12 +704,21 @@ export default function CreateUser() {
       };
 
       if (id) {
-        await dispatch(EditUserForm(payload));
+        await dispatch(EditUserForm(payload, setIsNaviget));
       } else {
-        await dispatch(CreateUserForm(payload));
+        await dispatch(CreateUserForm(payload, setIsNaviget));
       }
-      navigate("/user");
 
+      if (isNaviget === true && userId) {
+        navigate(`/userDetailPage/${userId}`);
+      }
+      setErrors({});
+    } else {
+      setErrors(validationErrors);
+    }
+  };
+  useEffect(() => {
+    if (!usersDataLoading && !userDataError) {
       setFormData({
         firstName: "",
         id: "",
@@ -660,6 +731,7 @@ export default function CreateUser() {
         CTC: "",
         Status: "",
         skill: "",
+        ACNo: "",
         UANNo: "",
         address1: "",
         address2: "",
@@ -677,7 +749,6 @@ export default function CreateUser() {
         workMode: "",
         ManagerName: { id: 0, name: "", type: "employee" },
         designation: "",
-        ACNo: "",
         Bank: "",
         IFSCCode: "",
         employeeType: "",
@@ -689,11 +760,10 @@ export default function CreateUser() {
         productType: "",
         Bank_Name: "",
       });
-      setErrors({});
-    } else {
-      setErrors(validationErrors);
+      setIsChecked(false);
+      setIsNaviget(true);
     }
-  };
+  }, [usersDataLoading, userDataError]);
 
   const validateForm = () => {
     const errors = {};
@@ -704,7 +774,7 @@ export default function CreateUser() {
     }
 
     if (!formData.currentZIP) {
-      errors.currentZIP = "*Zip/Pincode is required";
+      errors.currentZIP = "Zip/Postal code is mandatory";
     } else if (!/^\d+$/.test(formData.currentZIP)) {
       errors.currentZIP =
         "Invalid postal code or contains non-numeric characters";
@@ -723,7 +793,7 @@ export default function CreateUser() {
     }
     if (formData.Zip) {
       if (!formData.Zip) {
-        errors.Zip = "*Postal Code is required";
+        errors.Zip = "Postal Code is mandatory";
       } else if (!/^\d+$/.test(formData.Zip)) {
         errors.Zip = "Invalid postal code or contains non-numeric characters";
       } else {
@@ -741,28 +811,21 @@ export default function CreateUser() {
       }
     }
 
-    if (!formData.UANNo) {
-      errors.UANNo = "UAN No number is mandatory";
-    } else if (!/^\d+$/.test(formData.UANNo)) {
-      errors.UANNo = "UAN No number should contain only digits";
-    } else if (!/^[0-9]{12}$/.test(formData.UANNo)) {
-      errors.UANNo = "UAN No number should contains only 12 digits";
+    if (formData.UANNo) {
+      if (!/^\d{12}$/.test(formData.UANNo)) {
+        errors.UANNo = "UAN number should contain exactly 12 digits";
+      }
     }
 
-    if (!formData.ACNo && !/^[0-9]+$/.test(formData.ACNo)) {
-      errors.ACNo = "Your A/C number is mandatory";
-    }
-    if (!/^[0-9]+$/.test(formData.ACNo)) {
-      errors.ACNo = "Please provide valid A/C number";
-    }
     if (!formData.gender) {
       errors.gender = "Gender is mandatory";
     }
-    if (!formData.Client_loc) {
-      errors.Client_loc = "*Office Location is required";
+    if (formData.productType !== "PRAKAT_LOCATION" && !formData.Client_loc) {
+      errors.Client_loc = "Office Location is mandatory";
     }
+
     if (!formData.employedBy) {
-      errors.Client_loc = "*Office Location is required";
+      errors.employedBy = "Employee By Location is mandatory";
     }
 
     if (!formData.designation) {
@@ -773,9 +836,9 @@ export default function CreateUser() {
     }
 
     if (!formData.employeeID) {
-      errors.employeeID = "employeeID number is mandatory";
+      errors.employeeID = "Employee ID  is mandatory";
     } else if (!/^\d+$/.test(formData.employeeID)) {
-      errors.employeeID = "employeeID number should contain only digits";
+      errors.employeeID = "Employee ID should contain only Number";
     }
 
     if (!formData.ManagerName.name) {
@@ -791,22 +854,22 @@ export default function CreateUser() {
       errors.email = "Please enter a valid email address";
     }
     if (!formData.currentAddress1) {
-      errors.currentAddress1 = "*Current Address is required";
+      errors.currentAddress1 = "Current Address is mandatory";
     }
     if (!formData.currentcountry) {
-      errors.currentcountry = "*Country is required";
+      errors.currentcountry = "Country is mandatory";
     }
     if (!formData.currentstate) {
-      errors.currentstate = "*Current State is required";
+      errors.currentstate = "State is mandatory";
     }
     if (!formData.currentcity) {
-      errors.currentcity = "*Current city is required";
+      errors.currentcity = "City is mandatory";
     }
 
     if (!formData.number) {
       errors.number = "Mobile number is mandatory";
     } else if (!/^\d+$/.test(formData.number)) {
-      errors.number = "Mobile number should contain only digits";
+      errors.number = "Mobile number should contain only Number";
     }
     if (!formData.DOB) {
       errors.DOB = "Date of birth is mandatory";
@@ -823,31 +886,21 @@ export default function CreateUser() {
     if (!formData.AadhaarNo) {
       errors.AadhaarNo = "Aadhaar number is mandatory";
     } else if (!/^\d+$/.test(formData.AadhaarNo)) {
-      errors.AadhaarNo = "Aadhaar number should contain only digits";
+      errors.AadhaarNo = "Aadhaar number should contain only Number";
     } else if (!/^[0-9]{12}$/.test(formData.AadhaarNo)) {
-      errors.AadhaarNo = "Aadhaar number should contains only 12 digits";
+      errors.AadhaarNo = "Aadhaar number should contains only 12 Number";
     }
 
     if (!formData.CTC) {
       errors.CTC = "Employee CTC is mandatory";
-    } else if (
-      !/^\d+$/.test(formData.CTC) ||
-      /\W/.test(formData.CTC) ||
-      /\./.test(formData.CTC)
-    ) {
+    } else if (!/^\d+(\.\d{1,2})?$/.test(formData.CTC)) {
       errors.CTC =
-        "Please enter a valid numeric value for Employee CTC without special characters or dots.";
+        "Please enter a valid numeric value for CTC with up to two decimal places.";
     } else {
       const ctcNumber = parseFloat(formData.CTC);
       if (isNaN(ctcNumber) || ctcNumber < 0) {
         errors.CTC =
           "Please enter a valid non-negative numeric value for Employee CTC";
-      } else {
-        const ctcString = formData.CTC.toString();
-        const decimalIndex = ctcString.indexOf(".");
-        if (decimalIndex !== -1 && ctcString.length - decimalIndex > 3) {
-          errors.CTC = "Employee CTC can have up to two decimal places";
-        }
       }
     }
 
@@ -856,15 +909,6 @@ export default function CreateUser() {
     }
     if (!formData.employeeType) {
       errors.employeeType = "Employee type is mandatory";
-    }
-    if (!formData.Bank_Name) {
-      errors.BankName = "Your name as per bank is mandatory";
-    }
-    if (!formData.Bank) {
-      errors.Bank = "Your name as per bank is mandatory";
-    }
-    if (!formData.IFSCCode) {
-      errors.IFSCCode = "Your Bank IFSC COde is required";
     }
     return errors;
   };
@@ -1229,7 +1273,6 @@ export default function CreateUser() {
           </Grid>
         </Grid>
       </Grid>{" "}
-      <br />
       <Grid>
         <Typography variant="h6" sx={{ paddingLeft: "20px" }}>
           <b>Present Address</b>
@@ -1285,6 +1328,8 @@ export default function CreateUser() {
             <Grid item xs={6} mt={0.2}>
               <Autocomplete
                 disableFreeSolo
+                disableClearable
+                disableInput
                 id="currentcountry"
                 options={countries || []}
                 getOptionLabel={(option) => option.label}
@@ -1321,6 +1366,8 @@ export default function CreateUser() {
             <Grid item xs={6}>
               <Autocomplete
                 disableFreeSolo
+                disableClearable
+                disableInput
                 id="currentstate"
                 options={formData.currentcountry ? states : []}
                 getOptionLabel={(option) => option.label}
@@ -1364,9 +1411,9 @@ export default function CreateUser() {
             <Grid item xs={6} mt={0.3}>
               <Autocomplete
                 disableFreeSolo
+                disableInput
                 id="currentcity"
                 disableClearable={true} // Disable clear icon
-                filterOptions={(options) => options}
                 options={formData.currentstate ? cities : []}
                 style={{
                   borderRadius: "10px",
@@ -1579,7 +1626,7 @@ export default function CreateUser() {
             border: "1px solid silver",
           }}
         />
-        <Grid container spacing={2} style={{ marginLeft: "5px" }}>
+        <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
             <FormControl>
               <RadioGroup
@@ -1651,7 +1698,7 @@ export default function CreateUser() {
             border: "1px solid silver",
           }}
         />
-        <Grid container spacing={2} sx={{ margin: "20px" }}>
+        <Grid container spacing={2} sx={{ margin: "5px" }}>
           <Grid container>
             <Grid item xs={6}>
               <Autocomplete
@@ -1723,7 +1770,7 @@ export default function CreateUser() {
                 onChange={handleEmptypeChange}
                 title={
                   <>
-                    employee Type
+                    Employee Type
                     <span style={{ color: "red", width: "100%" }}>*</span>
                   </>
                 }
@@ -1820,11 +1867,10 @@ export default function CreateUser() {
                   border: "1px solid silver",
                 }}
               />
-              {errors.employeeType && (
+              {errors.employedBy && (
                 <Box>
                   <Typography color="error" style={{}}>
-                    {" "}
-                    {errors.employeeType}
+                    {errors.employedBy}
                   </Typography>
                 </Box>
               )}
@@ -1835,8 +1881,8 @@ export default function CreateUser() {
                 onChange={handleClientLocationChange}
                 title={
                   <>
-                    Location
-                    <span style={{ color: "red", width: "100%" }}>*</span>Client
+                    Client Location
+                    <span style={{ color: "red", width: "100%" }}>*</span>
                   </>
                 }
                 dropdownName="Client Location"
@@ -1850,13 +1896,15 @@ export default function CreateUser() {
                 options={Client_location || []}
                 labelKey="name"
                 valueKey="locationId"
+                disabled={enable}
               />
-              {errors.Client_loc && (
+              {formData.productType !== "PRAKAT_LOCATION" && (
                 <Box>
-                  <Typography color="error" style={{}}>
-                    {" "}
-                    {errors.Client_loc}
-                  </Typography>
+                  {errors.Client_loc && (
+                    <Typography color="error" style={{}}>
+                      {errors.Client_loc}
+                    </Typography>
+                  )}
                 </Box>
               )}
             </Grid>
@@ -1931,9 +1979,9 @@ export default function CreateUser() {
             border: "1px solid silver",
           }}
         />
-        <Grid container spacing={2} mt={2} sx={{ marginLeft: "20px" }}>
+        <Grid container spacing={2} mt={2} sx={{ marginLeft: "10px" }}>
           <Grid container>
-            <Grid item xs={6.2}>
+            <Grid item xs={6}>
               <TextField
                 label={
                   <>
@@ -1949,7 +1997,7 @@ export default function CreateUser() {
                 style={{
                   ...style.TimesheetTextField,
                   borderRadius: "10px",
-                  width: "90%",
+                  width: "92%",
                 }}
                 fullWidth
                 margin="normal"
@@ -1963,7 +2011,7 @@ export default function CreateUser() {
                 </Box>
               )}
             </Grid>
-            <Grid item xs={5.8}>
+            <Grid item xs={6}>
               <TextField
                 label="Name as per Bank"
                 placeholder="Name as per Bank"
@@ -1974,7 +2022,7 @@ export default function CreateUser() {
                 style={{
                   ...style.TimesheetTextField,
                   borderRadius: "10px",
-                  width: "97%",
+                  width: "95%",
                 }}
                 fullWidth
                 margin="normal"
@@ -1987,7 +2035,7 @@ export default function CreateUser() {
             </Grid>
           </Grid>
           <Grid container>
-            <Grid item xs={6.2}>
+            <Grid item xs={6}>
               <TextField
                 label="A/C No."
                 value={formData.ACNo}
@@ -1998,7 +2046,7 @@ export default function CreateUser() {
                 style={{
                   ...style.TimesheetTextField,
                   borderRadius: "10px",
-                  width: "90%",
+                  width: "92%",
                 }}
                 fullWidth
                 margin="normal"
@@ -2012,7 +2060,7 @@ export default function CreateUser() {
                 </Box>
               )}
             </Grid>
-            <Grid item xs={5.8}>
+            <Grid item xs={6}>
               <TextField
                 label="IFSC Code"
                 placeholder="IFSC Code"
@@ -2023,7 +2071,7 @@ export default function CreateUser() {
                 style={{
                   ...style.TimesheetTextField,
                   borderRadius: "10px",
-                  width: "97%",
+                  width: "95%",
                 }}
                 fullWidth
                 margin="normal"
@@ -2036,7 +2084,7 @@ export default function CreateUser() {
             </Grid>
           </Grid>
           <Grid container>
-            <Grid item xs={6.2}>
+            <Grid item xs={6}>
               <TextField
                 value={formData.Bank_Name}
                 label="Bank Name"
@@ -2047,7 +2095,7 @@ export default function CreateUser() {
                 style={{
                   ...style.TimesheetTextField,
                   borderRadius: "10px",
-                  width: "90%",
+                  width: "92%",
                 }}
                 fullWidth
                 margin="normal"
@@ -2061,7 +2109,7 @@ export default function CreateUser() {
                 </Box>
               )}
             </Grid>
-            <Grid item xs={5.8}></Grid>
+            <Grid item xs={6}></Grid>
           </Grid>
         </Grid>
       </Grid>

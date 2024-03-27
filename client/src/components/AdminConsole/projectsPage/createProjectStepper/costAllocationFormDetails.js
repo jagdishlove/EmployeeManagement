@@ -139,6 +139,27 @@ const CostAllocationFormDetails = () => {
   }, [projectId, saveButton]);
   //Save
   const handleSaveData = async (e, type) => {
+  // Check for validation errors
+  const newErrors = {};
+
+  // Check if Project Budget is not empty and contains only digits
+  if (formData.projectBudget.trim() !== '' && !/^\d+$/.test(formData.projectBudget)) {
+    newErrors.projectBudget = "Project Budget must contain only digits.";
+  }
+
+  // Check if Project Revenue is not empty and contains only digits
+  if (formData.projectRevenue.trim() !== '' && !/^\d+$/.test(formData.projectRevenue)) {
+    newErrors.projectRevenue = "Project Revenue must contain only digits.";
+  }
+
+  // Update the error state
+  setErrors(newErrors);
+
+    // If there are validation errors, do not proceed further
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+
     if (type === "save") {
       setSaveButton(true);
     } else if (type === "next") {
@@ -368,7 +389,7 @@ const CostAllocationFormDetails = () => {
             Project Budget
           </Typography>
           <TextField
-            placeholder="Project Implementation Cost"
+            placeholder="Project budget"
             name="projectBudget"
             value={formData.projectBudget}
             onChange={handleInputChange}
@@ -380,7 +401,9 @@ const CostAllocationFormDetails = () => {
             fullWidth
             InputProps={{ classes: { focused: "green-border" } }}
           />
-
+          <Typography variant="body2" color="error" fontSize={"1rem"}>
+            {errors.projectBudget}
+          </Typography>
           <Typography
             variant="body1"
             fontWeight="bold"
@@ -444,9 +467,9 @@ const CostAllocationFormDetails = () => {
             fullWidth
             InputProps={{ classes: { focused: "green-border" } }}
           />
-          {/* <Typography variant="body2" color="error">
+          <Typography variant="body2" color="error" fontSize={"1rem"}>
             {errors.projectRevenue}
-          </Typography> */}
+          </Typography>
           <Typography
             variant="body1"
             fontWeight="bold"

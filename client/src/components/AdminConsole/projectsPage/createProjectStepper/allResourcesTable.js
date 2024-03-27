@@ -11,6 +11,8 @@ import {
   TableHead,
   TableRow,
   Button,
+  Avatar,
+  Typography,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -47,14 +49,21 @@ const AllResourcesTable = ({ handleEdit }) => {
     <Grid container spacing={2} justifyContent={"center"}>
       <Grid item xs={12} sm={8} md={12} lg={12}>
         {allResourcesData?.length > 0 && (
+          <Typography variant="h3" gutterBottom>
+            <strong> Added Project Resources</strong>
+          </Typography>
+        )}
+        {allResourcesData?.length > 0 && (
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
                 <TableRow
                   style={{ backgroundColor: "#008080", color: "#ffffff" }}
                 >
-                  <TableCell style={{ color: "#ffffff" }}>SL No.</TableCell>
-                  <TableCell style={{ color: "#ffffff" }}>
+                  <TableCell style={{ color: "#ffffff", minWidth: 100 }}>
+                    SL No.
+                  </TableCell>
+                  <TableCell style={{ color: "#ffffff", minWidth: 200 }}>
                     Employee Name
                   </TableCell>
                   <TableCell style={{ color: "#ffffff" }}>
@@ -73,7 +82,22 @@ const AllResourcesTable = ({ handleEdit }) => {
                   <React.Fragment key={allResources.resourceId}>
                     <TableRow>
                       <TableCell>{index + 1}</TableCell>
-                      <TableCell>{allResources.employeeName}</TableCell>
+                      <TableCell>
+                        <Grid container spacing={2}>
+                          <Grid item xs={4}>
+                            <Avatar
+                              sx={{
+                                color: "#fff",
+                              }}
+                            >
+                              {allResources?.employeeName.charAt(0)}
+                            </Avatar>
+                          </Grid>
+                          <Grid item xs={8} mt={1}>
+                            {allResources.employeeName}
+                          </Grid>
+                        </Grid>
+                      </TableCell>
                       <TableCell>{allResources.designation}</TableCell>
                       <TableCell>
                         {allResources.employeeSkills?.length > 0 && (

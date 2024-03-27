@@ -3,10 +3,8 @@ import { Box, Grid, IconButton, Typography } from "@mui/material";
 import UserHerders from "./userHeaders";
 import UserListPage from "./userListPage";
 import { useDispatch, useSelector } from "react-redux";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { getAllUsers } from "../../../redux/actions/AdminConsoleAction/users/usersAction";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { useNavigate } from "react-router-dom";
 import { masterDataAction } from "../../../redux/actions/masterData/masterDataAction";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -17,7 +15,8 @@ export default function User() {
   const [skillsCheckedData, setSkillsCheckedData] = useState([]);
   const [designationId, setDesignationId] = useState("All");
   const [selectedSearchOption, setSelectedSearchOption] = useState("");
-  const navigate = useNavigate();
+  const [filteredSkills, setFilteredSkills] = useState([]);
+
 
   const userData = useSelector(
     (state) => state?.nonPersist?.userDetails?.usersData
@@ -26,6 +25,11 @@ export default function User() {
   const removeSkill = (skillToRemove) => {
     setSkillsCheckedData((prevSkills) =>
       prevSkills.filter((skill) => skill.skillId !== skillToRemove.skillId)
+    );
+    setFilteredSkills((prevFilteredSkills) =>
+      prevFilteredSkills.filter(
+        (skill) => skill.skillId !== skillToRemove.skillId
+      )
     );
   };
 
@@ -59,16 +63,10 @@ export default function User() {
     setPageCounter((counter) => counter + 1);
   };
 
-  const handleBack = () => {
-    navigate(-1);
-  };
+ 
   return (
     <Box>
       <Typography variant="h2" gutterBottom>
-        <KeyboardBackspaceIcon
-          style={{ fontSize: 30, cursor: "pointer" }}
-          onClick={() => handleBack()}
-        />
         USERS
       </Typography>
       <div
@@ -88,6 +86,8 @@ export default function User() {
           setDesignationId={setDesignationId}
           setSelectedSearchOption={setSelectedSearchOption}
           selectedSearchOption={selectedSearchOption}
+          filteredSkills={filteredSkills}
+          setFilteredSkills={setFilteredSkills}
         />
         <Grid>
           {skillsCheckedData.length > 0 ? (
@@ -137,7 +137,11 @@ export default function User() {
                 }}
                 key={selectedSkills.skillId}
               >
-                <IconButton onClick={() => removeSkill(selectedSkills)}  sx={{ padding: "6px" }} size="small">
+                <IconButton
+                  onClick={() => removeSkill(selectedSkills)}
+                  sx={{ padding: "6px" }}
+                  size="small"
+                >
                   <CloseIcon />
                 </IconButton>
                 <Typography

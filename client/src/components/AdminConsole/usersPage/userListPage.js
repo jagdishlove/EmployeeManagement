@@ -168,7 +168,7 @@ const UserDataListPage = ({ userData }) => {
               }}
               onClick={handleViewInDetail}
             >
-              View in detail
+              VIEW IN DETAIL
             </Typography>
           </Link>
         </Box>

@@ -85,11 +85,8 @@ export const formatDateForApi = (selectedDate) => {
 export const adminTimeOptions = () => {
   const options = [];
 
-  // Include "0" as the first option
-  options.push({ label: "0", value: "0" });
-
-  // Add options from 1 to 60
-  for (let i = 1; i <= 60; i++) {
+  // Include options from 0 to 59
+  for (let i = 0; i < 60; i++) {
     options.push({ label: i.toString(), value: i.toString() });
   }
 

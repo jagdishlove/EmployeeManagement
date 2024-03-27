@@ -77,18 +77,20 @@ const InputOption = ({
 
 export default function UserHerders({
   userData,
-  // skillsCheckedData,
+  skillsCheckedData,
   setSkillsCheckedData,
   designationId,
   setDesignationId,
   setSelectedSearchOption,
+  setFilteredSkills,
+  filteredSkills,
 }) {
   const theme = useTheme();
   const style = adminHeaderStyle(theme);
 
   const Navigate = useNavigate();
   const dispatch = useDispatch();
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   const handleInputChange = (e) => {
     const inputValue = e.target.value;
     if (inputValue.length >= 3) {
@@ -108,58 +110,67 @@ export default function UserHerders({
   const searchData = useSelector(
     (state) => state?.nonPersist?.userDetails?.searchData
   );
-  const [filteredSkills, setFilteredSkills] = useState([]);
-  const onResetSkillFilterHandler = () => {
-    setSkillsCheckedData([]);
-    setFilteredSkills([]);
-  };
-
-  const applySkillFilterHandler = () => {
-    setSkillsCheckedData(filteredSkills);
-    setIsDropdownOpen(false);
-  };
-
-  const handleCloseDropdown = () => {
-    setIsDropdownOpen(false);
-  };
 
   const CustomMenu = (props) => {
+    const { innerProps, children, selectProps } = props;
+
+    const applySkillFilterHandler = () => {
+      setSkillsCheckedData(filteredSkills);
+
+      // Close the dropdown when the "Apply" button is clicked
+      selectProps.onMenuClose();
+    };
+
+    const onResetSkillFilterHandler = () => {
+      setSkillsCheckedData([]);
+      setFilteredSkills([]);
+      // Close the dropdown when the "Apply" button is clicked
+      selectProps.onMenuClose();
+    };
+
     return (
       <components.Menu {...props}>
-        {props.children}
+        {children}
         <Box
           style={{
-            bottom: 0,
+            position: "absolute",
+            bottom: "-50px",
             left: 0,
             right: 0,
             padding: "10px",
+            background: "white",
+            border: "1px solid lightgray",
             display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            justifyContent: "flex-end",
           }}
+          {...innerProps}
         >
           <Button
-            onClick={applySkillFilterHandler}
-            style={{
-              width: "100%",
-              backgroundColor: "#008080",
-              borderRadius: "10px",
-              color: "#fff",
-            }}
-          >
-            Apply
-          </Button>
-          <Button
+            variant="contained"
+            color="secondary"
             onClick={onResetSkillFilterHandler}
             style={{
-              width: "100%",
-              borderRadius: "10px",
               border: "1px solid #008080",
+              borderRadius: "20px",
               color: "#008080",
-              marginTop: "5px",
+              "&:hover": {
+                backgroundColor: "#008080",
+                color: "white",
+              },
             }}
           >
             Clear All
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={applySkillFilterHandler}
+            style={{
+              borderRadius: "20px",
+              marginLeft: "10px",
+            }}
+          >
+            Apply
           </Button>
         </Box>
       </components.Menu>
@@ -176,8 +187,6 @@ export default function UserHerders({
         <Grid item xs={12} sm={12} md={4} lg={5}>
           <Box>
             <Autocomplete
-              isMulti={true}
-              isSearchable={true}
               options={searchData?.result || []}
               getOptionValue={(option) => option.id}
               getOptionLabel={(option) => option.name}
@@ -189,6 +198,11 @@ export default function UserHerders({
                 <TextField
                   {...params}
                   variant="outlined"
+                  value={
+                    skillsCheckedData.length > 0
+                      ? skillsCheckedData[0]?.skillName
+                      : null
+                  }
                   placeholder="Search by User Name, Project Name"
                   onChange={handleInputChange}
                   InputProps={{
@@ -256,12 +270,26 @@ export default function UserHerders({
                 isSearchable={false}
                 isMulti
                 closeMenuOnSelect={false}
-                hideSelectedOptions={false}
+                hideSelectedOptions={true} // Set hideSelectedOptions to true
                 onChange={(selectedOptions) => {
+                  // Update filteredSkills to include all selected options
                   setFilteredSkills(selectedOptions);
                 }}
                 options={skills}
                 value={filteredSkills}
+                isClearable={false}
+                controlShouldRenderValue={true}
+                getOptionValue={(option) => option.skillId}
+                getOptionLabel={(option) => option.skillName}
+                isLoading={skills?.length === 0}
+                styles={{
+                  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                  control: (baseStyles) => ({
+                    ...baseStyles,
+                    overflow: "auto",
+                    height: "55px",
+                  }),
+                }}
                 components={{
                   Option: (props) => (
                     <InputOption
@@ -270,22 +298,8 @@ export default function UserHerders({
                     />
                   ),
                   Menu: CustomMenu,
+                  MultiValueRemove: () => null,
                 }}
-                isClearable={false}
-                controlShouldRenderValue={false}
-                getOptionValue={(option) => option.skillId}
-                getOptionLabel={(option) => option.skillName}
-                isLoading={skills?.length === 0}
-                styles={{
-                  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                  control: (baseStyles) => ({
-                    ...baseStyles,
-                    height: "55px",
-                  }),
-                }}
-                menuIsOpen={isDropdownOpen}
-                onFocus={() => setIsDropdownOpen(true)}
-                onBlur={handleCloseDropdown} // Close dropdown when focus is lost
               />
             </FormControl>
           </Grid>

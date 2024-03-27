@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Autocomplete,
   Avatar,
   Box,
   Button,
@@ -361,8 +362,7 @@ export default function MasterDataDialogs({
             placeholder="Enter Phone Number"
             value={officeData.phone}
             onChange={(value) => {
-              const cleanedPhoneNumber = value.replace(/\s/g, "");
-              handleOfficeChange("phoneNumber", cleanedPhoneNumber);
+              handleOfficeChange("phoneNumber", value);
             }}
             sx={{ marginBottom: 1 }}
           />
@@ -372,19 +372,21 @@ export default function MasterDataDialogs({
             </Box>
           )}
           <Typography>Country</Typography>
-          <Dropdown
-            options={country} // Pass any additional options if needed
-            value={officeData.countryId}
-            onChange={(e, value) => handleOfficeChange("country", e, value)}
-            title="country"
-            dropdownName="country" // Pass the dropdown name
+          <Autocomplete
+            disableFreeSolo
+            id="Country"
+            options={country || []}
+            getOptionLabel={(option) => option.dataValue}
+            getOptionValue={(option) => option.id}
             style={{
-              ...style.TimesheetTextField,
-              border: "1px solid #8897ad87",
-              borderRadius: "5px",
+              borderRadius: "10px",
             }}
-            valueKey="id"
-            labelKey="dataValue"
+            value={
+              country.find((country) => country.id === officeData.countryId) ||
+              null
+            }
+            onChange={(e, value) => handleOfficeChange("country", e, value)}
+            renderInput={(params) => <TextField {...params} label="Country" />}
           />
           {errors.country && (
             <Box>
@@ -392,19 +394,21 @@ export default function MasterDataDialogs({
             </Box>
           )}
           <Typography>State</Typography>
-          <Dropdown
-            options={state} // Pass any additional options if needed
-            value={officeData.stateId}
-            onChange={(e, value) => handleOfficeChange("state", e, value)}
-            title="State"
-            dropdownName="State" // Pass the dropdown name
+
+          <Autocomplete
+            disableFreeSolo
+            id="State"
+            options={officeData.countryId ? state : []}
+            getOptionLabel={(option) => option.dataValue}
+            getOptionValue={(option) => option.id}
             style={{
-              ...style.TimesheetTextField,
-              border: "1px solid #8897ad87",
-              borderRadius: "5px",
+              borderRadius: "10px",
             }}
-            valueKey="id"
-            labelKey="dataValue"
+            value={
+              state.find((state) => state.id === officeData.stateId) || null
+            }
+            onChange={(e, value) => handleOfficeChange("state", e, value)}
+            renderInput={(params) => <TextField {...params} label="State" />}
           />
           {errors.state && (
             <Box>
@@ -412,19 +416,18 @@ export default function MasterDataDialogs({
             </Box>
           )}
           <Typography>City</Typography>
-          <Dropdown
-            options={city} // Pass any additional options if needed
-            value={officeData.cityId}
-            onChange={(e, value) => handleOfficeChange("city", e, value)}
-            title="City"
-            dropdownName="City" // Pass the dropdown name
+          <Autocomplete
+            disableFreeSolo
+            id="city"
+            options={officeData.stateId ? city : []}
+            getOptionLabel={(option) => option.dataValue}
+            getOptionValue={(option) => option.id}
             style={{
-              ...style.TimesheetTextField,
-              border: "1px solid #8897ad87",
-              borderRadius: "5px",
+              borderRadius: "10px",
             }}
-            valueKey="id"
-            labelKey="dataValue"
+            value={city.find((city) => city.id === officeData.cityId) || null}
+            onChange={(e, value) => handleOfficeChange("city", e, value)}
+            renderInput={(params) => <TextField {...params} label="City" />}
           />
           {errors.city && (
             <Box>
@@ -668,13 +671,15 @@ export default function MasterDataDialogs({
                   holidayFormData.date ? dayjs(holidayFormData.date) : null
                 }
                 onChange={(value) => handleHolidayChnage("date", value)}
-                renderInput={(params) => <TextField {...params} />}
+                renderInput={(params) => (
+                  <TextField {...params} sx={{ borderRadius: "8px" }} />
+                )}
               />
             </LocalizationProvider>
           </Grid>
-          {errors.selectedDate && (
+          {errors.date && (
             <Box>
-              <Typography color="error"> {errors.selectedDate}</Typography>
+              <Typography color="error"> {errors.date}</Typography>
             </Box>
           )}
           <Typography>Holiday Type</Typography>
@@ -682,12 +687,12 @@ export default function MasterDataDialogs({
             options={holidayType} // Pass any additional options if needed
             value={holidayFormData.holidayType}
             onChange={(e) => handleHolidayChnage("holidayType", e.target.value)}
-            title="holidayType"
-            placeholder="holidayType"
+            title="HolidayType"
+            placeholder="HolidayType"
             style={{
               ...style.TimesheetTextField,
               border: "1px solid #8897ad87",
-              borderRadius: "10px",
+              borderRadius: "5px",
             }}
           />
           {errors.holidayType && (
@@ -697,7 +702,7 @@ export default function MasterDataDialogs({
           )}
           <Typography>Enter Holiday Name</Typography>
           <TextField
-            placeholder="holiday Name"
+            placeholder="Holiday Name"
             value={holidayFormData.holidayName}
             onChange={(e) => handleHolidayChnage("holidayName", e.target.value)}
           />
@@ -844,19 +849,23 @@ export default function MasterDataDialogs({
             </Box>
           )}
           <Typography>Country</Typography>
-          <Dropdown
-            options={country} // Pass any additional options if needed
-            value={clinetDetails.countryId}
-            onChange={(e, value) => handleClinetDetails("country", e, value)}
-            title="country"
-            dropdownName="country" // Pass the dropdown name
+
+          <Autocomplete
+            disableFreeSolo
+            id="Country"
+            options={country || []}
+            getOptionLabel={(option) => option.dataValue}
+            getOptionValue={(option) => option.id}
             style={{
-              ...style.TimesheetTextField,
-              border: "1px solid #8897ad87",
-              borderRadius: "5px",
+              borderRadius: "10px",
             }}
-            valueKey="id"
-            labelKey="dataValue"
+            value={
+              country.find(
+                (country) => country.id === clinetDetails.countryId
+              ) || null
+            }
+            onChange={(e, value) => handleClinetDetails("country", e, value)}
+            renderInput={(params) => <TextField {...params} label="Country" />}
           />
           {errors.countryId && (
             <Box>
@@ -864,19 +873,20 @@ export default function MasterDataDialogs({
             </Box>
           )}
           <Typography>State</Typography>
-          <Dropdown
-            options={state} // Pass any additional options if needed
-            value={clinetDetails.stateId}
-            onChange={(e, value) => handleClinetDetails("state", e, value)}
-            title="State"
-            dropdownName="State" // Pass the dropdown name
+          <Autocomplete
+            disableFreeSolo
+            id="state"
+            options={clinetDetails.countryId ? state : []}
+            getOptionLabel={(option) => option.dataValue}
+            getOptionValue={(option) => option.id}
             style={{
-              ...style.TimesheetTextField,
-              border: "1px solid #8897ad87",
-              borderRadius: "5px",
+              borderRadius: "10px",
             }}
-            valueKey="id"
-            labelKey="dataValue"
+            value={
+              state.find((state) => state.id === clinetDetails.stateId) || null
+            }
+            onChange={(e, value) => handleClinetDetails("state", e, value)}
+            renderInput={(params) => <TextField {...params} label="State" />}
           />
           {errors.stateId && (
             <Box>
@@ -885,19 +895,20 @@ export default function MasterDataDialogs({
           )}
           <Typography>City</Typography>
 
-          <Dropdown
-            options={city} // Pass any additional options if needed
-            value={clinetDetails.cityId}
-            onChange={(e, value) => handleClinetDetails("city", e, value)}
-            title="City"
-            dropdownName="City" // Pass the dropdown name
+          <Autocomplete
+            disableFreeSolo
+            id="City"
+            options={clinetDetails.stateId ? city : []}
+            getOptionLabel={(option) => option.dataValue}
+            getOptionValue={(option) => option.id}
             style={{
-              ...style.TimesheetTextField,
-              border: "1px solid #8897ad87",
-              borderRadius: "5px",
+              borderRadius: "10px",
             }}
-            valueKey="id"
-            labelKey="dataValue"
+            value={
+              city.find((city) => city.id === clinetDetails.cityId) || null
+            }
+            onChange={(e, value) => handleClinetDetails("city", e, value)}
+            renderInput={(params) => <TextField {...params} label="City" />}
           />
           {errors.cityId && (
             <Box>
@@ -1029,42 +1040,46 @@ export default function MasterDataDialogs({
             </Box>
           )}
           <Typography>Country</Typography>
-          <Dropdown
-            options={country} // Pass any additional options if needed
-            value={clientLocationData.countryId}
-            onChange={(e, value) =>
-              handleOnsiteLocation("country", e.target.value, value)
-            }
-            title="country"
-            dropdownName="country" // Pass the dropdown name
-            style={{
-              ...style.TimesheetTextField,
-              border: "1px solid #8897ad87",
-              borderRadius: "5px",
-            }}
-            valueKey="id"
-            labelKey="dataValue"
-          />
 
+          <Autocomplete
+            disableFreeSolo
+            id="Country"
+            options={country || []}
+            getOptionLabel={(option) => option.dataValue}
+            getOptionValue={(option) => option.id}
+            style={{
+              borderRadius: "10px",
+            }}
+            value={
+              country.find(
+                (country) => country.id === clientLocationData.countryId
+              ) || null
+            }
+            onChange={(e, value) => handleOnsiteLocation("country", e, value)}
+            renderInput={(params) => <TextField {...params} label="Country" />}
+          />
           {errors.countryId && (
             <Box>
               <Typography color="error"> {errors.countryId}</Typography>
             </Box>
           )}
           <Typography>State</Typography>
-          <Dropdown
-            options={state} // Pass any additional options if needed
-            value={clientLocationData.stateId}
-            onChange={(e, value) => handleOnsiteLocation("state", e, value)}
-            title="state"
-            dropdownName="state" // Pass the dropdown name
+
+          <Autocomplete
+            disableFreeSolo
+            id="State"
+            options={clientLocationData.countryId ? state : []}
+            getOptionLabel={(option) => option.dataValue}
+            getOptionValue={(option) => option.id}
             style={{
-              ...style.TimesheetTextField,
-              border: "1px solid #8897ad87",
-              borderRadius: "5px",
+              borderRadius: "10px",
             }}
-            valueKey="id"
-            labelKey="dataValue"
+            value={
+              state.find((state) => state.id === clientLocationData.stateId) ||
+              null
+            }
+            onChange={(e, value) => handleOnsiteLocation("state", e, value)}
+            renderInput={(params) => <TextField {...params} label="State" />}
           />
           {errors.stateId && (
             <Box>
@@ -1072,19 +1087,20 @@ export default function MasterDataDialogs({
             </Box>
           )}
           <Typography>City</Typography>
-          <Dropdown
-            options={city} // Pass any additional options if needed
-            value={clientLocationData.cityId}
-            onChange={(e, value) => handleOnsiteLocation("city", e, value)}
-            title="city"
-            dropdownName="city" // Pass the dropdown name
+          <Autocomplete
+            disableFreeSolo
+            id="city"
+            options={clientLocationData.stateId ? city : []}
+            getOptionLabel={(option) => option.dataValue}
+            getOptionValue={(option) => option.id}
             style={{
-              ...style.TimesheetTextField,
-              border: "1px solid #8897ad87",
-              borderRadius: "5px",
+              borderRadius: "10px",
             }}
-            valueKey="id"
-            labelKey="dataValue"
+            value={
+              city.find((city) => city.id === clientLocationData.cityId) || null
+            }
+            onChange={(e, value) => handleOnsiteLocation("city", e, value)}
+            renderInput={(params) => <TextField {...params} label="City" />}
           />
           {errors.cityId && (
             <Box>

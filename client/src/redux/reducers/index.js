@@ -13,6 +13,8 @@ import usersReducer from "./AdminConsoleReducer/usersReducer";
 import masterDataReducer from "./AdminConsoleReducer/masterDataReducer";
 import adminTimeSheetReducer from "./AdminConsoleReducer/adminTimeSheetReducer";
 import adminLeavesReducer from "./AdminConsoleReducer/adminLeavesReducer";
+import workspaceReducer from "./workSpace/workSpaceReducer";
+import dashboardProjectReducer from "./dashboard/dashboardProjectReducer";
 
 const rootReducer = combineReducers({
   forgotPassword: forgotPasswordReducer,
@@ -29,6 +31,8 @@ const rootReducer = combineReducers({
   masterDataDetails: masterDataReducer,
   adminTimeSheet: adminTimeSheetReducer,
   adminLeaves: adminLeavesReducer,
+  workSpace: workspaceReducer,
+  dashboardProjectdetails : dashboardProjectReducer,
 });
 
 export default rootReducer;

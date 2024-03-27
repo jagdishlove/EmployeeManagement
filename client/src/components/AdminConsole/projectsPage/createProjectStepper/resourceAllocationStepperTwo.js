@@ -21,7 +21,9 @@ const ResourceAllocationStepperTwo = () => {
   const handleBackClick = () => {
     Navigate(`/EditForm/${projectId}`);
   };
-
+  const { getProjectData } = useSelector(
+    (state) => state?.nonPersist?.projectDetails
+  );
   return (
     <>
       <div
@@ -32,10 +34,14 @@ const ResourceAllocationStepperTwo = () => {
           style={{ color: "silver" }}
           onClick={() => handleBackClick()}
         >
-          <ArrowBackIcon />
+          <ArrowBackIcon
+            sx={{
+              color: "#000",
+            }}
+          />
         </IconButton>
         <Typography variant="h6">
-          <b>Project Name</b>
+          <b>{getProjectData?.projectName}</b>
         </Typography>
       </div>
       <div
@@ -53,6 +59,9 @@ const ResourceAllocationStepperTwo = () => {
         <Box
           sx={{
             width: "70%",
+            backgroundColor: "#e6e6e6 !important",
+            padding: "10px !important",
+            borderRadius: "10px",
           }}
         >
           <Stepper activeStep={1} alternativeLabel>
@@ -73,6 +82,7 @@ const ResourceAllocationStepperTwo = () => {
                           backgroundColor: index === 1 ? "#008080" : "#e6e6e6",
                           padding: "10px",
                           zIndex: "1",
+                          borderRadius: "5px",
                         }}
                       >
                         {label}

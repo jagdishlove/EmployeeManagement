@@ -124,7 +124,9 @@ const LeaveRequestForm = ({
       "Maternity Illness Leave"
     );
     const adoptionLeaveForMaleId = findLeaveMasterId("Adoption Leave For Male");
-    const adoptionLeaveForFemaleId = findLeaveMasterId("Adoption Leave For Female");
+    const adoptionLeaveForFemaleId = findLeaveMasterId(
+      "Adoption Leave For Female"
+    );
     const sickLeaveId = findLeaveMasterId("Sick Leave");
 
     const errors = {};
@@ -141,23 +143,10 @@ const LeaveRequestForm = ({
     // Example validation for leaveMasterId
     if (!leaveRqstData.leaveMasterId) {
       errors.leaveMasterId = "Leave Type is required";
-    } 
+    }
     if (!leaveRqstData.comments) {
       errors.comments = "Comment is required";
     }
-    const ccEmails = leaveRqstData?.cc?.split?.(',').map?.(email => email?.trim()) || [];
-
-    const isValidCCEmails = ccEmails?.every?.(email => isValidEmail(email));
-
-    function isValidEmail(email) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex?.test?.(email);
-    }
-
-    if (!isValidCCEmails) {
-      errors.cc = "Invalid email domain.";
-    }
-
 
     // Check if fromDate is before toDate
     if (dayjs(leaveRqstData.fromDate).isAfter(dayjs(leaveRqstData.toDate))) {
@@ -457,23 +446,13 @@ const LeaveRequestForm = ({
                       />
                     )}
                   />
-                  {errors.cc && (
-                    <Box>
-                      <Typography
-                        color="error"
-                        style={{ position: "absolute" }}
-                      >
-                        {errors.cc}
-                      </Typography>
-                    </Box>
-                  )}
                 </Grid>
               </Grid>
             </Grid>
             <Grid item xs={12}>
               <Box sx={{ display: "flex", gap: "10px", justifyContent: "end" }}>
-              <UsersAppliedLeave />
-                
+                <UsersAppliedLeave />
+
                 <Box sx={{}}>
                   <InputFileUpload
                     onChange={inputFileChangeHandler}

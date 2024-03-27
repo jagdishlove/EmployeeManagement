@@ -21,11 +21,15 @@ import {
   SET_SELECTED_COUNTRY_ID,
   GET_ALL_CITYS,
   SEARCH_EMPLOYEEANDPROJECT_SUCCESS,
+  CREATE_USER_FAIL,
+  CREATE_USER_REQUEST,
+  CREATE_USER_SUCCESS,
 } from "../../actions/AdminConsoleAction/users/usersActionTypes";
 
 const initialState = {
   usersData: [],
   usersDataLoading: false,
+  userDataError: false,
   userByIdData: {},
   employees: [],
   countries: [],
@@ -34,6 +38,7 @@ const initialState = {
   locationData: [],
   selectedCountryId: null,
   searchData: [],
+  userId: {},
 };
 
 const usersReducer = (state = initialState, action) => {
@@ -148,6 +153,24 @@ const usersReducer = (state = initialState, action) => {
       return {
         ...state,
         searchData: action.payload,
+      };
+    case CREATE_USER_REQUEST:
+      return {
+        ...state,
+        usersDataLoading: true,
+      };
+    case CREATE_USER_SUCCESS:
+      return {
+        ...state,
+        userId: action.payload.id,
+        usersDataLoading: false,
+        userDataError: null,
+      };
+    case CREATE_USER_FAIL:
+      return {
+        ...state,
+        usersDataLoading: false,
+        userDataError: true,
       };
     default:
       return state;

@@ -20,13 +20,13 @@ const Header = ({ anchorEl, open, handleMenuOpen, handleMenuClose }) => {
 
   const empId = useSelector((state) => state?.persistData.data?.empId);
 
-
   const handleUSerDetails = () => {
     navigate(`/userDetailPage/${empId}`);
-    handleMenuClose()
+    handleMenuClose();
   };
 
   const userName = useSelector((state) => state?.persistData?.data.userName);
+
   const isLG = useMediaQuery(theme.breakpoints.up("lg"));
   return (
     <>

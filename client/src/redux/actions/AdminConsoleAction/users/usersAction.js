@@ -235,7 +235,7 @@ export const getUserById = (data) => {
   };
 };
 
-export const CreateUserForm = (data) => {
+export const CreateUserForm = (data, setIsNaviget) => {
   return async (dispatch) => {
     let formData = new FormData();
     formData.append("file", data.file);
@@ -252,6 +252,7 @@ export const CreateUserForm = (data) => {
       toast.success("Create User is  Successfully.", {
         position: toast.POSITION.BOTTOM_CENTER,
       });
+      setIsNaviget(true);
     } catch (err) {
       if (
         err.response &&
@@ -273,7 +274,7 @@ export const CreateUserForm = (data) => {
   };
 };
 
-export const EditUserForm = (data) => {
+export const EditUserForm = (data, setIsNaviget) => {
   return async (dispatch) => {
     let formData = new FormData();
     formData.append("file", data.file);
@@ -292,6 +293,7 @@ export const EditUserForm = (data) => {
       toast.success("User Updated  Successfully.", {
         position: toast.POSITION.BOTTOM_CENTER,
       });
+      setIsNaviget(true);
     } catch (err) {
       if (
         err.response &&
@@ -448,7 +450,7 @@ export const saveSkills = (data) => {
         null
       );
       dispatch(saveSkillsSuccess(response));
-      toast.success("skill edit is  Successfully.", {
+      toast.success("Skill updated successfully.", {
         position: toast.POSITION.BOTTOM_CENTER,
       });
     } catch (err) {

@@ -41,9 +41,7 @@ import { postcodeValidator } from "postcode-validator";
 import MasterDataPage from "./masterDataPage";
 import { useNavigate } from "react-router-dom";
 import MasterDataDialogs from "./masterDataDialogs";
-import dayjs from "dayjs";
-import { Box } from "@mui/material";
-import { Button } from "bootstrap";
+
 import { getAllCitysAction } from "../../../redux/actions/AdminConsoleAction/users/usersAction";
 
 export default function MasterData() {
@@ -64,7 +62,7 @@ export default function MasterData() {
   const [chnageDataType, setChangeDataType] = useState("");
   const [chnageDataId, setChnageDataId] = useState("");
   const [value, setValue] = useState("");
-  const [selectedDate, setSelectedDate] = useState(null);
+
   const [designationExpand, setDesignatonExpand] = useState(true);
   const [skillExpand, setSkillExpand] = useState(false);
   const [officeLocationExpand, setOfiiceLocationExpand] = useState(false);
@@ -223,14 +221,6 @@ export default function MasterData() {
     navigate(-1);
   };
 
-  const cancleHandler = () => {
-    setIsOpenCalender(false);
-  };
-
-  const cancleHandlerAccepentc = (e) => {
-    setSelectedDate(e);
-  };
-
   const handleExpand = (type) => {
     if (type === "designation") {
       setDesignatonExpand(!designationExpand);
@@ -261,14 +251,6 @@ export default function MasterData() {
     }
   };
 
-  const ActionList = () => {
-    return (
-      <Box>
-        <Button onClick={cancleHandlerAccepentc}>Okay</Button>
-        <Button onClick={cancleHandler}>Cancel</Button>
-      </Box>
-    );
-  };
   useEffect(() => {
     if (officeLocation?.address?.countryId) {
       dispatch(
@@ -287,6 +269,7 @@ export default function MasterData() {
         })
       );
     }
+    dispatch(getAllCountry({ parentId: 0, dataType: "country" }));
 
     if (officeLocation) {
       setOfficeData({
@@ -295,8 +278,8 @@ export default function MasterData() {
         addressLine1: officeLocation.address?.addressLine1 || "",
         addressLine2: officeLocation.address?.addressLine2 || "",
         phone: officeLocation.phoneNumber || "",
-        
-        Id: officeLocation.address?.countryId || "",
+
+        countryId: officeLocation.address?.countryId || "",
         stateId: officeLocation.address?.stateId || "",
         cityId: officeLocation.address?.cityId || "",
         postalCode: officeLocation.address?.postalCode || "",
@@ -317,7 +300,6 @@ export default function MasterData() {
         holidayName: holiday.name || "",
         holidayType: holiday.holidayType || "",
       });
-      setSelectedDate(dayjs(holiday.date));
     }
   }, [officeLocation, dispatch, bandByID, holiday]);
 
@@ -330,6 +312,7 @@ export default function MasterData() {
         })
       );
     }
+    dispatch(getAllCountry({ parentId: 0, dataType: "country" }));
 
     if (onsiteLocation?.address?.stateId) {
       dispatch(
@@ -355,9 +338,6 @@ export default function MasterData() {
         addressName: onsiteLocation?.address?.name || "",
       });
     }
-  }, [onsiteLocation]);
-
-  useEffect(() => {
     if (clientDetails1?.address?.countryId) {
       dispatch(
         getAllState({
@@ -366,6 +346,7 @@ export default function MasterData() {
         })
       );
     }
+    dispatch(getAllCountry({ parentId: 0, dataType: "country" }));
 
     if (clientDetails1?.address?.stateId) {
       dispatch(
@@ -393,7 +374,7 @@ export default function MasterData() {
         `data:image/png;base64,${clientDetails1?.fileStorage?.data}`
       );
     }
-  }, [clientDetails1]);
+  }, [onsiteLocation, clientDetails1]);
 
   const handlechange = (e) => {
     setValue(e.target.value);
@@ -494,8 +475,8 @@ export default function MasterData() {
     setHolidayFormData({
       holidayName: "",
       holidayType: "",
+      date: null,
     });
-    setSelectedDate(null);
     setErrors({});
     setClinetDetails("");
     setClientLocationData("");
@@ -603,6 +584,7 @@ export default function MasterData() {
     }
   };
   const handleOfficeChange = async (field, data, value) => {
+    const id = value?.id;
     if (field === "phoneNumber") {
       setOfficeData((prevFormData) => ({
         ...prevFormData,
@@ -611,23 +593,24 @@ export default function MasterData() {
     } else if (field === "country") {
       setOfficeData((prevFormData) => ({
         ...prevFormData,
-        countryId: data.target.value,
+        countryId: id,
+        stateId: "",
+        cityId: "",
       }));
       setCountryCode(value?.code);
-      if (officeData.countryId || data.target.value) {
-        await dispatch(
-          getAllState({ parentId: data.target.value || "", dataType: "state" })
-        );
+      if (officeData.countryId || id) {
+        await dispatch(getAllState({ parentId: id || "", dataType: "state" }));
       }
     } else if (field === "state") {
       setOfficeData((prevFormData) => ({
         ...prevFormData,
-        stateId: data.target.value,
+        stateId: id,
+        cityId: "",
       }));
-      if (officeData.stateId || data.target.value) {
+      if (officeData.stateId || id) {
         await dispatch(
           getAllCitysAction({
-            parentId: data.target.value || "",
+            parentId: id || "",
             dataType: "city",
           })
         );
@@ -635,7 +618,7 @@ export default function MasterData() {
     } else if (field === "city") {
       setOfficeData((prevFormData) => ({
         ...prevFormData,
-        cityId: data.target.value,
+        cityId: id,
       }));
     } else {
       setOfficeData((prevFormData) => ({
@@ -646,6 +629,7 @@ export default function MasterData() {
   };
 
   const handleClinetDetails = async (field, data, value) => {
+    const id = value?.id;
     if (field === "phoneNumber") {
       setClinetDetails((prevFormData) => ({
         ...prevFormData,
@@ -654,27 +638,28 @@ export default function MasterData() {
     } else if (field === "country") {
       setClinetDetails((prevFormData) => ({
         ...prevFormData,
-        countryId: data.target.value,
+        countryId: id,
+        stateId: "",
+        cityId: "",
       }));
       setCountryCode(value?.code);
-      await dispatch(
-        getAllState({ parentId: data.target.value || "", dataType: "state" })
-      );
+      await dispatch(getAllState({ parentId: id || "", dataType: "state" }));
     } else if (field === "state") {
       setClinetDetails((prevFormData) => ({
         ...prevFormData,
-        stateId: data.target.value,
+        stateId: id,
+        cityId: "",
       }));
       dispatch(
         getAllCitysAction({
-          parentId: data.target.value || "",
+          parentId: id || "",
           dataType: "city",
         })
       );
     } else if (field === "city") {
       setClinetDetails((prevFormData) => ({
         ...prevFormData,
-        cityId: data.target.value,
+        cityId: id,
       }));
     } else {
       setClinetDetails((prevFormData) => ({
@@ -685,6 +670,7 @@ export default function MasterData() {
   };
 
   const handleOnsiteLocation = async (field, data, value) => {
+    const id = value?.id;
     if (field === "phoneNumber") {
       setClientLocationData((prevFormData) => ({
         ...prevFormData,
@@ -693,25 +679,28 @@ export default function MasterData() {
     } else if (field === "country") {
       setClientLocationData((prevFormData) => ({
         ...prevFormData,
-        countryId: data,
+        countryId: id,
+        stateId: "",
+        cityId: "",
       }));
       setCountryCode(value?.code);
-      await dispatch(getAllState({ parentId: data || "", dataType: "state" }));
+      await dispatch(getAllState({ parentId: id || "", dataType: "state" }));
     } else if (field === "state") {
       setClientLocationData((prevFormData) => ({
         ...prevFormData,
-        stateId: data.target.value,
+        stateId: id,
+        cityId: "",
       }));
       dispatch(
         getAllCitysAction({
-          parentId: data.target.value || "",
+          parentId: id || "",
           dataType: "city",
         })
       );
     } else if (field === "city") {
       setClientLocationData((prevFormData) => ({
         ...prevFormData,
-        cityId: data.target.value,
+        cityId: id,
       }));
     } else {
       setClientLocationData((prevFormData) => ({
@@ -1043,11 +1032,11 @@ export default function MasterData() {
         errors.city = "Please select City";
       }
       if (!officeData.addressLine1) {
-        errors.addressLine1 = "please add address";
+        errors.addressLine1 = "Please add address";
       }
 
       if (!officeData.addressLine2) {
-        errors.addressLine2 = "please add address";
+        errors.addressLine2 = "Please add address";
       }
 
       if (!officeData.postalCode) {
@@ -1066,12 +1055,7 @@ export default function MasterData() {
         }
       }
     }
-    if (
-      type === "Skill" ||
-      type === "Designation" ||
-      type === "Domain" ||
-      type === "Job Type"
-    ) {
+    if (type === "Designation" || type === "Domain" || type === "Job Type") {
       if (!value.match(/^[a-zA-Z\s]+$/)) {
         errors.value = `${type} should only contain letters and spaces`;
       }
@@ -1079,12 +1063,17 @@ export default function MasterData() {
         errors.value = `${type} name is mandatory.`;
       }
     }
+    if (type === "Skill") {
+      if (!value.trim()) {
+        errors.value = `${type} name is mandatory.`;
+      }
+    }
     if (type === "band") {
       if (!bandFormData.bandName) {
-        errors.bandName = "please enter BandName";
+        errors.bandName = "Please enter BandName";
       }
       if (!bandFormData.minimumCtc) {
-        errors.minimum = "please enter mainimum Ctc";
+        errors.minimum = "Please enter mainimum Ctc";
       }
       const maximumCtc = parseFloat(bandFormData.maximumCtc);
       const minimumCtc = parseFloat(bandFormData.minimumCtc);
@@ -1101,25 +1090,25 @@ export default function MasterData() {
       if (!holidayFormData.holidayType) {
         errors.holidayType = "Please enter holiday type.";
       }
-      if (!selectedDate) {
-        errors.holidayDate = "Please choose a date.";
+      if (!holidayFormData.date) {
+        errors.date = "Please choose a date.";
       }
     }
     if (type === "clinetDetails") {
       if (!clinetDetails.addressLine1) {
-        errors.addressLine1 = "please add Address";
+        errors.addressLine1 = "Please add Address";
       }
       if (!clinetDetails.addressLine2) {
-        errors.addressLine2 = "please add Address";
+        errors.addressLine2 = "Please add Address";
       }
       if (!clinetDetails.cityId) {
-        errors.cityId = "please select city";
+        errors.cityId = "Please select city";
       }
       if (!clinetDetails.countryId) {
-        errors.countryId = "please select country";
+        errors.countryId = "Please select country";
       }
       if (!clinetDetails.stateId) {
-        errors.stateId = "please select state";
+        errors.stateId = "Please select state";
       }
       if (!clinetDetails.postalCode) {
         errors.postalCode = "Postal code is mandatory";
@@ -1148,16 +1137,16 @@ export default function MasterData() {
         errors.addressLine1 = "please add Address";
       }
       if (!clientLocationData.addressLine2) {
-        errors.addressLine2 = "please add Address";
+        errors.addressLine2 = "Please add Address";
       }
       if (!clientLocationData.cityId) {
-        errors.cityId = "please select city";
+        errors.cityId = "Please select city";
       }
       if (!clientLocationData.countryId) {
-        errors.countryId = "please select country";
+        errors.countryId = "Please select country";
       }
       if (!clientLocationData.stateId) {
-        errors.stateId = "please select state";
+        errors.stateId = "Please select state";
       }
       if (!clientLocationData.postalCode) {
         errors.postalCode = "Postal code is mandatory";
@@ -1231,7 +1220,6 @@ export default function MasterData() {
         country={country}
         state={state}
         city={city}
-        ActionList={ActionList}
         handleDisable={handleDisable}
         handleAddDesignationCancle={handleAddDesignationCancle}
         handleOfficeChange={handleOfficeChange}
@@ -1247,8 +1235,6 @@ export default function MasterData() {
         edit={edit}
         officeData={officeData}
         clinetDetails={clinetDetails}
-        setSelectedDate={setSelectedDate}
-        selectedDate={selectedDate}
         value={value}
         setValue={setValue}
         handleEditDesignation={handleEditDesignation}

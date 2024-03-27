@@ -24,6 +24,10 @@ const CostAllocationStepperFinal = () => {
       Navigate(`/EditResourcesForm/${projectId}`);
     }
   };
+
+  const { getProjectData } = useSelector(
+    (state) => state?.nonPersist?.projectDetails
+  );
   return (
     <div>
       <div
@@ -34,10 +38,14 @@ const CostAllocationStepperFinal = () => {
           style={{ color: "silver" }}
           onClick={() => handleBackClick()}
         >
-          <ArrowBackIcon />
+          <ArrowBackIcon
+            sx={{
+              color: "#000",
+            }}
+          />
         </IconButton>
         <Typography variant="h6">
-          <b>Project Name</b>
+          <b>{getProjectData?.projectName}</b>
         </Typography>
       </div>
       <div
@@ -55,6 +63,9 @@ const CostAllocationStepperFinal = () => {
         <Box
           sx={{
             width: "70%",
+            backgroundColor: "#e6e6e6 !important",
+            padding: "10px !important",
+            borderRadius: "10px",
           }}
         >
           <Stepper activeStep={1} alternativeLabel>
@@ -75,6 +86,7 @@ const CostAllocationStepperFinal = () => {
                           backgroundColor: index === 2 ? "#008080" : "#e6e6e6",
                           padding: "10px",
                           zIndex: "1",
+                          borderRadius: "5px",
                         }}
                       >
                         {label}
