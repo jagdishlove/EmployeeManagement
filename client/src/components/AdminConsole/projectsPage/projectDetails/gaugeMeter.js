@@ -7,23 +7,35 @@ const GaugeMeter = () => {
   const { projectDetailsData } = useSelector(
     (state) => state.nonPersist?.projectDetails
   );
-  console.log("projectDetailsData", projectDetailsData);
+
+  const { dashboardProjectdetails } = useSelector(
+    (state) => state?.nonPersist?.dashboardProjectdetails
+  );
 
   // Calculate the percent based on the complexity level
   const calculatePercent = () => {
-    if (projectDetailsData.complexity === "HIGH") {
+    if (
+      projectDetailsData.complexity ||
+      dashboardProjectdetails.complexity === "HIGH"
+    ) {
       return 1.0;
-    } else if (projectDetailsData.complexity === "MEDIUM") {
-      return 0.25;
-    } else if (projectDetailsData.complexity === "LOW") {
-      return 0;
+    } else if (
+      projectDetailsData.complexity ||
+      dashboardProjectdetails.complexity === "MEDIUM"
+    ) {
+      return 0.5;
+    } else if (
+      projectDetailsData.complexity ||
+      dashboardProjectdetails.complexity === "LOW"
+    ) {
+      return 0.1;
     } else {
       return 0;
     }
   };
 
   return (
-    <div style={{ position: "relative", width: "140px", height: "80px" }}>
+    <div style={{ position: "relative", width: "160px", height: "120px" }}>
       <GaugeChart
         id="gauge-chart1"
         arcWidth={0.3}
@@ -37,7 +49,7 @@ const GaugeMeter = () => {
           top: "50%",
           left: "5px",
           transform: "translate(-50%, 10%)",
-          fontSize: "12px",
+          fontSize: "14px",
         }}
       >
         Low
@@ -47,7 +59,7 @@ const GaugeMeter = () => {
           position: "absolute",
           top: "50%",
           left: "50%",
-          transform: "translate(-50%, 70%)",
+          transform: "translate(-50%, 85%)",
           fontWeight: "bold",
           fontSize: "14px",
         }}
@@ -60,7 +72,7 @@ const GaugeMeter = () => {
           top: "50%",
           right: "5px",
           transform: "translate(50%, 10%)",
-          fontSize: "12px",
+          fontSize: "14px",
         }}
       >
         High

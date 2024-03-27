@@ -9,7 +9,7 @@ import { adminHeaderStyle } from "./approvalTimesheets/adminHeaderStyle.js";
 import TimesheetTab from "./approvalTimesheets/timesheetTab.js";
 import MySpaceTab from "./mySpaceTab.js";
 import ProjectsTab from "./projectsTab.js";
-import ReporteesTab from "./reporteesTab.js";
+import ReporteesTab from "./reportees/reporteesTab.js";
 
 const AdminHeader = () => {
   const theme = useTheme();
@@ -49,7 +49,7 @@ const AdminHeader = () => {
                   padding: 0,
                   margin: "0px !important",
                   marginLeft: "0px",
-                  marginTop:'-2.5px'
+                  marginTop: "-2.5px",
                 }}
               >
                 {/* No border-bottom for the sub-tabs */}
@@ -60,19 +60,19 @@ const AdminHeader = () => {
                       backgroundColor: "#008080",
                       color: "#ffffff",
                     }),
-                    marginLeft: isLeaveApprover ? '390px' : '454px',
+                    marginLeft: isLeaveApprover ? "390px" : "454px",
                     borderBottomRightRadius: "10px",
                     borderBottomLeftRadius: "10px",
-                    height:'40px',
-                    width:'130px',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    border:"2px solid #008080",
+                    height: "40px",
+                    width: "130px",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    border: "2px solid #008080",
                   }}
                   onClick={() => setSelectedTab(0)}
                 >
-                 <p style={{marginLeft:'-10px'}}>Timesheet </p> 
+                  <p style={{ marginLeft: "-10px" }}>Timesheet </p>
                 </Tab>
                 {/* Render the "Leaves" tab only for users with "LEAVEAPPROVER" role */}
                 {isLeaveApprover && (
@@ -85,16 +85,16 @@ const AdminHeader = () => {
                       }),
                       borderBottomRightRadius: "10px",
                       borderBottomLeftRadius: "10px",
-                      height:'40px',
-                      width:'130px',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                      border:"2px solid #008080",
+                      height: "40px",
+                      width: "130px",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                      border: "2px solid #008080",
                     }}
                     onClick={() => setSelectedTab(1)}
                   >
-                  Leaves
+                    Leaves
                   </Tab>
                 )}
               </TabList>

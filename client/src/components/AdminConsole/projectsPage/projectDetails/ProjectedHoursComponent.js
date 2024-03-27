@@ -49,6 +49,21 @@ const ProjectedHoursWatch = ({ hours }) => {
     );
   }
 
+  // Extract hours and minutes from the string
+  const matches = hours.match(/(\d+)\s*Hrs\s*(\d+)\s*mins/i);
+
+  // if (!matches || matches?.length !== 3) {
+  //   return <Watch style={{ textAlign: "center" }}>Invalid hours format</Watch>;
+  // }
+
+  const hoursValue = parseInt(matches[1]);
+  const minutesValue = parseInt(matches[2]);
+
+  // Check if conversion is successful
+  if (isNaN(hoursValue) || isNaN(minutesValue)) {
+    return <Watch style={{ textAlign: "center" }}>Invalid hours format</Watch>;
+  }
+
   return (
     <Watch
       style={{
@@ -56,7 +71,11 @@ const ProjectedHoursWatch = ({ hours }) => {
       }}
     >
       {hourLines}
-      <div>{hours}</div>
+      <div>
+        {hoursValue} Hrs
+        <br />
+        {minutesValue} mins
+      </div>
     </Watch>
   );
 };

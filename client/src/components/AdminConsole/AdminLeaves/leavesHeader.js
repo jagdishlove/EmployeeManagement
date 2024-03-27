@@ -22,7 +22,11 @@ const LeavesHeader = ({
   const dispatch = useDispatch();
 
   const handleChange = (e) => {
-    dispatch(searchUserAction(e?.target?.value));
+    const inputValue = e.target.value;
+
+    if (inputValue.length >= 3) {
+      dispatch(searchUserAction(inputValue));
+    }
   };
 
   const userData = useSelector(
@@ -58,7 +62,7 @@ const LeavesHeader = ({
     <div>
       {" "}
       <Typography variant="h4" gutterBottom fontWeight="bold">
-        Leave Module
+        LEAVE
       </Typography>
       <div
         style={{

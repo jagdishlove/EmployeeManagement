@@ -15,6 +15,7 @@ import {
   Paper,
   Grid,
   Button,
+  Avatar,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -234,7 +235,10 @@ const ProjectAccordion = () => {
                   {/* Example usage */}
                   <div style={{ marginRight: "-0.4rem" }}>
                     <ProjectedHoursWatch
-                      hours={projectDetailsData?.projectedImplementationHours}
+                      hours={
+                        projectDetailsData?.projectedImplementationHours ||
+                        "0 Hrs 0 mins"
+                      }
                     />
                   </div>
                   <div
@@ -253,7 +257,7 @@ const ProjectAccordion = () => {
                     <strong> Projected Implementation Hours:</strong>
                   </div>
                 </div>
-                {projectDetailsData?.projectResources.length > 0 && (
+                {projectDetailsData?.projectResources?.length > 0 && (
                   <TableContainer component={Paper}>
                     <Table>
                       <TableHead>
@@ -285,7 +289,22 @@ const ProjectAccordion = () => {
                           (resources, index) => (
                             <TableRow key={resources?.resourceId}>
                               <TableCell>{index + 1}</TableCell>
-                              <TableCell>{resources?.employeeName}</TableCell>
+                              <TableCell>
+                                <Grid container spacing={2}>
+                                  <Grid item xs={4}>
+                                    <Avatar
+                                      sx={{
+                                        color: "#fff",
+                                      }}
+                                    >
+                                      {resources?.employeeName.charAt(0)}
+                                    </Avatar>
+                                  </Grid>
+                                  <Grid item xs={8} mt={1}>
+                                    {resources.employeeName}
+                                  </Grid>
+                                </Grid>
+                              </TableCell>
                               <TableCell>{resources?.designation}</TableCell>
                               <TableCell>
                                 {resources.employeeSkills?.length > 0 && (
@@ -322,7 +341,7 @@ const ProjectAccordion = () => {
                                           }}
                                         >
                                           <React.Fragment key={index}>
-                                            {index > 0 && ", "}
+                                            {index > 0 && ""}
                                             <span style={{ color: "black" }}>
                                               {employeeSkill.skillName}
                                             </span>{" "}
@@ -450,7 +469,7 @@ const ProjectAccordion = () => {
             borderRadius={"10px"}
             border={"1px solid #898989"}
           >
-            {projectDetailsData?.costIncurredDetails.length > 0 && (
+            {projectDetailsData?.costIncurredDetails?.length > 0 && (
               <Grid
                 container
                 item
@@ -466,7 +485,7 @@ const ProjectAccordion = () => {
               </Grid>
             )}
             <Grid item sm={12} md={10}>
-              {projectDetailsData?.costIncurredDetails.length > 0 && (
+              {projectDetailsData?.costIncurredDetails?.length > 0 && (
                 <TableContainer
                   component={Paper}
                   style={{ border: "1px solid #008080" }}

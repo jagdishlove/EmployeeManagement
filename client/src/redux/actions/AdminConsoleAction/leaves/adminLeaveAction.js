@@ -93,7 +93,6 @@ export const adminApproveRejectLeavesAction = (
   newPayload
 ) => {
   return async (dispatch) => {
-    console.log("data", data);
     try {
       await makeRequest(
         "POST",

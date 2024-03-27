@@ -53,7 +53,11 @@ const ProjectDetailPage = () => {
           style={{ color: "silver" }}
           onClick={() => handleBackClick()}
         >
-          <ArrowBackIcon />
+          <ArrowBackIcon
+            sx={{
+              color: "#000",
+            }}
+          />
         </IconButton>
         <Typography variant="h6">
           <b>Project Detail</b>
@@ -107,7 +111,7 @@ const ProjectDetailPage = () => {
             }}
           >
             {!projectDetailsData?.client?.fileStorage?.data &&
-              projectDetailsData?.client?.firstName && (
+              projectDetailsData?.client?.clientName && (
                 <Typography
                   variant="h1"
                   sx={{
@@ -130,8 +134,16 @@ const ProjectDetailPage = () => {
             {projectDetailsData?.client?.clientName}
           </Typography>
           <Typography fontSize={"22px"}>
-            {projectDetailsData?.client?.address?.addressLine1}{" "}
+            {projectDetailsData?.client?.address?.addressLine1}
+            {", "}
             {projectDetailsData?.client?.address?.addressLine2}
+            {", "}
+            {projectDetailsData?.client?.address?.city?.dataValue}
+            {", "}
+            {projectDetailsData?.client?.address?.state?.dataValue}
+            {", "}
+            {projectDetailsData?.client?.address?.country?.dataValue} <br />
+            {projectDetailsData?.client?.phone}
           </Typography>
         </Grid>
 

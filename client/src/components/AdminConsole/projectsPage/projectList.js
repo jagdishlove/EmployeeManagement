@@ -1,6 +1,7 @@
 import { Edit as EditIcon } from "@mui/icons-material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {
+  Avatar,
   Button,
   Card,
   CardContent,
@@ -45,10 +46,29 @@ const ProjectList = ({ projectsData }) => {
   const remainingDuration = endDate.diff(currentDate, "day");
 
   // Calculate the progress percentage
-  const progressPercentage = Math.max(
-    0,
-    Math.min(100, ((totalDuration - remainingDuration) / totalDuration) * 100)
-  );
+  let progressPercentage;
+
+  if (
+    startDate.isValid() &&
+    endDate.isValid() &&
+    startDate.isSame(endDate, "day")
+  ) {
+    // If both start and end dates are valid and they are the same day
+    progressPercentage = 100;
+  } else if (startDate.isValid() && !endDate.isValid()) {
+    // If start date is valid but end date is not
+    progressPercentage = 0;
+  } else {
+    // Otherwise, calculate the progress based on the duration
+    progressPercentage = Math.max(
+      0,
+      Math.min(100, ((totalDuration - remainingDuration) / totalDuration) * 100)
+    );
+  }
+
+  // Format the progress percentage
+  const formattedProgress =
+    progressPercentage === 100 ? "100%" : progressPercentage.toFixed(0) + "%"; // Rounded to the nearest whole number
 
   const progressbarColor = () => {
     if (projectsData.status === "Ongoing") {
@@ -71,15 +91,20 @@ const ProjectList = ({ projectsData }) => {
     >
       <CardHeader
         avatar={
-          <img
-            src={`data:${projectsData?.fileStorage?.fileType};base64,${projectsData?.fileStorage?.data}`}
-            alt="Logo"
-            style={{
-              width: 40, // Set the width as needed
-              height: 40, // Set the height as needed
-              borderRadius: "50%", // Optional: Add a border-radius for a circular shape
-            }}
-          />
+          projectsData?.fileStorage?.data ? (
+            <Avatar
+              src={`data:image/png;base64,${projectsData.fileStorage.data}`}
+              alt={projectsData.clientName}
+            />
+          ) : (
+            <Avatar
+              sx={{
+                color: "#000000",
+              }}
+            >
+              {projectsData?.clientName.charAt(0)}
+            </Avatar>
+          )
         }
         action={
           <>
@@ -141,14 +166,18 @@ const ProjectList = ({ projectsData }) => {
             </Typography>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="body2" color="textSecondary">
-              <b style={{ color: "black" }}>Start Date : </b>{" "}
-              {projectsData?.startDate}
-              <b style={{ color: "black", marginLeft: "10px" }}>
-                End Date :{" "}
-              </b>{" "}
-              {projectsData?.endDate}
-            </Typography>
+            {projectsData.status === "Yet To Start" ? (
+              <></>
+            ) : (
+              <Typography variant="body2" color="textSecondary">
+                <b style={{ color: "black" }}>Start Date : </b>{" "}
+                {projectsData?.startDate}
+                <b style={{ color: "black", marginLeft: "10px" }}>
+                  End Date :{" "}
+                </b>{" "}
+                {projectsData?.endDate}
+              </Typography>
+            )}
           </Grid>
           <Grid item xs={12}>
             {projectsData.status === "Yet To Start" ? (
@@ -163,9 +192,7 @@ const ProjectList = ({ projectsData }) => {
                   </Grid>
                   <Grid item xs={6} textAlign="end">
                     <Typography variant="body2" fontWeight="bold">
-                      {progressPercentage === 100
-                        ? "100%"
-                        : progressPercentage.toFixed(2) + " %"}
+                      {formattedProgress}
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>

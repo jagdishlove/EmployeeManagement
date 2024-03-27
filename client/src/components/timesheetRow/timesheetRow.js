@@ -59,7 +59,6 @@ const TimesheetRow = ({
   ratings,
 }) => {
   const theme = useTheme();
-
   const dispatch = useDispatch();
   const masterData = useSelector((state) => state.persistData.masterData);
 

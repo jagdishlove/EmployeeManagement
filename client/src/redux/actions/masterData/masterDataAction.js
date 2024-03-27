@@ -57,6 +57,33 @@ import {
   GET_ONSITE_OFFICE_LOCATION_FAIL,
   GET_ONSITE_OFFICE_LOCATION_REQUEST,
   GET_ONSITE_OFFICE_LOCATION_SUCCESS,
+  ADD_NEW_SKILL_REQUEST,
+  ADD_NEW_SKILL_SUCCESS,
+  ADD_NEW_SKILL_FAIL,
+  ADD_NEW_DESIGNATION_REQUEST,
+  ADD_NEW_DESIGNATION_SUCCESS,
+  ADD_NEW_DESIGNATION_FAIL,
+  ADD_NEW_BAND_REQUEST,
+  ADD_NEW_BAND_SUCCESS,
+  ADD_NEW_BAND_FAIL,
+  ADD_NEW_OFFICELOCATION_REQUEST,
+  ADD_NEW_OFFICELOCATION_SUCCESS,
+  ADD_NEW_OFFICELOCATION_FAIL,
+  ADD_NEW_JOBTYPE_REQUEST,
+  ADD_NEW_JOBTYPE_SUCCESS,
+  ADD_NEW_JOBTYPE_FAIL,
+  ADD_NEW_HOLIDAY_REQUEST,
+  ADD_NEW_HOLIDAY_SUCCESS,
+  ADD_NEW_HOLIDAY_FAIL,
+  ADD_NEW_DOMINE_REQUEST,
+  ADD_NEW_DOMINE_SUCCESS,
+  ADD_NEW_DOMINE_FAIL,
+  ADD_NEW_CLIENT_DETAILS_REQUEST,
+  ADD_NEW_CLIENT_DETAILS_SUCCESS,
+  ADD_NEW_CLIENT_DETAILS_FAIL,
+  ADD_NEW_ONSITE_OFFICE_LOCATION_REQUEST,
+  ADD_NEW_ONSITE_OFFICE_LOCATION_SUCCESS,
+  ADD_NEW_ONSITE_OFFICE_LOCATION_FAIL,
 } from "./masterDataActionType";
 
 const masterDataRequest = () => {
@@ -396,6 +423,196 @@ const getClientLocationFail = () => {
     type: GET_ONSITE_OFFICE_LOCATION_FAIL,
   };
 };
+
+// ADD_NEW_SKILL
+export const addNewSkillRequest = () => {
+  return {
+    type: ADD_NEW_SKILL_REQUEST,
+  };
+};
+
+export const addNewSkillSuccess = (response) => {
+  return {
+    type: ADD_NEW_SKILL_SUCCESS,
+    payload: response,
+  };
+};
+
+export const addNewSkillFail = (error) => {
+  return {
+    type: ADD_NEW_SKILL_FAIL,
+    error: error,
+  };
+};
+
+// ADD_NEW_DESIGNATION
+export const addNewDesignationRequest = () => {
+  return {
+    type: ADD_NEW_DESIGNATION_REQUEST,
+  };
+};
+
+export const addNewDesignationSuccess = (response) => {
+  return {
+    type: ADD_NEW_DESIGNATION_SUCCESS,
+    payload: response,
+  };
+};
+
+export const addNewDesignationFail = (error) => {
+  return {
+    type: ADD_NEW_DESIGNATION_FAIL,
+    error: error,
+  };
+};
+
+// ADD_NEW_BAND
+export const addNewBandRequest = () => {
+  return {
+    type: ADD_NEW_BAND_REQUEST,
+  };
+};
+
+export const addNewBandSuccess = (response) => {
+  return {
+    type: ADD_NEW_BAND_SUCCESS,
+    payload: response,
+  };
+};
+
+export const addNewBandFail = (error) => {
+  return {
+    type: ADD_NEW_BAND_FAIL,
+    error: error,
+  };
+};
+
+// ADD_NEW_OFFICELOCATION
+export const addNewOfficeLocationRequest = () => {
+  return {
+    type: ADD_NEW_OFFICELOCATION_REQUEST,
+  };
+};
+
+export const addNewOfficeLocationSuccess = (response) => {
+  return {
+    type: ADD_NEW_OFFICELOCATION_SUCCESS,
+    payload: response,
+  };
+};
+
+export const addNewOfficeLocationFail = (error) => {
+  return {
+    type: ADD_NEW_OFFICELOCATION_FAIL,
+    error: error,
+  };
+};
+
+// ADD_NEW_JOBTYPE
+export const addNewJobTypeRequest = () => {
+  return {
+    type: ADD_NEW_JOBTYPE_REQUEST,
+  };
+};
+
+export const addNewJobTypeSuccess = (response) => {
+  return {
+    type: ADD_NEW_JOBTYPE_SUCCESS,
+    payload: response,
+  };
+};
+
+export const addNewJobTypeFail = (error) => {
+  return {
+    type: ADD_NEW_JOBTYPE_FAIL,
+    error: error,
+  };
+};
+
+// ADD_NEW_HOLIDAY
+export const addNewHolidayRequest = () => {
+  return {
+    type: ADD_NEW_HOLIDAY_REQUEST,
+  };
+};
+
+export const addNewHolidaySuccess = (response) => {
+  return {
+    type: ADD_NEW_HOLIDAY_SUCCESS,
+    payload: response,
+  };
+};
+
+export const addNewHolidayFail = (error) => {
+  return {
+    type: ADD_NEW_HOLIDAY_FAIL,
+    error: error,
+  };
+};
+
+// ADD_NEW_DOMINE
+export const addNewDomineRequest = () => {
+  return {
+    type: ADD_NEW_DOMINE_REQUEST,
+  };
+};
+
+export const addNewDomineSuccess = (response) => {
+  return {
+    type: ADD_NEW_DOMINE_SUCCESS,
+    payload: response,
+  };
+};
+
+export const addNewDomineFail = (error) => {
+  return {
+    type: ADD_NEW_DOMINE_FAIL,
+    error: error,
+  };
+};
+
+// ADD_NEW_CLIENT_DETAILS
+export const addNewClientDetailsRequest = () => {
+  return {
+    type: ADD_NEW_CLIENT_DETAILS_REQUEST,
+  };
+};
+
+export const addNewClientDetailsSuccess = (response) => {
+  return {
+    type: ADD_NEW_CLIENT_DETAILS_SUCCESS,
+    payload: response,
+  };
+};
+
+export const addNewClientDetailsFail = (error) => {
+  return {
+    type: ADD_NEW_CLIENT_DETAILS_FAIL,
+    error: error,
+  };
+};
+
+// ADD_NEW_ONSITE_OFFICE_LOCATION
+export const addNewOnsiteOfficeLocationRequest = () => {
+  return {
+    type: ADD_NEW_ONSITE_OFFICE_LOCATION_REQUEST,
+  };
+};
+
+export const addNewOnsiteOfficeLocationSuccess = (response) => {
+  return {
+    type: ADD_NEW_ONSITE_OFFICE_LOCATION_SUCCESS,
+    payload: response,
+  };
+};
+
+export const addNewOnsiteOfficeLocationFail = (error) => {
+  return {
+    type: ADD_NEW_ONSITE_OFFICE_LOCATION_FAIL,
+    error: error,
+  };
+};
+
 export const masterDataAction = () => {
   return async (dispatch) => {
     try {
@@ -416,9 +633,10 @@ export const masterDataAction = () => {
 };
 
 export const CreateSkillData = (data) => {
-  return async () => {
+  return async (dispatch) => {
+    dispatch(addNewSkillRequest());
     try {
-      await makeRequest("POST", "api/skill/create", data);
+      const response = await makeRequest("POST", "api/skill/create", data);
       if (data.status === "INACTIVE") {
         toast.success("Skill has been Disabled successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
@@ -432,7 +650,9 @@ export const CreateSkillData = (data) => {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
+      dispatch(addNewSkillSuccess(response));
     } catch (err) {
+      dispatch(addNewSkillFail(err.message));
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
@@ -441,13 +661,17 @@ export const CreateSkillData = (data) => {
 };
 
 export const UpdateSkillData = (data) => {
-  return async () => {
+  return async (dispatch) => {
+    dispatch(addNewSkillRequest());
+
     try {
-      await makeRequest("POST", "api/skill/create", data);
+      const respone = await makeRequest("POST", "api/skill/create", data);
       toast.success("Skill has been Updated successfully", {
         position: toast.POSITION.BOTTOM_CENTER,
       });
+      dispatch(addNewSkillSuccess(respone));
     } catch (err) {
+      dispatch(addNewSkillFail(err.message));
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
@@ -486,9 +710,10 @@ export const DeleteSkillData = (data) => {
 };
 
 export const CreateBandlData = (data) => {
-  return async () => {
+  return async (dispatch) => {
+    dispatch(addNewBandRequest());
     try {
-      await makeRequest("POST", "api/band/create", data);
+      const respone = await makeRequest("POST", "api/band/create", data);
       if (data.status === "INACTIVE") {
         toast.success("Band has been Disabled successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
@@ -502,7 +727,10 @@ export const CreateBandlData = (data) => {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
+      dispatch(addNewBandSuccess(respone));
     } catch (err) {
+      dispatch(addNewBandFail());
+
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
@@ -511,13 +739,18 @@ export const CreateBandlData = (data) => {
 };
 
 export const UpdateBandlData = (data) => {
-  return async () => {
+  return async (dispatch) => {
+    dispatch(addNewBandRequest());
+
     try {
-      await makeRequest("POST", "api/band/create", data);
+      const respone = await makeRequest("POST", "api/band/create", data);
       toast.success("Band has been Updated successfully", {
         position: toast.POSITION.BOTTOM_CENTER,
       });
+      dispatch(addNewBandSuccess(respone));
     } catch (err) {
+      dispatch(addNewBandFail());
+
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
@@ -571,9 +804,14 @@ export const DeleteBandData = (data) => {
 };
 
 export const CreateDesignationData = (data) => {
-  return async () => {
+  return async (dispatch) => {
+    dispatch(addNewDesignationRequest());
     try {
-      await makeRequest("POST", "api/designation/create", data);
+      const responsec = await makeRequest(
+        "POST",
+        "api/designation/create",
+        data
+      );
       if (data.status === "INACTIVE") {
         toast.success("Designation has been Disabled successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
@@ -582,7 +820,10 @@ export const CreateDesignationData = (data) => {
         toast.success("Designation has been Enabled successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
+        dispatch(addNewDesignationSuccess(responsec));
       } else {
+        dispatch(addNewDesignationFail());
+
         toast.success("Designation added successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
@@ -596,13 +837,18 @@ export const CreateDesignationData = (data) => {
 };
 
 export const UpdateDesignationData = (data) => {
-  return async () => {
+  return async (dispatch) => {
+    dispatch(addNewDesignationRequest());
+
     try {
-      await makeRequest("POST", "api/designation/create", data);
+      const respone = await makeRequest("POST", "api/designation/create", data);
       toast.success("Designation has been updated successfully", {
         position: toast.POSITION.BOTTOM_CENTER,
       });
+      dispatch(addNewDesignationSuccess(respone));
     } catch (err) {
+      dispatch(addNewDesignationFail());
+
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
@@ -629,7 +875,7 @@ export const DeleteDesignationData = (data) => {
   return async () => {
     try {
       await makeRequest("DELETE", `api/designation/delete/${data}`);
-      toast.success("designation Is been Disabled  ", {
+      toast.success("Designation Is been Disabled  ", {
         position: toast.POSITION.BOTTOM_CENTER,
       });
     } catch (err) {
@@ -641,9 +887,14 @@ export const DeleteDesignationData = (data) => {
 };
 
 export const CreateOfficeLocationnData = (data) => {
-  return async () => {
+  return async (dispatch) => {
+    dispatch(addNewOfficeLocationRequest());
     try {
-      await makeRequest("POST", "api/officeLocation/create", data);
+      const respone = await makeRequest(
+        "POST",
+        "api/officeLocation/create",
+        data
+      );
       if (data.status === "INACTIVE") {
         toast.success("OfficeLocation has been Disabled successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
@@ -657,7 +908,10 @@ export const CreateOfficeLocationnData = (data) => {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
+      dispatch(addNewOfficeLocationSuccess(respone));
     } catch (err) {
+      dispatch(addNewOfficeLocationFail());
+
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
@@ -666,13 +920,22 @@ export const CreateOfficeLocationnData = (data) => {
 };
 
 export const UpdateOfficeLocationnData = (data) => {
-  return async () => {
+  return async (dispatch) => {
+    dispatch(addNewOfficeLocationRequest());
+
     try {
-      await makeRequest("POST", "api/officeLocation/create", data);
+      const respone = await makeRequest(
+        "POST",
+        "api/officeLocation/create",
+        data
+      );
       toast.success("OfficeLocation has been Updated successfully", {
         position: toast.POSITION.BOTTOM_CENTER,
       });
+      dispatch(addNewOfficeLocationSuccess(respone));
     } catch (err) {
+      dispatch(addNewOfficeLocationFail());
+
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
@@ -714,9 +977,10 @@ export const GetOfficeLocation = (data) => {
 };
 
 export const CreateManageHoliday = (data) => {
-  return async () => {
+  return async (dispatch) => {
+    dispatch(addNewHolidayRequest());
     try {
-      await makeRequest("POST", "api/holiday/create", data);
+      const respone = await makeRequest("POST", "api/holiday/create", data);
       if (data.status === "INACTIVE") {
         toast.success("Holiday has been Disabled successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
@@ -730,7 +994,10 @@ export const CreateManageHoliday = (data) => {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
+      dispatch(addNewHolidaySuccess(respone));
     } catch (err) {
+      dispatch(addNewHolidayFail());
+
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
@@ -739,13 +1006,18 @@ export const CreateManageHoliday = (data) => {
 };
 
 export const UpdateManageHoliday = (data) => {
-  return async () => {
+  return async (dispatch) => {
+    dispatch(addNewHolidayRequest());
+
     try {
-      await makeRequest("POST", "api/holiday/create", data);
+      const respone = await makeRequest("POST", "api/holiday/create", data);
       toast.success("Holiday has been Updated successfully", {
         position: toast.POSITION.BOTTOM_CENTER,
       });
+      dispatch(addNewHolidaySuccess(respone));
     } catch (err) {
+      dispatch(addNewHolidayFail());
+
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
@@ -784,9 +1056,10 @@ export const GetHoliday = (data) => {
 };
 
 export const CreateDomine = (data) => {
-  return async () => {
+  return async (dispatch) => {
+    dispatch(addNewDomineRequest());
     try {
-      await makeRequest("POST", "api/domain/create", data);
+      const respone = await makeRequest("POST", "api/domain/create", data);
       if (data.status === "INACTIVE") {
         toast.success("Domain has been Disabled successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
@@ -800,7 +1073,10 @@ export const CreateDomine = (data) => {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
+      dispatch(addNewDomineSuccess(respone));
     } catch (err) {
+      dispatch(addNewDomineFail());
+
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
@@ -809,13 +1085,18 @@ export const CreateDomine = (data) => {
 };
 
 export const UpdateDomine = (data) => {
-  return async () => {
+  return async (dispatch) => {
+    dispatch(addNewDomineRequest());
+
     try {
-      await makeRequest("POST", "api/domain/create", data);
+      const respone = await makeRequest("POST", "api/domain/create", data);
       toast.success("Domain has been Update successfully", {
         position: toast.POSITION.BOTTOM_CENTER,
       });
+      dispatch(addNewDomineSuccess(respone));
     } catch (err) {
+      dispatch(addNewDomineFail());
+
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
@@ -839,9 +1120,10 @@ export const GetAllDomines = () => {
 };
 
 export const CreateJobTypeData = (data) => {
-  return async () => {
+  return async (dispatch) => {
+    dispatch(addNewJobTypeRequest());
     try {
-      await makeRequest("POST", "api/jobType/create", data);
+      const respone = await makeRequest("POST", "api/jobType/create", data);
       if (data.status === "INACTIVE") {
         toast.success("JobType has been Disabled successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
@@ -855,7 +1137,9 @@ export const CreateJobTypeData = (data) => {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
+      dispatch(addNewJobTypeSuccess(respone));
     } catch (err) {
+      dispatch(addNewJobTypeFail(err));
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
@@ -864,13 +1148,18 @@ export const CreateJobTypeData = (data) => {
 };
 
 export const UpdateJobType = (data) => {
-  return async () => {
+  return async (dispatch) => {
+    dispatch(addNewJobTypeRequest());
+
     try {
-      await makeRequest("POST", "api/jobType/create", data);
+      const respone = await makeRequest("POST", "api/jobType/create", data);
       toast.success("JobType has been Update successfully", {
         position: toast.POSITION.BOTTOM_CENTER,
       });
+      dispatch(addNewJobTypeSuccess(respone));
     } catch (err) {
+      dispatch(addNewJobTypeFail(err));
+
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
@@ -944,15 +1233,15 @@ export const CreateClinetDetails = (data) => {
     try {
       await addRequest("POST", "api/client/create", formData);
       if (data.status === "INACTIVE") {
-        toast.success("client has been Disabled successfully", {
+        toast.success("Client has been Disabled successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       } else if (data.status === "ACTIVE") {
-        toast.success("client has been Enabled successfully", {
+        toast.success("Client has been Enabled successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       } else {
-        toast.success("client added successfully", {
+        toast.success("Client added successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
@@ -975,7 +1264,7 @@ export const UpdateClinetDetails = (data) => {
     }
     try {
       await addRequest("POST", "api/client/create", formData);
-      toast.success("client has been Update successfully", {
+      toast.success("Client has been Update successfully", {
         position: toast.POSITION.BOTTOM_CENTER,
       });
     } catch (err) {
@@ -1053,20 +1342,20 @@ export const CreateOnsiteOfficeLocation = (data) => {
       await makeRequest("POST", "api/clientOnsiteOfficeLocation/create", data);
       if (data.status === "INACTIVE") {
         toast.success(
-          "clientOnsiteOfficeLocation has been Disabled successfully",
+          "ClientOnsiteOfficeLocation has been Disabled successfully",
           {
             position: toast.POSITION.BOTTOM_CENTER,
           }
         );
       } else if (data.status === "ACTIVE") {
         toast.success(
-          "clientOnsiteOfficeLocation has been Enabled successfully",
+          "ClientOnsiteOfficeLocation has been Enabled successfully",
           {
             position: toast.POSITION.BOTTOM_CENTER,
           }
         );
       } else {
-        toast.success("clientOnsiteOfficeLocation added successfully", {
+        toast.success("ClientOnsiteOfficeLocation added successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }
@@ -1101,7 +1390,7 @@ export const UpdateOnsiteOfficeLocation = (data) => {
     try {
       await makeRequest("POST", "api/clientOnsiteOfficeLocation/create", data);
       toast.success(
-        "clientOnsiteOfficeLocation has been Updated successfully",
+        "ClientOnsiteOfficeLocation has been Updated successfully",
         {
           position: toast.POSITION.BOTTOM_CENTER,
         }

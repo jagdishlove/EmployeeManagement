@@ -7,13 +7,11 @@ import {
   Typography,
 } from "@mui/material";
 import React from "react";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import dayjs from "dayjs";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 
 export default function MasterDataPage({
-  handleBack,
   handleExpand,
   designationExpand,
   handleAdd,
@@ -38,10 +36,6 @@ export default function MasterDataPage({
   return (
     <>
       <Grid container alignItems="center">
-        <KeyboardBackspaceIcon
-          style={{ fontSize: 30, cursor: "pointer" }}
-          onClick={handleBack}
-        />
         <Typography variant="h2" component="div" sx={{ marginLeft: 1 }}>
           Master Data
         </Typography>
@@ -355,7 +349,7 @@ export default function MasterDataPage({
                                   ? "1.5px solid #008080"
                                   : "1.5px solid #AEAEAE",
                               borderRadius: "15px",
-                              padding: "30px",
+                              padding: "40px",
                               margin: "5px",
                               height: "40px",
                               display: "flex",

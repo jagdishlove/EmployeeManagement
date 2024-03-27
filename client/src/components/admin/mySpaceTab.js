@@ -6,7 +6,7 @@ const MySpaceTab = () => {
     <div>
       <Typography variant="h1">This is My Space Tab</Typography>
     </div>
-  )
-}
+  );
+};
 
 export default MySpaceTab;

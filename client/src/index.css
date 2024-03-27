@@ -264,14 +264,37 @@ input::-webkit-inner-spin-button {
   display: none !important;
 }
 
-.css-n7tliy-MuiStep-root {
+/* .css-n7tliy-MuiStep-root {
   background-color:  #e6e6e6 !important;
   padding: 10px !important;
+} */
+
+.css-1187icl{
+  background-color:  #e6e6e6 !important;
+  padding: 10px !important;
+  border-radius: 10px !important;
 }
+
 .css-1u9des2-indicatorSeparator{
   display: none;
 }
+.css-95m0ql {display: none !important;}
 
 .dialogContainer {
   border-radius: 50px !important;
+}
+
+.css-1vuxth3-MuiBarElement-root{
+  fill: #81C84B !important;
+}
+.css-6kig8r-MuiBarElement-root {
+  fill: #20D7FE !important;
+}
+
+.css-156rdpn-MuiBarElement-root {
+  fill: #33A1EC !important;
+}
+
+.css-mt6n7l-MuiBarElement-root{
+  fill: #FFA07A !important;
 }

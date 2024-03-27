@@ -51,16 +51,12 @@ export default function UserDetailsPage() {
   const [bankExpand, setBankExpand] = useState(false);
   const [skillExpanded, setSkillExpanded] = useState(false);
   const role = useSelector((state) => state?.persistData.data.role);
-  const isUser = role?.includes("USER");
   const isSuperAdmin = role?.includes("SUPERADMIN");
 
   const handleAddSkillClick = () => {
     setShowAddSkills(!showAddSkills);
   };
   const skills = useSelector((state) => state.persistData.masterData?.skill);
-  const onResetSkillFilterHandler = () => {
-    setSelectedSkills([]);
-  };
 
   const InputOption = ({
     getStyles,
@@ -128,44 +124,65 @@ export default function UserDetailsPage() {
     );
   };
 
-  const applySkillFilterHandler = () => {};
   const CustomMenu = (props) => {
+    const { innerProps, children, selectProps } = props;
+
+    const applySkillFilterHandler = () => {
+      setSelectedSkills(selectedSkills);
+      setShowAddSkills(false);
+      // Close the dropdown when the "Apply" button is clicked
+      selectProps.onMenuClose();
+    };
+
+    const onResetSkillFilterHandler = () => {
+      setSelectedSkills([]);
+      // Close the dropdown when the "Apply" button is clicked
+      selectProps.onMenuClose();
+    };
+
     return (
       <components.Menu {...props}>
-        {props.children}
+        {children}
         <Box
           style={{
-            bottom: 0,
+            position: "absolute",
+            bottom: "-50px",
             left: 0,
             right: 0,
             padding: "10px",
+            background: "white",
+            border: "1px solid lightgray",
             display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            justifyContent: "flex-end",
           }}
+          {...innerProps}
         >
           <Button
-            onClick={applySkillFilterHandler}
-            style={{
-              width: "100%",
-              backgroundColor: "#008080",
-              borderRadius: "10px",
-              color: "#fff",
-            }}
-          >
-            Apply
-          </Button>
-          <Button
+            variant="contained"
+            color="secondary"
             onClick={onResetSkillFilterHandler}
             style={{
-              width: "100%",
-              borderRadius: "10px",
               border: "1px solid #008080",
+              borderRadius: "20px",
               color: "#008080",
-              marginTop: "5px",
+              "&:hover": {
+                backgroundColor: "#008080",
+                color: "white",
+              },
             }}
           >
             Clear All
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={applySkillFilterHandler}
+            style={{
+              borderRadius: "20px",
+              marginLeft: "10px",
+            }}
+          >
+            Apply
           </Button>
         </Box>
       </components.Menu>
@@ -187,6 +204,8 @@ export default function UserDetailsPage() {
 
   const handleSkillExpand = () => {
     setSkillExpanded(!skillExpanded);
+    setShowAddSkills(false);
+    setIsEditing(false);
   };
 
   const handleBankExpand = () => {
@@ -194,8 +213,10 @@ export default function UserDetailsPage() {
   };
 
   useEffect(() => {
-    dispatch(getUserById(id));
-    dispatch(getLoocations());
+    if (id) {
+      dispatch(getUserById(id));
+      dispatch(getLoocations());
+    }
   }, [id]);
 
   useEffect(() => {
@@ -219,7 +240,13 @@ export default function UserDetailsPage() {
     (state) => state?.nonPersist?.userDetails?.userByIdData
   );
 
-  const [selectedSkills, setSelectedSkills] = useState(userData?.employeeSkill);
+  const [selectedSkills, setSelectedSkills] = useState();
+
+  useEffect(() => {
+    if (userData?.employeeSkill) {
+      setSelectedSkills(userData.employeeSkill);
+    }
+  }, [userData?.employeeSkill]);
 
   useEffect(() => {
     if (userData?.officeLocationId) {
@@ -284,7 +311,6 @@ export default function UserDetailsPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [showAddSkills, setShowAddSkills] = useState(false);
   const [addSkills, setAddSkills] = useState();
-  // const [value, setValue] = useState(0);
   const [skillValues, setSkillValues] = useState({});
 
   const handleEditButtonClick = () => {
@@ -353,20 +379,19 @@ export default function UserDetailsPage() {
             </Typography>
             <LightTooltip title={`${skillValues[skill.skillId]}`}>
               <Slider
-                value={skillValues[skill.skillId] || 0}
+                value={skillValues[skill.skillId] || skill.rating}
                 onChange={(event, newValue) =>
                   handleSliderChange(skill.skillId, newValue)
                 }
                 min={0}
                 max={10}
-                step={1} // Optional: Set the step to 1 if you want to allow only integer values
+                step={1}
                 sx={{
                   width: "500px",
                   color:
-                    skillValues[skill.skillId] < 5
+                    (skillValues[skill.skillId] || skill.rating) < 5
                       ? "#90DC90"
-                      : skillValues[skill.skillId] >= 5 &&
-                        skillValues[skill.skillId] <= 7
+                      : (skillValues[skill.skillId] || skill.rating) <= 7
                       ? "#E6E62C"
                       : "#E38F75",
                 }}
@@ -389,10 +414,9 @@ export default function UserDetailsPage() {
             <StarOutlinedIcon
               style={{
                 backgroundColor:
-                  skillValues[skill.skillId] < 5
+                  skill.rating < 5
                     ? "#90DC90"
-                    : skillValues[skill.skillId] >= 5 &&
-                      skillValues[skill.skillId] <= 7
+                    : skill.rating >= 5 && skill.rating <= 7
                     ? "#E6E62C"
                     : "#E38F75",
                 color: "#ffff",
@@ -401,11 +425,10 @@ export default function UserDetailsPage() {
                 height: 15,
                 marginTop: 4.4,
                 marginLeft: 5,
+                marginRight: 4,
               }}
             />
-            <Typography variant="body1" sx={{ marginLeft: 1 }}>
-              {skillValues[skill.skillId]}
-            </Typography>
+            {skill?.rating}
           </>
         )}
       </div>
@@ -454,7 +477,11 @@ export default function UserDetailsPage() {
   };
 
   const handleBack = () => {
-    navigate("/users");
+    if (isSuperAdmin) {
+      navigate("/users");
+    } else {
+      navigate(-1);
+    }
   };
 
   const handleEdit = (id) => {
@@ -469,7 +496,7 @@ export default function UserDetailsPage() {
           onClick={() => handleBack()}
         />
         <Typography variant="h2" component="div" sx={{ marginLeft: 1 }}>
-          User Details Page
+          User Details
         </Typography>
       </Grid>
       <div
@@ -615,10 +642,20 @@ export default function UserDetailsPage() {
                           fontSize: "14px",
                         }}
                       >
-                        {officeLocation?.address?.addressLine1}
-                        {officeLocation?.address?.addressLine2}
-                        {DataValue[officeLocation?.address?.stateId]}
-                        {officeLocation?.address?.postalCode}
+                        {`${officeLocation?.address?.addressLine1}, 
+                          ${officeLocation?.address?.addressLine2}, 
+                          ${DataValue[officeLocation?.address?.stateId]}, 
+                          ${officeLocation?.address?.postalCode}`
+                          .split(",")
+                          .map((item, index) => (
+                            <React.Fragment key={index}>
+                              {item.trim()}
+                              {index !== 3 && ","}{" "}
+                              {/* Add a comma if it's not the last item */}
+                              {index !== 3 && " "}{" "}
+                              {/* Add a space if it's not the last item */}
+                            </React.Fragment>
+                          ))}
                       </Typography>
                     </Grid>
                   </Grid>
@@ -635,7 +672,7 @@ export default function UserDetailsPage() {
               height: "600px",
               padding: 8.4,
               borderRadius: "25px",
-              width: "90%",
+              width: "97%",
             }}
           >
             <Typography variant="h5" gutterBottom>
@@ -865,204 +902,200 @@ export default function UserDetailsPage() {
                         textAlign: "end",
                       }}
                     >
-                      {isUser || isSuperAdmin ? (
-                        <>
-                          <Grid
-                            display="flex"
-                            justifyContent="space-between"
-                            alignItems="end"
-                            mb={1}
-                          >
-                            <Grid
-                              item
-                              justifyContent="space-between"
-                              alignItems="end"
-                              sx={{
-                                textAlign: "end",
-                              }}
-                            >
-                              <HtmlTooltip
+                      <Grid
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="end"
+                        mb={1}
+                      >
+                        <Grid
+                          item
+                          justifyContent="space-between"
+                          alignItems="end"
+                          sx={{
+                            textAlign: "end",
+                          }}
+                        >
+                          <HtmlTooltip
+                            sx={{
+                              "& .MuiTooltip-tooltip": {
+                                backgroundColor: "#fff !important",
+                                // Add additional styles if needed
+                              },
+                            }}
+                            title={
+                              <Grid
                                 sx={{
-                                  "& .MuiTooltip-tooltip": {
-                                    backgroundColor: "#fff !important",
-                                    // Add additional styles if needed
-                                  },
+                                  backgroundColor: "#fff",
+                                  width: "100%",
+                                  zIndex: 9999,
                                 }}
-                                title={
-                                  <Grid
-                                    sx={{
-                                      backgroundColor: "#fff",
-                                      width: "100%",
-                                      zIndex: 9999,
-                                    }}
-                                  >
-                                    <Box
-                                      sx={{
-                                        color: "#000",
-                                        padding: "2px",
-                                        borderRadius: "2px",
-                                      }}
-                                    >
-                                      <Typography variant="body2">
-                                        <StarOutlinedIcon
-                                          style={{
-                                            backgroundColor: "#90DC90",
-                                            color: "#ffff",
-                                            borderRadius: "50%",
-                                            width: 15,
-                                            height: 15,
-                                            marginRight: 5,
-                                          }}
-                                        />
-                                        1 to 3 – Beginner
-                                      </Typography>
-                                    </Box>
-                                    <Box
-                                      sx={{
-                                        color: "#000",
-                                        padding: "2px",
-                                        borderRadius: "2px",
-                                      }}
-                                    >
-                                      <Typography variant="body2">
-                                        <StarOutlinedIcon
-                                          style={{
-                                            backgroundColor: "#C6C620",
-                                            color: "#ffff",
-                                            borderRadius: "50%",
-                                            width: 15,
-                                            height: 15,
-                                            marginRight: 5,
-                                          }}
-                                        />
-                                        4 to 6 – Intermediate
-                                      </Typography>
-                                    </Box>
-                                    <Box
-                                      sx={{
-                                        color: "#000",
-                                        padding: "2px",
-                                        borderRadius: "2px",
-                                      }}
-                                    >
-                                      <Typography variant="body2">
-                                        <StarOutlinedIcon
-                                          style={{
-                                            backgroundColor: "#FF5722",
-                                            color: "#ffff",
-                                            borderRadius: "50%",
-                                            width: 15,
-                                            height: 15,
-                                            marginRight: 5,
-                                          }}
-                                        />
-                                        7 to 10 – Advanced
-                                      </Typography>
-                                    </Box>
-                                  </Grid>
-                                }
                               >
-                                <IconButton>
-                                  <InfoIcon
-                                    sx={{
-                                      fontSize: "25px",
-                                      marginTop: "-3px",
+                                <Box
+                                  sx={{
+                                    color: "#000",
+                                    padding: "2px",
+                                    borderRadius: "2px",
+                                  }}
+                                >
+                                  <Typography variant="body2">
+                                    <StarOutlinedIcon
+                                      style={{
+                                        backgroundColor: "#90DC90",
+                                        color: "#ffff",
+                                        borderRadius: "50%",
+                                        width: 15,
+                                        height: 15,
+                                        marginRight: 5,
+                                      }}
+                                    />
+                                    1 to 3 – Beginner
+                                  </Typography>
+                                </Box>
+                                <Box
+                                  sx={{
+                                    color: "#000",
+                                    padding: "2px",
+                                    borderRadius: "2px",
+                                  }}
+                                >
+                                  <Typography variant="body2">
+                                    <StarOutlinedIcon
+                                      style={{
+                                        backgroundColor: "#C6C620",
+                                        color: "#ffff",
+                                        borderRadius: "50%",
+                                        width: 15,
+                                        height: 15,
+                                        marginRight: 5,
+                                      }}
+                                    />
+                                    4 to 6 – Intermediate
+                                  </Typography>
+                                </Box>
+                                <Box
+                                  sx={{
+                                    color: "#000",
+                                    padding: "2px",
+                                    borderRadius: "2px",
+                                  }}
+                                >
+                                  <Typography variant="body2">
+                                    <StarOutlinedIcon
+                                      style={{
+                                        backgroundColor: "#FF5722",
+                                        color: "#ffff",
+                                        borderRadius: "50%",
+                                        width: 15,
+                                        height: 15,
+                                        marginRight: 5,
+                                      }}
+                                    />
+                                    7 to 10 – Advanced
+                                  </Typography>
+                                </Box>
+                              </Grid>
+                            }
+                          >
+                            <IconButton>
+                              <InfoIcon
+                                sx={{
+                                  fontSize: "25px",
+                                  marginTop: "-3px",
 
-                                      color: "#008080",
+                                  color: "#008080",
+                                }}
+                              />
+                            </IconButton>
+                          </HtmlTooltip>
+                        </Grid>
+
+                        <Grid
+                          item
+                          sx={{
+                            textAlign: "start",
+                          }}
+                        >
+                          {!isEditing ? (
+                            <>
+                              <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={handleEditButtonClick}
+                                style={{
+                                  backgroundColor: "white",
+                                  textTransform: "capitalize",
+                                }}
+                              >
+                                <BorderColorOutlinedIcon />
+                                {"Edit"}
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={handleAddSkillClick}
+                                style={{
+                                  backgroundColor: "white",
+                                  textTransform: "capitalize",
+                                }}
+                              >
+                                Add Skills
+                                <KeyboardArrowDownIcon
+                                  sx={{
+                                    marginLeft: 2,
+                                  }}
+                                />
+                              </Button>
+                              {showAddSkills && (
+                                <>
+                                  <Select
+                                    isSearchable={false}
+                                    isMulti
+                                    closeMenuOnSelect={false}
+                                    hideSelectedOptions={false}
+                                    onChange={(selectedOptions) => {
+                                      setSelectedSkills(selectedOptions);
+                                    }}
+                                    options={skills}
+                                    value={selectedSkills}
+                                    components={{
+                                      Option: (props) => (
+                                        <InputOption
+                                          {...props}
+                                          skillsCheckedData={selectedSkills}
+                                        />
+                                      ),
+                                      Menu: CustomMenu,
+                                    }}
+                                    isClearable={false}
+                                    controlShouldRenderValue={true}
+                                    getOptionValue={(option) => option.skillId}
+                                    getOptionLabel={(option) =>
+                                      option.skillName
+                                    }
+                                    isLoading={skills?.length === 0}
+                                    styles={{
+                                      menuPortal: (base) => ({
+                                        ...base,
+                                        zIndex: 9999,
+                                      }),
+                                      control: (baseStyles) => ({
+                                        ...baseStyles,
+                                        overflow: "auto",
+                                        height: "55px",
+                                        width: "300px",
+                                      }),
                                     }}
                                   />
-                                </IconButton>
-                              </HtmlTooltip>
-                            </Grid>
-
-                            <Grid
-                              item
-                              sx={{
-                                textAlign: "start",
-                              }}
-                            >
-                              {!isEditing ? (
-                                <>
-                                  <Button
-                                    variant="outlined"
-                                    color="primary"
-                                    onClick={handleEditButtonClick}
-                                    style={{
-                                      backgroundColor: "white",
-                                      textTransform: "capitalize",
-                                    }}
-                                  >
-                                    <BorderColorOutlinedIcon />
-                                    {"Edit"}
-                                  </Button>
-                                </>
-                              ) : (
-                                <>
-                                  <Button
-                                    variant="outlined"
-                                    color="primary"
-                                    onClick={handleAddSkillClick}
-                                    style={{
-                                      backgroundColor: "white",
-                                      textTransform: "capitalize",
-                                    }}
-                                  >
-                                    Add Skills
-                                    <KeyboardArrowDownIcon
-                                      sx={{
-                                        marginLeft: 2,
-                                      }}
-                                    />
-                                  </Button>
-                                  {showAddSkills && (
-                                    <Select
-                                      isSearchable={false}
-                                      isMulti
-                                      closeMenuOnSelect={false}
-                                      hideSelectedOptions={false}
-                                      onChange={(selectedOptions) => {
-                                        setSelectedSkills(selectedOptions);
-                                      }}
-                                      options={skills}
-                                      value={selectedSkills}
-                                      components={{
-                                        Option: (props) => (
-                                          <InputOption
-                                            {...props}
-                                            skillsCheckedData={selectedSkills}
-                                          />
-                                        ),
-                                        Menu: CustomMenu,
-                                      }}
-                                      isClearable={false}
-                                      controlShouldRenderValue={true}
-                                      getOptionValue={(option) =>
-                                        option.skillId
-                                      }
-                                      getOptionLabel={(option) =>
-                                        option.skillName
-                                      }
-                                      isLoading={skills?.length === 0}
-                                      styles={{
-                                        menuPortal: (base) => ({
-                                          ...base,
-                                          zIndex: 9999,
-                                        }),
-                                        control: (baseStyles) => ({
-                                          ...baseStyles,
-                                          height: "auto",
-                                        }),
-                                      }}
-                                    />
-                                  )}
                                 </>
                               )}
-                            </Grid>
-                          </Grid>
-                        </>
-                      ) : (
-                        <></>
-                      )}
+                            </>
+                          )}
+                        </Grid>
+                      </Grid>
                     </Grid>
                     <Grid
                       sx={{
@@ -1073,55 +1106,44 @@ export default function UserDetailsPage() {
                       }}
                     >
                       <Grid item container>
-                        {/* First Inner Grid */}
-                        <Grid item>
-                          <div style={skillsContainerStyle}>
-                            {renderSkills()}
-                          </div>
-                          <div
-                            style={{
-                              display: "flex",
+                        <div style={skillsContainerStyle}>{renderSkills()}</div>
+                        {isEditing && (
+                          <Grid
+                            container
+                            sx={{
+                              bottom: 0,
+                              left: 0,
+                              width: "100%",
+                              padding: "10px",
+                              backgroundColor: "#fff",
                               justifyContent: "flex-end",
-                              marginTop: "10px",
                             }}
                           >
-                            {isEditing && (
-                              <Grid
-                                container
-                                sx={{
-                                  display: "flex",
-                                  alignItems: "flex-end",
-                                  justifyContent: "flex-end",
-                                  textAlign: "end",
-                                }}
-                              >
-                                <Button
-                                  variant="outlined"
-                                  sx={{
-                                    color: "#000",
-                                    bgcolor: "white",
-                                    marginRight: "10px",
-                                    textTransform: "capitalize",
-                                  }}
-                                  onClick={handleCancel}
-                                >
-                                  Cancel
-                                </Button>
-                                <Button
-                                  variant="contained"
-                                  sx={{
-                                    color: "white",
-                                    bgcolor: "#008080",
-                                    textTransform: "capitalize",
-                                  }}
-                                  onClick={handleSave}
-                                >
-                                  Save
-                                </Button>
-                              </Grid>
-                            )}
-                          </div>
-                        </Grid>
+                            <Button
+                              variant="outlined"
+                              sx={{
+                                color: "#000",
+                                bgcolor: "white",
+                                marginRight: "10px",
+                                textTransform: "capitalize",
+                              }}
+                              onClick={handleCancel}
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              variant="contained"
+                              sx={{
+                                color: "white",
+                                bgcolor: "#008080",
+                                textTransform: "capitalize",
+                              }}
+                              onClick={handleSave}
+                            >
+                              Save
+                            </Button>
+                          </Grid>
+                        )}
                       </Grid>
                     </Grid>
                   </AccordionDetails>
@@ -1455,6 +1477,7 @@ export default function UserDetailsPage() {
                       }}
                     >
                       <Grid
+                        container
                         sx={{
                           padding: "10px",
                           border: "1px solid black",
@@ -1462,12 +1485,17 @@ export default function UserDetailsPage() {
                           backgroundColor: "#F0F0F0",
                         }}
                       >
-                        <Typography>
-                          <b>Cost to Company : </b>
-                          <CurrencyRupeeIcon sx={{ padding: "4px" }} />
-                          {userData.ctc}
-                          <br />
-                        </Typography>
+                        <Grid item xs={4}>
+                          <Typography variant="body1">
+                            <b>Cost to Company :</b>
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={8}>
+                          <Typography variant="body1">
+                            <CurrencyRupeeIcon sx={{ padding: "4px" }} />
+                            {userData.ctc}
+                          </Typography>
+                        </Grid>
                       </Grid>
                     </AccordionDetails>
                   </>

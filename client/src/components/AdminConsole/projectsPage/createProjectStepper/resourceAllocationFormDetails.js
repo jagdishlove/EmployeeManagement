@@ -1,6 +1,7 @@
 import { useTheme } from "@emotion/react";
 import SearchIcon from "@mui/icons-material/Search";
 import {
+  Avatar,
   Box,
   Button,
   Checkbox,
@@ -110,6 +111,8 @@ const ResourceAllocationFormDetails = () => {
   const [descCheckedData, setDescCheckedData] = useState([]);
   const debouncedValue = useDebounce(searchData);
   const [saveButton, setSaveButton] = useState(false);
+  const [occupenyhoursValue, setOccupencyHoursValue] = useState("");
+  const [render, setRender] = useState(true);
 
   useEffect(() => {
     const params = {
@@ -142,8 +145,6 @@ const ResourceAllocationFormDetails = () => {
     endDate: null,
     actualEndDate: null,
   });
-
-  console.log("formData", formData);
 
   // Define state variables for errors
   const [errors, setErrors] = useState({
@@ -204,10 +205,6 @@ const ResourceAllocationFormDetails = () => {
       newErrors.occupancyHours = "Occupancy Hours must contain only digits.";
     }
 
-    if (!formData.occupancyMinutes) {
-      newErrors.occupancyMinutes = "Please select Occupancy Minutes.";
-    }
-
     // Update the error state
     setErrors(newErrors);
 
@@ -215,6 +212,8 @@ const ResourceAllocationFormDetails = () => {
     if (Object.keys(newErrors).length > 0) {
       return;
     }
+
+    setRender(true);
 
     const payload = {
       employeeId: employeeId,
@@ -227,10 +226,8 @@ const ResourceAllocationFormDetails = () => {
       payload.resourceId = selectedOccupancyHours;
     }
 
-    dispatch(saveCreateResourcesAction(payload));
-    dispatch(getAllResourcesAction(projectId));
-
-    // setTimeInput("");
+    await dispatch(saveCreateResourcesAction(payload));
+    await dispatch(getAllResourcesAction(projectId));
 
     setFormData({
       occupancyHours: "",
@@ -238,14 +235,13 @@ const ResourceAllocationFormDetails = () => {
     });
     setSelectedOccupancyHours(null);
     setIsModalOpen(false); // Close the modal after confirmation
+    setRender(true);
   };
 
   //for displaying the table after confirm
   useEffect(() => {
-    if (projectId) {
-      dispatch(getAllResourcesAction(projectId));
-      setShowAllResourcesTable(true);
-    }
+    dispatch(getAllResourcesAction(projectId));
+    setShowAllResourcesTable(true);
   }, [projectId]);
 
   const handleCancel = () => {
@@ -258,6 +254,7 @@ const ResourceAllocationFormDetails = () => {
 
     setSelectedOccupancyHours(null);
     setIsModalOpen(false); // Close the modal after canceling
+    setRender(true);
   };
 
   //Edit
@@ -265,11 +262,30 @@ const ResourceAllocationFormDetails = () => {
     (state) => state.nonPersist.projectDetails?.allResourcesData
   );
 
+  useEffect(() => {
+    const totalOccupancyMinutes = allResourcesData.reduce((total, resource) => {
+      const [hours, minutes] = resource.occupancyHours
+        .split(" ")[0]
+        .split("Hrs")
+        .map((value) => parseInt(value));
+
+      return total + (hours * 60 + (minutes || 0));
+    }, 0);
+    const totalHours = Math.floor(totalOccupancyMinutes / 60);
+    const totalMinutes = totalOccupancyMinutes % 60;
+    const totalOccupancyTimeString = `${totalHours} hr ${totalMinutes
+      .toString()
+      .padStart(2, "0")} min`;
+
+    setOccupencyHoursValue(totalOccupancyTimeString);
+  }, [render, handleConfirm]);
+
   const handleEdit = (employeeId, resourceId) => {
     // setIsEditing(true);
     setEmployeeId(employeeId);
     dispatch(getResourceDetailsPopupAction(employeeId));
     setIsModalOpen(true);
+    setRender(true);
 
     const selectedOccupancyHours = allResourcesData.find(
       (item) => item.resourceId === resourceId
@@ -322,12 +338,24 @@ const ResourceAllocationFormDetails = () => {
     // Check for validation errors
     const newErrors = {};
 
-    if (formData.startDate && formData.endDate) {
+    if ((formData.endDate || formData.actualEndDate) && !formData.startDate) {
+      newErrors.startDate = "Please enter the start date.";
+    } else if (formData.startDate && formData.endDate) {
       const startDate = dayjs(formData.startDate);
       const endDate = dayjs(formData.endDate);
 
       if (startDate.isAfter(endDate)) {
         newErrors.startDate = "Start date must be before the end date.";
+      }
+    }
+
+    if (formData.startDate && formData.actualEndDate) {
+      const startDate = dayjs(formData.startDate);
+      const actualEndDate = dayjs(formData.actualEndDate);
+
+      if (actualEndDate.isBefore(startDate)) {
+        newErrors.actualEndDate =
+          "Actual End date must be after the start date.";
       }
     }
 
@@ -363,12 +391,24 @@ const ResourceAllocationFormDetails = () => {
     // Check for validation errors
     const newErrors = {};
 
-    if (formData.startDate && formData.endDate) {
+    if ((formData.endDate || formData.actualEndDate) && !formData.startDate) {
+      newErrors.startDate = "Please enter the start date.";
+    } else if (formData.startDate && formData.endDate) {
       const startDate = dayjs(formData.startDate);
       const endDate = dayjs(formData.endDate);
 
       if (startDate.isAfter(endDate)) {
         newErrors.startDate = "Start date must be before the end date.";
+      }
+    }
+
+    if (formData.startDate && formData.actualEndDate) {
+      const startDate = dayjs(formData.startDate);
+      const actualEndDate = dayjs(formData.actualEndDate);
+
+      if (actualEndDate.isBefore(startDate)) {
+        newErrors.actualEndDate =
+          "Actual End date must be after the start date.";
       }
     }
 
@@ -718,7 +758,22 @@ const ResourceAllocationFormDetails = () => {
                           sx={{ color: "#008080" }}
                         />
                       </TableCell>
-                      <TableCell>{option.employeeName}</TableCell>
+                      <TableCell>
+                        <Grid container spacing={2}>
+                          <Grid item xs={4}>
+                            <Avatar
+                              sx={{
+                                color: "#fff",
+                              }}
+                            >
+                              {option?.employeeName.charAt(0)}
+                            </Avatar>
+                          </Grid>
+                          <Grid item xs={8} mt={1}>
+                            {option.employeeName}
+                          </Grid>
+                        </Grid>
+                      </TableCell>
                       <TableCell>{option.employeeDesignation}</TableCell>
                       <TableCell>
                         {option.employeeSkills?.length > 0 && (
@@ -908,7 +963,7 @@ const ResourceAllocationFormDetails = () => {
                       <Dropdown
                         options={[...adminTimeOptions()]}
                         title="Select Occupancy Minutes"
-                        value={formData?.occupancyMinutes}
+                        value={formData?.occupancyMinutes || "0"}
                         onChange={handleTimeInputChange}
                         fullWidth
                         margin="normal"
@@ -992,7 +1047,7 @@ const ResourceAllocationFormDetails = () => {
           <TextField
             placeholder="Projected Implementation Hours"
             name="projectedimplementationhours"
-            value={getProjectData.projectedImplementationHours}
+            value={occupenyhoursValue}
             onChange={handleInputChange}
             style={{
               ...style.TimesheetTextField,
@@ -1034,7 +1089,7 @@ const ResourceAllocationFormDetails = () => {
               />
             </LocalizationProvider>
             {errors.startDate && (
-              <Typography variant="caption" color="error">
+              <Typography variant="caption" color="error" fontSize={"1rem"}>
                 {errors.startDate}
               </Typography>
             )}
@@ -1096,6 +1151,11 @@ const ResourceAllocationFormDetails = () => {
                 renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>
+            {errors.actualEndDate && (
+              <Typography variant="caption" color="error" fontSize={"1rem"}>
+                {errors.actualEndDate}
+              </Typography>
+            )}
           </Grid>
         </Grid>
         <Grid item xs={12} sm={8} md={10} lg={10}>
