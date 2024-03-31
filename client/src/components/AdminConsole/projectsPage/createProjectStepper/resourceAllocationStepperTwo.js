@@ -58,7 +58,7 @@ const ResourceAllocationStepperTwo = () => {
       >
         <Box
           sx={{
-            width: "70%",
+            width: "80%",
             backgroundColor: "#e6e6e6 !important",
             padding: "10px !important",
             borderRadius: "10px",
@@ -80,7 +80,7 @@ const ResourceAllocationStepperTwo = () => {
                         style={{
                           color: index === 1 ? "#ffffff" : "#000000",
                           backgroundColor: index === 1 ? "#008080" : "#e6e6e6",
-                          padding: "10px",
+                          padding: "10px 40px",
                           zIndex: "1",
                           borderRadius: "5px",
                         }}

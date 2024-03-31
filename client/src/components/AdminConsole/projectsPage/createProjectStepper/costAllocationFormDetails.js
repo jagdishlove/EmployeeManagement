@@ -60,7 +60,24 @@ const CostAllocationFormDetails = () => {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-
+    // Check for special characters using a regular expression
+    if (name === "projectBudget" || name === "projectRevenue") {
+      if (/[^0-9]/.test(value)) {
+        // If special characters are found, update the error state
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: `${
+            name === "projectBudget" ? "Project Budget" : "Project Revenue"
+          } does not contain special characters.`,
+        }));
+      } else {
+        // If no special characters, clear the error
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: "",
+        }));
+      }
+    }
     setFormData({
       ...formData,
       [name]: value,
@@ -139,21 +156,24 @@ const CostAllocationFormDetails = () => {
   }, [projectId, saveButton]);
   //Save
   const handleSaveData = async (e, type) => {
-  // Check for validation errors
-  const newErrors = {};
+    // Check for validation errors
+    const newErrors = {};
 
-  // Check if Project Budget is not empty and contains only digits
-  if (formData.projectBudget.trim() !== '' && !/^\d+$/.test(formData.projectBudget)) {
-    newErrors.projectBudget = "Project Budget must contain only digits.";
-  }
+    if (formData.projectBudget) {
+      if (!/^\d+$/.test(formData.projectBudget)) {
+        newErrors.projectBudget =
+          "Project Budget does not contain special characters .";
+      }
+    }
+    if (formData.projectRevenue) {
+      if (!/^\d+$/.test(formData.projectRevenue)) {
+        newErrors.projectRevenue =
+          "Project Revenue does not contain special characters.";
+      }
+    }
 
-  // Check if Project Revenue is not empty and contains only digits
-  if (formData.projectRevenue.trim() !== '' && !/^\d+$/.test(formData.projectRevenue)) {
-    newErrors.projectRevenue = "Project Revenue must contain only digits.";
-  }
-
-  // Update the error state
-  setErrors(newErrors);
+    // Update the error state
+    setErrors(newErrors);
 
     // If there are validation errors, do not proceed further
     if (Object.keys(newErrors).length > 0) {

@@ -26,36 +26,43 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardArrowLeftOutlined";
 import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
-
+import { useTheme } from "@mui/material/styles";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProjectListAction } from "../../redux/actions/workSpace/workSpaceAction";
 import { dashboardProjectResourcesAction } from "../../redux/actions/dashboard/project/dashboardProjectAction";
+import { TimesheetStyle } from "../timesheet/timesheetStyle";
 const ProjectProgress = () => {
-  const [project, setProject] = useState("");
   const dispatch = useDispatch();
-  const [expandedRows, setExpandedRows] = useState([]);
+  const [expanded, setExpanded] = useState(false);
+  const theme = useTheme();
+  const style = TimesheetStyle(theme);
   const { dashboardProjectResources } = useSelector(
     (state) => state?.nonPersist?.dashboardProjectdetails
   );
-  console.log("dashboardProjectResources", dashboardProjectResources);
 
   useEffect(() => {
-    dispatch(dashboardProjectResourcesAction(project));
-  }, [project]);
-
-  useEffect(() => {
+    
     dispatch(getAllProjectListAction());
   }, []);
 
   const projectList = useSelector(
     (state) => state?.nonPersist?.workSpace?.projectList
   );
+  const [project, setProject] = useState(
+    projectList.length > 0 ? projectList[0].id : ""
+  );
+
+  useEffect(() => {
+    if (project) {
+      dispatch(dashboardProjectResourcesAction(project));
+    }
+  }, [project]);
 
   const handleProjectListChnage = (e) => {
     const { value } = e.target;
     setProject(value);
   };
-
+  
   const totalPages = 3;
 
   const [currentPage, setCurrentPage] = useState(0);
@@ -72,40 +79,42 @@ const ProjectProgress = () => {
     }
   };
 
-  const toggleExpand = (resourceId) => {
-    setExpandedRows((prevExpandedRows) =>
-      prevExpandedRows.includes(resourceId)
-        ? prevExpandedRows.filter((id) => id !== resourceId)
-        : [...prevExpandedRows, resourceId]
-    );
+  const toggleExpand = () => {
+    setExpanded(!expanded);
   };
 
   return (
     <div>
-      <Typography variant="h4" gutterBottom fontWeight="bold">
-        Project Progress Dashboard
-      </Typography>
-
-      <Dropdown
-        title="Projects"
-        options={projectList}
-        value={project}
-        dropdownName="Projects" // Pass the dropdown name
-        onChange={handleProjectListChnage}
-        style={{
-          borderRadius: "5px",
-          border: "1px solid  #ccc",
-          width: "25%",
-          marginBottom: "10px",
-        }}
-        labelKey="projectName"
-        valueKey="id"
-      />
+      <Grid container>
+        <Grid item xs={12}>
+          <Typography variant="h4" gutterBottom fontWeight="bold">
+            Project Progress Dashboard
+          </Typography>
+        </Grid>
+        <Grid item xs={3}>
+          <Dropdown
+            title="Projects"
+            options={projectList}
+            value={project}
+            dropdownName="Projects" // Pass the dropdown name
+            onChange={handleProjectListChnage}
+            style={{
+              ...style.TimesheetTextField,
+              border: "1px solid silver",
+              width: "90%",
+              marginRight: "5%",
+              borderRadius: "5px",
+            }}
+            labelKey="projectName"
+            valueKey="id"
+          />
+        </Grid>
+      </Grid>
       <div
         style={{
           width: "100%",
-          margin: "auto",
-          marginBottom: "18px",
+
+          margin: "15px 0px",
           border: "1px solid #C0C0C0",
         }}
       />
@@ -126,7 +135,7 @@ const ProjectProgress = () => {
             <WorkspaceProjectsTab project={project} />
           </TabPanel>
           <TabPanel>
-            <WorkspaceEffortsTab />
+            <WorkspaceEffortsTab project={project} />
           </TabPanel>
         </Tabs>
       </Box>
@@ -203,63 +212,66 @@ const ProjectProgress = () => {
                     </Grid>
                   </TableCell>
                   <TableCell>
-                    {row.employeeSkills?.length > 0 && (
+                    {row.employeeSkills.length > 0 && (
                       <Grid
                         container
                         sx={{
-                          border: "1px solid #F3F3F3",
+                          border: "1px solid ##F3F3F3",
                           borderRadius: "5px",
                           backgroundColor: "#F3F3F3",
                           overflow: "auto",
                         }}
                       >
-                        {row.employeeSkills.map((employeeSkill, index) => (
-                          <Grid
-                            item
-                            key={index}
-                            sx={{
-                              border: "1px solid #AEAEAE",
-                              borderRadius: "8px",
-                              padding: "4px",
-                              margin: "5px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "flex-end",
-                              color: "#000000",
-                              backgroundColor: "#ffffff",
-                            }}
-                          >
-                            {index > 0 && ""}
-                            <span style={{ color: "black" }}>
-                              {employeeSkill.skillName}
-                            </span>{" "}
-                            {employeeSkill.rating && (
-                              <>
-                                <StarOutlinedIcon
-                                  style={{
-                                    backgroundColor:
-                                      employeeSkill.rating < 5
-                                        ? "#90DC90"
-                                        : employeeSkill.rating >= 5 &&
-                                          employeeSkill.rating <= 7
-                                        ? "#E6E62C"
-                                        : "#E38F75",
-                                    color: "#ffff",
-                                    borderRadius: "50%",
-                                    width: 15,
-                                    height: 15,
-                                    marginTop: 0,
-                                    marginLeft: 2,
-                                    marginRight: 2,
-                                  }}
-                                />
-                                {employeeSkill.rating}
-                              </>
-                            )}
-                          </Grid>
-                        ))}
-                        {dashboardProjectResources?.employeeSkills?.length >
-                          1 && (
+                        {row.employeeSkills
+                          .slice(0, expanded ? row.employeeSkills.length : 3) // Slice the array based on expansion state
+                          .map((employeeSkill, index) => (
+                            <Grid
+                              item
+                              key={index}
+                              sx={{
+                                border: "1px solid #AEAEAE",
+                                borderRadius: "8px",
+                                padding: "4px",
+                                margin: "5px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "flex-end",
+                                color: "#000000",
+                                backgroundColor: "#ffffff",
+                              }}
+                            >
+                              <React.Fragment key={index}>
+                                {index > 0 && ""}
+                                <span style={{ color: "black" }}>
+                                  {employeeSkill.skillName}
+                                </span>{" "}
+                                {employeeSkill.rating && (
+                                  <>
+                                    <StarOutlinedIcon
+                                      style={{
+                                        backgroundColor:
+                                          employeeSkill.rating < 5
+                                            ? "#90DC90"
+                                            : employeeSkill.rating >= 5 &&
+                                              employeeSkill.rating <= 7
+                                            ? "#E6E62C"
+                                            : "#E38F75",
+                                        color: "#ffff",
+                                        borderRadius: "50%",
+                                        width: 15,
+                                        height: 15,
+                                        marginTop: 0,
+                                        marginLeft: 2,
+                                        marginRight: 2,
+                                      }}
+                                    />
+                                    {employeeSkill.rating}
+                                  </>
+                                )}
+                              </React.Fragment>
+                            </Grid>
+                          ))}
+                        {row.employeeSkills.length > 2 && ( // Render expand/collapse button
                           <Grid
                             item
                             sx={{
@@ -269,33 +281,25 @@ const ProjectProgress = () => {
                               marginLeft: "auto", // Pushes the button to the right
                             }}
                           >
-                            <Button
-                              onClick={() =>
-                                toggleExpand(
-                                  dashboardProjectResources.resourceId
-                                )
-                              }
-                              endIcon={
-                                expandedRows.includes(
-                                  dashboardProjectResources.resourceId
-                                ) ? (
+                            <Button onClick={toggleExpand}>
+                              {expanded ? (
+                                <>
+                                  View Less
                                   <KeyboardArrowUpIcon />
-                                ) : (
+                                </>
+                              ) : (
+                                <>
+                                  {" "}
                                   <KeyboardArrowDownIcon />
-                                )
-                              }
-                            >
-                              {expandedRows.includes(
-                                dashboardProjectResources.resourceId
-                              )
-                                ? "View Less"
-                                : ""}
+                                </>
+                              )}
                             </Button>
                           </Grid>
                         )}
                       </Grid>
                     )}
                   </TableCell>
+
                   <TableCell>{row.occupancyHours}</TableCell>
 
                   <TableCell>{row.loggedInHours}</TableCell>

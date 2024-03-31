@@ -133,8 +133,6 @@ const ProjectTabSectionTwo = () => {
               </Typography>
             </Grid>
           </Grid>
-
-          {/* Second Grid container for percentage and image */}
           <Grid
             container
             item

@@ -9,7 +9,9 @@ import { dashboardProjectDetailsAction } from "../../../redux/actions/dashboard/
 const WorkspaceProjectsTab = ({ project }) => {
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(dashboardProjectDetailsAction(project));
+    if (project) {
+      dispatch(dashboardProjectDetailsAction(project));
+    }
   }, [project]);
 
   return (

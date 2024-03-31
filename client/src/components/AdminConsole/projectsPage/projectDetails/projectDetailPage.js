@@ -10,10 +10,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { getProjectDetailsAction } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import { useParams } from "react-router-dom/dist";
 import GaugeMeter from "./gaugeMeter";
-import OnTimeGreen from "../../../../assets/OnTimeGreen.png";
-import OnGoingBlue from "../../../../assets/OnGoingBlue.png";
-import WithDelayRed from "../../../../assets/WithDelayRed.png";
-import YetToStartGrey from "../../../../assets/YetToStartGrey.png";
+import OnTime from "../../../../assets/On Time.svg";
+import Ongoing from "../../../../assets/Ongoing.svg";
+import Withdelay from "../../../../assets/with delay.svg";
+import Yettostart from "../../../../assets/Yet to start.svg";
 
 const ProjectDetailPage = () => {
   const dispatch = useDispatch();
@@ -55,7 +55,7 @@ const ProjectDetailPage = () => {
         >
           <ArrowBackIcon
             sx={{
-              color: "#000",
+              color: "#000000",
             }}
           />
         </IconButton>
@@ -120,7 +120,9 @@ const ProjectDetailPage = () => {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    color: "#A4A4A4",
+                    color: "#ffffff",
+                    backgroundColor: "#008080",
+                    border: "1px solid #008080",
                   }}
                 >
                   {projectDetailsData?.client?.clientName[0].toUpperCase()}
@@ -133,7 +135,7 @@ const ProjectDetailPage = () => {
           <Typography variant="h4" fontWeight={"bold"}>
             {projectDetailsData?.client?.clientName}
           </Typography>
-          <Typography fontSize={"22px"}>
+          <Typography fontSize={"18px"}>
             {projectDetailsData?.client?.address?.addressLine1}
             {", "}
             {projectDetailsData?.client?.address?.addressLine2}
@@ -183,18 +185,17 @@ const ProjectDetailPage = () => {
             <img
               src={
                 projectDetailsData?.status === "Ongoing"
-                  ? OnGoingBlue
+                  ? Ongoing
                   : projectDetailsData?.status === "On Time"
-                  ? OnTimeGreen
+                  ? OnTime
                   : projectDetailsData?.status === "With Delay"
-                  ? WithDelayRed
+                  ? Withdelay
                   : projectDetailsData?.status === "Yet To Start"
-                  ? YetToStartGrey
+                  ? Yettostart
                   : ""
               }
               alt="image"
-              width={160}
-              height={40}
+              height={45}
               style={{
                 marginRight: "5px",
                 marginLeft: "-10px",

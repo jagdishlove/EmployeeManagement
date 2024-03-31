@@ -33,7 +33,7 @@ const ProjectAccordion = () => {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const dispatch = useDispatch();
   const { id } = useParams();
-
+  const [expandedRows, setExpandedRows] = useState([]);
   // Project Details
   const { projectDetailsData } = useSelector(
     (state) => state.nonPersist?.projectDetails
@@ -65,10 +65,13 @@ const ProjectAccordion = () => {
     setAccordionDetails3(!accordionDetails3);
   };
 
-  const [expanded, setExpanded] = useState(false);
-
-  const toggleExpand = () => {
-    setExpanded(!expanded);
+  // Function to toggle row expansion
+  const toggleRowExpansion = (index) => {
+    if (expandedRows.includes(index)) {
+      setExpandedRows(expandedRows.filter((rowIndex) => rowIndex !== index));
+    } else {
+      setExpandedRows([...expandedRows, index]);
+    }
   };
 
   return (
@@ -259,7 +262,7 @@ const ProjectAccordion = () => {
                 </div>
                 {projectDetailsData?.projectResources?.length > 0 && (
                   <TableContainer component={Paper}>
-                    <Table>
+                    <Table style={{ tableLayout: "fixed" }}>
                       <TableHead>
                         <TableRow
                           style={{
@@ -267,19 +270,19 @@ const ProjectAccordion = () => {
                             color: "#ffffff",
                           }}
                         >
-                          <TableCell style={{ color: "#ffffff" }}>
+                          <TableCell style={{ color: "#ffffff", width: "10%" }}>
                             Sl. No
                           </TableCell>
-                          <TableCell style={{ color: "#ffffff" }}>
+                          <TableCell style={{ color: "#ffffff", width: "20%" }}>
                             Name
                           </TableCell>
-                          <TableCell style={{ color: "#ffffff" }}>
+                          <TableCell style={{ color: "#ffffff", width: "20%" }}>
                             Designation
                           </TableCell>
-                          <TableCell style={{ color: "#ffffff" }}>
+                          <TableCell style={{ color: "#ffffff", width: "55%" }}>
                             Skill
                           </TableCell>
-                          <TableCell style={{ color: "#ffffff" }}>
+                          <TableCell style={{ color: "#ffffff", width: "20%" }}>
                             Occupancy Hours
                           </TableCell>
                         </TableRow>
@@ -287,61 +290,70 @@ const ProjectAccordion = () => {
                       <TableBody>
                         {projectDetailsData?.projectResources?.map(
                           (resources, index) => (
-                            <TableRow key={resources?.resourceId}>
-                              <TableCell>{index + 1}</TableCell>
-                              <TableCell>
-                                <Grid container spacing={2}>
-                                  <Grid item xs={4}>
-                                    <Avatar
+                            <React.Fragment key={resources?.resourceId}>
+                              <TableRow
+                                onClick={() => toggleRowExpansion(index)}
+                                style={{ cursor: "pointer" }}
+                              >
+                                <TableCell>{index + 1}</TableCell>
+                                <TableCell>
+                                  <Grid container spacing={2}>
+                                    <Grid item xs={4}>
+                                      <Avatar
+                                        sx={{
+                                          color: "#fff",
+                                          backgroundColor: " #4813B8",
+                                        }}
+                                      >
+                                        {resources?.employeeName.charAt(0)}
+                                      </Avatar>
+                                    </Grid>
+                                    <Grid item xs={8} mt={1}>
+                                      {resources.employeeName}
+                                    </Grid>
+                                  </Grid>
+                                </TableCell>
+                                <TableCell>{resources?.designation}</TableCell>
+                                <TableCell
+                                  style={{
+                                    maxWidth: "240px",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                  }}
+                                >
+                                  {resources.employeeSkills?.length > 0 && (
+                                    <Grid
+                                      container
                                       sx={{
-                                        color: "#fff",
+                                        border: "1px solid #F3F3F3",
+                                        borderRadius: "5px",
+                                        backgroundColor: "#F3F3F3",
+                                        overflow: "auto",
                                       }}
                                     >
-                                      {resources?.employeeName.charAt(0)}
-                                    </Avatar>
-                                  </Grid>
-                                  <Grid item xs={8} mt={1}>
-                                    {resources.employeeName}
-                                  </Grid>
-                                </Grid>
-                              </TableCell>
-                              <TableCell>{resources?.designation}</TableCell>
-                              <TableCell>
-                                {resources.employeeSkills?.length > 0 && (
-                                  <Grid
-                                    container
-                                    sx={{
-                                      border: "1px solid ##F3F3F3",
-                                      borderRadius: "5px",
-                                      backgroundColor: "#F3F3F3",
-                                      overflow: "auto",
-                                    }}
-                                  >
-                                    {resources.employeeSkills
-                                      .slice(
-                                        0,
-                                        expanded
-                                          ? resources.employeeSkills.length
-                                          : 2
-                                      )
-                                      .map((employeeSkill, index) => (
-                                        <Grid
-                                          item
-                                          key={index}
-                                          sx={{
-                                            border: "1px solid #AEAEAE",
-                                            borderRadius: "8px",
-                                            padding: "4px",
-                                            margin: "5px",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "flex-end",
-                                            color: "#000000",
-                                            backgroundColor: "#ffffff",
-                                          }}
-                                        >
-                                          <React.Fragment key={index}>
-                                            {index > 0 && ""}
+                                      {resources.employeeSkills
+                                        .slice(
+                                          0,
+                                          expandedRows.includes(index)
+                                            ? resources.employeeSkills.length
+                                            : 2
+                                        )
+                                        .map((employeeSkill, skillIndex) => (
+                                          <Grid
+                                            item
+                                            key={skillIndex}
+                                            sx={{
+                                              border: "1px solid #AEAEAE",
+                                              borderRadius: "8px",
+                                              padding: "4px",
+                                              margin: "5px",
+                                              display: "flex",
+                                              alignItems: "center",
+                                              justifyContent: "flex-end",
+                                              color: "#000000",
+                                              backgroundColor: "#ffffff",
+                                            }}
+                                          >
                                             <span style={{ color: "black" }}>
                                               {employeeSkill.skillName}
                                             </span>{" "}
@@ -370,43 +382,44 @@ const ProjectAccordion = () => {
                                                 {employeeSkill.rating}
                                               </>
                                             )}
-                                          </React.Fragment>
-                                        </Grid>
-                                      ))}
-                                    {resources.employeeSkills.length > 2 && (
-                                      <Grid
-                                        item
-                                        sx={{
-                                          display: "flex",
-                                          alignItems: "center",
-                                          justifyContent: "flex-end",
-                                          marginLeft: "auto", // Pushes the button to the right
-                                        }}
-                                      >
-                                        <Button
-                                          onClick={toggleExpand}
-                                          // endIcon={<KeyboardArrowDownIcon />}
+                                          </Grid>
+                                        ))}
+                                      {resources.employeeSkills.length > 2 && (
+                                        <Grid
+                                          item
+                                          sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "flex-end",
+                                            marginLeft: "auto",
+                                          }}
                                         >
-                                          {expanded ? (
-                                            <>
-                                              View Less
-                                              <KeyboardArrowUpIcon />
-                                            </>
-                                          ) : (
-                                            <>
-                                              {" "}
-                                              <KeyboardArrowDownIcon />
-                                            </>
-                                          )}
-                                        </Button>
-                                      </Grid>
-                                    )}
-                                  </Grid>
-                                )}
-                              </TableCell>
-
-                              <TableCell>{resources?.occupancyHours}</TableCell>
-                            </TableRow>
+                                          <Button
+                                            onClick={() =>
+                                              toggleRowExpansion(index)
+                                            }
+                                          >
+                                            {expandedRows.includes(index) ? (
+                                              <>
+                                                View Less
+                                                <KeyboardArrowUpIcon />
+                                              </>
+                                            ) : (
+                                              <>
+                                                <KeyboardArrowDownIcon />
+                                              </>
+                                            )}
+                                          </Button>
+                                        </Grid>
+                                      )}
+                                    </Grid>
+                                  )}
+                                </TableCell>
+                                <TableCell>
+                                  {resources?.occupancyHours}
+                                </TableCell>
+                              </TableRow>
+                            </React.Fragment>
                           )
                         )}
                       </TableBody>

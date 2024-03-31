@@ -38,7 +38,7 @@ const initialState = {
   locationData: [],
   selectedCountryId: null,
   searchData: [],
-  userId: {},
+  userId: null,
 };
 
 const usersReducer = (state = initialState, action) => {

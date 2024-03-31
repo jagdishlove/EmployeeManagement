@@ -8,26 +8,13 @@ const GaugeMeter = () => {
     (state) => state.nonPersist?.projectDetails
   );
 
-  const { dashboardProjectdetails } = useSelector(
-    (state) => state?.nonPersist?.dashboardProjectdetails
-  );
-
   // Calculate the percent based on the complexity level
   const calculatePercent = () => {
-    if (
-      projectDetailsData.complexity ||
-      dashboardProjectdetails.complexity === "HIGH"
-    ) {
-      return 1.0;
-    } else if (
-      projectDetailsData.complexity ||
-      dashboardProjectdetails.complexity === "MEDIUM"
-    ) {
+    if (projectDetailsData?.complexity === "HIGH") {
+      return 1;
+    } else if (projectDetailsData?.complexity === "MEDIUM") {
       return 0.5;
-    } else if (
-      projectDetailsData.complexity ||
-      dashboardProjectdetails.complexity === "LOW"
-    ) {
+    } else if (projectDetailsData?.complexity === "LOW") {
       return 0.1;
     } else {
       return 0;

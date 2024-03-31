@@ -23,6 +23,7 @@ import {
 } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import Dropdown from "../../../forms/dropdown/dropdown";
 import { masterDataAction } from "../../../../redux/actions/masterData/masterDataAction";
+import { toast } from "react-toastify";
 
 const CreateProjectFormDetails = () => {
   const theme = useTheme();
@@ -174,7 +175,7 @@ const CreateProjectFormDetails = () => {
 
   useEffect(() => {
     if (projectId && saveButton) navigate(`/projectDetailPage/${projectId}`);
-  }, [projectId]);
+  }, [projectId, saveButton]);
 
   useEffect(() => {
     if (id) {
@@ -270,6 +271,18 @@ const CreateProjectFormDetails = () => {
 
     await dispatch(saveCreateProjectAction(payload, saveProjectStagePayload));
 
+    if (type === "save") {
+      if (projectId) {
+        navigate(`/projectDetailPage/${projectId}`);
+        {
+          toast.success("Project Details Saved Successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+      } else if (id) {
+        navigate(`/projectDetailPage/${id}`);
+      }
+    }
     // Clear validation errors
     setValidationErrors({});
   };
@@ -280,7 +293,7 @@ const CreateProjectFormDetails = () => {
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
-      return; // Do not proceed with saving if there are validation errors
+      return;
     }
     // Save data first
     await handleSaveData(e, "next");
