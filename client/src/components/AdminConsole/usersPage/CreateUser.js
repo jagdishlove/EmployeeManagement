@@ -59,6 +59,8 @@ export default function CreateUser() {
 
   const userId = useSelector((state) => state?.nonPersist?.userDetails?.userId);
 
+  console.log("object", userId);
+
   const [validationErrors, setValidationErrors] = useState({});
   const [formData, setFormData] = useState({
     firstName: "",
@@ -184,8 +186,6 @@ export default function CreateUser() {
     // Update the form data
     setFormData(updatedFormData);
 
-    // Update the checkbox state
-    // setIsChecked(newIsChecked);
 
     // Fetch states and cities based on permanent address if country and state are selected
     if (newIsChecked && formData.currentcountry) {
@@ -711,6 +711,8 @@ export default function CreateUser() {
 
       if (isNaviget === true && userId) {
         navigate(`/userDetailPage/${userId}`);
+      } else if (isNaviget === true && id) {
+        navigate(`/userDetailPage/${id}`);
       }
       setErrors({});
     } else {
@@ -837,8 +839,6 @@ export default function CreateUser() {
 
     if (!formData.employeeID) {
       errors.employeeID = "Employee ID  is mandatory";
-    } else if (!/^\d+$/.test(formData.employeeID)) {
-      errors.employeeID = "Employee ID should contain only Number";
     }
 
     if (!formData.ManagerName.name) {
@@ -910,6 +910,22 @@ export default function CreateUser() {
     if (!formData.employeeType) {
       errors.employeeType = "Employee type is mandatory";
     }
+    if (formData.ACNo) {
+      if (!/^\d+$/.test(formData.ACNo)) {
+        errors.ACNo = "A/C No must be an digit";
+      }
+    }
+    if (formData.IFSCCode) {
+      if (!/^[A-Za-z0-9]+$/.test(formData.IFSCCode)) {
+        errors.IFSCCode = "IFSC Code must not contain special characters";
+      }
+    }
+    if (formData.Bank_Name) {
+      if (!/^[A-Za-z\s]+$/.test(formData.Bank_Name)) {
+        errors.BankName = "Bank Name must contain only alphabetic characters";
+      }
+    }
+
     return errors;
   };
 

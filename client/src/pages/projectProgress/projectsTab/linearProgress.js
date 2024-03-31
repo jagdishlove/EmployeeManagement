@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 
 const useStyles = () => ({
   root: {
-    width: "80%",
+    width: "100%",
     borderRadius: 0,
     border: `1px solid #36531F`,
     overflow: "hidden",
@@ -34,7 +34,7 @@ export default function LinearProgressThickness() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        paddingTop: "20px",
+        paddingTop: "15px",
       }}
     >
       <LinearProgress

@@ -28,9 +28,7 @@ const ConditionalSidebar = ({ children }) => {
   }, []);
 
   return isMobile ? (
-    <BottomNavigationMobile>
-      {children}
-    </BottomNavigationMobile>
+    <BottomNavigationMobile>{children}</BottomNavigationMobile>
   ) : (
     <Sidebar>{children}</Sidebar>
   );

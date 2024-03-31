@@ -11,9 +11,59 @@ import {
   DialogTitle,
 } from "@mui/material";
 import OpenInFullOutlinedIcon from "@mui/icons-material/OpenInFullOutlined";
-import { LineChart } from "@mui/x-charts/LineChart";
-
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 import ProjectBarChart from "./barChart";
+
+
+
+const data = [
+ 
+  {
+    time: "2024-03-25",
+    projectedImplementationCost: 1.2,
+    actualImplementationCost: 0.0,
+  },
+  {
+    time: "2024-03-26",
+    projectedImplementationCost: 1.6,
+    actualImplementationCost: 0.0,
+  },
+  {
+    time: "2024-03-27",
+    projectedImplementationCost: 2.0,
+    actualImplementationCost: 0.0,
+  },
+  {
+    time: "2024-03-28",
+    projectedImplementationCost: 2.4,
+    actualImplementationCost: 91.13982987587345,
+  },
+  {
+    time: "2024-03-29",
+    projectedImplementationCost: 2.8000000000000003,
+    actualImplementationCost: 100.0,
+  },
+  {
+    time: "2024-03-30",
+    projectedImplementationCost: 3.4,
+    actualImplementationCost: 91.13982987587345,
+  },
+  {
+    time: "2024-03-31",
+    projectedImplementationCost: 2.8000000000000003,
+    actualImplementationCost: 100.0,
+  },
+  
+];
 
 const ProjectTebSectionThree = () => {
   const [open, setOpen] = useState(false);
@@ -29,6 +79,35 @@ const ProjectTebSectionThree = () => {
   const handleClose = () => {
     setOpen(false);
     setOpenBar(false);
+  };
+
+  const [interval, setInterval] = useState("7D");
+  const [filteredData, setFilteredData] = useState(data);
+  const handleIntervalChange = (newInterval) => {
+    setInterval(newInterval);
+    // Logic to filter data based on interval
+    // Example: filter for last 7 days, 1 month, 6 months, 1 year, or show all data
+    let newData;
+    switch (newInterval) {
+      case '7D':
+        newData = data.filter((item) => new Date(item.time) >= new Date(data[data.length - 1].time) - 7 * 24 * 60 * 60 * 1000);
+        break;
+      case '1M':
+        newData = data.filter((item) => new Date(item.time) >= new Date(data[data.length - 1].time) - 30 * 24 * 60 * 60 * 1000);
+        break;
+      case '6M':
+        newData = data.filter((item) => new Date(item.time) >= new Date(data[data.length - 1].time) - 6 * 30 * 24 * 60 * 60 * 1000);
+        break;
+      case '1Y':
+        newData = data.filter((item) => new Date(item.time) >= new Date(data[data.length - 1].time) - 365 * 24 * 60 * 60 * 1000);
+        break;
+      case 'All':
+        newData = data;
+        break;
+      default:
+        newData = data;
+    }
+    setFilteredData(newData);
   };
 
   return (
@@ -55,8 +134,8 @@ const ProjectTebSectionThree = () => {
             flexDirection: "column",
           }}
         >
-          <Grid container spacing={3}>
-            <Grid item xs={6} marginTop={"60px"}>
+          <Grid container spacing={4}>
+            <Grid item xs={6} marginTop={"110px"}>
               <ProjectBarChart />
             </Grid>
             <Grid item xs={6}>
@@ -84,12 +163,15 @@ const ProjectTebSectionThree = () => {
                   sx={{
                     width: "10px",
                     height: "10px",
-                    radius: "50px",
                     backgroundColor: "#81C84B",
                     marginRight: "5px",
+                    borderRadius: "50%",
                   }}
                 />
-                <Typography variant="body1" fontWeight="bold">
+                <Typography
+                  fontWeight="bold"
+                  style={{ fontSize: "14px", lineHeight: "15px" }}
+                >
                   Actual Implementation Cost
                 </Typography>
               </Box>
@@ -100,9 +182,13 @@ const ProjectTebSectionThree = () => {
                     height: "10px",
                     backgroundColor: "#20D7FE",
                     marginRight: "5px",
+                    borderRadius: "50%",
                   }}
                 />
-                <Typography variant="body1" fontWeight="bold">
+                <Typography
+                  fontWeight="bold"
+                  style={{ fontSize: "14px", lineHeight: "15px" }}
+                >
                   Projected Implementation Cost
                 </Typography>
               </Box>
@@ -111,12 +197,15 @@ const ProjectTebSectionThree = () => {
                   sx={{
                     width: "10px",
                     height: "10px",
-                    radius: "50px",
                     backgroundColor: "#33A1EC",
                     marginRight: "5px",
+                    borderRadius: "50%",
                   }}
                 />
-                <Typography variant="body1" fontWeight="bold">
+                <Typography
+                  fontWeight="bold"
+                  style={{ fontSize: "14px", lineHeight: "15px" }}
+                >
                   Budget
                 </Typography>
               </Box>
@@ -125,12 +214,15 @@ const ProjectTebSectionThree = () => {
                   sx={{
                     width: "10px",
                     height: "10px",
-                    radius: "50px",
                     backgroundColor: "#FFA07A",
                     marginRight: "5px",
+                    borderRadius: "50%",
                   }}
                 />
-                <Typography variant="body1" fontWeight="bold">
+                <Typography
+                  fontWeight="bold"
+                  style={{ fontSize: "14px", lineHeight: "15px" }}
+                >
                   Time
                 </Typography>
               </Box>
@@ -192,64 +284,99 @@ const ProjectTebSectionThree = () => {
             </Grid>
           </Grid>
 
-          <LineChart
-            xAxis={[{ data: [1, 2, 3, 5, 8, 10], label: "Time" }]}
-            yAxis={[{ data: [1, 2, 3, 5, 8, 10], label: "Cost" }]}
-            series={[
-              {
-                name: "Time",
-                data: [2, 5.5, 2, 8.5, 1.5, 5],
-                color: "#60C0A3",
-              },
-              {
-                name: "Cost",
-                data: [3, 6.5, 1115, 11.5, 15.5, 15],
-                color: "#C06060",
-              },
-            ]}
-            axes={[
-              {
-                primary: true,
-                type: "linear",
-                position: "bottom",
-                label: "Time",
-              },
-              { type: "linear", position: "left", label: "Cost" },
-            ]}
-            width={450}
-            height={300}
-          />
+          <div style={{ marginBottom: '20px' }}>
+        <Button onClick={() => handleIntervalChange('7D')} variant={interval === '7D' ? 'contained' : 'outlined'}>7D</Button>
+        <Button onClick={() => handleIntervalChange('1M')} variant={interval === '1M' ? 'contained' : 'outlined'}>1M</Button>
+        <Button onClick={() => handleIntervalChange('6M')} variant={interval === '6M' ? 'contained' : 'outlined'}>6M</Button>
+        <Button onClick={() => handleIntervalChange('1Y')} variant={interval === '1Y' ? 'contained' : 'outlined'}>1Y</Button>
+        <Button onClick={() => handleIntervalChange('All')} variant={interval === 'All' ? 'contained' : 'outlined'}>All</Button>
+      </div>
+      <ResponsiveContainer width="100%" height={400}>
+        <LineChart
+          data={filteredData}
+          margin={{
+            top: 5,
+            right: 30,
+            left: 20,
+            bottom: 5,
+          }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="time" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line type="monotone" dataKey="projectedImplementationCost" stroke="#8884d8" activeDot={{ r: 8 }} name="Projected Implementation Cost" />
+          <Line type="monotone" dataKey="actualImplementationCost" stroke="#82ca9d" activeDot={{ r: 8 }} name="Actual Implementation Cost" />
+        </LineChart>
+      </ResponsiveContainer>
           <Dialog open={open} onClose={handleClose}>
             <DialogTitle> </DialogTitle>
             <DialogContent>
               <DialogContentText>
-                <LineChart
-                  xAxis={[{ data: [1, 2, 3, 5, 8, 10], label: "Time" }]}
-                  yAxis={[{ data: [1, 2, 3, 5, 8, 10], label: "Cost" }]}
-                  series={[
-                    {
-                      name: "Time",
-                      data: [2, 5.5, 2, 8.5, 1.5, 5],
-                      color: "#60C0A3",
-                    },
-                    {
-                      name: "Cost",
-                      data: [3, 6.5, 1115, 11.5, 15.5, 15],
-                      color: "#C06060",
-                    },
-                  ]}
-                  axes={[
-                    {
-                      primary: true,
-                      type: "linear",
-                      position: "bottom",
-                      label: "Time",
-                    },
-                    { type: "linear", position: "left", label: "Cost" },
-                  ]}
-                  width={500}
-                  height={300}
-                />
+                <div style={{ marginBottom: "20px" }}>
+                  <Button
+                    onClick={() => handleIntervalChange("7D")}
+                    variant={interval === "7D" ? "contained" : "outlined"}
+                  >
+                    7D
+                  </Button>
+                  <Button
+                    onClick={() => handleIntervalChange("1M")}
+                    variant={interval === "1M" ? "contained" : "outlined"}
+                  >
+                    1M
+                  </Button>
+                  <Button
+                    onClick={() => handleIntervalChange("6M")}
+                    variant={interval === "6M" ? "contained" : "outlined"}
+                  >
+                    6M
+                  </Button>
+                  <Button
+                    onClick={() => handleIntervalChange("1Y")}
+                    variant={interval === "1Y" ? "contained" : "outlined"}
+                  >
+                    1Y
+                  </Button>
+                  <Button
+                    onClick={() => handleIntervalChange("All")}
+                    variant={interval === "All" ? "contained" : "outlined"}
+                  >
+                    All
+                  </Button>
+                </div>
+                <ResponsiveContainer width="100%" height={400}>
+                  <LineChart
+                    data={filteredData}
+                    margin={{
+                      top: 5,
+                      right: 30,
+                      left: 20,
+                      bottom: 5,
+                    }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="time" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="projectedImplementationCost"
+                      stroke="#8884d8"
+                      activeDot={{ r: 8 }}
+                      name="Projected Implementation Cost"
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="actualImplementationCost"
+                      stroke="#82ca9d"
+                      activeDot={{ r: 8 }}
+                      name="Actual Implementation Cost"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
               </DialogContentText>
             </DialogContent>
             <DialogActions>

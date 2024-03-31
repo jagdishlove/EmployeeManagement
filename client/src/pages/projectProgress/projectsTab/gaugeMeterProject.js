@@ -3,31 +3,17 @@ import GaugeChart from "react-gauge-chart";
 import { useSelector } from "react-redux";
 
 const GaugeMeterProject = () => {
-  // Project Details
-  const { projectDetailsData } = useSelector(
-    (state) => state.nonPersist?.projectDetails
-  );
-
   const { dashboardProjectdetails } = useSelector(
     (state) => state?.nonPersist?.dashboardProjectdetails
   );
 
   // Calculate the percent based on the complexity level
   const calculatePercent = () => {
-    if (
-      projectDetailsData.complexity ||
-      dashboardProjectdetails.complexity === "HIGH"
-    ) {
+    if (dashboardProjectdetails.complexity === "HIGH") {
       return 1.0;
-    } else if (
-      projectDetailsData.complexity ||
-      dashboardProjectdetails.complexity === "MEDIUM"
-    ) {
+    } else if (dashboardProjectdetails.complexity === "MEDIUM") {
       return 0.5;
-    } else if (
-      projectDetailsData.complexity ||
-      dashboardProjectdetails.complexity === "LOW"
-    ) {
+    } else if (dashboardProjectdetails.complexity === "LOW") {
       return 0.1;
     } else {
       return 0;

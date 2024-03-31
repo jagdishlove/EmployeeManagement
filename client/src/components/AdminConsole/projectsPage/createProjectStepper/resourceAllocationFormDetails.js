@@ -44,6 +44,7 @@ import StarOutlinedIcon from "@mui/icons-material/StarOutlined";
 import icon from "../../../../assets/Featured icon.svg";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import { toast } from "react-toastify";
 
 const InputOption = ({
   getStyles,
@@ -218,9 +219,11 @@ const ResourceAllocationFormDetails = () => {
     const payload = {
       employeeId: employeeId,
       projectId: projectId,
-      occupancyHours: formData.occupancyHours * 60 + formData.occupancyMinutes,
+      occupancyHours:
+        formData.occupancyHours * 60 + parseInt(formData.occupancyMinutes || 0),
     };
-
+    console.log("payload", payload);
+    console.log("formData", formData);
     if (selectedOccupancyHours !== null) {
       // Perform Update
       payload.resourceId = selectedOccupancyHours;
@@ -240,8 +243,10 @@ const ResourceAllocationFormDetails = () => {
 
   //for displaying the table after confirm
   useEffect(() => {
-    dispatch(getAllResourcesAction(projectId));
-    setShowAllResourcesTable(true);
+    if (projectId) {
+      dispatch(getAllResourcesAction(projectId));
+      setShowAllResourcesTable(true);
+    }
   }, [projectId]);
 
   const handleCancel = () => {
@@ -331,6 +336,7 @@ const ResourceAllocationFormDetails = () => {
     if (projectId && saveButton) navigate(`/projectDetailPage/${projectId}`);
   }, [projectId, saveButton]);
 
+  
   //Save
   const handleSaveData = async (e, type) => {
     e.preventDefault();
@@ -384,6 +390,18 @@ const ResourceAllocationFormDetails = () => {
       actualEndDate: formData?.actualEndDate,
     };
     await dispatch(saveCreateProjectAction(payload, getResourcespayload));
+    if (type === "save") {
+      if (projectId) {
+        navigate(`/projectDetailPage/${projectId}`);
+        {
+          toast.success("Project Details Saved Successfully", {
+            position: toast.POSITION.BOTTOM_CENTER,
+          });
+        }
+      } else if (id) {
+        navigate(`/projectDetailPage/${id}`);
+      }
+    }
   };
 
   const handleSaveAndNext = async (e) => {
@@ -764,11 +782,12 @@ const ResourceAllocationFormDetails = () => {
                             <Avatar
                               sx={{
                                 color: "#fff",
+                                backgroundColor: " #4813B8",
                               }}
                             >
                               {option?.employeeName.charAt(0)}
                             </Avatar>
-                          </Grid>
+                          </Grid>{" "}
                           <Grid item xs={8} mt={1}>
                             {option.employeeName}
                           </Grid>
@@ -850,7 +869,8 @@ const ResourceAllocationFormDetails = () => {
                                   marginLeft: "auto", // Pushes the button to the right
                                 }}
                               >
-                                <Button onClick={toggleExpand}>
+                                <Button onClick={toggleExpand} width={20}>
+                                  {" "}
                                   {expanded ? (
                                     <>
                                       View Less

@@ -117,14 +117,12 @@ export default function UserHerders({
     const applySkillFilterHandler = () => {
       setSkillsCheckedData(filteredSkills);
 
-      // Close the dropdown when the "Apply" button is clicked
       selectProps.onMenuClose();
     };
 
     const onResetSkillFilterHandler = () => {
       setSkillsCheckedData([]);
       setFilteredSkills([]);
-      // Close the dropdown when the "Apply" button is clicked
       selectProps.onMenuClose();
     };
 
@@ -270,7 +268,7 @@ export default function UserHerders({
                 isSearchable={false}
                 isMulti
                 closeMenuOnSelect={false}
-                hideSelectedOptions={true} // Set hideSelectedOptions to true
+                hideSelectedOptions={false} // Set hideSelectedOptions to true
                 onChange={(selectedOptions) => {
                   // Update filteredSkills to include all selected options
                   setFilteredSkills(selectedOptions);

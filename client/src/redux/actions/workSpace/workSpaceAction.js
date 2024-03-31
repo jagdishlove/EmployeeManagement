@@ -4,6 +4,9 @@ import {
   GET_ALL_PROJECTLIST_REQUEST,
   GET_ALL_PROJECTLIST_SUCCESS,
   GET_ALL_PROJECTLIST_FAIL,
+  GET_WORKSPACE_DATA_FAIL,
+  GET_WORKSPACE_DATA_REQUEST,
+  GET_WORKSPACE_DATA_SUCCESS,
 } from "./workSpaceActioType";
 
 const getAllProjectListRequest = () => {
@@ -25,6 +28,25 @@ const getAllProjectListFail = () => {
   };
 };
 
+const getWorkspaceDataRequest = () => {
+  return {
+    type: GET_WORKSPACE_DATA_REQUEST,
+  };
+};
+
+const getWorkSpaceDataSuccess = (data) => {
+  return {
+    type: GET_WORKSPACE_DATA_SUCCESS,
+    payload: data,
+  };
+};
+
+const getWorkSpaceDataFail = () => {
+  return {
+    type: GET_WORKSPACE_DATA_FAIL,
+  };
+};
+
 export const getAllProjectListAction = () => {
   return async (dispatch) => {
     dispatch(getAllProjectListRequest());
@@ -38,6 +60,26 @@ export const getAllProjectListAction = () => {
       dispatch(getAllProjectListSuccess(response));
     } catch (err) {
       dispatch(getAllProjectListFail());
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  };
+};
+
+export const getWorkSpaceDataAction = (params) => {
+  return async (dispatch) => {
+    dispatch(getWorkspaceDataRequest());
+    try {
+      const response = await makeRequest(
+        "GET",
+        "api/projectProgress/performance",
+        null,
+        params
+      );
+      dispatch(getWorkSpaceDataSuccess(response));
+    } catch (err) {
+      dispatch(getWorkSpaceDataFail());
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });

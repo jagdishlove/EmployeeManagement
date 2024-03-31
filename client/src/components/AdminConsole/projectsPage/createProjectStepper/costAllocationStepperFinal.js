@@ -62,7 +62,7 @@ const CostAllocationStepperFinal = () => {
       >
         <Box
           sx={{
-            width: "70%",
+            width: "80%",
             backgroundColor: "#e6e6e6 !important",
             padding: "10px !important",
             borderRadius: "10px",
@@ -78,13 +78,14 @@ const CostAllocationStepperFinal = () => {
                         display: "flex",
                         flexDirection: "row",
                         alignItems: "center",
+                        marginRight: "-20px !important",
                       }}
                     >
                       <div
                         style={{
                           color: index === 2 ? "#ffffff" : "#000000",
                           backgroundColor: index === 2 ? "#008080" : "#e6e6e6",
-                          padding: "10px",
+                          padding: "10px 40px",
                           zIndex: "1",
                           borderRadius: "5px",
                         }}

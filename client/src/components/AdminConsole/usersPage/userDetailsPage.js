@@ -53,6 +53,8 @@ export default function UserDetailsPage() {
   const role = useSelector((state) => state?.persistData.data.role);
   const isSuperAdmin = role?.includes("SUPERADMIN");
 
+  const empId = useSelector((state) => state?.persistData.data?.empId);
+
   const handleAddSkillClick = () => {
     setShowAddSkills(!showAddSkills);
   };
@@ -246,6 +248,7 @@ export default function UserDetailsPage() {
     if (userData?.employeeSkill) {
       setSelectedSkills(userData.employeeSkill);
     }
+    setAddSkills(userData?.employeeSkill);
   }, [userData?.employeeSkill]);
 
   useEffect(() => {
@@ -389,9 +392,9 @@ export default function UserDetailsPage() {
                 sx={{
                   width: "500px",
                   color:
-                    (skillValues[skill.skillId] || skill.rating) < 5
+                    (skillValues[skill.skillId] || skill.rating) < 4
                       ? "#90DC90"
-                      : (skillValues[skill.skillId] || skill.rating) <= 7
+                      : (skillValues[skill.skillId] > 4 || skill.rating) < 7
                       ? "#E6E62C"
                       : "#E38F75",
                 }}
@@ -414,9 +417,9 @@ export default function UserDetailsPage() {
             <StarOutlinedIcon
               style={{
                 backgroundColor:
-                  skill.rating < 5
+                  skill.rating < 4
                     ? "#90DC90"
-                    : skill.rating >= 5 && skill.rating <= 7
+                    : skill.rating >= 4 && skill.rating < 7
                     ? "#E6E62C"
                     : "#E38F75",
                 color: "#ffff",
@@ -1018,18 +1021,24 @@ export default function UserDetailsPage() {
                         >
                           {!isEditing ? (
                             <>
-                              <Button
-                                variant="outlined"
-                                color="primary"
-                                onClick={handleEditButtonClick}
-                                style={{
-                                  backgroundColor: "white",
-                                  textTransform: "capitalize",
-                                }}
-                              >
-                                <BorderColorOutlinedIcon />
-                                {"Edit"}
-                              </Button>
+                              {empId === id ? (
+                                <>
+                                  <Button
+                                    variant="outlined"
+                                    color="primary"
+                                    onClick={handleEditButtonClick}
+                                    style={{
+                                      backgroundColor: "white",
+                                      textTransform: "capitalize",
+                                    }}
+                                  >
+                                    <BorderColorOutlinedIcon />
+                                    {"Edit"}
+                                  </Button>
+                                </>
+                              ) : (
+                                <></>
+                              )}
                             </>
                           ) : (
                             <>
@@ -1250,7 +1259,9 @@ export default function UserDetailsPage() {
                               </Typography>
                             </Grid>
                             <Grid item xs={8}>
-                              <Typography variant="body1">On going</Typography>
+                              <Typography variant="body1">
+                                {projectDetailsData?.status}
+                              </Typography>
                             </Grid>
                             <Grid item xs={4}>
                               <Typography variant="body1">

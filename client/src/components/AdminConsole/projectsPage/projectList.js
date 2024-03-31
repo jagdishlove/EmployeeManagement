@@ -95,11 +95,20 @@ const ProjectList = ({ projectsData }) => {
             <Avatar
               src={`data:image/png;base64,${projectsData.fileStorage.data}`}
               alt={projectsData.clientName}
+              style={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "4px",
+              }}
             />
           ) : (
             <Avatar
               sx={{
-                color: "#000000",
+                color: "#ffffff",
+                backgroundColor: "#008080",
+                width: "40px",
+                height: "40px",
+                borderRadius: "4px",
               }}
             >
               {projectsData?.clientName.charAt(0)}
