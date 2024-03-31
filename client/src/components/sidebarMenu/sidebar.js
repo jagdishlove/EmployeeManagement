@@ -133,15 +133,15 @@ const Sidebar = ({ children }) => {
     localStorage.setItem("selectedItem", text);
   };
 
-  useEffect(() => {
-    // Get the selected item from local storage when the component initializes
-    const storedSelectedItem = localStorage.getItem("selectedItem");
-    if (storedSelectedItem) {
-      setSelectedItem(storedSelectedItem);
-    }
+  // useEffect(() => {
+  //   // Get the selected item from local storage when the component initializes
+  //   const storedSelectedItem = localStorage.getItem("selectedItem");
+  //   if (storedSelectedItem) {
+  //     setSelectedItem(storedSelectedItem);
+  //   }
 
-    navigate("/" + selectedItem.toLowerCase());
-  }, [selectedItem]);
+  //   navigate("/" + selectedItem.toLowerCase());
+  // }, [selectedItem]);
 
   const handleDrawerOpen = () => {
     setOpen(true);
