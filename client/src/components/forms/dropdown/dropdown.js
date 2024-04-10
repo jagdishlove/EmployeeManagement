@@ -63,8 +63,7 @@ const Dropdown = ({
               option.employmentType ||
               option.managerName ||
               option.complexityName ||
-              option.projectType ||
-              option[valueKey]
+              option.projectType 
             }
             sx={{
               "&.Mui-selected": {

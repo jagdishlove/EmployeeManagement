@@ -5,19 +5,21 @@ import LinearProgressThickness from "./linearProgress";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 
+const ProjectTabSectionOne = () => {
+  const navigate = useNavigate();
 
-const ProjectTabSectionOne = ({projectList}) => {  
-  const Navigate = useNavigate();
- 
   const { dashboardProjectdetails } = useSelector(
     (state) => state?.nonPersist?.dashboardProjectdetails
   );
+  const projectList = useSelector(
+    (state) => state?.nonPersist?.workSpace?.projectList
+  );
+  console.log("projectList", projectList);
   const ColorBox = ({ color, tooltip, children }) => (
     <Tooltip
       title={
         <Box
           sx={{
-           
             backgroundColor: "#ffffff",
             color: "#000000",
             padding: "8px",
@@ -47,10 +49,10 @@ const ProjectTabSectionOne = ({projectList}) => {
     </Tooltip>
   );
 
-
-  const handleViewInDetail = () => {
-    Navigate(`/projectDetailPage/${projectList.id}`);
+  const handleViewInDetail = (id) => {
+    navigate(`/projectDetailPage/${id}`);
   };
+
   return (
     <div>
       <Grid
@@ -68,7 +70,7 @@ const ProjectTabSectionOne = ({projectList}) => {
             p: 2,
             display: "flex",
             alignItems: "center",
-            backgroundColor:"#ffffff"
+            backgroundColor: "#ffffff",
           }}
         >
           <Grid item xs={2}>
@@ -87,7 +89,9 @@ const ProjectTabSectionOne = ({projectList}) => {
             </Typography>
             <Box style={{ textAlign: "right" }}>
               {" "}
-              <Link  onClick={handleViewInDetail}>View project detail &gt; &gt;</Link>
+              <Link onClick={() => handleViewInDetail(projectList.id)}>
+                View project detail &gt; &gt;
+              </Link>
             </Box>
           </Grid>
         </Grid>
@@ -104,7 +108,7 @@ const ProjectTabSectionOne = ({projectList}) => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            backgroundColor:"#ffffff"
+            backgroundColor: "#ffffff",
           }}
         >
           <GaugeMeter />
@@ -120,7 +124,7 @@ const ProjectTabSectionOne = ({projectList}) => {
             boxShadow: 2,
             p: 2,
             display: "flex",
-            backgroundColor:"#ffffff"
+            backgroundColor: "#ffffff",
           }}
         >
           <Grid container>

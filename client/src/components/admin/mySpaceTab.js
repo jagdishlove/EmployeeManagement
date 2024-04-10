@@ -181,7 +181,8 @@ const MySpaceTab = () => {
   }, [lines]);
 
   return (
-    <Grid style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
+    
+    <Grid style={{ position: 'relative', display: 'flex', flexDirection: 'column', }}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <Card sx={{
