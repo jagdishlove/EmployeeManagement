@@ -22,7 +22,11 @@ export default function AdminTimesheetHeader({
 
   const dispatch = useDispatch();
   const handleChange = (e) => {
-    dispatch(searchUserAction(e?.target?.value));
+    const inputValue = e.target.value;
+
+    if (inputValue.length >= 3) {
+      dispatch(searchUserAction(inputValue));
+    }
   };
 
   const handleApproveChange = (e) => {
@@ -43,7 +47,7 @@ export default function AdminTimesheetHeader({
   );
 
   const userData = useSelector(
-    (state) => state?.nonPersist?.adminTimeSheet?.searchUserData
+    (state) => state?.nonPersist?.adminTimeSheet?.searchUserData?.result
   );
 
   const approverList = useSelector(
@@ -71,18 +75,18 @@ export default function AdminTimesheetHeader({
       <Grid item xs={12} sm={12} md={4} lg={5}>
         <Box>
           <Autocomplete
-            isMulti={true}
-            isSearchable={true}
-            options={userData?.result || []}
-            getOptionValue={(option) => option.id}
-            getOptionLabel={(option) => option.name}
-            getOptionSelected={(option, value) => option.id === value.id}
-            onChange={(e, data) => setSelectedSearchOption(data)}
-            name="UserName"
             sx={{
+              borderRadius: "8px",
               width: "40%",
             }}
-            isLoading={userData?.length === 0}
+            options={userData || []}
+            getOptionLabel={(option) => option.name}
+            getOptionSelected={(option, value) => option.id === value.id}
+            onChange={(event, data) => {
+              setSelectedSearchOption(data);
+            }}
+            isSearchable={true}
+            getOptionValue={(option) => option.id}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -91,7 +95,6 @@ export default function AdminTimesheetHeader({
                 onChange={handleChange}
                 InputProps={{
                   ...params.InputProps,
-                  style: { borderRadius: "50px" },
                   startAdornment: (
                     <>
                       <SearchIcon />
@@ -99,6 +102,8 @@ export default function AdminTimesheetHeader({
                     </>
                   ),
                   endAdornment: null,
+
+                  style: { borderRadius: "20px" },
                 }}
               />
             )}

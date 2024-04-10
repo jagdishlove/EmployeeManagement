@@ -328,7 +328,7 @@ export const getAllLeaveRequestsOfEmployeesAction = (
           "POST",
           `/api/leave/getAllLeaveRequestsOfEmployees`,
           {
-            filters: payload ? payload : [],
+            filters: payload ? [payload] : [],
           },
           { page: 0, size: counter, fromDate: fromDate, toDate: toDate }
         );

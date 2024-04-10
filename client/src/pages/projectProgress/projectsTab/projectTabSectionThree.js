@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Grid,
@@ -11,64 +11,24 @@ import {
   DialogTitle,
 } from "@mui/material";
 import OpenInFullOutlinedIcon from "@mui/icons-material/OpenInFullOutlined";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
 import ProjectBarChart from "./barChart";
+import ProjectProgressLineChart from "./projectProgressLineChart";
+import { useDispatch, useSelector } from "react-redux";
+import { getProjectProgressGraphAction } from "../../../redux/actions/workSpace/workSpaceAction";
 
-
-
-const data = [
- 
-  {
-    time: "2024-03-25",
-    projectedImplementationCost: 1.2,
-    actualImplementationCost: 0.0,
-  },
-  {
-    time: "2024-03-26",
-    projectedImplementationCost: 1.6,
-    actualImplementationCost: 0.0,
-  },
-  {
-    time: "2024-03-27",
-    projectedImplementationCost: 2.0,
-    actualImplementationCost: 0.0,
-  },
-  {
-    time: "2024-03-28",
-    projectedImplementationCost: 2.4,
-    actualImplementationCost: 91.13982987587345,
-  },
-  {
-    time: "2024-03-29",
-    projectedImplementationCost: 2.8000000000000003,
-    actualImplementationCost: 100.0,
-  },
-  {
-    time: "2024-03-30",
-    projectedImplementationCost: 3.4,
-    actualImplementationCost: 91.13982987587345,
-  },
-  {
-    time: "2024-03-31",
-    projectedImplementationCost: 2.8000000000000003,
-    actualImplementationCost: 100.0,
-  },
-  
+const options = [
+  { value: "SEVEN_DAYS", label: "7D" },
+  { value: "ONE_MONTH", label: "1M" },
+  { value: "SIX_MONTHS", label: "6M" },
+  { value: "ONE_YEAR", label: "1Y" },
+  { value: "ALL", label: "ALL" },
 ];
 
-const ProjectTebSectionThree = () => {
+const ProjectTebSectionThree = ({ project }) => {
   const [open, setOpen] = useState(false);
   const [openBar, setOpenBar] = useState(false);
-
+  const [selectedOption, setSelectedOption] = useState(options[0]);
+  const dispatch = useDispatch();
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -81,34 +41,20 @@ const ProjectTebSectionThree = () => {
     setOpenBar(false);
   };
 
-  const [interval, setInterval] = useState("7D");
-  const [filteredData, setFilteredData] = useState(data);
-  const handleIntervalChange = (newInterval) => {
-    setInterval(newInterval);
-    // Logic to filter data based on interval
-    // Example: filter for last 7 days, 1 month, 6 months, 1 year, or show all data
-    let newData;
-    switch (newInterval) {
-      case '7D':
-        newData = data.filter((item) => new Date(item.time) >= new Date(data[data.length - 1].time) - 7 * 24 * 60 * 60 * 1000);
-        break;
-      case '1M':
-        newData = data.filter((item) => new Date(item.time) >= new Date(data[data.length - 1].time) - 30 * 24 * 60 * 60 * 1000);
-        break;
-      case '6M':
-        newData = data.filter((item) => new Date(item.time) >= new Date(data[data.length - 1].time) - 6 * 30 * 24 * 60 * 60 * 1000);
-        break;
-      case '1Y':
-        newData = data.filter((item) => new Date(item.time) >= new Date(data[data.length - 1].time) - 365 * 24 * 60 * 60 * 1000);
-        break;
-      case 'All':
-        newData = data;
-        break;
-      default:
-        newData = data;
-    }
-    setFilteredData(newData);
+  const handleOptionClick = (selectedOption) => {
+    setSelectedOption(selectedOption);
   };
+
+  const params = { timeInterval: selectedOption.value };
+  const projectList = useSelector(
+    (state) => state?.nonPersist?.workSpace?.projectList
+  );
+
+  useEffect(() => {
+    if (projectList.length > 0) {
+      dispatch(getProjectProgressGraphAction(project, params));
+    }
+  }, [project, selectedOption]);
 
   return (
     <div>
@@ -132,6 +78,7 @@ const ProjectTebSectionThree = () => {
             display: "flex",
             alignItems: "center",
             flexDirection: "column",
+            backgroundColor:"#ffffff"
           }}
         >
           <Grid container spacing={4}>
@@ -170,7 +117,11 @@ const ProjectTebSectionThree = () => {
                 />
                 <Typography
                   fontWeight="bold"
-                  style={{ fontSize: "14px", lineHeight: "15px" }}
+                  style={{
+                    fontSize: "14px",
+                    lineHeight: "15px",
+                    marginBottom: "5px",
+                  }}
                 >
                   Actual Implementation Cost
                 </Typography>
@@ -187,7 +138,11 @@ const ProjectTebSectionThree = () => {
                 />
                 <Typography
                   fontWeight="bold"
-                  style={{ fontSize: "14px", lineHeight: "15px" }}
+                  style={{
+                    fontSize: "14px",
+                    lineHeight: "15px",
+                    marginBottom: "5px",
+                  }}
                 >
                   Projected Implementation Cost
                 </Typography>
@@ -204,7 +159,11 @@ const ProjectTebSectionThree = () => {
                 />
                 <Typography
                   fontWeight="bold"
-                  style={{ fontSize: "14px", lineHeight: "15px" }}
+                  style={{
+                    fontSize: "14px",
+                    lineHeight: "15px",
+                    marginBottom: "5px",
+                  }}
                 >
                   Budget
                 </Typography>
@@ -221,7 +180,11 @@ const ProjectTebSectionThree = () => {
                 />
                 <Typography
                   fontWeight="bold"
-                  style={{ fontSize: "14px", lineHeight: "15px" }}
+                  style={{
+                    fontSize: "14px",
+                    lineHeight: "15px",
+                    marginBottom: "5px",
+                  }}
                 >
                   Time
                 </Typography>
@@ -243,6 +206,7 @@ const ProjectTebSectionThree = () => {
             display: "flex",
             alignItems: "center",
             flexDirection: "column",
+            backgroundColor:"#ffffff"
           }}
         >
           <Grid container spacing={3}>
@@ -284,99 +248,105 @@ const ProjectTebSectionThree = () => {
             </Grid>
           </Grid>
 
-          <div style={{ marginBottom: '20px' }}>
-        <Button onClick={() => handleIntervalChange('7D')} variant={interval === '7D' ? 'contained' : 'outlined'}>7D</Button>
-        <Button onClick={() => handleIntervalChange('1M')} variant={interval === '1M' ? 'contained' : 'outlined'}>1M</Button>
-        <Button onClick={() => handleIntervalChange('6M')} variant={interval === '6M' ? 'contained' : 'outlined'}>6M</Button>
-        <Button onClick={() => handleIntervalChange('1Y')} variant={interval === '1Y' ? 'contained' : 'outlined'}>1Y</Button>
-        <Button onClick={() => handleIntervalChange('All')} variant={interval === 'All' ? 'contained' : 'outlined'}>All</Button>
-      </div>
-      <ResponsiveContainer width="100%" height={400}>
-        <LineChart
-          data={filteredData}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="time" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Line type="monotone" dataKey="projectedImplementationCost" stroke="#8884d8" activeDot={{ r: 8 }} name="Projected Implementation Cost" />
-          <Line type="monotone" dataKey="actualImplementationCost" stroke="#82ca9d" activeDot={{ r: 8 }} name="Actual Implementation Cost" />
-        </LineChart>
-      </ResponsiveContainer>
+          <Grid
+            container
+            style={{
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "row",
+              justifyContent: "flex-end",
+              marginRight: "90px",
+            }}
+          >
+            {options.map((option) => (
+              <Grid item key={option.value}>
+                <button
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    cursor: "pointer",
+                    textDecoration:
+                      selectedOption === option ? "underline" : "none",
+                    color: selectedOption === option ? "#3689EA" : "inherit",
+                  }}
+                  onClick={() => handleOptionClick(option)}
+                >
+                  {option.label}
+                </button>
+              </Grid>
+            ))}
+          </Grid>
+          <ProjectProgressLineChart
+            handleClickOpen={handleClickOpen}
+            selectedOption={selectedOption}
+          />
           <Dialog open={open} onClose={handleClose}>
-            <DialogTitle> </DialogTitle>
+            <DialogTitle>
+              <Grid container spacing={2} width="500px">
+                <Grid item xs={12}>
+                  <Box display="flex" alignItems="center">
+                    <Box
+                      sx={{
+                        width: "10px",
+                        height: "10px",
+                        backgroundColor: "#60C0A3",
+                        marginRight: "5px",
+                      }}
+                    />
+                    <Typography variant="body1" fontWeight="bold">
+                      Projected Implementation
+                    </Typography>
+                  </Box>
+                  <Box display="flex" alignItems="center">
+                    <Box
+                      sx={{
+                        width: "10px",
+                        height: "10px",
+                        backgroundColor: "#C06060",
+                        marginRight: "5px",
+                      }}
+                    />
+                    <Typography variant="body1" fontWeight="bold">
+                      Actual Implementation
+                    </Typography>
+                  </Box>
+                </Grid>
+              </Grid>
+              <Grid
+                container
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  flexDirection: "row",
+                  justifyContent: "flex-end",
+                }}
+              >
+                {options.map((option) => (
+                  <Grid item key={option.value}>
+                    <button
+                      style={{
+                        border: "none",
+                        background: "transparent",
+                        cursor: "pointer",
+                        textDecoration:
+                          selectedOption === option ? "underline" : "none",
+                        color:
+                          selectedOption === option ? "#3689EA" : "inherit",
+                      }}
+                      onClick={() => handleOptionClick(option)}
+                    >
+                      {option.label}
+                    </button>
+                  </Grid>
+                ))}
+              </Grid>
+            </DialogTitle>
             <DialogContent>
               <DialogContentText>
-                <div style={{ marginBottom: "20px" }}>
-                  <Button
-                    onClick={() => handleIntervalChange("7D")}
-                    variant={interval === "7D" ? "contained" : "outlined"}
-                  >
-                    7D
-                  </Button>
-                  <Button
-                    onClick={() => handleIntervalChange("1M")}
-                    variant={interval === "1M" ? "contained" : "outlined"}
-                  >
-                    1M
-                  </Button>
-                  <Button
-                    onClick={() => handleIntervalChange("6M")}
-                    variant={interval === "6M" ? "contained" : "outlined"}
-                  >
-                    6M
-                  </Button>
-                  <Button
-                    onClick={() => handleIntervalChange("1Y")}
-                    variant={interval === "1Y" ? "contained" : "outlined"}
-                  >
-                    1Y
-                  </Button>
-                  <Button
-                    onClick={() => handleIntervalChange("All")}
-                    variant={interval === "All" ? "contained" : "outlined"}
-                  >
-                    All
-                  </Button>
-                </div>
-                <ResponsiveContainer width="100%" height={400}>
-                  <LineChart
-                    data={filteredData}
-                    margin={{
-                      top: 5,
-                      right: 30,
-                      left: 20,
-                      bottom: 5,
-                    }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="time" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line
-                      type="monotone"
-                      dataKey="projectedImplementationCost"
-                      stroke="#8884d8"
-                      activeDot={{ r: 8 }}
-                      name="Projected Implementation Cost"
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="actualImplementationCost"
-                      stroke="#82ca9d"
-                      activeDot={{ r: 8 }}
-                      name="Actual Implementation Cost"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
+                <ProjectProgressLineChart
+                  handleClickOpen={handleClickOpen}
+                  selectedOption={selectedOption}
+                />
               </DialogContentText>
             </DialogContent>
             <DialogActions>

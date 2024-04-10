@@ -46,24 +46,26 @@ export const modifyDataFormat = (data) => {
   Object.keys(data).forEach((key) => {
     const itemList = data[key];
     if (Array.isArray(itemList) && itemList.length > 0) {
-      modifiedData[key] = itemList.map((item) => ({
-        id:
-          item[`${key}Id`] ||
-          item.id ||
-          item.jobId ||
-          item.status ||
-          item.locationId,
-        value:
-          item[`${key}Type`] ||
-          item[`${key}Name`] ||
-          item.projectName ||
-          item.employmentType ||
-          item.gender ||
-          item.activityType ||
-          item.jobType ||
-          item.locationName ||
-          item[key],
-      }));
+      modifiedData[key] = itemList
+        .filter((item) => item.status === "ACTIVE") // Filter out only ACTIVE status items
+        .map((item) => ({
+          id:
+            item[`${key}Id`] ||
+            item.id ||
+            item.jobId ||
+            item.status ||
+            item.locationId,
+          value:
+            item[`${key}Type`] ||
+            item[`${key}Name`] ||
+            item.projectName ||
+            item.employmentType ||
+            item.gender ||
+            item.activityType ||
+            item.jobType ||
+            item.locationName ||
+            item[key],
+        }));
     } else {
       modifiedData[key] = [];
     }

@@ -26,7 +26,6 @@ const LeaveRequestForm = ({
   setErrors,
   // hasNumberDaysGreaterThanZero,
 }) => {
-  const { numberOfDays } = useSelector((state) => state?.nonPersist.leavesData);
   const [status, setStatus] = useState("Saved");
 
   const style = {};
@@ -38,7 +37,7 @@ const LeaveRequestForm = ({
     const newEntry = {
       fromDate: leaveRqstData.fromDate,
       toDate: leaveRqstData.toDate,
-      numberOfDays: numberOfDays,
+      numberOfDays: leaveRqstData.noOfDays,
       status: status,
       ccEmails: leaveRqstData.CC,
       file: leaveRqstData.file,
@@ -68,13 +67,18 @@ const LeaveRequestForm = ({
   }, [dispatch]);
 
   const autoCompleteHandler = (_, value) => {
-    // Ensure that value is an array
     const ccValue = Array.isArray(value) ? value : [value];
+    const validatedEmails = ccValue.filter((email) => isValidEmail(email)); // Filter out invalid emails
 
     // Assuming you want to join the array back to a string for the Autocomplete component
-    const ccString = ccValue.join(",");
+    const ccString = validatedEmails.join(",");
 
     onChangeFormDataHandler(_, ccString, "cc");
+  };
+  const isValidEmail = (email) => {
+    // Regular expression for basic email validation
+    const emailPattern = /\S+@\S+\.\S+/;
+    return emailPattern.test(email);
   };
   const textFieldChangeHandler = (e) => {
     const value = e.target.value;
@@ -163,7 +167,7 @@ const LeaveRequestForm = ({
         leaveRqstData.leaveMasterId === `${adoptionLeaveForMaleId}` ||
         leaveRqstData.leaveMasterId === `${adoptionLeaveForFemaleId}` ||
         (leaveRqstData.leaveMasterId === `${sickLeaveId}` &&
-          numberOfDays >= 3 &&
+          leaveRqstData.noOfDays >= 3 &&
           !leaveRqstData.attachment)) &&
       !file
     ) {
@@ -323,9 +327,10 @@ const LeaveRequestForm = ({
                   }}
                 >
                   <Typography marginTop="35px" fontSize="20px">
-                    {typeof numberOfDays === "number"
+                    {/* {typeof numberOfDays === "number"
                       ? numberOfDays.toFixed(1)
-                      : "0"}
+                      : "0"} */}
+                    {leaveRqstData?.noOfDays}
                   </Typography>
                 </Box>
               </Grid>

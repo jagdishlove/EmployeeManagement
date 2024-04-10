@@ -736,6 +736,12 @@ export default function MasterData() {
   const handleSubmit = async (type, id, status) => {
     const validationErrors = validateForm(type);
 
+    console.log("validationErrors", validationErrors);
+    console.log(
+      "Object.keys(validationErrors).length",
+      Object.keys(validationErrors).length
+    );
+
     if (Object.keys(validationErrors).length == 0) {
       setErrors({});
       try {
@@ -788,6 +794,7 @@ export default function MasterData() {
             locationId: id ? id : "",
             phoneNumber: officeData.phone,
             address: {
+              addressId: officeData.addressId ? officeData.addressId : "",
               addressLine1: officeData.addressLine1,
               addressLine2: officeData.addressLine2,
               postalCode: officeData.postalCode,
@@ -832,6 +839,7 @@ export default function MasterData() {
             file: file ? file : "",
             clientName: clinetDetails.clinetName,
             phone: clinetDetails.phone,
+            "address.name": clinetDetails.clinetName,
             "address.addressLine1": clinetDetails.addressLine1,
             "address.addressLine2": clinetDetails.addressLine2,
             "address.postalCode": clinetDetails.postalCode,
@@ -850,6 +858,7 @@ export default function MasterData() {
             phoneNumber: clientLocationData.phone,
             address: {
               name: clientLocationData.addressName,
+              addressId: clientLocationData.addressId,
               addressLine1: clientLocationData.addressLine1,
               addressLine2: clientLocationData.addressLine2,
               postalCode: clientLocationData.postalCode,
@@ -915,6 +924,8 @@ export default function MasterData() {
             locationId: id ? id : "",
             phoneNumber: officeData.phone,
             address: {
+              addressId: officeData.addressId ? officeData.addressId : "",
+
               name: officeData.addressName,
               addressLine1: officeData.addressLine1,
               addressLine2: officeData.addressLine2,
@@ -922,9 +933,11 @@ export default function MasterData() {
               countryId: officeData.countryId,
               stateId: officeData.stateId,
               cityId: officeData.cityId,
-              type: officeData.type || "",
             },
           };
+          if (officeData.officeAddress) {
+            payload.address.name = officeData.officeAddress;
+          }
           if (status) {
             payload.status = status;
           }
@@ -969,6 +982,7 @@ export default function MasterData() {
             file: file ? file : "",
             clientName: clinetDetails.clinetName,
             phone: clinetDetails.phone,
+            "address.id": clinetDetails.addressId,
             "address.addressLine1": clinetDetails.addressLine1,
             "address.addressLine2": clinetDetails.addressLine2,
             "address.postalCode": clinetDetails.postalCode,
@@ -987,6 +1001,7 @@ export default function MasterData() {
             phoneNumber: clientLocationData.phone,
             address: {
               name: clientLocationData.addressName,
+              addressId: clientLocationData.addressId,
               addressLine1: clientLocationData.addressLine1,
               addressLine2: clientLocationData.addressLine2,
               postalCode: clientLocationData.postalCode,

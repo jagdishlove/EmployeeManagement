@@ -60,24 +60,35 @@ const CostAllocationFormDetails = () => {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    // Check for special characters using a regular expression
-    if (name === "projectBudget" || name === "projectRevenue") {
-      if (/[^0-9]/.test(value)) {
-        // If special characters are found, update the error state
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          [name]: `${
-            name === "projectBudget" ? "Project Budget" : "Project Revenue"
-          } does not contain special characters.`,
-        }));
-      } else {
-        // If no special characters, clear the error
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          [name]: "",
-        }));
-      }
+
+    // Ensure project budget and project revenue do not contain alphabets
+    if (
+      (name === "projectBudget" || name === "projectRevenue") &&
+      /[a-zA-Z]/.test(value)
+    ) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: `${
+          name === "projectBudget" ? "Project Budget" : "Project Revenue"
+        } containing only positive digits.`,
+      }));
+    } else if (
+      (name === "projectBudget" || name === "projectRevenue") &&
+      /[^a-zA-Z0-9]/.test(value)
+    ) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: `${
+          name === "projectBudget" ? "Project Budget" : "Project Revenue"
+        } does not contain special characters.`,
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: "",
+      }));
     }
+
     setFormData({
       ...formData,
       [name]: value,
@@ -123,6 +134,7 @@ const CostAllocationFormDetails = () => {
 
     await dispatch(saveCreateCostIncurredAction(payload));
     await dispatch(getAllCostIncurredAction(projectId));
+    await dispatch(getProjectDetailsAction(id));
     // Reset the form after dispatching the action
     handleReset();
     setSelectedCostIncurredId(null);
@@ -130,8 +142,12 @@ const CostAllocationFormDetails = () => {
 
   //for displaying the table after confirm
   useEffect(() => {
-    dispatch(getAllCostIncurredAction(projectId));
-  }, [projectId]);
+    if (projectId) {
+      dispatch(getAllCostIncurredAction(projectId));
+    } else if (id) {
+      dispatch(getAllCostIncurredAction(id));
+    }
+  }, [projectId, id]);
 
   const allCostIncurredData = useSelector(
     (state) => state.nonPersist.projectDetails?.allCostIncurredData
@@ -164,11 +180,19 @@ const CostAllocationFormDetails = () => {
         newErrors.projectBudget =
           "Project Budget does not contain special characters .";
       }
+      if (/[a-zA-Z]/.test(formData.projectBudget)) {
+        newErrors.projectBudget =
+          "Project Budget containing only positive digits.";
+      }
     }
     if (formData.projectRevenue) {
       if (!/^\d+$/.test(formData.projectRevenue)) {
         newErrors.projectRevenue =
           "Project Revenue does not contain special characters.";
+      }
+      if (/[a-zA-Z]/.test(formData.projectRevenue)) {
+        newErrors.projectRevenue =
+          "Project Revenue containing only positive digits.";
       }
     }
 
@@ -191,7 +215,7 @@ const CostAllocationFormDetails = () => {
       stage: 3,
     };
     const payload = {
-      id: projectId,
+      id: id ? id : projectId,
       projectBudget: formData.projectBudget,
       projectRevenue: formData.projectRevenue,
     };
@@ -228,8 +252,13 @@ const CostAllocationFormDetails = () => {
         projectBudget: projectDetailsData?.projectBudget || "",
         projectRevenue: projectDetailsData?.projectRevenue || "",
       }));
+    } else {
+      setFormData({
+        projectBudget: "",
+        projectRevenue: "",
+      });
     }
-  }, [id]);
+  }, [id, projectDetailsData]);
 
   return (
     <div style={{ marginBottom: "50px" }}>

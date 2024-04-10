@@ -55,6 +55,9 @@ export default function UserDetailsPage() {
 
   const empId = useSelector((state) => state?.persistData.data?.empId);
 
+  console.log("empId", empId);
+  console.log("id", id);
+
   const handleAddSkillClick = () => {
     setShowAddSkills(!showAddSkills);
   };
@@ -334,7 +337,7 @@ export default function UserDetailsPage() {
     setSelectedSkills(updatedSkills);
     const updatedAddSkills = updatedSkills.map(({ skillId, rating }) => ({
       skillId,
-      rating,
+      rating: rating !== undefined ? rating : 0,
     }));
     setAddSkills(updatedAddSkills);
   };
@@ -380,7 +383,9 @@ export default function UserDetailsPage() {
             <Typography variant="body1" sx={{ width: "100%" }}>
               {skill.skillName}
             </Typography>
-            <LightTooltip title={`${skillValues[skill.skillId]}`}>
+            <LightTooltip
+              title={`${skillValues[skill.skillId] || skill.rating || 0}`}
+            >
               <Slider
                 value={skillValues[skill.skillId] || skill.rating}
                 onChange={(event, newValue) =>
@@ -390,11 +395,14 @@ export default function UserDetailsPage() {
                 max={10}
                 step={1}
                 sx={{
+                  marginLeft: "10px",
                   width: "500px",
                   color:
                     (skillValues[skill.skillId] || skill.rating) < 4
                       ? "#90DC90"
-                      : (skillValues[skill.skillId] > 4 || skill.rating) < 7
+                      : ((skillValues[skill.skillId] > 4 &&
+                          skillValues[skill.skillId]) ||
+                          skill.rating) < 7
                       ? "#E6E62C"
                       : "#E38F75",
                 }}
@@ -481,7 +489,7 @@ export default function UserDetailsPage() {
 
   const handleBack = () => {
     if (isSuperAdmin) {
-      navigate("/users");
+      navigate(-1);
     } else {
       navigate(-1);
     }
@@ -570,7 +578,8 @@ export default function UserDetailsPage() {
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          color: "#A4A4A4",
+                          color: "#ffff",
+                          backgroundColor: "#008080",
                         }}
                       >
                         {userData.firstName[0].toUpperCase()}
@@ -1021,7 +1030,7 @@ export default function UserDetailsPage() {
                         >
                           {!isEditing ? (
                             <>
-                              {empId === id ? (
+                              {empId == id ? (
                                 <>
                                   <Button
                                     variant="outlined"

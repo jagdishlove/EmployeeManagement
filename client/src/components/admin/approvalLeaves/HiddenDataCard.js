@@ -1,9 +1,10 @@
 import { CloudDownload } from "@mui/icons-material";
 import { Button, Grid, IconButton, TextField, Typography } from "@mui/material";
 import dayjs from "dayjs";
-import React from "react";
+import { React, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { downloadFileAction } from "../../../redux/actions/leaves/approvalLeaveAction";
+import Checkbox from "@mui/material/Checkbox";
 
 const HiddenDataCard = ({
   cardData,
@@ -13,9 +14,11 @@ const HiddenDataCard = ({
   index,
   setComments,
   comments,
+  onCardSelect,
+  superAdmin,
 }) => {
   const masterData = useSelector((state) => state?.persistData?.masterData);
-
+  const [isChecked, setIsChecked] = useState(false);
   const handleApproval = (status, leaveRequestId) => {
     approveRejectLeavesHandler(leaveRequestId, status, comments);
   };
@@ -38,6 +41,11 @@ const HiddenDataCard = ({
 
   const handleDownload = (file) => {
     dispatch(downloadFileAction(file, cardData.fileName));
+  };
+
+  const handleCheckboxChange = () => {
+    setIsChecked(!isChecked);
+    onCardSelect(cardData.leaveRequestId, !isChecked); // Notify parent about card selection change
   };
 
   return (
@@ -79,7 +87,21 @@ const HiddenDataCard = ({
           {cardData?.submittedDate}
         </Typography>
       </div>
+      <div
+        style={{
+          position: "absolute",
+          top: "-0.5rem",
+          right: "0rem",
 
+          padding: "0.50rem 0.50rem",
+        }}
+      >
+        <Checkbox
+          checked={isChecked}
+          onChange={handleCheckboxChange}
+          inputProps={{ "aria-label": "controlled" }}
+        />
+      </div>
       <Grid
         item
         container
@@ -345,7 +367,7 @@ const HiddenDataCard = ({
         gap={2}
         style={{ marginTop: 13, position: "relative" }}
       >
-        {approval && (
+        {(approval || superAdmin) && (
           <>
             {
               <Grid style={{ width: "100%" }}>

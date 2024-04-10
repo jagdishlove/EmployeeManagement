@@ -52,6 +52,7 @@ const ProjectTabSectionTwo = () => {
             display: "flex",
             alignItems: "center",
             flexDirection: "column",
+            backgroundColor:"#ffffff"
           }}
         >
           {/* First Grid container for icon and text */}
@@ -112,6 +113,7 @@ const ProjectTabSectionTwo = () => {
             display: "flex",
             alignItems: "center",
             flexDirection: "column",
+            backgroundColor:"#ffffff"
           }}
         >
           {/* First Grid container for icon and text */}
@@ -169,6 +171,7 @@ const ProjectTabSectionTwo = () => {
             display: "flex",
             alignItems: "center",
             flexDirection: "column",
+            backgroundColor:"#ffffff"
           }}
         >
           {/* First Grid container for icon and text */}
@@ -229,6 +232,7 @@ const ProjectTabSectionTwo = () => {
             display: "flex",
             alignItems: "center",
             flexDirection: "column",
+            backgroundColor:"#ffffff"
           }}
         >
           {/* First Grid container for icon and text */}
@@ -287,6 +291,7 @@ const ProjectTabSectionTwo = () => {
             display: "flex",
             alignItems: "center",
             flexDirection: "column",
+            backgroundColor:"#ffffff"
           }}
         >
           {/* First Grid container for icon and text */}

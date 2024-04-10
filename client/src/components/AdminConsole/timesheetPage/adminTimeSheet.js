@@ -1,6 +1,8 @@
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
@@ -9,7 +11,6 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
 import AdminTimesheetHeader from "./adminTimesheetHeader";
 import TimesheetRow from "../../timesheetRow/timesheetRow";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,7 +23,6 @@ import {
 } from "../../../redux/actions/AdminConsoleAction/timeSheet/adminTimesheetAction";
 import dayjs from "dayjs";
 import InfiniteScroll from "react-infinite-scroll-component";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import icon from "../../../assets/Featured icon.svg";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -39,14 +39,13 @@ function AdminTimeSheet() {
 
   const [comments, setComments] = useState({});
   const [ratings, setRatings] = useState({});
+  const [selectedTimesheets, setSelectedTimesheets] = useState([]);
+  const [openApproveDialog, setOpenApproveDialog] = useState(false);
+  const [selectedCards, setSelectedCards] = useState({});
+  const [isChecked, setIsChecked] = useState(false);
+  const [selectall, setSelectall] = useState(false);
 
-  const handleCommentChange = (entryId, comment) => {
-    setComments((prevComments) => ({ ...prevComments, [entryId]: comment }));
-  };
 
-  const handleRatingChange = (entryId, rating) => {
-    setRatings((prevRatings) => ({ ...prevRatings, [entryId]: rating }));
-  };
 
   const params = {
     status: states,
@@ -55,7 +54,6 @@ function AdminTimeSheet() {
         ? dayjs(selectedDate, { format: "YYYY-MM-DD" }).format("YYYY-MM-DD")
         : "",
   };
-
   const payload = {
     status: states,
     date:
@@ -67,12 +65,42 @@ function AdminTimeSheet() {
   };
 
   useEffect(() => {
-    dispatch(getAllTimeSheetApprovers(params));
-  }, [states, selectedDate]);
+    dispatch(
+      getAllTimeSheetApprovers({
+        status: states,
+        date:
+          selectedDate !== "All"
+            ? dayjs(selectedDate, { format: "YYYY-MM-DD" }).format("YYYY-MM-DD")
+            : "",
+      })
+    );
+  }, [states, selectedDate, dispatch]);
 
   useEffect(() => {
-    dispatch(getAllTimeSheetForAdmin(payload, selectedSearchOption));
-  }, [selectedDate, selectedSearchOption, approver, states]);
+    dispatch(
+      getAllTimeSheetForAdmin(
+        {
+          status: states,
+          date:
+            selectedDate !== "All"
+              ? dayjs(selectedDate, { format: "YYYY-MM-DD" }).format(
+                  "YYYY-MM-DD"
+                )
+              : "",
+          approverId: approver === "All" ? "" : approver,
+          size: pageCounter * 5,
+        },
+        selectedSearchOption
+      )
+    );
+  }, [
+    selectedDate,
+    selectedSearchOption,
+    approver,
+    states,
+    pageCounter,
+    dispatch,
+  ]);
 
   const adminTimeSheetData = useSelector(
     (state) => state?.nonPersist?.adminTimeSheet?.allTimeSheetsForAdmin
@@ -90,30 +118,43 @@ function AdminTimeSheet() {
     approverNameMapping[approver.id] = approver.approverName;
   });
 
-  const handleSlectAll = () => {
-    setOpenPopup(true);
+  const handleSelectTimesheet = (timesheetId, rating, comment) => {
+    setSelectedTimesheets((prevSelected) =>
+      prevSelected.includes(timesheetId)
+        ? prevSelected.filter((id) => id !== timesheetId)
+        : [
+            ...prevSelected,
+            {
+              timesheetEntryId: timesheetId,
+              rating: rating,
+              comment: comment,
+            },
+          ]
+    );
   };
 
+  const handleCommentChange = (entryId, comment) => {
+    setComments((prevComments) => ({ ...prevComments, [entryId]: comment }));
+  };
+
+  const handleRatingChange = (entryId, rating) => {
+    setRatings((prevRatings) => ({ ...prevRatings, [entryId]: rating }));
+  };
+
+  const handleSelectAll = () => {
+    const entriesToApprove = adminTimeSheetData?.content || [];
+    const updatedSelectedCards = {};
+
+    for (const entry of entriesToApprove) {
+      updatedSelectedCards[entry.timesheetEntryId] = !isChecked;
+    }
+
+    setSelectedCards(updatedSelectedCards);
+    setIsChecked((prevIsChecked) => !prevIsChecked);
+    setSelectall(!selectall);
+  };
   const handleClosePopup = () => {
     setOpenPopup(false);
-  };
-
-  const validationForm = (rating, data) => {
-    const newErrors = {};
-
-    let activity = {};
-
-    for (var i = 0; i < masterData.activity.length; i++) {
-      if (data.activityId === masterData.activity[i].activityId) {
-        activity = masterData.activity[i];
-      }
-    }
-
-    if (activity.approvalRatingRequired === true && !rating) {
-      newErrors.ratingError = "Please add a rating";
-    }
-
-    return newErrors;
   };
 
   const approveSubmitHandler = async (data, rating, comment) => {
@@ -184,8 +225,6 @@ function AdminTimeSheet() {
 
       if (Object.keys(newErrors).length === 0) {
         const entryId = entry.timesheetEntryId;
-
-        // Extract values from comments and ratings objects
         const commentValue = comments[entryId];
         const ratingValue = ratings[entryId];
 
@@ -202,13 +241,30 @@ function AdminTimeSheet() {
 
     if (Object.keys(errors).length === 0) {
       try {
-        // Dispatch the bulk approval action with the updated comments
         await dispatch(
           adminBulkApproveTimesheet(
             approvedEntries,
-            payload,
+            {
+              status: states,
+              date:
+                selectedDate !== "All"
+                  ? dayjs(selectedDate, { format: "YYYY-MM-DD" }).format(
+                      "YYYY-MM-DD"
+                    )
+                  : "",
+              approverId: approver === "All" ? "" : approver,
+              size: pageCounter * 5,
+            },
             selectedSearchOption,
-            params
+            {
+              status: states,
+              date:
+                selectedDate !== "All"
+                  ? dayjs(selectedDate, { format: "YYYY-MM-DD" }).format(
+                      "YYYY-MM-DD"
+                    )
+                  : "",
+            }
           )
         );
         setErrorValidation({});
@@ -220,23 +276,114 @@ function AdminTimeSheet() {
     }
   };
 
-  const fetchMore = () => {
-    // Fetch more data only if there is more data available
-    const nextPage = 10 * pageCounter;
-    const nextPagePayload = {
-      status: states,
-      date:
-        selectedDate !== "All"
-          ? dayjs(selectedDate, { format: "YYYY-MM-DD" }).format("YYYY-MM-DD")
-          : "",
-      approverId: approver === "All" ? "" : approver,
-      size: nextPage,
-    };
+  const validationForm = (rating, data) => {
+    const newErrors = {};
 
-    dispatch(getAllTimeSheetForAdmin(nextPagePayload, selectedSearchOption));
+    let activity = {};
+
+    for (var i = 0; i < masterData.activity.length; i++) {
+      if (data.activityId === masterData.activity[i].activityId) {
+        activity = masterData.activity[i];
+      }
+    }
+
+    if (activity.approvalRatingRequired === true && !rating) {
+      newErrors.ratingError = "Please add a rating";
+    }
+
+    return newErrors;
+  };
+
+  const fetchMore = () => {
+    const nextPage = 10 * pageCounter;
+    dispatch(
+      getAllTimeSheetForAdmin(
+        {
+          status: states,
+          date:
+            selectedDate !== "All"
+              ? dayjs(selectedDate, { format: "YYYY-MM-DD" }).format(
+                  "YYYY-MM-DD"
+                )
+              : "",
+          approverId: approver === "All" ? "" : approver,
+          size: nextPage,
+        },
+        selectedSearchOption
+      )
+    );
     setPageCounter((counter) => counter + 1);
   };
 
+  const approveSelectedLeavesHandler = async () => {
+    const entriesToApprove = adminTimeSheetData?.content || [];
+
+    const errors = {};
+    const approvedEntries = [];
+
+    for (const entry of entriesToApprove) {
+      const entryId = entry.timesheetEntryId;
+
+      // Check if the current entry is selected
+      if (selectedCards[entryId]) {
+        const newErrors = validationForm(entry, "approved");
+
+        if (Object.keys(newErrors).length === 0) {
+          // Extract values from comments and ratings objects
+          const commentValue = comments[entryId];
+          const ratingValue = ratings[entryId];
+
+          approvedEntries.push({
+            timesheetEntryId: entryId,
+            comment: commentValue || "APPROVED",
+            rating: ratingValue || 5,
+            approvalStatus: "APPROVED",
+          });
+        } else {
+          errors[entryId] = newErrors;
+        }
+      }
+    }
+
+    if (Object.keys(errors).length === 0) {
+      try {
+        // Dispatch the approval action for selected leaves
+        dispatch(adminApproveTimesheet(approvedEntries));
+        setErrorValidation({});
+        setSelectedCards({});
+      } catch (error) {
+        console.error("Error during selected leaves approval:", error);
+      } finally {
+        setOpenPopup(false);
+        setOpenApproveDialog(false);
+        setSelectall(!selectall);
+      }
+    } else {
+      setErrorValidation(errors);
+    }
+  };
+
+  const onCardSelect = (id, isSelected) => {
+    setSelectedCards((prevSelected) => ({
+      ...prevSelected,
+      [id]: isSelected,
+    }));
+  };
+  const handleOpenApproveDialog = () => {
+    setOpenApproveDialog(true);
+  };
+
+  const handleCheckboxChange = (leaveRequestId) => {
+    setSelectedCards((prevSelectedCards) => {
+      const updatedSelectedCards = { ...prevSelectedCards };
+
+      // Toggle the state of the clicked checkbox
+      updatedSelectedCards[leaveRequestId] =
+        !updatedSelectedCards[leaveRequestId];
+
+      return updatedSelectedCards;
+    });
+  };
   return (
     <Grid>
       <AdminTimesheetHeader
@@ -248,25 +395,71 @@ function AdminTimeSheet() {
         setStatus={setStatus}
         setSelectedSearchOption={setSelectedSearchOption}
       />
+      {Object.values(selectedCards).some((isSelected) => isSelected) && (
+        <Box display="flex" justifyContent="flex-end" mt={2} mr={2}>
+          <Button
+            sx={{
+              background: "#008080",
+              color: "white",
+              marginLeft: 2,
+              padding: "10px 15px",
+              "&:hover": {
+                background: "#006666",
+              },
+            }}
+            onClick={handleOpenApproveDialog}
+          >
+            Approve TimeSheet
+          </Button>
+        </Box>
+      )}
+
+      <Dialog
+        open={openApproveDialog}
+        onClose={() => setOpenApproveDialog(false)}
+        PaperProps={{
+          style: {
+            borderRadius: 20,
+            padding: 10,
+          },
+        }}
+      >
+        <DialogTitle>
+          <img src={icon} /> Approve{" "}
+          {
+            Object.values(selectedCards).filter((value) => value === true)
+              .length
+          }
+          /{adminTimeSheetData?.totalElements} Leaves
+        </DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to approve all the selected Timesheet?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenApproveDialog(false)}>Cancel</Button>
+          <Button onClick={approveSelectedLeavesHandler}>Approve</Button>
+        </DialogActions>
+      </Dialog>
       {states === "SUBMITTED" &&
-      adminTimeSheetData?.content?.length > 0 &&
-      approver !== "All" ? (
-        <>
+        adminTimeSheetData?.content?.length > 0 &&
+        approver !== "All" && (
           <Box display="flex" justifyContent="flex-end" mt={2} mr={2}>
-            <Typography mr={2}>Select All</Typography>
-            <CheckBoxOutlineBlankIcon
+            <Typography mr={2} mt={1}>
+              Select All
+            </Typography>
+            <Checkbox
+              checked={selectall}
               sx={{ cursor: "pointer" }}
-              onClick={handleSlectAll}
+              onClick={handleSelectAll}
             />
           </Box>
-        </>
-      ) : (
-        <></>
-      )}
+        )}
 
       {adminTimeSheetData?.content?.length === 0 ? (
         <Box mt={5} sx={{ display: "flex", justifyContent: "center" }}>
-          <Typography> No TimeSheet requests found.</Typography>
+          <Typography>No TimeSheet requests found.</Typography>
         </Box>
       ) : (
         <InfiniteScroll
@@ -281,11 +474,13 @@ function AdminTimeSheet() {
                 data={entry}
                 superAdmin={true}
                 approval={true}
+                selected={selectedTimesheets.includes(entry.timesheetEntryId)}
+                onSelect={handleSelectTimesheet}
                 approveSubmitHandler={approveSubmitHandler}
                 rejectButtonHandler={rejectButtonHandler}
                 bulkApproveHandler={bulkApproveHandler}
                 errorValidation={errorValidation[entry.timesheetEntryId]}
-                activityType={entry.activityType} // Pass the activityType prop
+                activityType={entry.activityType}
                 comments={comments[entry.timesheetEntryId] || ""}
                 ratings={ratings[entry.timesheetEntryId] || 5}
                 onCommentChange={(comment) =>
@@ -294,6 +489,10 @@ function AdminTimeSheet() {
                 onRatingChange={(rating) =>
                   handleRatingChange(entry.timesheetEntryId, rating)
                 }
+                onCardSelect={onCardSelect}
+                selectedCards={selectedCards}
+                setSelectedCards={setSelectedCards}
+                handleCheckboxChange={handleCheckboxChange}
               />
             ))
           ) : (
@@ -317,27 +516,22 @@ function AdminTimeSheet() {
           <CloseIcon />
         </IconButton>
         <DialogTitle>
-          {" "}
-          <img src={icon} /> Approve{" "}
-          {
-            <b>
-              {" "}
-              {adminTimeSheetData?.numberOfElements
-                ? adminTimeSheetData.numberOfElements
-                : "0"}
-              /
-              {adminTimeSheetData?.totalElements
-                ? adminTimeSheetData.totalElements
-                : "0"}
-            </b>
-          }{" "}
+          <img src={icon} alt="icon" /> Approve{" "}
+          <b>
+            {adminTimeSheetData?.numberOfElements
+              ? adminTimeSheetData.numberOfElements
+              : "0"}
+            /
+            {adminTimeSheetData?.totalElements
+              ? adminTimeSheetData.totalElements
+              : "0"}
+          </b>{" "}
           Timesheets
         </DialogTitle>
         <DialogContent>
-          {/* 'Amit’s Workspace' ? */}
           <p>
-            Are you sure you want to approve all the submitted timesheets from
-            &apos;{approverNameMapping[approver]} workspace&apos; ?
+            Are you sure you want to approve all the submitted timesheets from{" "}
+            &apos;{approverNameMapping[approver]} workspace&apos;?
           </p>
         </DialogContent>
         <DialogActions>

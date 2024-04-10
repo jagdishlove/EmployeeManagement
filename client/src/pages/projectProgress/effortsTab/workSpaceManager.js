@@ -28,6 +28,8 @@ function WorkSpaceManager() {
           padding: "20px",
           marginRight: "8px",
           border: "1px solid #DFDFDF",
+          boxShadow: 2,
+          backgroundColor: "#ffffff",
         }}
       >
         <Grid container spacing={2} alignItems="center">
@@ -79,6 +81,8 @@ function WorkSpaceManager() {
           padding: "20px",
           marginRight: "8px",
           textAlign: "center",
+          boxShadow: 2,
+          backgroundColor: "#ffffff",
         }}
       >
         <Grid container spacing={2} mb={2}>
@@ -105,6 +109,8 @@ function WorkSpaceManager() {
           padding: "20px",
           marginRight: "8px",
           textAlign: "center",
+          boxShadow: 2,
+          backgroundColor: "#ffffff",
         }}
       >
         <Grid container spacing={2} mb={2}>
@@ -128,6 +134,8 @@ function WorkSpaceManager() {
           border: "1px solid #DFDFDF",
           borderRadius: "5px",
           padding: "20px",
+          boxShadow: 2,
+          backgroundColor: "#ffffff",
         }}
       >
         <Grid container spacing={2} mb={2}>
@@ -151,7 +159,7 @@ function WorkSpaceManager() {
             styles={{
               root: { width: "70px" }, // Adjust the width to reduce the size
               path: { stroke: "#4CAF50" }, // Adjust path color if needed
-              text: { fontSize: "10px", fill: "#000" }, // Adjust font size
+              text: { fontSize: "10px", fill: "#" }, // Adjust font size
             }}
           />
         </Box>

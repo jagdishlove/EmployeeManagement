@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
@@ -19,7 +20,6 @@ import dayjs from "dayjs";
 import InfiniteScroll from "react-infinite-scroll-component";
 import DataCard from "../../admin/approvalLeaves/DataCard";
 import ApprovedLeaveTable from "./approvedLeaveTable";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import icon from "../../../assets/Featured icon.svg";
 
 const AdminLeaves = () => {
@@ -32,9 +32,14 @@ const AdminLeaves = () => {
   const [pageCounter, setPageCounter] = useState(2);
   const [resultFilterData, setResultFilterData] = useState([]);
   const [openPopup, setOpenPopup] = useState(false);
+  const [openApproveDialog, setOpenApproveDialog] = useState(false);
+
   const [errorValidation, setErrorValidation] = useState({});
   const [comments, setComments] = useState({});
-
+  const [error, setError] = useState({});
+  const [selectedCards, setSelectedCards] = useState([]);
+  const [isChecked, setIsChecked] = useState(false);
+  const [selectAll, setSelectall] = useState(false);
   const getPayload = {
     size: 5 * 2,
     status: leaveStatus,
@@ -94,20 +99,39 @@ const AdminLeaves = () => {
   };
 
   const approveRejectLeavesHandler = async (id, status, approverComment) => {
-    const payload = [
-      {
-        leaveRequestId: id,
-        approverComment: approverComment || "APPROVED",
-        status,
-      },
-    ];
-    await dispatch(
-      adminApproveRejectLeavesAction(payload, getPayload, selectedSearchOption)
-    );
+    const newErrors = validationForm(approverComment, status);
+ 
+    if (Object.keys(newErrors).length === 0) {
+      const payload = [
+        {
+          leaveRequestId: id,
+          approverComment: approverComment || "APPROVED",
+          status,
+        },
+      ];
+      await dispatch(
+        adminApproveRejectLeavesAction(
+          payload,
+          getPayload,
+          selectedSearchOption
+        )
+      );
+    } else {
+      setError({ ...newErrors, [id]: newErrors });
+    }
   };
 
-  const handleSlectAll = () => {
-    setOpenPopup(true);
+  const handleSelectAll = () => {
+    const entriesToApprove = adminLeavesData?.content || [];
+    const updatedSelectedCards = {};
+
+    for (const entry of entriesToApprove) {
+      updatedSelectedCards[entry.leaveRequestId] = !isChecked;
+    }
+
+    setSelectedCards(updatedSelectedCards);
+    setIsChecked((prevIsChecked) => !prevIsChecked);
+    setSelectall(!selectAll);
   };
 
   const handleClosePopup = () => {
@@ -132,6 +156,7 @@ const AdminLeaves = () => {
     const errors = {};
     const approvedEntries = [];
 
+
     for (const entry of entriesToApprove) {
       const newErrors = validationForm(entry, "approved");
 
@@ -140,6 +165,7 @@ const AdminLeaves = () => {
 
         // Extract values from comments and ratings objects
         const commentValue = comments[entryId];
+        const approvedEntries = [];
 
         approvedEntries.push({
           leaveRequestId: entryId,
@@ -166,6 +192,72 @@ const AdminLeaves = () => {
     }
   };
 
+  const approveSelectedLeavesHandler = async () => {
+    const entriesToApprove = adminLeavesData?.content || [];
+
+    const errors = {};
+    const approvedEntries = [];
+
+    for (const entry of entriesToApprove) {
+      const entryId = entry.leaveRequestId;
+
+      // Check if the current entry is selected
+      if (selectedCards[entryId]) {
+        const newErrors = validationForm(entry, "approved");
+
+        if (Object.keys(newErrors).length === 0) {
+          // Extract values from comments and ratings objects
+          const commentValue = comments[entryId];
+
+          approvedEntries.push({
+            leaveRequestId: entryId,
+            approverComment: commentValue || "APPROVED",
+            status: "APPROVED",
+          });
+        } else {
+          errors[entryId] = newErrors;
+        }
+      }
+    }
+
+    if (Object.keys(errors).length === 0) {
+      try {
+        // Dispatch the approval action for selected leaves
+        dispatch(adminApproveRejectLeavesAction(approvedEntries));
+        setErrorValidation({});
+      } catch (error) {
+        console.error("Error during selected leaves approval:", error);
+      } finally {
+        setOpenPopup(false);
+        setOpenApproveDialog(false);
+        setSelectall(!selectAll);
+      }
+    } else {
+      setErrorValidation(errors);
+    }
+  };
+
+  const onCardSelect = (id, isSelected) => {
+    setSelectedCards((prevSelected) => ({
+      ...prevSelected,
+      [id]: isSelected,
+    }));
+  };
+  const handleOpenApproveDialog = () => {
+    setOpenApproveDialog(true);
+  };
+
+  const handleCheckboxChange = (leaveRequestId) => {
+    setSelectedCards((prevSelectedCards) => {
+      const updatedSelectedCards = { ...prevSelectedCards };
+
+      // Toggle the state of the clicked checkbox
+      updatedSelectedCards[leaveRequestId] =
+        !updatedSelectedCards[leaveRequestId];
+
+      return updatedSelectedCards;
+    });
+  };
   return (
     <div>
       <LeavesHeader
@@ -177,14 +269,64 @@ const AdminLeaves = () => {
         setApprover={setApprover}
         approver={approver}
       />
+      {Object.values(selectedCards).some((isSelected) => isSelected) && (
+        <Box display="flex" justifyContent="flex-end" mt={2} mr={2}>
+          <Button
+            sx={{
+              background: "#008080",
+              color: "white",
+              marginLeft: 2,
+              padding: "10px 15px",
+              "&:hover": {
+                background: "#006666",
+              },
+            }}
+            onClick={handleOpenApproveDialog}
+          >
+            Approve Leaves
+          </Button>
+        </Box>
+      )}
 
-      {leaveStatus === "SUBMITTED" && approver !== "All" ? (
+      <Dialog
+        open={openApproveDialog}
+        onClose={() => setOpenApproveDialog(false)}
+        PaperProps={{
+          style: {
+            borderRadius: 20,
+            padding: 10,
+          },
+        }}
+      >
+        <DialogTitle>
+          <img src={icon} /> Approve{" "}
+          {
+            Object.values(selectedCards).filter((value) => value === true)
+              .length
+          }
+          /{adminLeavesData?.totalElements} Leaves
+        </DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to approve all the selected Leaves?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenApproveDialog(false)}>Cancel</Button>
+          <Button onClick={approveSelectedLeavesHandler}>Approve</Button>
+        </DialogActions>
+      </Dialog>
+
+      {leaveStatus === "SUBMITTED" &&
+      approver !== "All" &&
+      resultFilterData?.content?.length > 0 ? (
         <>
           <Box display="flex" justifyContent="flex-end" mt={2} mr={2}>
             <Typography mr={2}>Select All</Typography>
-            <CheckBoxOutlineBlankIcon
+            <Checkbox
+              checked={selectAll}
               sx={{ cursor: "pointer" }}
-              onClick={handleSlectAll}
+              onClick={handleSelectAll}
             />
           </Box>
         </>
@@ -215,6 +357,11 @@ const AdminLeaves = () => {
                 }
                 superAdmin={true}
                 errorValidation={errorValidation[cardData.leaveRequestId]}
+                error={error}
+                onCardSelect={onCardSelect}
+                selectedCards={selectedCards}
+                setSelectedCards={setSelectedCards}
+                handleCheckboxChange={handleCheckboxChange}
               />
             ))}
 
@@ -236,11 +383,24 @@ const AdminLeaves = () => {
       >
         <DialogTitle>
           {" "}
-          <img src={icon} /> Approve 500 Timesheets
+          <img src={icon} /> Approve{" "}
+          {
+            <b>
+              {" "}
+              {adminLeavesData?.numberOfElements
+                ? adminLeavesData.numberOfElements
+                : "0"}
+              /
+              {adminLeavesData?.totalElements
+                ? adminLeavesData.totalElements
+                : "0"}
+            </b>
+          }{" "}
+          Leaves
         </DialogTitle>
         <DialogContent>
           <p>
-            Are you sure you want to approve all the submitted timesheets from
+            Are you sure you want to approve all the submitted Leaves from
             &apos;{approverNameMapping[approver]} workspace&apos; ?
           </p>
         </DialogContent>

@@ -22,7 +22,7 @@ import HolidayVillageIcon from "@mui/icons-material/HolidayVillage";
 import Header from "../header/header";
 import { SidebarStyle } from "./sidebarStyle";
 import { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import { useSelector } from "react-redux";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -114,7 +114,6 @@ const Sidebar = ({ children }) => {
   const theme = useTheme();
   const style = SidebarStyle(theme);
   // const mobile = useMobileScreen();
-  const navigate = useNavigate();
 
   const handleResize = () => {
     setOpen(window.innerWidth >= 900); // Update the state when the screen width changes
@@ -132,16 +131,6 @@ const Sidebar = ({ children }) => {
     // Save the selected item to local storage
     localStorage.setItem("selectedItem", text);
   };
-
-  // useEffect(() => {
-  //   // Get the selected item from local storage when the component initializes
-  //   const storedSelectedItem = localStorage.getItem("selectedItem");
-  //   if (storedSelectedItem) {
-  //     setSelectedItem(storedSelectedItem);
-  //   }
-
-  //   navigate("/" + selectedItem.toLowerCase());
-  // }, [selectedItem]);
 
   const handleDrawerOpen = () => {
     setOpen(true);

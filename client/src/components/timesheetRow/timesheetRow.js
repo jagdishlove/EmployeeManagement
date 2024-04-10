@@ -36,6 +36,7 @@ import { timeValidation } from "../../utils/timeValidation";
 import TimePicker from "../forms/customInputs/timePicker";
 import Dropdown from "../forms/dropdown/dropdown";
 import Star from "../stars/star";
+import Checkbox from "@mui/material/Checkbox";
 
 const TimesheetRow = ({
   selectedDate,
@@ -57,6 +58,9 @@ const TimesheetRow = ({
   onRatingChange,
   comments,
   ratings,
+
+  selectedCards,
+  handleCheckboxChange,
 }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -306,7 +310,7 @@ const TimesheetRow = ({
     try {
       const newErrors = validationForm();
       const timeError = timeValidation(getTimesheetData, newEnteryTime);
-
+     
       setErrors(newErrors);
       setTimeError(timeError);
 
@@ -319,8 +323,13 @@ const TimesheetRow = ({
           saveTimeSheetEntryAction(payload, formatDateForApi(selectedDate))
         );
         getProjectName(selectedValues.jobType);
+        setNewEnteryTime({
+          fromTime: "",
+          toTime: "",
+        });
       }
     } finally {
+    
       setLoading(false);
     }
   };
@@ -548,6 +557,27 @@ const TimesheetRow = ({
           </Typography>
         </div>
       ) : null}
+      {superAdmin ? (
+        <>
+          <div
+            style={{
+              position: "absolute",
+              top: "-0.5rem",
+              right: "0rem",
+
+              padding: "0.50rem 0.50rem",
+            }}
+          >
+            <Checkbox
+              checked={selectedCards[data.timesheetEntryId] || false}
+              onChange={() => handleCheckboxChange(data.timesheetEntryId)}
+              inputProps={{ "aria-label": "controlled" }}
+            />
+          </div>
+        </>
+      ) : (
+        <></>
+      )}
       <Grid container spacing={2}>
         {/* First Row */}
         <Grid container item spacing={2} xs={12} sm={12} md={6} lg={6}>
@@ -1000,6 +1030,7 @@ const TimesheetRow = ({
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12} sx={style.timesheetCol4}>
           <span style={{ color: "red" }}>{timeError}</span>
+
           {data && timeError && (
             <span style={{ color: "red" }}>
               Please edit again data is not saved or{" "}

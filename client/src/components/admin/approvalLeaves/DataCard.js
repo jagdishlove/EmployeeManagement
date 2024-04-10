@@ -13,6 +13,7 @@ import React, { useState } from "react";
 import HiddenDataCard from "./HiddenDataCard";
 import { useSelector } from "react-redux";
 import dayjs from "dayjs";
+import Checkbox from "@mui/material/Checkbox";
 
 const DataCard = ({
   cardData,
@@ -24,6 +25,9 @@ const DataCard = ({
   superAdmin,
   onCommentChange,
   adminComments,
+  onCardSelect,
+  selectedCards,
+  handleCheckboxChange,
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [comments, setComments] = useState("");
@@ -49,6 +53,7 @@ const DataCard = ({
     );
     return leaveTypeObject ? leaveTypeObject.leaveType : "";
   };
+
   return (
     <Box sx={{ marginTop: "25px" }}>
       <Accordion
@@ -73,7 +78,7 @@ const DataCard = ({
           }}
         >
           {!expanded ? (
-            <Grid container spacing={2} sx={{ padding: "10px", width: "100%" }}>
+            <Grid container spacing={3} sx={{ padding: "10px", width: "100%" }}>
               <div
                 style={{
                   position: "absolute",
@@ -109,7 +114,30 @@ const DataCard = ({
                 >
                   {cardData?.submittedDate}
                 </Typography>
-              </div>
+              </div>{" "}
+              {superAdmin ? (
+                <>
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "-0.5rem",
+                      right: "0rem",
+
+                      padding: "0.50rem 0.50rem",
+                    }}
+                  >
+                    <Checkbox
+                      checked={selectedCards[cardData.leaveRequestId] || false}
+                      onChange={() =>
+                        handleCheckboxChange(cardData.leaveRequestId)
+                      }
+                      inputProps={{ "aria-label": "controlled" }}
+                    />
+                  </div>
+                </>
+              ) : (
+                <></>
+              )}
               <Grid item xs={12} sm={12} md={6} lg={6} display={"flex"}>
                 <TextField
                   label="From"
@@ -207,13 +235,21 @@ const DataCard = ({
                   REJECT
                 </Button>
               </Grid>
-              {approval && (
+              {(approval || superAdmin) && (
                 <>
                   {
                     <Grid item xs={12} sm={12} md={12} lg={12}>
-                      <span style={{ color: "red", position: "absolute" }}>
-                        {error[index]}
-                      </span>
+                      <p
+                        style={{
+                          color: "red",
+                          position: "absolute",
+                          width: "100%",
+                          fontSize: "14.5px",
+                          lineHeight: "20px",
+                        }}
+                      >
+                        {error?.[index]}
+                      </p>
                     </Grid>
                   }
                 </>
@@ -229,6 +265,8 @@ const DataCard = ({
               leaveRequest={leaveRequest}
               setComments={setComments}
               comments={comments}
+              onCardSelect={onCardSelect}
+              superAdmin={superAdmin}
             />
           )}
         </AccordionSummary>

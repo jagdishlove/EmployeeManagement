@@ -37,7 +37,10 @@ const Router = () => {
         path="/"
         element={
           isAuthenticated ? (
-            <Sidebar /> // Render the home page when authenticated
+            <>
+              <Sidebar />
+              <Navigate to="/timesheet" replace />
+            </> // Render the home page when authenticated
           ) : (
             <Login /> // Render the login page when not authenticated
           )
@@ -62,6 +65,7 @@ const Router = () => {
       />
       <Route
         path="/projectProgress"
+        exact
         element={
           isAuthenticated ? (
             <ConditionalSidebar>
