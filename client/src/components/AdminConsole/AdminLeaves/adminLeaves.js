@@ -100,7 +100,7 @@ const AdminLeaves = () => {
 
   const approveRejectLeavesHandler = async (id, status, approverComment) => {
     const newErrors = validationForm(approverComment, status);
- 
+
     if (Object.keys(newErrors).length === 0) {
       const payload = [
         {
@@ -155,7 +155,6 @@ const AdminLeaves = () => {
 
     const errors = {};
     const approvedEntries = [];
-
 
     for (const entry of entriesToApprove) {
       const newErrors = validationForm(entry, "approved");
@@ -322,7 +321,7 @@ const AdminLeaves = () => {
       resultFilterData?.content?.length > 0 ? (
         <>
           <Box display="flex" justifyContent="flex-end" mt={2} mr={2}>
-            <Typography mr={2}>Select All</Typography>
+            <Typography mt={1}>Select All</Typography>
             <Checkbox
               checked={selectAll}
               sx={{ cursor: "pointer" }}

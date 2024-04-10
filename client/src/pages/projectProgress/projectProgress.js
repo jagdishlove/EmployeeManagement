@@ -413,6 +413,7 @@ const ProjectProgress = () => {
                                     alignItems: "center",
                                     justifyContent: "flex-end",
                                     marginLeft: "auto",
+                                    width: "0px",
                                   }}
                                 >
                                   <Button

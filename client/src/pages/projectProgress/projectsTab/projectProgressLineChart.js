@@ -45,14 +45,14 @@ function ProjectProgressLineChart() {
           <Line
             type="monotone"
             dataKey="projectedImplementationCost"
-            stroke="#8884d8"
+            stroke="#60C0A3"
             activeDot={{ r: 8 }}
             name="Projected Implementation"
           />
           <Line
             type="monotone"
             dataKey="actualImplementationCost"
-            stroke="#82ca9d"
+            stroke="#C06060"
             activeDot={{ r: 8 }}
             name="Actual Implementation"
           />

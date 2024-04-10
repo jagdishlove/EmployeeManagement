@@ -19,7 +19,7 @@ import { getMySpaceActivityAction } from "../../../redux/actions/workSpace/workS
 import { useTheme } from "@mui/material/styles";
 import { TimesheetStyle } from "../../../pages/timesheet/timesheetStyle";
 
-const ITEMS_PER_PAGE = 3; // Change this as needed
+const ITEMS_PER_PAGE = 3;
 
 const CustomBorderComponent = () => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -32,6 +32,7 @@ const CustomBorderComponent = () => {
     const { value } = event.target;
     setSelectedValue(value);
   };
+
   const handlePrevPage = () => {
     if (currentPage > 0) {
       setCurrentPage((prevPage) => prevPage - 1);
@@ -48,10 +49,10 @@ const CustomBorderComponent = () => {
   const otherActivityData = useSelector(
     (state) => state?.nonPersist?.workSpace?.myspaceActivity?.content
   );
-  console.log("timesheetData", otherActivityData);
+  console.log("otherActivityData", otherActivityData);
+
   useEffect(() => {
     dispatch(masterDataAction());
-
     dispatch(getMySpaceActivityAction(selectedValue));
   }, [selectedValue, dispatch]);
 
@@ -61,107 +62,24 @@ const CustomBorderComponent = () => {
 
   const timelineData = [
     {
-      date: "2024-03-25T03:25:38.913+00:00",
       activityType: "LEAVES",
       events: [
         {
-          time: "20:00:00",
-          leaveType: "LOP",
-          status: "Approved",
-          fromDate: "2024-04-03T03:25:38.913+00:00",
-          toDate: "2024-04-03T03:25:38.913+00:00",
-          startTime: "09:00:00",
-          endTime: "10:00:00",
-          managerName: "Deepak",
-          projectTask: "Kairos Task",
-          ProjectName:"Kairos"
-        },
-        {
-          time: "18:00:00",
-          leaveType: "Privilege Leave",
-          status: "Submitted",
-          fromDate: "2024-04-03T03:25:38.913+00:00",
-          toDate: "2024-04-03T03:25:38.913+00:00",
-          startTime: "09:00:00",
-          endTime: "10:00:00",
-          managerName: "Mani",
-          projectTask: "Kairos Task",
-          ProjectName:"Kairos"
-        },
-        {
-          time: "19:00:00",
-          leaveType: "Casual Leave",
-          status: "Rejected",
-          fromDate: "2024-04-03T03:25:38.913+00:00",
-          toDate: "2024-04-03T03:25:38.913+00:00",
-          startTime: "09:00:00",
-          endTime: "10:00:00",
-          managerName: "Amit",
-          projectTask: "Kairos Task",
-          ProjectName:"Kairos"
-        },
-      ],
-    },
-    {
-      date: "2024-03-25T03:25:38.913+00:00",
-      activityType: "TIMESHEET",
-      events: [
-        {
-          time: "03:00:00",
-          leaveType: "Privilege Leave",
-          status: "Submitted",
-          fromDate: "2024-04-23T03:25:38.913+00:00",
-          toDate: "2024-04-24T03:25:38.913+00:00",
-          startTime: "09:00:00",
-          endTime: "10:00:00",
-          managerName: "Deepak",
-          projectTask: "Kairos Meeting",
-          ProjectName:"Kairos"
-        },
-        {
-          time: "01:00:00",
-          leaveType: "LOP",
-          status: "Approved",
-          fromDate: "2024-04-01T03:25:38.913+00:00",
-          toDate: "2024-04-02T03:25:38.913+00:00",
-          startTime: "09:00:00",
-          endTime: "10:00:00",
-          managerName: "Deepak",
-          projectTask: "Kairos Meeting",
-          ProjectName:"Kairos"
-        },
-        {
-          time: "11:00:00",
-          leaveType: "Casual Leave",
-          status: "Rejected",
-          fromDate: "2024-04-11T03:25:38.913+00:00",
-          toDate: "2024-04-12T03:25:38.913+00:00",
-          startTime: "09:00:00",
-          endTime: "10:00:00",
-          managerName: "Amit",
-          projectTask: "Kairos Meeting",
-          ProjectName:"Kairos"
-        },
-      ],
-    },
-    {
-      date: "2024-03-25T03:25:38.913+00:00",
-      activityType: "OTHER_ACTIVITIES",
-      events: [
-        {
+          date: "2024-04-03T03:25:38.913+00:00",
           time: "08:00:00",
           leaveType: "LOP",
           status: "Approved",
-          fromDate: "2024-04-05T03:25:38.913+00:00",
-          toDate: "2024-04-05T03:25:38.913+00:00",
+          fromDate: "2024-04-03T03:25:38.913+00:00",
+          toDate: "2024-04-03T03:25:38.913+00:00",
           startTime: "09:00:00",
           endTime: "10:00:00",
           managerName: "Deepak",
           projectTask: "Kairos Task",
-          ProjectName:"Kairos"
+          ProjectName: "Kairos",
         },
         {
-          time: "14:00:00",
+          date: "2024-04-03T03:25:38.913+00:00",
+          time: "09:00:00",
           leaveType: "Privilege Leave",
           status: "Submitted",
           fromDate: "2024-04-03T03:25:38.913+00:00",
@@ -170,27 +88,90 @@ const CustomBorderComponent = () => {
           endTime: "10:00:00",
           managerName: "Mani",
           projectTask: "Kairos Task",
-          ProjectName:"Kairos"
+          ProjectName: "Kairos",
         },
         {
-          time: "10:00:00",
+          date: "2024-04-03T03:25:38.913+00:00",
+          time: "09:00:00",
           leaveType: "Casual Leave",
           status: "Rejected",
-          fromDate: "2024-04-11T03:25:38.913+00:00",
-          toDate: "2024-04-11T03:25:38.913+00:00",
+          fromDate: "2024-04-03T03:25:38.913+00:00",
+          toDate: "2024-04-03T03:25:38.913+00:00",
           startTime: "09:00:00",
           endTime: "10:00:00",
           managerName: "Amit",
-          projectTask: "Kairos Meeting",
-          ProjectName:"Kairos"
+          projectTask: "Kairos Task",
+          ProjectName: "Kairos",
+        },
+      ],
+    },
+    {
+      activityType: "TIMESHEET",
+      events: [
+        {
+          date: "2024-04-02T03:25:38.913+00:00",
+          time: "04:00:00",
+          leaveType: "LOP",
+          status: "Approved",
+          fromDate: "2024-04-03T03:25:38.913+00:00",
+          toDate: "2024-04-03T03:25:38.913+00:00",
+          startTime: "09:00:00",
+          endTime: "10:00:00",
+          managerName: "Deepak",
+          projectTask: "Kairos Task",
+          ProjectName: "Kairos",
+        },
+        {
+          date: "2024-04-03T03:25:38.913+00:00",
+          time: "05:00:00",
+          leaveType: "Privilege Leave",
+          status: "Submitted",
+          fromDate: "2024-04-03T03:25:38.913+00:00",
+          toDate: "2024-04-03T03:25:38.913+00:00",
+          startTime: "09:00:00",
+          endTime: "10:00:00",
+          managerName: "Mani",
+          projectTask: "Kairos Task",
+          ProjectName: "Kairos",
+        },
+        {
+          date: "2024-04-04T03:25:38.913+00:00",
+          time: "06:00:00",
+          leaveType: "Casual Leave",
+          status: "Rejected",
+          fromDate: "2024-04-03T03:25:38.913+00:00",
+          toDate: "2024-04-03T03:25:38.913+00:00",
+          startTime: "09:00:00",
+          endTime: "10:00:00",
+          managerName: "Amit",
+          projectTask: "Kairos Task",
+          ProjectName: "Kairos",
         },
       ],
     },
   ];
-  const currentPageData = timelineData.slice(
-    currentPage * ITEMS_PER_PAGE,
-    (currentPage + 1) * ITEMS_PER_PAGE
-  );
+
+  // const currentPageData = timelineData
+  //   .filter((entry) => entry.activityType === selectedValue)
+  //   .slice(currentPage * ITEMS_PER_PAGE, (currentPage + 1) * ITEMS_PER_PAGE);
+
+  // Function to convert time from 24-hour format to 12-hour format
+  const convertTimeTo12HourFormat = (timeString) => {
+    // Parse the time string into hours, minutes, and seconds
+    const [hours, minutes] = timeString.split(":").map(Number);
+
+    // Determine if it's AM or PM
+    const period = hours >= 12 ? "pm" : "am";
+
+    // Convert hours to 12-hour format
+    const twelveHour = hours % 12 || 12;
+
+    // Return formatted time string
+    return `${twelveHour}:${minutes.toString().padStart(2, "0")} ${period}`;
+  };
+
+  // Store the dates already displayed
+  const displayedDates = {};
   return (
     <>
       <Grid item xs={6} ml={5} mt={5} display="flex" alignItems="center">
@@ -209,7 +190,12 @@ const CustomBorderComponent = () => {
         <Stack direction="row" spacing={2} alignItems="center">
           <Typography variant="body1" sx={{ color: "#5E5E5E" }}>
             {currentPage + 1} of{" "}
-            {Math.ceil(timelineData.length / ITEMS_PER_PAGE)} Pages
+            {Math.ceil(
+              timelineData.filter(
+                (entry) => entry.activityType === selectedValue
+              ).length / ITEMS_PER_PAGE
+            )}{" "}
+            Pages
           </Typography>
           <IconButton onClick={handlePrevPage} disabled={currentPage === 0}>
             <KeyboardArrowLeftOutlinedIcon />
@@ -217,7 +203,13 @@ const CustomBorderComponent = () => {
           <IconButton
             onClick={handleNextPage}
             disabled={
-              currentPage >= Math.ceil(timelineData.length / ITEMS_PER_PAGE) - 1
+              currentPage >=
+              Math.ceil(
+                timelineData.filter(
+                  (entry) => entry.activityType === selectedValue
+                ).length / ITEMS_PER_PAGE
+              ) -
+                1
             }
           >
             <ChevronRightOutlinedIcon />
@@ -250,133 +242,150 @@ const CustomBorderComponent = () => {
       <Grid container>
         <Grid item xs={12} md={12} lg={12}>
           <Timeline>
-            {currentPageData.map((entry, index) => (
-              <TimelineItem key={index}>
-                <TimelineOppositeContent
-                  color="textSecondary"
-                  sx={{ maxWidth: "11%" }}
-                >
-                  {entry.date}
-                </TimelineOppositeContent>
-                <TimelineSeparator>
-                  <TimelineDot />
-                  {index < currentPageData.length - 1 && <TimelineConnector />}
-                </TimelineSeparator>
-                <TimelineContent>
-                  {entry.events.map((event, eventIndex) => (
-                    <React.Fragment key={eventIndex}>
-                      <div style={{ display: "flex", alignItems: "center" }}>
-                        <div>{event.time}</div>
-
-                        <div
-                          style={{
-                            border: "1px dotted #ccc",
-                            flex: 1,
-                            marginLeft: "16px",
-                            padding: "10px 20px",
-                            margin: "15px 20px",
-                            maxWidth: "89%", // Set maximum width to 60% of its container
-                            wordWrap: "break-word",
-                          }}
+            {timelineData.map((entry, index) => (
+              <React.Fragment key={index}>
+                {/* Filter events for the selected activity type */}
+                {entry.activityType === selectedValue &&
+                  entry.events.map((event, eventIndex) => (
+                    <TimelineItem key={`${index}-${eventIndex}`}>
+                      {/* Display date only once for each group of events with the same date */}
+                      {(eventIndex === 0 || // Display the date for the first event
+                        event.date !== entry.events[eventIndex - 1].date || // Display the date if the date changes
+                        entry.events.filter((e) => e.date === event.date)
+                          .length > 1) && ( // Display the date if there are multiple events on the same date
+                        <TimelineOppositeContent
+                          color="textSecondary"
+                          sx={{ maxWidth: "11%" }}
                         >
-                          {selectedValue === "LEAVES" &&
-                            entry.activityType === "LEAVES" && (
-                              <>
-                                {event.status === "Submitted" && (
-                                  <>
-                                    You submitted {event.leaveType} from{" "}
-                                    {event.fromDate} to {event.toDate} to{" "}
-                                    {event.managerName}
-                                  </>
-                                )}
-                                {event.status === "Approved" && (
-                                  <>
-                                    Your submitted {event.leaveType} from{" "}
-                                    {event.fromDate} to {event.toDate} has been
-                                    approved by {event.managerName}.
-                                  </>
-                                )}
-                                {event.status === "Rejected" && (
-                                  <>
-                                    Your timesheet {event.fromDate}{" "}
-                                    {event.startTime} to {event.endTime}{" "}
-                                    rejected by {event.managerName}.
-                                  </>
-                                )}
-                              </>
-                            )}
-                          {selectedValue === "TIMESHEET" &&
-                            entry.activityType === "TIMESHEET" && (
-                              <>
-                                {event.status === "Submitted" && (
-                                  <>
-                                    You {event.status} a timesheet for
-                                    {event.fromDate} {event.startTime} to{" "}
-                                    {event.endTime}
-                                    engaged in {event.projectTask}
-                                  </>
-                                )}
-                                {event.status === "Approved" && (
-                                  <>
-                                    {event.managerName} has {event.status} Your
-                                    timesheet for
-                                    {event.fromDate} {event.startDate} to{" "}
-                                    {event.endTime} engaged in{" "}
-                                    {event.projectTask}
-                                  </>
-                                )}
-                                {event.status === "Rejected" && (
-                                  <>
-                                    {event.managerName} has {event.status} Your
-                                    timesheet for
-                                    {event.fromDate} {event.startDate} to{" "}
-                                    {event.endTime} engaged in{" "}
-                                    {event.projectTask}
-                                  </>
-                                )}
-                              </>
-                            )}
-
-                          {selectedValue === "OTHER_ACTIVITIES" &&
-                            entry.activityType === "OTHER_ACTIVITIES" && (
-                              <>
-                                {event.status === "Submitted" && (
-                                  <>
-                                    You {event.status} a timesheet for
-                                    {event.fromDate} {event.startTime} to{" "}
-                                    {event.endTime}
-                                    engaged in {event.projectTask}
-                                  </>
-                                )}
-                                {event.status === "Approved" && (
-                                  <>
-                                    {event.managerName} has {event.status} Your
-                                    timesheet for
-                                    {event.fromDate} {event.startTime} to{" "}
-                                    {event.endTime} engaged in{" "}
-                                    {event.projectTask}
-                                  </>
-                                )}
-                                {event.status === "Rejected" && (
-                                  <>
-                                    Your timesheet for {""}
-                                    {event.fromDate} {event.startDate} to{" "}
-                                    {event.endTime} {event.projectTask}{" "}
-                                    {event.status} by {""}
-                                    {event.managerName}
-                                  </>
-                                )}
-                              </>
-                            )}
-                        </div>
-                      </div>
-                      {eventIndex < entry.events.length - 1 && (
-                        <TimelineConnector />
+                           {!displayedDates[event.date] && (
+                            <>
+                              {new Date(event.date).toLocaleDateString(
+                                undefined,
+                                {
+                                  month: "long",
+                                  day: "numeric",
+                                }
+                              )}
+                              {displayedDates[event.date] = true}
+                            </>
+                          )}
+                        </TimelineOppositeContent>
                       )}
-                    </React.Fragment>
+                      <TimelineSeparator>
+                        <TimelineDot />
+                        {eventIndex < entry.events.length - 1 && (
+                          <TimelineConnector />
+                        )}
+                      </TimelineSeparator>
+                      <TimelineContent>
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                          <div>{convertTimeTo12HourFormat(event.time)}</div>
+                          <div
+                            style={{
+                              border: "1px dotted #ccc",
+                              flex: 1,
+                              marginLeft: "16px",
+                              padding: "10px 20px",
+                              margin: "15px 20px",
+                              maxWidth: "89%",
+                              wordWrap: "break-word",
+                            }}
+                          >
+                            {selectedValue === "LEAVES" &&
+                              entry.activityType === "LEAVES" && (
+                                <>
+                                  {event.status === "Submitted" && (
+                                    <>
+                                      You submitted {event.leaveType} from{" "}
+                                      {event.fromDate} to {event.toDate} to{" "}
+                                      {event.managerName}
+                                    </>
+                                  )}
+                                  {event.status === "Approved" && (
+                                    <>
+                                      Your submitted {event.leaveType} from{" "}
+                                      {event.fromDate} to {event.toDate} has
+                                      been approved by {event.managerName}.
+                                    </>
+                                  )}
+                                  {event.status === "Rejected" && (
+                                    <>
+                                      Your timesheet {event.fromDate}{" "}
+                                      {event.startTime} to {event.endTime}{" "}
+                                      rejected by {event.managerName}.
+                                    </>
+                                  )}
+                                </>
+                              )}
+                            {selectedValue === "TIMESHEET" &&
+                              entry.activityType === "TIMESHEET" && (
+                                <>
+                                  {event.status === "Submitted" && (
+                                    <>
+                                      You {event.status} a timesheet for{" "}
+                                      {event.fromDate} {event.startTime} to{" "}
+                                      {event.endTime} engaged in{" "}
+                                      {event.projectTask}
+                                    </>
+                                  )}
+                                  {event.status === "Approved" && (
+                                    <>
+                                      {event.managerName} has {event.status}{" "}
+                                      Your timesheet for {event.fromDate}{" "}
+                                      {event.startDate} to {event.endTime}{" "}
+                                      engaged in {event.projectTask}
+                                    </>
+                                  )}
+                                  {event.status === "Rejected" && (
+                                    <>
+                                      {event.managerName} has {event.status}{" "}
+                                      Your timesheet for {event.fromDate}{" "}
+                                      {event.startDate} to {event.endTime}
+                                      engaged in {event.projectTask}
+                                    </>
+                                  )}
+                                </>
+                              )}
+
+                            {selectedValue === "OTHER_ACTIVITIES" &&
+                              entry.activityType === "OTHER_ACTIVITIES" && (
+                                <>
+                                  {event.status === "Submitted" && (
+                                    <>
+                                      You {event.status} a timesheet for{" "}
+                                      {event.fromDate} {event.startTime} to{" "}
+                                      {event.endTime} engaged in{" "}
+                                      {event.projectTask}
+                                    </>
+                                  )}
+                                  {event.status === "Approved" && (
+                                    <>
+                                      {event.managerName} has {event.status}{" "}
+                                      Your timesheet for {event.fromDate}{" "}
+                                      {event.startTime} to {event.endTime}
+                                      engaged in {event.projectTask}
+                                    </>
+                                  )}
+                                  {event.status === "Rejected" && (
+                                    <>
+                                      Your timesheet for {event.fromDate}{" "}
+                                      {event.startDate} to {event.endTime}{" "}
+                                      {event.projectTask} {event.status} by{" "}
+                                      {event.managerName}
+                                    </>
+                                  )}
+                                </>
+                              )}
+                          </div>
+                        </div>
+                        {/* Render TimelineConnector if there are more events */}
+                        {eventIndex < entry.events.length - 1 && (
+                          <TimelineConnector />
+                        )}
+                      </TimelineContent>
+                    </TimelineItem>
                   ))}
-                </TimelineContent>
-              </TimelineItem>
+              </React.Fragment>
             ))}
           </Timeline>
         </Grid>
