@@ -32,8 +32,11 @@ const ProjectList = ({ projectsData }) => {
     Navigate(`/EditForm/${projectsData?.id}`);
   };
 
-  const startDateString = projectsData.startDate;
-  const endDateString = projectsData.endDate;
+  const startDateString = projectsData?.startDate;
+  const endDateString = projectsData?.endDate;
+
+  const actualEndDateString = projectsData?.actualEndDate; // Fetch the actual end date from projectsData
+  const actualEndDate = dayjs(actualEndDateString, "YYYY-MM-DD");
 
   const startDate = dayjs(startDateString, "YYYY-MM-DD");
   const endDate = dayjs(endDateString, "YYYY-MM-DD");
@@ -43,8 +46,9 @@ const ProjectList = ({ projectsData }) => {
   const totalDuration = endDate.diff(startDate, "day");
 
   // Calculate the remaining duration in days
-  const remainingDuration = endDate.diff(currentDate, "day");
-
+  const remainingDuration = actualEndDate.isValid()
+    ? actualEndDate.diff(currentDate, "day")
+    : endDate.diff(currentDate, "day");
   // Calculate the progress percentage
   let progressPercentage;
 
@@ -58,6 +62,9 @@ const ProjectList = ({ projectsData }) => {
   } else if (startDate.isValid() && !endDate.isValid()) {
     // If start date is valid but end date is not
     progressPercentage = 0;
+  } else if (actualEndDate.isValid() && actualEndDate.isBefore(endDate)) {
+    // If actual end date is valid and it's before the current date
+    progressPercentage = 100;
   } else {
     // Otherwise, calculate the progress based on the duration
     progressPercentage = Math.max(

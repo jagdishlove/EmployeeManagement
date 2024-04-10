@@ -7,19 +7,25 @@ import StepLabel from "@mui/material/StepLabel";
 import Stepper from "@mui/material/Stepper";
 import React from "react";
 import ResourceAllocationFormDetails from "./resourceAllocationFormDetails";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const ResourceAllocationStepperTwo = () => {
   const steps = ["Create Project", "Resource Allocation", "Cost Allocation"];
   const Navigate = useNavigate();
 
+  const { id } = useParams();
+
   const projectId = useSelector(
     (state) => state.nonPersist.projectDetails?.projectId
   );
 
   const handleBackClick = () => {
-    Navigate(`/EditForm/${projectId}`);
+    if (projectId) {
+      Navigate(`/EditForm/${projectId}`);
+    } else if (id) {
+      Navigate(`/EditForm/${id}`);
+    }
   };
   const { getProjectData } = useSelector(
     (state) => state?.nonPersist?.projectDetails
@@ -58,9 +64,9 @@ const ResourceAllocationStepperTwo = () => {
       >
         <Box
           sx={{
-            width: "80%",
+            width: "72%",
             backgroundColor: "#e6e6e6 !important",
-            padding: "10px !important",
+            padding: "10px 0px !important",
             borderRadius: "10px",
           }}
         >
@@ -80,7 +86,7 @@ const ResourceAllocationStepperTwo = () => {
                         style={{
                           color: index === 1 ? "#ffffff" : "#000000",
                           backgroundColor: index === 1 ? "#008080" : "#e6e6e6",
-                          padding: "10px 40px",
+                          padding: index === 1 ? "10px 35px" : "10px 0px",
                           zIndex: "1",
                           borderRadius: "5px",
                         }}

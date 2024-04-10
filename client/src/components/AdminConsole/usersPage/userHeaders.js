@@ -286,6 +286,7 @@ export default function UserHerders({
                     ...baseStyles,
                     overflow: "auto",
                     height: "55px",
+                    position: "relative",
                   }),
                 }}
                 components={{
@@ -301,7 +302,7 @@ export default function UserHerders({
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={12} md={5} lg={4}></Grid>
+          <Grid item xs={12} sm={12} md={5} lg={3}></Grid>
           <Grid item margin={"auto"} alignItems="flex-end">
             <Typography
               variant="h7"

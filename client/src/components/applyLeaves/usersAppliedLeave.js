@@ -2,7 +2,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   Box,
-  CircularProgress,
+  // CircularProgress,
   IconButton,
   Table,
   TableBody,
@@ -12,18 +12,21 @@ import {
   TableRow,
   TextField,
   Typography,
+  Autocomplete,
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Select, { components } from "react-select";
+// import  { components } from "react-select";
 import { getAllLeaveRequestsOfEmployeesAction } from "../../redux/actions/leaves/leaveAction";
 import { masterDataAction } from "../../redux/actions/masterData/masterDataAction";
 import { getLeaveType } from "../../utils/getLeaveTypeFromId";
 import useDebounce from "../../utils/useDebounce";
 import ModalCust from "../modal/ModalCust";
+import Approve_Leaves from "../../assets/Approve_Leaves.svg";
+import Pending_Leaves from "../../assets/Pending_Leaves.svg";
 
 const UsersAppliedLeave = ({ color }) => {
   const dispatch = useDispatch();
@@ -34,7 +37,7 @@ const UsersAppliedLeave = ({ color }) => {
     (state) => state?.nonPersist?.leavesData.allEmployeesLeaveData
   );
   const searchAPIData = useSelector(
-    (state) => state?.nonPersist?.leavesData?.allEmployeesSearchData
+    (state) => state?.nonPersist?.leavesData?.allEmployeesSearchData?.result
   );
 
   const leaveTypesData = useSelector(
@@ -43,10 +46,10 @@ const UsersAppliedLeave = ({ color }) => {
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [filtered, setFilteredData] = useState();
-  const [loading, setLoading] = useState(false);
-  const [selectedOptions, setSelectedOptions] = useState([]);
+  // const [loading, setLoading] = useState(false);
+  // const [selectedOptions, setSelectedOptions] = useState([]);
   const [selectedSearchOption, setSelectedSearchOption] = useState();
-
+  // const [isFocused, setIsFocused] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const tableRef = useRef(null);
   const [filterData, setFilterData] = useState({
@@ -93,10 +96,16 @@ const UsersAppliedLeave = ({ color }) => {
 
   const iconColor = color ? "#FFFFFF" : "#008080";
 
-  const handleInputChange = (data) => {
-    setSelectedSearchOption(data);
-    dispatch(getAllLeaveRequestsOfEmployeesAction(15, filterData, null, data));
-    setSelectedOptions(data);
+  // const handleInputChange = (data) => {
+  //   setSelectedSearchOption(data);
+  //   dispatch(getAllLeaveRequestsOfEmployeesAction(15, filterData, null, data));
+  //   setSelectedOptions(data);
+  // };
+
+  const handleSearchChange = (e) => {
+    dispatch(
+      getAllLeaveRequestsOfEmployeesAction(15, e.target.value, "searchFilter")
+    );
   };
 
   useEffect(() => {
@@ -110,10 +119,10 @@ const UsersAppliedLeave = ({ color }) => {
         15,
         filterData,
         null,
-        selectedOptions
+        selectedSearchOption
       )
     );
-  }, [filterData]);
+  }, [filterData, selectedSearchOption]);
 
   const onChangeHandler = (newValue, name) => {
     setFilterData((prev) => ({
@@ -134,19 +143,23 @@ const UsersAppliedLeave = ({ color }) => {
   };
 
   const fetchMoreData = async () => {
-    dispatch(
-      getAllLeaveRequestsOfEmployeesAction(
-        allemployeesleavesData?.numberOfElements + 15,
-        filterData,
-        null,
-        selectedSearchOption
-      )
-    );
-    setLoading(false);
-    setHasMore(
+    if (
       allemployeesleavesData?.numberOfElements <
-        allemployeesleavesData.totalElements
-    );
+      allemployeesleavesData.totalElements
+    ) {
+      dispatch(
+        getAllLeaveRequestsOfEmployeesAction(
+          allemployeesleavesData?.numberOfElements + 15,
+          filterData,
+          null,
+          selectedSearchOption
+        )
+      );
+      // setLoading(false);
+      setHasMore(true);
+    } else {
+      setHasMore(false); // No more data to fetch
+    }
   };
 
   const handleScroll = () => {
@@ -155,21 +168,21 @@ const UsersAppliedLeave = ({ color }) => {
       table.clientHeight + table.scrollTop + 1 >= table.scrollHeight;
 
     if (isNearBottom && hasMore) {
+      // setLoading(true);
       fetchMoreData();
-      setLoading(true);
     }
   };
 
-  const CustomSelectControl = (props) => {
-    return (
-      <components.Control {...props}>
-        <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
-          <SearchIcon sx={{ marginLeft: "10px" }} />
-          {props.children}
-        </div>
-      </components.Control>
-    );
-  };
+  // const CustomSelectControl = (props) => {
+  //   return (
+  //     <components.Control {...props}>
+  //       <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
+  //         <SearchIcon sx={{ marginLeft: "10px" }} />
+  //         {props.children}
+  //       </div>
+  //     </components.Control>
+  //   );
+  // };
 
   return (
     <Box>
@@ -202,8 +215,7 @@ const UsersAppliedLeave = ({ color }) => {
           gap={"30px"}
         >
           <Box>
-            <Select
-              isMulti
+            {/* <Select
               styles={{
                 menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                 control: (baseStyles) => ({
@@ -212,18 +224,61 @@ const UsersAppliedLeave = ({ color }) => {
                   height: "55px",
                   maxWidth: "800px",
                   width: "400px",
+                  borderColor: isFocused ? "#008080" : baseStyles.borderColor, // Set border color based on focus state
+                  "&:hover": {
+                    borderColor: "#008080", // Border color on hover
+                  },
                 }),
               }}
-              isSearchable={true}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              isClearable={true}
               menuPortalTarget={document.body}
               value={selectedOptions}
               components={{ Control: CustomSelectControl }}
-              onChange={handleInputChange}
+              onChange={(selectedOption) => {
+                handleInputChange(selectedOption ? [selectedOption] : null); // Convert single selected option to an array
+              }}
               getOptionValue={(option) => option.id}
               getOptionLabel={(option) => option.name}
               options={searchAPIData?.result}
               isLoading={searchAPIData?.length === 0}
               placeholder="Search by Name or Leave Type"
+            /> */}
+            <Autocomplete
+              sx={{
+                borderRadius: "8px",
+                maxWidth: "800px",
+                width: "400px",
+              }}
+              options={searchAPIData || []}
+              getOptionLabel={(option) => option.name}
+              getOptionSelected={(option, value) => option.id === value.id}
+              onChange={(event, data) => {
+                setSelectedSearchOption(data);
+              }}
+              isSearchable={true}
+              getOptionValue={(option) => option.id}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  placeholder="Search by User Name"
+                  onChange={handleSearchChange}
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: (
+                      <>
+                        <SearchIcon />
+                        {params.InputProps.startAdornment}
+                      </>
+                    ),
+                    endAdornment: null,
+
+                    style: { borderRadius: "20px" },
+                  }}
+                />
+              )}
             />
           </Box>
           <Box>
@@ -255,128 +310,141 @@ const UsersAppliedLeave = ({ color }) => {
             </LocalizationProvider>
           </Box>
         </Box>
-
-        <Box
-          sx={{
-            marginTop: "20px",
-            border: "1px solid #008080",
-            overflowX: "auto",
-          }}
-        >
-          <TableContainer
-            sx={{ maxHeight: "calc(92vh - 200px)", overflowY: "auto" }}
-            onScroll={handleScroll}
-            ref={tableRef}
+        {filtered && filtered.length > 0 ? (
+          <Box
+            sx={{
+              marginTop: "20px",
+              border: "1px solid #008080",
+              overflowX: "auto",
+            }}
           >
-            <Table stickyHeader>
-              <TableHead
-                sx={{
-                  backgroundColor: "red",
-                }}
-              >
-                <TableRow>
-                  <TableCell
-                    style={{
-                      ...tableHead,
-                      color: "white",
-                      textAlign: "center",
-                    }}
-                  >
-                    Name
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      ...tableHead,
-                      color: "white",
-                      textAlign: "center",
-                    }}
-                  >
-                    Date
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      ...tableHead,
-                      color: "white",
-                      textAlign: "center",
-                    }}
-                  >
-                    No. of Days
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      ...tableHead,
-                      color: "white",
-                      textAlign: "center",
-                    }}
-                  >
-                    Leave Type
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      ...tableHead,
-                      color: "white",
-                      textAlign: "center",
-                    }}
-                  >
-                    Status
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filtered?.map((row, index) => (
-                  <TableRow key={index}>
-                    <TableCell sx={{ textAlign: "center" }}>
-                      {row.name}
+            <TableContainer
+              sx={{ maxHeight: "calc(92vh - 200px)", overflowY: "scroll" }}
+              onScroll={handleScroll}
+              ref={tableRef}
+            >
+              <Table style={{ tableLayout: "fixed" }}>
+                <TableHead
+                  sx={{
+                    backgroundColor: "red",
+                  }}
+                >
+                  <TableRow>
+                    <TableCell
+                      style={{
+                        ...tableHead,
+                        color: "white",
+                        textAlign: "center",
+                      }}
+                    >
+                      Name
                     </TableCell>
-                    <TableCell sx={{ textAlign: "center" }}>
-                      {row.date}
+                    <TableCell
+                      style={{
+                        ...tableHead,
+                        color: "white",
+                        textAlign: "center",
+                      }}
+                    >
+                      Date
                     </TableCell>
-                    <TableCell sx={{ textAlign: "center" }}>
-                      {row.days}
+                    <TableCell
+                      style={{
+                        ...tableHead,
+                        color: "white",
+                        textAlign: "center",
+                      }}
+                    >
+                      No. of Days
                     </TableCell>
-                    <TableCell sx={{ textAlign: "center" }}>
-                      {row.type}
+                    <TableCell
+                      style={{
+                        ...tableHead,
+                        color: "white",
+                        textAlign: "center",
+                      }}
+                    >
+                      Leave Type
                     </TableCell>
-                    <TableCell sx={{ textAlign: "center" }}>
-                      {row.status}
+                    <TableCell
+                      style={{
+                        ...tableHead,
+                        color: "white",
+                        textAlign: "center",
+                      }}
+                    >
+                      Status
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "100%",
-                zIndex: 1,
-              }}
-            >
-              {loading && (
-                <Box>
-                  <CircularProgress />
-                </Box>
-              )}
-            </Box>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {filtered?.map((row, index) => (
+                    <TableRow key={index}>
+                      <TableCell sx={{ textAlign: "center" }}>
+                        {row.name}
+                      </TableCell>
+                      <TableCell sx={{ textAlign: "center" }}>
+                        {row.date}
+                      </TableCell>
+                      <TableCell sx={{ textAlign: "center" }}>
+                        {row.days}
+                      </TableCell>
+                      <TableCell sx={{ textAlign: "center" }}>
+                        {row.type}
+                      </TableCell>
+                      <TableCell sx={{ textAlign: "center" }}>
+                        {row.status}
+                        <img
+                          src={
+                            row?.status === "APPROVED"
+                              ? Approve_Leaves
+                              : row?.status === "SUBMITTED"
+                              ? Pending_Leaves
+                              : ""
+                          }
+                          alt="image"
+                          height={24}
+                          style={{
+                            marginLeft: "10px",
+                            margintop: "25px",
+                          }}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
 
-          {/* {loading && (
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              position="fixed"
-              top="0"
-              left="0"
-              width="100%"
-              height="100%"
-              bgcolor="rgba(255, 255, 255, 0.7)"
-            >
-              <CircularProgress />
-            </Box>
-          )} */}
-        </Box>
+              {/* <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: "100%",
+                  zIndex: 1,
+                }}
+              >
+                {loading && (
+                  <Box>
+                    <CircularProgress />
+                  </Box>
+                )}
+              </Box> */}
+            </TableContainer>
+          </Box>
+        ) : (
+          <Typography
+            sx={{
+              textAlign: "center",
+              padding: "100px",
+              fontSize: "16px",
+              color: "gray",
+              fontWeight: "600",
+            }}
+          >
+            No Leave Data Available.
+          </Typography>
+        )}
       </ModalCust>
     </Box>
   );

@@ -292,7 +292,7 @@ const ProjectAccordion = () => {
                           (resources, index) => (
                             <React.Fragment key={resources?.resourceId}>
                               <TableRow
-                                onClick={() => toggleRowExpansion(index)}
+                                // onClick={() => toggleRowExpansion(index)}
                                 style={{ cursor: "pointer" }}
                               >
                                 <TableCell>{index + 1}</TableCell>
@@ -332,12 +332,7 @@ const ProjectAccordion = () => {
                                       }}
                                     >
                                       {resources.employeeSkills
-                                        .slice(
-                                          0,
-                                          expandedRows.includes(index)
-                                            ? resources.employeeSkills.length
-                                            : 2
-                                        )
+                                        .slice(0, 2)
                                         .map((employeeSkill, skillIndex) => (
                                           <Grid
                                             item
@@ -395,13 +390,16 @@ const ProjectAccordion = () => {
                                           }}
                                         >
                                           <Button
+                                            style={{
+                                              padding: "0px",
+                                              minWidth: "auto",
+                                            }}
                                             onClick={() =>
                                               toggleRowExpansion(index)
                                             }
                                           >
                                             {expandedRows.includes(index) ? (
                                               <>
-                                                View Less
                                                 <KeyboardArrowUpIcon />
                                               </>
                                             ) : (
@@ -419,6 +417,107 @@ const ProjectAccordion = () => {
                                   {resources?.occupancyHours}
                                 </TableCell>
                               </TableRow>
+
+                              {expandedRows.includes(index) ? (
+                                <>
+                                  <TableRow
+                                    sx={{ border: "5px solid #EBEBEB" }}
+                                  >
+                                    <TableCell colSpan={5}>
+                                      <Grid sx={{ backgroundColor: "#fff" }}>
+                                        {expandedRows.includes(index) &&
+                                          resources.employeeSkills.map(
+                                            (employeeSkill, skillIndex) => (
+                                              <Grid
+                                                item
+                                                key={skillIndex}
+                                                sx={{
+                                                  border: "1px solid #AEAEAE",
+                                                  borderRadius: "8px",
+                                                  padding: "4px",
+                                                  margin: "5px",
+                                                  display: "block",
+                                                  alignItems: "center",
+                                                  justifyContent: "flex-end",
+                                                  color: "#000000",
+                                                  backgroundColor: "#ffffff",
+                                                  float: "left",
+                                                }}
+                                              >
+                                                <span
+                                                  style={{ color: "black" }}
+                                                >
+                                                  {employeeSkill.skillName}
+                                                </span>{" "}
+                                                {employeeSkill.rating && (
+                                                  <>
+                                                    <StarOutlinedIcon
+                                                      style={{
+                                                        backgroundColor:
+                                                          employeeSkill.rating <
+                                                          5
+                                                            ? "#90DC90"
+                                                            : employeeSkill.rating >=
+                                                                5 &&
+                                                              employeeSkill.rating <=
+                                                                7
+                                                            ? "#E6E62C"
+                                                            : "#E38F75",
+                                                        color: "#ffff",
+                                                        borderRadius: "50%",
+                                                        width: 15,
+                                                        height: 15,
+                                                        marginTop: 0,
+                                                        marginLeft: 2,
+                                                        marginRight: 2,
+                                                      }}
+                                                    />
+                                                    {employeeSkill.rating}
+                                                  </>
+                                                )}
+                                              </Grid>
+                                            )
+                                          )}
+                                        {resources.employeeSkills?.length >
+                                          1 && (
+                                          <Grid
+                                            container
+                                            justifyContent="flex-end"
+                                            display={"flex"}
+                                            flexDirection={"row"}
+                                            width={"auto"}
+                                          >
+                                            <Button
+                                              style={{ padding: "0px" }}
+                                              onClick={() =>
+                                                toggleRowExpansion(index)
+                                              }
+                                            >
+                                              {expandedRows.includes(index) ? (
+                                                <div
+                                                  style={{
+                                                    fontSize: "12px",
+                                                    color: "#000000",
+                                                  }}
+                                                >
+                                                  View Less
+                                                  <KeyboardArrowUpIcon
+                                                    style={{ color: "#008080" }}
+                                                  />
+                                                </div>
+                                              ) : (
+                                                <KeyboardArrowDownIcon />
+                                              )}
+                                            </Button>
+                                          </Grid>
+                                        )}
+                                      </Grid>
+                                    </TableCell>
+                                  </TableRow>
+                                </>
+                              ) : (
+                                <></>
+                              )}
                             </React.Fragment>
                           )
                         )}

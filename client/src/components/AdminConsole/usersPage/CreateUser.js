@@ -59,8 +59,6 @@ export default function CreateUser() {
 
   const userId = useSelector((state) => state?.nonPersist?.userDetails?.userId);
 
-  console.log("object", userId);
-
   const [validationErrors, setValidationErrors] = useState({});
   const [formData, setFormData] = useState({
     firstName: "",
@@ -185,7 +183,6 @@ export default function CreateUser() {
 
     // Update the form data
     setFormData(updatedFormData);
-
 
     // Fetch states and cities based on permanent address if country and state are selected
     if (newIsChecked && formData.currentcountry) {
@@ -438,26 +435,37 @@ export default function CreateUser() {
   };
 
   const handleProductTypeChange = (event, type) => {
-    let updatedFormData = {
-      ...formData,
-      productType: event.target.value,
-    };
+    // let updatedFormData = {
+    //   ...formData,
+    //   productType: event.target.value,
+    // };
     if (type === "CLIENT_LOCATION") {
-      updatedFormData = {
-        ...updatedFormData,
-      };
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        productType: event.target.value,
+      }));
+      // updatedFormData = {
+      //   ...updatedFormData,
+
+      // };
       setEnable(false);
     }
     if (type === "PRAKAT_LOCATION") {
-      updatedFormData = {
-        ...updatedFormData,
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        productType: event.target.value,
         Client_loc: "",
-      };
+      }));
+      // updatedFormData = {
+
+      //   ...updatedFormData,
+      //   Client_loc: "",
+      // };
       setEnable(true);
     }
 
     // setProductType(event.target.value);
-    setFormData(updatedFormData);
+    // setFormData(updatedFormData);
     // setWorkMode("");
   };
   const handleWorkModeChange = (event) => {
@@ -661,7 +669,7 @@ export default function CreateUser() {
   const handleSave = async () => {
     const validationErrors = validateForm();
 
-    if (Object.keys(validationErrors).length == 0) {
+    if (validationErrors == undefined) {
       const payload = {
         id: id ? id : "",
         file: formData.file,
@@ -813,120 +821,122 @@ export default function CreateUser() {
       }
     }
 
-    if (formData.UANNo) {
-      if (!/^\d{12}$/.test(formData.UANNo)) {
-        errors.UANNo = "UAN number should contain exactly 12 digits";
-      }
+    if (!formData.UANNo) {
+      errors.UANNo = "UAN number is mandatory";
+    } else if (!/^\d{12}$/.test(formData.UANNo)) {
+      errors.UANNo = "UAN number should contain exactly 12 digits";
     }
 
     if (!formData.gender) {
       errors.gender = "Gender is mandatory";
     }
     if (formData.productType !== "PRAKAT_LOCATION" && !formData.Client_loc) {
-      errors.Client_loc = "Office Location is mandatory";
-    }
+      if (formData.productType !== "PRAKAT_LOCATION" && !formData.Client_loc) {
+        errors.Client_loc = "Office Location is mandatory";
+      }
 
-    if (!formData.employedBy) {
-      errors.employedBy = "Employee By Location is mandatory";
-    }
+      if (!formData.employedBy) {
+        errors.employedBy = "Employee By Location is mandatory";
+      }
 
-    if (!formData.designation) {
-      errors.designation = "Designation is mandatory";
-    }
-    if (!formData.skill) {
-      errors.skill = "Skills is mandatory";
-    }
+      if (!formData.designation) {
+        errors.designation = "Designation is mandatory";
+      }
+      if (!formData.skill) {
+        errors.skill = "Skills is mandatory";
+      }
 
-    if (!formData.employeeID) {
-      errors.employeeID = "Employee ID  is mandatory";
-    }
+      if (!formData.employeeID) {
+        errors.employeeID = "Employee ID  is mandatory";
+      }
 
-    if (!formData.ManagerName.name) {
-      errors.ManagerName = "Manager name is mandatory";
-    }
-    if (!formData.Status) {
-      errors.Status = "Status is mandatory";
-    }
+      if (!formData.ManagerName.name) {
+        errors.ManagerName = "Manager name is mandatory";
+      }
+      if (!formData.Status) {
+        errors.Status = "Status is mandatory";
+      }
 
-    if (!formData.email) {
-      errors.email = "Email is mandatory";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = "Please enter a valid email address";
-    }
-    if (!formData.currentAddress1) {
-      errors.currentAddress1 = "Current Address is mandatory";
-    }
-    if (!formData.currentcountry) {
-      errors.currentcountry = "Country is mandatory";
-    }
-    if (!formData.currentstate) {
-      errors.currentstate = "State is mandatory";
-    }
-    if (!formData.currentcity) {
-      errors.currentcity = "City is mandatory";
-    }
+      if (!formData.email) {
+        errors.email = "Email is mandatory";
+      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+        errors.email = "Please enter a valid email address";
+      }
+      if (!formData.currentAddress1) {
+        errors.currentAddress1 = "Current Address is mandatory";
+      }
+      if (!formData.currentcountry) {
+        errors.currentcountry = "Country is mandatory";
+      }
+      if (!formData.currentstate) {
+        errors.currentstate = "State is mandatory";
+      }
+      if (!formData.currentcity) {
+        errors.currentcity = "City is mandatory";
+      }
 
-    if (!formData.number) {
-      errors.number = "Mobile number is mandatory";
-    } else if (!/^\d+$/.test(formData.number)) {
-      errors.number = "Mobile number should contain only Number";
-    }
-    if (!formData.DOB) {
-      errors.DOB = "Date of birth is mandatory";
-    }
-    if (!formData.DOJ) {
-      errors.DOJ = "Date of joining is mandatory";
-    }
-    if (!formData.lastName) {
-      errors.lastName = "Last name is mandatory";
-    } else if (!/^[a-zA-Z]+$/.test(formData.lastName)) {
-      errors.lastName = "Last name should contain only alphabets.";
-    }
+      if (!formData.number) {
+        errors.number = "Mobile number is mandatory";
+      } else if (!/^\d+$/.test(formData.number)) {
+        errors.number = "Mobile number should contain only Number";
+      }
+      if (!formData.DOB) {
+        errors.DOB = "Date of birth is mandatory";
+      }
+      if (!formData.DOJ) {
+        errors.DOJ = "Date of joining is mandatory";
+      }
+      if (!formData.lastName) {
+        errors.lastName = "Last name is mandatory";
+      } else if (!/^[a-zA-Z]+$/.test(formData.lastName)) {
+        errors.lastName = "Last name should contain only alphabets.";
+      }
 
-    if (!formData.AadhaarNo) {
-      errors.AadhaarNo = "Aadhaar number is mandatory";
-    } else if (!/^\d+$/.test(formData.AadhaarNo)) {
-      errors.AadhaarNo = "Aadhaar number should contain only Number";
-    } else if (!/^[0-9]{12}$/.test(formData.AadhaarNo)) {
-      errors.AadhaarNo = "Aadhaar number should contains only 12 Number";
-    }
+      if (!formData.AadhaarNo) {
+        errors.AadhaarNo = "Aadhaar number is mandatory";
+      } else if (!/^\d+$/.test(formData.AadhaarNo)) {
+        errors.AadhaarNo = "Aadhaar number should contain only Number";
+      } else if (!/^[0-9]{12}$/.test(formData.AadhaarNo)) {
+        errors.AadhaarNo = "Aadhaar number should contains only 12 Number";
+      }
 
-    if (!formData.CTC) {
-      errors.CTC = "Employee CTC is mandatory";
-    } else if (!/^\d+(\.\d{1,2})?$/.test(formData.CTC)) {
-      errors.CTC =
-        "Please enter a valid numeric value for CTC with up to two decimal places.";
-    } else {
-      const ctcNumber = parseFloat(formData.CTC);
-      if (isNaN(ctcNumber) || ctcNumber < 0) {
+      if (!formData.CTC) {
+        errors.CTC = "Employee CTC is mandatory";
+      } else if (!/^\d+(\.\d{1,2})?$/.test(formData.CTC)) {
         errors.CTC =
-          "Please enter a valid non-negative numeric value for Employee CTC";
+          "Please enter a valid numeric value for CTC with up to two decimal places.";
+      } else {
+        const ctcNumber = parseFloat(formData.CTC);
+        if (isNaN(ctcNumber) || ctcNumber < 0) {
+          errors.CTC =
+            "Please enter a valid non-negative numeric value for Employee CTC";
+        }
       }
-    }
 
-    if (!formData.workMode) {
-      errors.workMode = "Work Mode is mandatory";
-    }
-    if (!formData.employeeType) {
-      errors.employeeType = "Employee type is mandatory";
-    }
-    if (formData.ACNo) {
-      if (!/^\d+$/.test(formData.ACNo)) {
-        errors.ACNo = "A/C No must be an digit";
+      if (!formData.workMode) {
+        errors.workMode = "Work Mode is mandatory";
       }
-    }
-    if (formData.IFSCCode) {
-      if (!/^[A-Za-z0-9]+$/.test(formData.IFSCCode)) {
-        errors.IFSCCode = "IFSC Code must not contain special characters";
+      if (!formData.employeeType) {
+        errors.employeeType = "Employee type is mandatory";
       }
-    }
-    if (formData.Bank_Name) {
-      if (!/^[A-Za-z\s]+$/.test(formData.Bank_Name)) {
-        errors.BankName = "Bank Name must contain only alphabetic characters";
+      if (formData.ACNo) {
+        if (!/^\d+$/.test(formData.ACNo)) {
+          errors.ACNo = "A/C No must be an digit";
+        }
       }
-    }
+      if (formData.IFSCCode) {
+        if (!/^[A-Za-z0-9]+$/.test(formData.IFSCCode)) {
+          errors.IFSCCode = "IFSC Code must not contain special characters";
+        }
+      }
+      if (formData.Bank_Name) {
+        if (!/^[A-Za-z\s]+$/.test(formData.Bank_Name)) {
+          errors.BankName = "Bank Name must contain only alphabetic characters";
+        }
+      }
 
-    return errors;
+      return errors;
+    }
   };
 
   return (
@@ -1058,9 +1068,9 @@ export default function CreateUser() {
                 margin="normal"
                 InputProps={{ classes: { focused: "green-border" } }}
               />
-              {errors.firstName && (
+              {errors?.firstName && (
                 <Box>
-                  <Typography color="error">{errors.firstName}</Typography>
+                  <Typography color="error">{errors?.firstName}</Typography>
                 </Box>
               )}
             </Grid>
@@ -1085,9 +1095,9 @@ export default function CreateUser() {
                 margin="normal"
                 InputProps={{ classes: { focused: "green-border" } }}
               />
-              {errors.lastName && (
+              {errors?.lastName && (
                 <Box>
-                  <Typography color="error">{errors.lastName}</Typography>
+                  <Typography color="error">{errors?.lastName}</Typography>
                 </Box>
               )}
             </Grid>
@@ -1114,9 +1124,9 @@ export default function CreateUser() {
                 margin="normal"
                 InputProps={{ classes: { focused: "green-border" } }}
               />
-              {errors.email && (
+              {errors?.email && (
                 <Box>
-                  <Typography color="error">{errors.email}</Typography>
+                  <Typography color="error">{errors?.email}</Typography>
                 </Box>
               )}
             </Grid>
@@ -1140,9 +1150,9 @@ export default function CreateUser() {
                   renderInput={(params) => <TextField {...params} />}
                 />
               </LocalizationProvider>
-              {errors.DOB && (
+              {errors?.DOB && (
                 <Box>
-                  <Typography color="error">{errors.DOB}</Typography>
+                  <Typography color="error">{errors?.DOB}</Typography>
                 </Box>
               )}
             </Grid>
@@ -1169,9 +1179,9 @@ export default function CreateUser() {
                 margin="normal"
                 InputProps={{ classes: { focused: "green-border" } }}
               />
-              {errors.number && (
+              {errors?.number && (
                 <Box>
-                  <Typography color="error">{errors.number}</Typography>
+                  <Typography color="error">{errors?.number}</Typography>
                 </Box>
               )}
             </Grid>
@@ -1194,9 +1204,9 @@ export default function CreateUser() {
                   renderInput={(params) => <TextField {...params} />}
                 />
               </LocalizationProvider>
-              {errors.DOJ && (
+              {errors?.DOJ && (
                 <Box>
-                  <Typography color="error">{errors.DOJ}</Typography>
+                  <Typography color="error">{errors?.DOJ}</Typography>
                 </Box>
               )}
             </Grid>
@@ -1222,11 +1232,11 @@ export default function CreateUser() {
                   borderRadius: "5px",
                 }}
               />
-              {errors.gender && (
+              {errors?.gender && (
                 <Box>
                   <Typography color="error" style={{}}>
                     {" "}
-                    {errors.gender}
+                    {errors?.gender}
                   </Typography>
                 </Box>
               )}
@@ -1253,9 +1263,9 @@ export default function CreateUser() {
                 margin="normal"
                 InputProps={{ classes: { focused: "green-border" } }}
               />
-              {errors.AadhaarNo && (
+              {errors?.AadhaarNo && (
                 <Box>
-                  <Typography color="error">{errors.AadhaarNo}</Typography>
+                  <Typography color="error">{errors?.AadhaarNo}</Typography>
                 </Box>
               )}
             </Grid>
@@ -1276,11 +1286,11 @@ export default function CreateUser() {
                 fullWidth
                 margin="normal"
               />
-              {errors.UANNo && (
+              {errors?.UANNo && (
                 <Box>
                   <Typography color="error" style={{}}>
                     {" "}
-                    {errors.UANNo}
+                    {errors?.UANNo}
                   </Typography>
                 </Box>
               )}
@@ -1319,10 +1329,10 @@ export default function CreateUser() {
                 }}
                 onChange={(e) => handleInputChange(e, "currentAddress1")}
               />
-              {errors.currentAddress1 && (
+              {errors?.currentAddress1 && (
                 <Box>
                   <Typography color="error">
-                    {errors.currentAddress1}
+                    {errors?.currentAddress1}
                   </Typography>
                 </Box>
               )}
@@ -1373,9 +1383,11 @@ export default function CreateUser() {
                   />
                 )}
               />
-              {errors.currentcountry && (
+              {errors?.currentcountry && (
                 <Box>
-                  <Typography color="error">{errors.currentcountry}</Typography>
+                  <Typography color="error">
+                    {errors?.currentcountry}
+                  </Typography>
                 </Box>
               )}
             </Grid>
@@ -1416,9 +1428,9 @@ export default function CreateUser() {
                   />
                 )}
               />
-              {errors.currentstate && (
+              {errors?.currentstate && (
                 <Box>
-                  <Typography color="error">{errors.currentstate}</Typography>
+                  <Typography color="error">{errors?.currentstate}</Typography>
                 </Box>
               )}
             </Grid>
@@ -1454,9 +1466,9 @@ export default function CreateUser() {
                   />
                 )}
               />
-              {errors.currentcity && (
+              {errors?.currentcity && (
                 <Box>
-                  <Typography color="error">{errors.currentcity}</Typography>
+                  <Typography color="error">{errors?.currentcity}</Typography>
                 </Box>
               )}
             </Grid>
@@ -1476,9 +1488,9 @@ export default function CreateUser() {
                 }}
                 onChange={handlezipChange}
               />
-              {errors.currentZIP && (
+              {errors?.currentZIP && (
                 <Box>
-                  <Typography color="error">{errors.currentZIP}</Typography>
+                  <Typography color="error">{errors?.currentZIP}</Typography>
                 </Box>
               )}
             </Grid>
@@ -1533,22 +1545,20 @@ export default function CreateUser() {
               <TextField
                 label={<>Address Line 1</>}
                 name="address1"
-                value={formData.address1}
-                style={{
-                  width: "90%",
-                }}
+                value={isChecked ? formData.currentAddress1 : formData.address1}
+                style={{ width: "90%" }}
                 onChange={(e) => handleInputChange(e)}
+                disabled={isChecked} // Disable the field if checkbox is checked
               />
             </Grid>
             <Grid item xs={6}>
               <TextField
                 label={<>Address Line 2</>}
                 name="address2"
-                value={formData.address2}
-                style={{
-                  width: "90%",
-                }}
+                value={isChecked ? formData.currentAddress2 : formData.address2}
+                style={{ width: "90%" }}
                 onChange={(e) => handleInputChange(e)}
+                disabled={isChecked} // Disable the field if checkbox is checked
               />
             </Grid>
           </Grid>
@@ -1558,37 +1568,54 @@ export default function CreateUser() {
                 disableFreeSolo
                 id="country"
                 value={
-                  countries.find(
-                    (country) => country.id === formData.country
-                  ) || null
+                  isChecked
+                    ? countries.find(
+                        (country) => country.id === formData.currentcountry
+                      ) || null
+                    : countries.find(
+                        (country) => country.id === formData.country
+                      ) || null
                 }
                 options={countries || []}
                 getOptionLabel={(option) => option.label}
                 getOptionValue={(option) => option.id}
                 style={{ width: "90%" }}
                 onChange={(e, value) =>
-                  handleCountryChange("country", e, value)
+                  isChecked
+                    ? handleCountryChange("currentcountry", e, value)
+                    : handleCountryChange("country", e, value)
                 }
                 renderInput={(params) => (
                   <TextField {...params} label={<>Country</>} />
                 )}
+                disabled={isChecked} // Disable the field if checkbox is checked
               />
             </Grid>
             <Grid item xs={6}>
               <Autocomplete
                 disableFreeSolo
                 id="state"
-                options={formData.country ? states : []}
+                options={isChecked ? states : formData.country ? states : []}
                 value={
-                  states.find((state) => state.id === formData.state) || null
+                  isChecked
+                    ? states.find(
+                        (state) => state.id === formData.currentstate
+                      ) || null
+                    : states.find((state) => state.id === formData.state) ||
+                      null
                 }
                 getOptionLabel={(option) => option.label}
                 getOptionValue={(option) => option.id}
                 style={{ width: "90%" }}
-                onChange={(e, value) => handleStateChange("state", e, value)}
+                onChange={(e, value) =>
+                  isChecked
+                    ? handleStateChange("currentstate", e, value)
+                    : handleStateChange("state", e, value)
+                }
                 renderInput={(params) => (
                   <TextField {...params} label={<>State</>} />
                 )}
+                disabled={isChecked} // Disable the field if checkbox is checked
               />
             </Grid>
           </Grid>
@@ -1597,34 +1624,51 @@ export default function CreateUser() {
               <Autocomplete
                 disableFreeSolo
                 id="city"
-                value={
-                  cities?.find((city) => city.id === formData.city) || null
+                options={
+                  isChecked
+                    ? cities
+                    : formData.state
+                    ? cities
+                    : formData.country
+                    ? cities
+                    : []
                 }
-                options={formData.state ? cities : []}
+                value={
+                  isChecked
+                    ? cities.find((city) => city.id === formData.currentcity) ||
+                      null
+                    : cities.find((city) => city.id === formData.city) || null
+                }
                 getOptionLabel={(option) => option.label}
-                getOptionValue={(option) => option.id}
-                style={{ width: "90%" }}
-                onChange={(e, value) => handleCity("city", e, value)}
+                onChange={(e, value) =>
+                  isChecked
+                    ? handleCity("currentcity", e, value)
+                    : handleCity("city", e, value)
+                }
                 renderInput={(params) => (
                   <TextField {...params} label={<>City</>} />
                 )}
+                style={{ width: "90%" }}
+                disabled={isChecked} // Disable the field if checkbox is checked
               />
             </Grid>
             <Grid item xs={6}>
               <TextField
                 id="Zip"
                 name="Zip"
-                label={<>Zip/Postal Code</>}
-                value={formData.Zip}
-                style={{
-                  width: "90%",
-                  borderRadius: "10px",
-                }}
-                onChange={handlezipChange}
+                label={
+                  <>
+                    Zip/Postal Code<span style={{ color: "red" }}>*</span>
+                  </>
+                }
+                value={isChecked ? formData.currentZIP : formData.Zip}
+                style={{ width: "90%" }}
+                onChange={(e) => handlezipChange(e, "Zip")}
+                disabled={isChecked} // Disable the field if checkbox is checked
               />
-              {errors.Zip && (
+              {errors?.Zip && (
                 <Box>
-                  <Typography color="error">{errors.Zip}</Typography>
+                  <Typography color="error">{errors?.Zip}</Typography>
                 </Box>
               )}
             </Grid>
@@ -1692,9 +1736,9 @@ export default function CreateUser() {
                 width: "90%",
               }}
             />
-            {errors.workMode && (
+            {errors?.workMode && (
               <Box>
-                <Typography color="error">{errors.workMode}</Typography>
+                <Typography color="error">{errors?.workMode}</Typography>
               </Box>
             )}
           </Grid>
@@ -1743,9 +1787,9 @@ export default function CreateUser() {
                   />
                 )}
               />
-              {errors.ManagerName && (
+              {errors?.ManagerName && (
                 <Box>
-                  <Typography color="error">{errors.ManagerName}</Typography>
+                  <Typography color="error">{errors?.ManagerName}</Typography>
                 </Box>
               )}
             </Grid>
@@ -1769,11 +1813,11 @@ export default function CreateUser() {
                 }}
                 options={masterdata4}
               />
-              {errors.designation && (
+              {errors?.designation && (
                 <Box>
                   <Typography color="error" style={{}}>
                     {" "}
-                    {errors.designation}
+                    {errors?.designation}
                   </Typography>
                 </Box>
               )}
@@ -1800,11 +1844,11 @@ export default function CreateUser() {
                   border: "1px solid silver",
                 }}
               />
-              {errors.employeeType && (
+              {errors?.employeeType && (
                 <Box>
                   <Typography color="error" style={{}}>
                     {" "}
-                    {errors.employeeType}
+                    {errors?.employeeType}
                   </Typography>
                 </Box>
               )}
@@ -1819,7 +1863,7 @@ export default function CreateUser() {
                 onChange={(_, value) => handleChange2(value)}
                 getOptionLabel={(option) => option.skillName}
                 getOptionValue={(option) => option.skillId}
-                value={skill.filter((s) =>
+                value={skill?.filter((s) =>
                   formData.skill?.includes(s?.skillId)
                 )}
                 renderOption={(props, option) => (
@@ -1850,11 +1894,11 @@ export default function CreateUser() {
                 )}
               />
 
-              {errors.skill && (
+              {errors?.skill && (
                 <Box>
                   <Typography color="error" style={{}}>
                     {" "}
-                    {errors.skill}
+                    {errors?.skill}
                   </Typography>
                 </Box>
               )}
@@ -1883,10 +1927,10 @@ export default function CreateUser() {
                   border: "1px solid silver",
                 }}
               />
-              {errors.employedBy && (
+              {errors?.employedBy && (
                 <Box>
                   <Typography color="error" style={{}}>
-                    {errors.employedBy}
+                    {errors?.employedBy}
                   </Typography>
                 </Box>
               )}
@@ -1916,9 +1960,9 @@ export default function CreateUser() {
               />
               {formData.productType !== "PRAKAT_LOCATION" && (
                 <Box>
-                  {errors.Client_loc && (
+                  {errors?.Client_loc && (
                     <Typography color="error" style={{}}>
-                      {errors.Client_loc}
+                      {errors?.Client_loc}
                     </Typography>
                   )}
                 </Box>
@@ -1945,11 +1989,11 @@ export default function CreateUser() {
                   width: "90%",
                 }}
               />
-              {errors.Status && (
+              {errors?.Status && (
                 <Box>
                   <Typography color="error" style={{}}>
                     {" "}
-                    {errors.Status}
+                    {errors?.Status}
                   </Typography>
                 </Box>
               )}
@@ -1974,9 +2018,9 @@ export default function CreateUser() {
                   width: "90%",
                 }}
               />
-              {errors.employeeID && (
+              {errors?.employeeID && (
                 <Box>
-                  <Typography color="error">{errors.employeeID}</Typography>
+                  <Typography color="error">{errors?.employeeID}</Typography>
                 </Box>
               )}
             </Grid>
@@ -2021,9 +2065,9 @@ export default function CreateUser() {
                   classes: { focused: "green-border" },
                 }}
               />
-              {errors.CTC && (
+              {errors?.CTC && (
                 <Box>
-                  <Typography color="error">{errors.CTC}</Typography>
+                  <Typography color="error">{errors?.CTC}</Typography>
                 </Box>
               )}
             </Grid>
@@ -2043,58 +2087,9 @@ export default function CreateUser() {
                 fullWidth
                 margin="normal"
               />
-              {errors.Bank && (
+              {errors?.Bank && (
                 <Box>
-                  <Typography color="error">{errors.Bank}</Typography>
-                </Box>
-              )}
-            </Grid>
-          </Grid>
-          <Grid container>
-            <Grid item xs={6}>
-              <TextField
-                label="A/C No."
-                value={formData.ACNo}
-                placeholder="A/C No."
-                id="ACNo"
-                name="ACNo"
-                onChange={handleInputChange}
-                style={{
-                  ...style.TimesheetTextField,
-                  borderRadius: "10px",
-                  width: "92%",
-                }}
-                fullWidth
-                margin="normal"
-                InputProps={{
-                  classes: { focused: "green-border" },
-                }}
-              />
-              {errors.ACNo && (
-                <Box>
-                  <Typography color="error">{errors.ACNo}</Typography>
-                </Box>
-              )}
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                label="IFSC Code"
-                placeholder="IFSC Code"
-                id="IFSCCode"
-                name="IFSCCode"
-                onChange={handleInputChange}
-                value={formData.IFSCCode}
-                style={{
-                  ...style.TimesheetTextField,
-                  borderRadius: "10px",
-                  width: "95%",
-                }}
-                fullWidth
-                margin="normal"
-              />
-              {errors.IFSCCode && (
-                <Box>
-                  <Typography color="error">{errors.IFSCCode}</Typography>
+                  <Typography color="error">{errors?.Bank}</Typography>
                 </Box>
               )}
             </Grid>
@@ -2119,9 +2114,58 @@ export default function CreateUser() {
                   classes: { focused: "green-border" },
                 }}
               />
-              {errors.BankName && (
+              {errors?.BankName && (
                 <Box>
-                  <Typography color="error">{errors.BankName}</Typography>
+                  <Typography color="error">{errors?.BankName}</Typography>
+                </Box>
+              )}
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="A/C No."
+                value={formData.ACNo}
+                placeholder="A/C No."
+                id="ACNo"
+                name="ACNo"
+                onChange={handleInputChange}
+                style={{
+                  ...style.TimesheetTextField,
+                  borderRadius: "10px",
+                  width: "95%",
+                }}
+                fullWidth
+                margin="normal"
+                InputProps={{
+                  classes: { focused: "green-border" },
+                }}
+              />
+              {errors?.ACNo && (
+                <Box>
+                  <Typography color="error">{errors?.ACNo}</Typography>
+                </Box>
+              )}
+            </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item xs={6}>
+              <TextField
+                label="IFSC Code"
+                placeholder="IFSC Code"
+                id="IFSCCode"
+                name="IFSCCode"
+                onChange={handleInputChange}
+                value={formData.IFSCCode}
+                style={{
+                  ...style.TimesheetTextField,
+                  borderRadius: "10px",
+                  width: "92%",
+                }}
+                fullWidth
+                margin="normal"
+              />
+              {errors?.IFSCCode && (
+                <Box>
+                  <Typography color="error">{errors?.IFSCCode}</Typography>
                 </Box>
               )}
             </Grid>

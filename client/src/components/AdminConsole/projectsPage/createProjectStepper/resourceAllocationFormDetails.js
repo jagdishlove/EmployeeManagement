@@ -121,7 +121,7 @@ const ResourceAllocationFormDetails = () => {
       skillIds: "",
     };
 
-    dispatch(getAllocationSearch(params));
+    dispatch(getAllocationSearch(params, projectId));
   }, [debouncedValue]);
 
   const masterSkillData = useSelector(
@@ -130,9 +130,9 @@ const ResourceAllocationFormDetails = () => {
   const masterDesigData = useSelector(
     (state) => state?.persistData?.masterData?.designation
   );
-  const { getProjectData } = useSelector(
-    (state) => state?.nonPersist?.projectDetails
-  );
+  // const { getProjectData } = useSelector(
+  //   (state) => state?.nonPersist?.projectDetails
+  // );
 
   const theme = useTheme();
   const style = TimesheetStyle(theme);
@@ -142,9 +142,9 @@ const ResourceAllocationFormDetails = () => {
     projectedimplementationhours: "",
     occupancyHours: "",
     occupancyMinutes: "",
-    startDate: null,
-    endDate: null,
-    actualEndDate: null,
+    startDate: "",
+    endDate: "",
+    actualEndDate: "",
   });
 
   // Define state variables for errors
@@ -218,12 +218,11 @@ const ResourceAllocationFormDetails = () => {
 
     const payload = {
       employeeId: employeeId,
-      projectId: projectId,
+      projectId: id ? id : projectId,
       occupancyHours:
         formData.occupancyHours * 60 + parseInt(formData.occupancyMinutes || 0),
     };
-    console.log("payload", payload);
-    console.log("formData", formData);
+
     if (selectedOccupancyHours !== null) {
       // Perform Update
       payload.resourceId = selectedOccupancyHours;
@@ -245,6 +244,9 @@ const ResourceAllocationFormDetails = () => {
   useEffect(() => {
     if (projectId) {
       dispatch(getAllResourcesAction(projectId));
+      setShowAllResourcesTable(true);
+    } else if (id) {
+      dispatch(getAllResourcesAction(id));
       setShowAllResourcesTable(true);
     }
   }, [projectId]);
@@ -269,18 +271,20 @@ const ResourceAllocationFormDetails = () => {
 
   useEffect(() => {
     const totalOccupancyMinutes = allResourcesData.reduce((total, resource) => {
-      const [hours, minutes] = resource.occupancyHours
-        .split(" ")[0]
-        .split("Hrs")
-        .map((value) => parseInt(value));
+      const parts = resource.occupancyHours.split(" ");
+      const hoursPart = parts[0].includes("Hrs") ? parts[0].split("Hrs")[0] : 0;
+      const minutesPart = parts.length > 1 ? parts[1].split("mins")[0] : 0;
 
-      return total + (hours * 60 + (minutes || 0));
+      const hours = parseInt(hoursPart) || 0;
+      const minutes = parseInt(minutesPart) || 0;
+
+      return total + (hours * 60 + minutes);
     }, 0);
+
     const totalHours = Math.floor(totalOccupancyMinutes / 60);
     const totalMinutes = totalOccupancyMinutes % 60;
-    const totalOccupancyTimeString = `${totalHours} hr ${totalMinutes
-      .toString()
-      .padStart(2, "0")} min`;
+
+    const totalOccupancyTimeString = `${totalHours} Hrs ${totalMinutes} mins`;
 
     setOccupencyHoursValue(totalOccupancyTimeString);
   }, [render, handleConfirm]);
@@ -336,7 +340,6 @@ const ResourceAllocationFormDetails = () => {
     if (projectId && saveButton) navigate(`/projectDetailPage/${projectId}`);
   }, [projectId, saveButton]);
 
-  
   //Save
   const handleSaveData = async (e, type) => {
     e.preventDefault();
@@ -383,7 +386,7 @@ const ResourceAllocationFormDetails = () => {
       stage: 2,
     };
     const payload = {
-      id: projectId,
+      id: id || projectId,
       projectedImplementationHours: formData.projectName,
       startDate: formData?.startDate,
       endDate: formData?.endDate,
@@ -457,7 +460,7 @@ const ResourceAllocationFormDetails = () => {
         query: searchData || "",
         skillIds: getSkillId,
       };
-      dispatch(getAllocationSearch(params));
+      dispatch(getAllocationSearch(params, projectId));
 
       // Close the dropdown when the "Apply" button is clicked
       props.selectProps.onMenuClose();
@@ -471,7 +474,7 @@ const ResourceAllocationFormDetails = () => {
         skillIds: "", // Assuming you want to clear all selected skill IDs
       };
 
-      dispatch(getAllocationSearch(params));
+      dispatch(getAllocationSearch(params, projectId));
       // Close the dropdown when the "Apply" button is clicked
       props.selectProps.onMenuClose();
     };
@@ -533,7 +536,7 @@ const ResourceAllocationFormDetails = () => {
         query: searchData || "",
         designationIds: getSkillId,
       };
-      dispatch(getAllocationSearch(params));
+      dispatch(getAllocationSearch(params, projectId));
 
       // Close the dropdown when the "Apply" button is clicked
       props.selectProps.onMenuClose();
@@ -547,7 +550,7 @@ const ResourceAllocationFormDetails = () => {
         designationIds: "", // Assuming you want to clear all selected skill IDs
       };
 
-      dispatch(getAllocationSearch(params));
+      dispatch(getAllocationSearch(params, projectId));
 
       // Close the dropdown when the "Apply" button is clicked
       props.selectProps.onMenuClose();
@@ -626,16 +629,22 @@ const ResourceAllocationFormDetails = () => {
           projectDetailsData?.projectedImplementationHours || "",
         startDate: projectDetailsData?.startDate
           ? new Date(projectDetailsData.startDate)
-          : null,
+          : "",
         endDate: projectDetailsData?.endDate
           ? new Date(projectDetailsData.endDate)
-          : null,
+          : "",
         actualEndDate: projectDetailsData?.actualEndDate
           ? new Date(projectDetailsData.actualEndDate)
-          : null,
+          : "",
       }));
+    } else {
+      setFormData({
+        startDate: "",
+        endDate: "",
+        actualEndDate: "",
+      });
     }
-  }, [id]);
+  }, [id, projectDetailsData]);
 
   const [expanded, setExpanded] = useState(false);
 
@@ -1099,11 +1108,7 @@ const ResourceAllocationFormDetails = () => {
               <DatePicker
                 name="startDate"
                 format="DD/MM/YYYY"
-                value={
-                  getProjectData.startDate
-                    ? dayjs(getProjectData.startDate)
-                    : null
-                } // Set value to null to not display the current date
+                value={formData.startDate ? dayjs(formData.startDate) : null} // Set value to null to not display the current date
                 onChange={(value) => handleDateChange("startDate", value)}
                 renderInput={(params) => <TextField {...params} />}
               />
@@ -1134,9 +1139,7 @@ const ResourceAllocationFormDetails = () => {
               <DatePicker
                 name="endDate"
                 format="DD/MM/YYYY"
-                value={
-                  getProjectData.endDate ? dayjs(getProjectData.endDate) : null
-                } // Set value to null to not display the current date
+                value={formData.endDate ? dayjs(formData.endDate) : null} // Set value to null to not display the current date
                 onChange={(value) => handleDateChange("endDate", value)}
                 renderInput={(params) => <TextField {...params} />}
               />
@@ -1163,9 +1166,7 @@ const ResourceAllocationFormDetails = () => {
                 name="actualEndDate"
                 format="DD/MM/YYYY"
                 value={
-                  getProjectData.actualEndDate
-                    ? dayjs(getProjectData.actualEndDate)
-                    : null
+                  formData.actualEndDate ? dayjs(formData.actualEndDate) : null
                 } // Set value to null to not display the current date
                 onChange={(value) => handleDateChange("actualEndDate", value)}
                 renderInput={(params) => <TextField {...params} />}

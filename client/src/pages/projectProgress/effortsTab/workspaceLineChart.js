@@ -1,35 +1,24 @@
 import { Box, Grid, Typography } from "@mui/material";
 import React from "react";
 import OpenInFullOutlinedIcon from "@mui/icons-material/OpenInFullOutlined";
-import { LineChart } from "@mui/x-charts/LineChart";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+
 import { useSelector } from "react-redux";
 
-function WorkspaceLineChart({ handleClickOpen, selectedOption }) {
-  const getXAxisData = () => {
-    switch (selectedOption?.value) {
-      case "SEVEN_DAYS":
-        return [0, 1, 2, 3, 4, 5, 6, 7]; // Example: 7 days
-      case "ONE_MONTH":
-        return [
-          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-          21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-        ]; // Example: 30 days
-      case "SIX_MONTHS":
-        return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]; // Example: 6 months
-      case "ONE_YEAR":
-        return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; // Example: 1 year
-      case "ALL":
-        return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // Example: All data
-      default:
-        return [];
-    }
-  };
-
+function WorkspaceLineChart({ handleClickOpen }) {
   const workSpaceData = useSelector(
-    (state) => state?.nonPersist?.workSpace?.workSpaceData
+    (state) => state?.nonPersist?.workSpace?.workSpaceData?.durations
   );
 
-  console.log("X-Axis Data:", getXAxisData());
+  // Function to calculate tick values based on selected option
 
   return (
     <>
@@ -80,42 +69,36 @@ function WorkspaceLineChart({ handleClickOpen, selectedOption }) {
           </Box>
         </Grid>
       </Grid>
-
-      <LineChart
-        xAxis={[{ data: getXAxisData(), label: "Duration" }]}
-        yAxis={[{ data: [1, 2, 3, 5, 8, 10], label: "Time" }]}
-        series={[
-          {
-            name: "Time",
-            data: workSpaceData?.durations
-              ? [
-                  0,
-                  ...workSpaceData.durations.map((item) => item.projectedHours),
-                ]
-              : [],
-
-            color: "#50C01B",
-          },
-          {
-            name: "Duration",
-            data: workSpaceData?.durations
-              ? [0, ...workSpaceData.durations.map((item) => item.actualHours)]
-              : [],
-            color: "#FF66FF",
-          },
-        ]}
-        axes={[
-          {
-            primary: true,
-            type: "linear",
-            position: "bottom",
-            label: "Duration",
-          },
-          { type: "linear", position: "left", label: "Time" },
-        ]}
-        width={500}
-        height={300}
-      />
+      <ResponsiveContainer width="100%" height={400}>
+        <LineChart
+          data={workSpaceData}
+          margin={{
+            top: 5,
+            right: 30,
+            left: 20,
+            bottom: 5,
+          }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="duration" />
+          <YAxis />
+          <Tooltip />
+          <Line
+            type="monotone"
+            dataKey="projectedHours"
+            stroke="#50C01B"
+            activeDot={{ r: 8 }}
+            name="projectedHourst"
+          />
+          <Line
+            type="monotone"
+            dataKey="actualHours"
+            stroke="#FF66FF"
+            activeDot={{ r: 8 }}
+            name="actualHours"
+          />
+        </LineChart>
+      </ResponsiveContainer>
     </>
   );
 }

@@ -1,15 +1,40 @@
-import { Grid, Avatar, Typography, Tooltip } from "@mui/material";
+import { Grid, Avatar, Typography, Tooltip, Box } from "@mui/material";
 import React from "react";
 import GaugeMeter from "../projectsTab/gaugeMeterProject";
 import LinearProgressThickness from "./linearProgress";
 import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 
-const ProjectTabSectionOne = () => {
+
+const ProjectTabSectionOne = ({projectList}) => {  
+  const Navigate = useNavigate();
+ 
   const { dashboardProjectdetails } = useSelector(
     (state) => state?.nonPersist?.dashboardProjectdetails
   );
   const ColorBox = ({ color, tooltip, children }) => (
-    <Tooltip title={tooltip}>
+    <Tooltip
+      title={
+        <Box
+          sx={{
+           
+            backgroundColor: "#ffffff",
+            color: "#000000",
+            padding: "8px",
+            maxWidth: "400px",
+          }}
+        >
+          {tooltip}
+        </Box>
+      }
+      PopoverProps={{
+        sx: {
+          "& .MuiTooltip-tooltip": {
+            backgroundColor: "transparent", // To remove the default background color of the tooltip
+          },
+        },
+      }}
+    >
       <div
         style={{
           background: color,
@@ -22,6 +47,10 @@ const ProjectTabSectionOne = () => {
     </Tooltip>
   );
 
+
+  const handleViewInDetail = () => {
+    Navigate(`/projectDetailPage/${projectList.id}`);
+  };
   return (
     <div>
       <Grid
@@ -39,6 +68,7 @@ const ProjectTabSectionOne = () => {
             p: 2,
             display: "flex",
             alignItems: "center",
+            backgroundColor:"#ffffff"
           }}
         >
           <Grid item xs={2}>
@@ -55,8 +85,13 @@ const ProjectTabSectionOne = () => {
               <strong>Project Name:</strong>{" "}
               {dashboardProjectdetails?.projectName}
             </Typography>
+            <Box style={{ textAlign: "right" }}>
+              {" "}
+              <Link  onClick={handleViewInDetail}>View project detail &gt; &gt;</Link>
+            </Box>
           </Grid>
         </Grid>
+
         <Grid
           item
           xs={12}
@@ -69,6 +104,7 @@ const ProjectTabSectionOne = () => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            backgroundColor:"#ffffff"
           }}
         >
           <GaugeMeter />
@@ -84,6 +120,7 @@ const ProjectTabSectionOne = () => {
             boxShadow: 2,
             p: 2,
             display: "flex",
+            backgroundColor:"#ffffff"
           }}
         >
           <Grid container>

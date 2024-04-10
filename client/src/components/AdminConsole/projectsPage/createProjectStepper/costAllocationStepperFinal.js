@@ -6,22 +6,31 @@ import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import Stepper from "@mui/material/Stepper";
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CostAllocationFormDetails from "./costAllocationFormDetails";
 import { useSelector } from "react-redux";
 
 const CostAllocationStepperFinal = () => {
   const steps = ["Create Project", "Resource Allocation", "Cost Allocation"];
   const Navigate = useNavigate();
+  const { id } = useParams();
   const projectId = useSelector(
     (state) => state.nonPersist.projectDetails?.projectId
   );
 
   const handleBackClick = () => {
-    if (window.location.pathname === "/resourceallocation") {
-      Navigate(`/EditForm/${projectId}`);
-    } else {
-      Navigate(`/EditResourcesForm/${projectId}`);
+    if (projectId) {
+      if (window.location.pathname === "/resourceallocation") {
+        Navigate(`/EditForm/${projectId}`);
+      } else {
+        Navigate(`/EditResourcesForm/${projectId}`);
+      }
+    } else if (id) {
+      if (window.location.pathname === "/resourceallocation") {
+        Navigate(`/EditForm/${id}`);
+      } else {
+        Navigate(`/EditResourcesForm/${id}`);
+      }
     }
   };
 
@@ -62,9 +71,9 @@ const CostAllocationStepperFinal = () => {
       >
         <Box
           sx={{
-            width: "80%",
+            width: "72%",
             backgroundColor: "#e6e6e6 !important",
-            padding: "10px !important",
+            padding: "10px 0px !important",
             borderRadius: "10px",
           }}
         >
@@ -78,14 +87,13 @@ const CostAllocationStepperFinal = () => {
                         display: "flex",
                         flexDirection: "row",
                         alignItems: "center",
-                        marginRight: "-20px !important",
                       }}
                     >
                       <div
                         style={{
                           color: index === 2 ? "#ffffff" : "#000000",
                           backgroundColor: index === 2 ? "#008080" : "#e6e6e6",
-                          padding: "10px 40px",
+                          padding: index === 2 ? "10px 55px" : "10px 0px",
                           zIndex: "1",
                           borderRadius: "5px",
                         }}

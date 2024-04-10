@@ -2,7 +2,7 @@ export const TimesheetStyle = (theme, approval, data) => ({
   TimesheetTextField: {
     "& .MuiOutlinedInput-root": {
       borderRadius: "10px",
-      background: { xs: theme.palette.secondary.main, md: "white" },
+      background: { xs: theme?.palette?.secondary?.main, md: "white" },
       fontSize: "15px",
     },
     "& .MuiContainer-root": {
@@ -31,7 +31,7 @@ export const TimesheetStyle = (theme, approval, data) => ({
   TimesheetTextFieldToTime: {
     "& .MuiOutlinedInput-root": {
       borderRadius: "10px",
-      background: { xs: theme.palette.secondary.main, md: "white" },
+      background: { xs: theme?.palette?.secondary?.main, md: "white" },
       fontSize: "15px",
       marginTop: "2px",
       paddingTop: "1px",
@@ -51,7 +51,7 @@ export const TimesheetStyle = (theme, approval, data) => ({
   TimesheetTextField1: {
     "& .MuiOutlinedInput-root": {
       borderRadius: "10px",
-      background: { xs: theme.palette.secondary.main, md: "#DEE1E5" },
+      background: { xs: theme?.palette?.secondary?.main, md: "#DEE1E5" },
       color: "#000000",
     },
     "&  .MuiInputLabel-root": {
@@ -69,7 +69,7 @@ export const TimesheetStyle = (theme, approval, data) => ({
   TimesheetManagerTextField: {
     "& .MuiOutlinedInput-root": {
       borderRadius: "10px",
-      background: { xs: theme.palette.secondary.main, md: "#DEE1E5" },
+      background: { xs: theme?.palette?.secondary?.main, md: "#DEE1E5" },
       color: "#000000",
       marginTop: { xs: "15px", sm: "15px", md: "0px", lg: "0px" },
     },
@@ -104,7 +104,7 @@ export const TimesheetStyle = (theme, approval, data) => ({
 
   TimesheetDateTextField: {
     "& .MuiOutlinedInput-root": {
-      background: { xs: theme.palette.secondary.main, md: "white" },
+      background: { xs: theme?.palette?.secondary?.main, md: "white" },
       fontSize: "15px",
       fontWeight: "bold",
       marginLeft: "-24px",

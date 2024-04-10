@@ -48,6 +48,7 @@ const LeavePage = () => {
     leaveMasterId: "",
     comments: "",
     manager: managerData.managerName || "",
+    noOfDays: 0,
     cc: [],
     file: " ",
   };
@@ -200,6 +201,14 @@ const LeavePage = () => {
     leaveRqstData.toSession,
     leaveRqstData.leaveMasterId,
   ]);
+
+  const { numberOfDays } = useSelector((state) => state?.nonPersist.leavesData);
+  useEffect(() => {
+    setLeaveReqstData((prevData) => ({
+      ...prevData,
+      noOfDays: numberOfDays,
+    }));
+  }, [numberOfDays]);
 
   const handleSaveLeaveApplyData = async (type) => {
     setSaveSubmitStatus((prev) => !prev);

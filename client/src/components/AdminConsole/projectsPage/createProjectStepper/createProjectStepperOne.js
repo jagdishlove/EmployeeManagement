@@ -50,9 +50,9 @@ const CreateProjectStepperOne = () => {
       >
         <Box
           sx={{
-            width: "80%",
+            width: "72%",
             backgroundColor: "#e6e6e6 !important",
-            padding: "10px !important",
+            padding: "10px 0px !important",
             borderRadius: "10px",
           }}
         >
@@ -72,7 +72,7 @@ const CreateProjectStepperOne = () => {
                         style={{
                           color: index === 0 ? "#ffffff" : "#000000",
                           backgroundColor: index === 0 ? "#008080" : "#e6e6e6",
-                          padding: "10px 40px",
+                          padding: index === 0 ? "10px 55px" : "10px 0px",
                           zIndex: "1",
                           borderRadius: "5px",
                         }}

@@ -2,7 +2,7 @@ import { Box, Grid, Typography } from "@mui/material";
 import moment from "moment";
 import React, { useRef } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
-import "react-big-calendar/lib/css/react-big-calendar.css";
+import "react-big-calendar/lib/css/react-big-calendar.css"; 
 import { useDispatch, useSelector } from "react-redux";
 import { getTimesheetEntryAction } from "../../../redux/actions/timeSheet/timeSheetAction";
 import VerticalBarGraph from "../VerticalBarGraph";

@@ -458,13 +458,13 @@ export const getAllDomainAction = (data) => {
   };
 };
 
-export const getAllocationSearch = (data) => {
+export const getAllocationSearch = (data, id) => {
   return async (dispatch) => {
     dispatch(getAllocationSearchRqst());
     try {
       const response = await makeRequest(
         "GET",
-        "/api/resources/searchResource",
+        `/api/resources/searchResource/${id}`,
         null,
         data
       );
@@ -597,8 +597,6 @@ export const saveCreateProjectAction = (payload, saveProjectStagePayload) => {
     }
   };
 };
-
-
 
 export const saveCreateCostIncurredAction = (payload) => {
   return async (dispatch) => {

@@ -45,7 +45,9 @@ const Dropdown = ({
           <MenuItem
             key={index}
             value={
+              option[valueKey] ||
               option.id ||
+              option.firstName ||
               option.value ||
               option.projectName ||
               option.sessionName ||
