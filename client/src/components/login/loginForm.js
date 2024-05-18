@@ -21,7 +21,7 @@ const LoginForm = () => {
   const theme = useTheme();
   const style = LoginStyle(theme);
   const errorData = useSelector(
-    (state) => state.nonPersist.errorMessages.error
+    (state) => state.persistData.errorMessages.error
   );
 
   useEffect(() => {
@@ -143,7 +143,7 @@ const LoginForm = () => {
           </Typography>
         </Box>
 
-        <Box sx={style.inputOutsideBox} >
+        <Box sx={style.inputOutsideBox}>
           <Box sx={style.inputOutsideBoxText}>
             <Typography
               sx={{
@@ -156,7 +156,7 @@ const LoginForm = () => {
                 },
               }}
               style={{
-                marginTop:'10%'
+                marginTop: "10%",
               }}
             >
               Welcome Back 👋{" "}
@@ -253,13 +253,13 @@ const LoginForm = () => {
               textAlign: "center",
               marginTop: "auto", // Pushes the text to the bottom
             }}
-            style={{marginTop:'15%'}}
+            style={{ marginTop: "15%" }}
           >
             {" "}
             &copy; 2023 ALL RIGHTS RESERVED
           </Typography>
         ) : (
-          <Typography sx={style.ARRMobile} > 
+          <Typography sx={style.ARRMobile}>
             {" "}
             &copy; 2023 ALL RIGHTS RESERVED
           </Typography>

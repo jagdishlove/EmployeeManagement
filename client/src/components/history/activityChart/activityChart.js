@@ -5,7 +5,7 @@ import { Cell, Pie, PieChart, Tooltip } from "recharts";
 
 const ActivityChart = () => {
   const historyData = useSelector(
-    (state) => state?.nonPersist?.historyData.historyData
+    (state) => state?.persistData?.historyData.historyData
   );
 
   const data = historyData?.legendList;
@@ -71,30 +71,29 @@ const ActivityChart = () => {
         }}
         variant="h6"
       >
-       <b> MONTHLY ACTIVITY CHART</b> 
+        <b> MONTHLY ACTIVITY CHART</b>
       </Typography>
 
       {filteredData?.length === 0 ? (
         <Typography>No data available</Typography>
       ) : (
         <PieChart width={400} height={250}>
-  <Pie
-    data={dataWithPercentage}
-    dataKey="hours"
-    outerRadius={100}
-    label={renderCustomizedLabel}
-    labelLine={false} // Remove label lines
-  >
-    {dataWithPercentage?.map((entry, index) => (
-      <Cell
-        key={`cell-${index}`}
-        fill={entry.color} // Use the defined color
-      />
-    ))}
-  </Pie>
-  <Tooltip formatter={formatTooltip} />
-</PieChart>
-
+          <Pie
+            data={dataWithPercentage}
+            dataKey="hours"
+            outerRadius={100}
+            label={renderCustomizedLabel}
+            labelLine={false} // Remove label lines
+          >
+            {dataWithPercentage?.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={entry.color} // Use the defined color
+              />
+            ))}
+          </Pie>
+          <Tooltip formatter={formatTooltip} />
+        </PieChart>
       )}
     </div>
   );

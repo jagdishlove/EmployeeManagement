@@ -9,7 +9,7 @@ const CustomizedYAxisTick = (props) => {
   return (
     <g transform={`translate(${x},${y})`}>
       <text x={0} y={0} dy={4} textAnchor="end" fill="#666">
-        {`${payload.value}`}
+        {`${payload.value}`} {/* Displaying values in percentage */}
       </text>
     </g>
   );
@@ -17,42 +17,52 @@ const CustomizedYAxisTick = (props) => {
 
 const BarChartComponent = () => {
   const { dashboardProjectdetails } = useSelector(
-    (state) => state?.nonPersist?.dashboardProjectdetails
+    (state) => state?.persistData?.dashboardProjectdetails
   );
+
 
   const data = [
     {
       name: "Actual Implementation Cost",
-      value: Math.min(dashboardProjectdetails.actualImplementationCost, 100),
+      value: dashboardProjectdetails.actualImplementationCostInPercentage,
+      originalValue:
+        dashboardProjectdetails?.actualImplementationCost?.toFixed(2), // Store original value
       fill: "#81C84B",
     },
     {
       name: "Projected Implementation Cost",
-      value: Math.min(dashboardProjectdetails.projectedImplementationCost, 100),
+      value:dashboardProjectdetails?.projectedImplementationCostInPercentage,
+      originalValue:
+        (dashboardProjectdetails?.projectedImplementationCost || 0).toFixed(2), // Store original value
       fill: "#20D7FE",
     },
     {
       name: "Budget",
-      value: Math.min(dashboardProjectdetails.budget, 100),
+      value: dashboardProjectdetails?.projectBudgetInPercentage,
+
+      originalValue: dashboardProjectdetails?.projectBudget || 0, // Store original value
       fill: "#33A1EC",
     },
     {
       name: "Time",
-      value: Math.min(dashboardProjectdetails.time, 100),
+      value: dashboardProjectdetails?.timeInPercentage,
+
+      originalValue: dashboardProjectdetails?.time || 0, // Store original value
       fill: "#FFA07A",
     },
-  ];
+];
+
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
+      const originalValue = data.value === 0 ? 0 : data.originalValue; // Handling the case where value is 0
       return (
         <div style={{ backgroundColor: "#fff", padding: "5px" }}>
-          <p>{`${data.name}: ${data.value}`}</p>
+          <p>{`${data.name}: ${originalValue}`}</p>
         </div>
       );
     }
-
     return null;
   };
 
@@ -62,9 +72,10 @@ const BarChartComponent = () => {
         <XAxis
           dataKey="none"
           label={{
-            value: "FDX",
+            value: dashboardProjectdetails?.projectName,
             angle: 360,
             position: "insideBottomMiddle",
+             style: { fontWeight: "bold", color:"black" }
           }}
         />
         <YAxis
@@ -74,6 +85,7 @@ const BarChartComponent = () => {
             angle: -90,
             position: "insideRight",
             offset: 55,
+            style: { fontWeight: "bold", color:"black" }
           }}
         />
         <Tooltip content={<CustomTooltip />} />

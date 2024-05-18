@@ -33,14 +33,14 @@ const AdminSubHeader = ({
     ? [{ id: "All", firstName: "All" }, ...getTeamMembersFromApi]
     : [];
   const projectList = useSelector(
-    (state) => state?.nonPersist?.projectListData?.data
+    (state) => state?.persistData?.projectListData?.data
   );
   const teamMemberList = useSelector(
-    (state) => state?.nonPersist?.teamMemberList?.teamMemberList
+    (state) => state?.persistData?.teamMemberList?.teamMemberList
   );
 
   const approvalData = useSelector(
-    (state) => state?.nonPersist?.timesheetData?.approvalTimesheetData
+    (state) => state?.persistData?.timesheetData?.approvalTimesheetData
   );
 
   useEffect(() => {

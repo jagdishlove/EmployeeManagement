@@ -25,11 +25,12 @@ const Dropdown = ({
       <Select
         labelId="demo-simple-select-label"
         value={
-          options?.length === 1
+          options?.length === 1 && !options.every((obj) => "jobType" in obj) 
+          && !options.every((obj) => "locationId" in obj) && !options.every((obj) => "designationId" in obj) 
             ? options[0].id ||
               options[0].value ||
               options[0].projectName ||
-              options[0].activityId
+              options[0].activityId 
             : value
         }
         name={name}
@@ -63,7 +64,7 @@ const Dropdown = ({
               option.employmentType ||
               option.managerName ||
               option.complexityName ||
-              option.projectType 
+              option.projectType
             }
             sx={{
               "&.Mui-selected": {

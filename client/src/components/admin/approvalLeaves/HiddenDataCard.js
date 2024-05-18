@@ -14,14 +14,27 @@ const HiddenDataCard = ({
   index,
   setComments,
   comments,
-  onCardSelect,
+
   superAdmin,
+  handleCheckboxChange,
+  selectedCards,
 }) => {
-  const masterData = useSelector((state) => state?.persistData?.masterData);
-  const [isChecked, setIsChecked] = useState(false);
-  const handleApproval = (status, leaveRequestId) => {
-    approveRejectLeavesHandler(leaveRequestId, status, comments);
+  const masterData = useSelector(
+    (state) => state?.persistData?.loginDetails?.masterData
+  );
+
+  const [loading, setLoading] = useState(false);
+
+
+  const handleApproval = async (status, leaveRequestId) => {
+    try {
+      setLoading(true);
+      await approveRejectLeavesHandler(leaveRequestId, status, comments);
+    } finally {
+      setLoading(false);
+    }
   };
+  
 
   const dispatch = useDispatch();
 
@@ -41,11 +54,6 @@ const HiddenDataCard = ({
 
   const handleDownload = (file) => {
     dispatch(downloadFileAction(file, cardData.fileName));
-  };
-
-  const handleCheckboxChange = () => {
-    setIsChecked(!isChecked);
-    onCardSelect(cardData.leaveRequestId, !isChecked); // Notify parent about card selection change
   };
 
   return (
@@ -96,11 +104,20 @@ const HiddenDataCard = ({
           padding: "0.50rem 0.50rem",
         }}
       >
-        <Checkbox
-          checked={isChecked}
-          onChange={handleCheckboxChange}
-          inputProps={{ "aria-label": "controlled" }}
-        />
+        {superAdmin ? (
+          <Checkbox
+            checked={
+              (selectedCards &&
+                cardData &&
+                selectedCards[cardData.leaveRequestId]) ||
+              false
+            }
+            onChange={() =>
+              handleCheckboxChange(cardData && cardData.leaveRequestId)
+            }
+            inputProps={{ "aria-label": "controlled" }}
+          />
+        ) : null}
       </div>
       <Grid
         item
@@ -221,37 +238,6 @@ const HiddenDataCard = ({
               : getLeaveType(cardData.leaveMasterId)}
           </Typography>
         </Grid>
-        {cardData.fileName && (
-          <Grid style={{ marginRight: "50%", marginLeft: "-80%" }}>
-            <IconButton
-              style={{ marginRight: "50%", marginLeft: "-100%" }}
-              onClick={() => handleDownload(cardData?.fileDownloadLink)}
-            >
-              <CloudDownload />
-            </IconButton>
-            <Grid
-              style={{
-                marginLeft: "-14%",
-                marginTop: "-3%",
-                position: "absolute",
-              }}
-            >
-              <Typography>{cardData.fileName}</Typography>
-            </Grid>
-          </Grid>
-        )}
-        {cardData.fileName && (
-          <Typography
-            style={{
-              position: "absolute",
-              marginLeft: "-34%",
-              fontSize: "10px",
-              marginTop: "-1%",
-            }}
-          >
-            please click on the icon to download the file
-          </Typography>
-        )}
       </Grid>
       <Grid
         item
@@ -318,8 +304,9 @@ const HiddenDataCard = ({
               },
             }}
             onClick={() => handleApproval("APPROVED", cardData.leaveRequestId)}
+            disabled={loading}
           >
-            APPROVE
+            {loading ? "Loading..." : "APPROVE"}
           </Button>
         </Grid>
         <Grid
@@ -358,26 +345,49 @@ const HiddenDataCard = ({
         </Grid>
       </Grid>
       <Grid
-        item
         container
         xs={12}
         sm={12}
         md={4}
         lg={4}
-        gap={2}
-        style={{ marginTop: 13, position: "relative" }}
+        display={"inline-flex"}
+        flexDirection={"row"}
+        style={{ lineHeight: "20px", marginLeft: "20px" }}
       >
+        <Grid item xs={12} style={{ marginTop: "-20px" }}>
+          {cardData.fileName && (
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <IconButton
+                style={{ marginRight: "8px" }}
+                onClick={() => handleDownload(cardData?.fileDownloadLink)}
+              >
+                <CloudDownload />
+              </IconButton>
+              <Typography>{cardData.fileName}</Typography>
+            </div>
+          )}
+        </Grid>
+
+        <Grid item xs={12}>
+          {cardData.fileName && (
+            <Typography
+              style={{
+                fontSize: "10px",
+                marginTop: "-10px",
+              }}
+            >
+              please click on the icon to download the file
+            </Typography>
+          )}
+        </Grid>
+
         {(approval || superAdmin) && (
           <>
             {
-              <Grid style={{ width: "100%" }}>
+              <Grid item xs={12}>
                 <p
                   style={{
                     color: "red",
-                    position: "absolute",
-                    width: "100%",
-                    fontSize: "14.5px",
-                    lineHeight: "20px",
                   }}
                 >
                   {error?.[index]}

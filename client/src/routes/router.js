@@ -25,10 +25,15 @@ import AdminTimeSheet from "../components/AdminConsole/timesheetPage/adminTimeSh
 import AdminLeaves from "../components/AdminConsole/AdminLeaves/adminLeaves";
 import ProjectProgress from "../pages/projectProgress/projectProgress";
 import WorkSpace from "../pages/workspace/workspace";
+import MySpaceTab from "../components/admin/mySpaceTab";
+import ReporteesTab from "../components/admin/reportees/reporteesTab";
+import TimesheetTab from "../components/admin/approvalTimesheets/timesheetTab";
+import ApprovalLeavesPage from "../components/admin/approvalLeaves/approvalLeavesPage";
+import ApprovalTab from "../components/admin/approvalTab";
 
 const Router = () => {
   const isAuthenticated = useSelector(
-    (state) => state.persistData.data.jwtAccessToken
+    (state) => state.persistData?.loginDetails?.data.jwtAccessToken
   );
 
   return (
@@ -49,7 +54,7 @@ const Router = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/create-new-password" element={<CreateNewPassword />} />
       <Route
-        path="/workspace"
+        path="/workspace/*"
         element={
           isAuthenticated ? (
             <ConditionalSidebar>
@@ -62,7 +67,74 @@ const Router = () => {
             </>
           )
         }
-      />
+      >
+        <Route
+          index
+          element={
+            isAuthenticated ? (
+              <MySpaceTab />
+            ) : (
+              <>
+                <Navigate to="/" />
+                <Login />
+              </>
+            )
+          }
+        />
+        <Route
+          path="reportees"
+          element={
+            isAuthenticated ? (
+              <ReporteesTab />
+            ) : (
+              <>
+                <Navigate to="/" />
+                <Login />
+              </>
+            )
+          }
+        />
+        <Route
+          path="Approval/*"
+          element={
+            isAuthenticated ? (
+              <ApprovalTab />
+            ) : (
+              <>
+                <Navigate to="/" />
+                <Login />
+              </>
+            )
+          }
+        >
+          <Route
+            index
+            element={
+              isAuthenticated ? (
+                <TimesheetTab />
+              ) : (
+                <>
+                  <Navigate to="/" />
+                  <Login />
+                </>
+              )
+            }
+          />
+          <Route
+            path="leaves"
+            element={
+              isAuthenticated ? (
+                <ApprovalLeavesPage />
+              ) : (
+                <>
+                  <Navigate to="/" />
+                  <Login />
+                </>
+              )
+            }
+          />
+        </Route>
+      </Route>
       <Route
         path="/projectProgress"
         exact

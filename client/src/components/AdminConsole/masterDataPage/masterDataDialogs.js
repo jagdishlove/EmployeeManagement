@@ -510,34 +510,38 @@ export default function MasterDataDialogs({
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={handleCloseDialog}
-            sx={{
-              color: "#000",
-              width: "100px",
-              marginTop: "-10px",
-              border: "1px solid #AEAEAE",
-              textTransform: "capitalize",
-            }}
-          >
-            cancle
-          </Button>
-          <Button
-            onClick={() => handleSubmit(chnageDataType, chnageDataId, "ACTIVE")}
-            sx={{
-              backgroundColor: "#008080",
-              color: "#ffff",
-              marginRight: "30px",
-              width: "100px",
-              marginTop: "-10px",
-              "&:hover": {
-                backgroundColor: "#008080",
-              },
-              textTransform: "capitalize",
-            }}
-          >
-            Enable
-          </Button>
+        <Grid container justifyContent="flex-end" marginTop="-10px">
+  <Grid item>
+    <Button
+      onClick={handleCloseDialog}
+      sx={{
+        color: "#000",
+        width: "100px",
+        border: "1px solid #AEAEAE",
+        textTransform: "capitalize",
+      }}
+    >
+      Cancel
+    </Button>
+  </Grid>
+  <Grid item marginLeft="10px">
+    <Button
+      onClick={() => handleSubmit(chnageDataType, chnageDataId, "ACTIVE")}
+      sx={{
+        backgroundColor: "#008080",
+        color: "#ffff",
+        width: "100px",
+        "&:hover": {
+          backgroundColor: "#008080",
+        },
+        textTransform: "capitalize",
+      }}
+    >
+      Enable
+    </Button>
+  </Grid>
+</Grid>
+
         </DialogActions>
       </Dialog>
       <Dialog open={bandDialog} onClose={handleCloseDialog}>
@@ -604,6 +608,7 @@ export default function MasterDataDialogs({
                 color: "#000",
                 width: "100px",
                 marginTop: "-10px",
+
                 border: "1px solid #AEAEAE",
                 textTransform: "capitalize",
               }}
@@ -768,7 +773,7 @@ export default function MasterDataDialogs({
         <DialogContent
           sx={{ display: "flex", flexDirection: "column", gap: 1 }}
         >
-          <label htmlFor="upload-photo">
+          <label htmlFor="upload-photo" style={{ width: "10%" }}>
             <Avatar
               sx={{
                 cursor: "pointer",
@@ -986,7 +991,7 @@ export default function MasterDataDialogs({
         >
           <Typography>Client Name</Typography>
           <TextField
-            placeholder="Office Address"
+            placeholder="Client Name"
             name="addressName"
             value={clientLocationData.addressName}
             onChange={(e) => handleOnsiteLocation("addressName", e)}

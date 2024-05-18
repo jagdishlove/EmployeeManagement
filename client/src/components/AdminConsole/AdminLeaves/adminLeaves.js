@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -33,12 +34,13 @@ const AdminLeaves = () => {
   const [resultFilterData, setResultFilterData] = useState([]);
   const [openPopup, setOpenPopup] = useState(false);
   const [openApproveDialog, setOpenApproveDialog] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [errorValidation, setErrorValidation] = useState({});
   const [comments, setComments] = useState({});
   const [error, setError] = useState({});
   const [selectedCards, setSelectedCards] = useState([]);
-  const [isChecked, setIsChecked] = useState(false);
+  // const [isChecked, setIsChecked] = useState(false);
   const [selectAll, setSelectall] = useState(false);
   const getPayload = {
     size: 5 * 2,
@@ -55,7 +57,7 @@ const AdminLeaves = () => {
   }, [selectedDate, leaveStatus, approver, dispatch, selectedSearchOption]);
 
   const adminLeavesData = useSelector(
-    (state) => state?.nonPersist?.adminLeaves?.allLeavesForAdmin
+    (state) => state?.persistData?.adminLeaves?.allLeavesForAdmin
   );
 
   useEffect(() => {
@@ -66,9 +68,10 @@ const AdminLeaves = () => {
   const params = {
     status: leaveStatus,
   };
+  localStorage.setItem("selectedTabIndex", 0);
 
   const approverList = useSelector(
-    (state) => state?.nonPersist?.adminLeaves?.leavesApproversData
+    (state) => state?.persistData?.adminLeaves?.leavesApproversData
   );
 
   useEffect(() => {
@@ -102,36 +105,44 @@ const AdminLeaves = () => {
     const newErrors = validationForm(approverComment, status);
 
     if (Object.keys(newErrors).length === 0) {
-      const payload = [
-        {
-          leaveRequestId: id,
-          approverComment: approverComment || "APPROVED",
-          status,
-        },
-      ];
-      await dispatch(
-        adminApproveRejectLeavesAction(
-          payload,
-          getPayload,
-          selectedSearchOption
-        )
-      );
+      try {
+        setLoading(true);
+
+        const payload = [
+          {
+            leaveRequestId: id,
+            approverComment: approverComment || "APPROVED",
+            status,
+          },
+        ];
+        await dispatch(
+          adminApproveRejectLeavesAction(
+            payload,
+            getPayload,
+            selectedSearchOption,
+            params
+          )
+        );
+        
+      } finally {
+        setLoading(false);
+      }
     } else {
-      setError({ ...newErrors, [id]: newErrors });
+      setError({ [id]: newErrors });
     }
   };
 
   const handleSelectAll = () => {
     const entriesToApprove = adminLeavesData?.content || [];
     const updatedSelectedCards = {};
+    const allSelected = !selectAll;
 
     for (const entry of entriesToApprove) {
-      updatedSelectedCards[entry.leaveRequestId] = !isChecked;
+      updatedSelectedCards[entry.leaveRequestId] = allSelected;
     }
 
     setSelectedCards(updatedSelectedCards);
-    setIsChecked((prevIsChecked) => !prevIsChecked);
-    setSelectall(!selectAll);
+    setSelectall(allSelected);
   };
 
   const handleClosePopup = () => {
@@ -178,13 +189,23 @@ const AdminLeaves = () => {
 
     if (Object.keys(errors).length === 0) {
       try {
+        setLoading(true);
+
         // Dispatch the bulk approval action with the updated comments
-        dispatch(adminApproveRejectLeavesAction(approvedEntries));
+        dispatch(
+          adminApproveRejectLeavesAction(
+            approvedEntries,
+            getPayload,
+            selectedSearchOption,
+            params
+          )
+        );
         setErrorValidation({});
       } catch (error) {
         console.error("Error during bulk approval:", error);
       } finally {
         setOpenPopup(false);
+        setLoading(false);
       }
     } else {
       setErrorValidation(errors);
@@ -192,8 +213,9 @@ const AdminLeaves = () => {
   };
 
   const approveSelectedLeavesHandler = async () => {
-    const entriesToApprove = adminLeavesData?.content || [];
+    setLoading(true);
 
+    const entriesToApprove = adminLeavesData?.content || [];
     const errors = {};
     const approvedEntries = [];
 
@@ -222,14 +244,22 @@ const AdminLeaves = () => {
     if (Object.keys(errors).length === 0) {
       try {
         // Dispatch the approval action for selected leaves
-        dispatch(adminApproveRejectLeavesAction(approvedEntries));
+        dispatch(
+          adminApproveRejectLeavesAction(
+            approvedEntries,
+            getPayload,
+            selectedSearchOption,
+            params
+          )
+        );
         setErrorValidation({});
       } catch (error) {
         console.error("Error during selected leaves approval:", error);
       } finally {
         setOpenPopup(false);
         setOpenApproveDialog(false);
-        setSelectall(!selectAll);
+        setLoading(false);
+        setSelectall(false);
       }
     } else {
       setErrorValidation(errors);
@@ -257,6 +287,14 @@ const AdminLeaves = () => {
       return updatedSelectedCards;
     });
   };
+
+  const setApproverHandler = (newApprover) => {
+    setApprover(newApprover);
+    setSelectedCards({});
+    setSelectall(false);
+  };
+
+  localStorage.removeItem("selectedProject");
   return (
     <div>
       <LeavesHeader
@@ -265,8 +303,9 @@ const AdminLeaves = () => {
         setLeaveStatus={setLeaveStatus}
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
-        setApprover={setApprover}
+        setApprover={setApproverHandler}
         approver={approver}
+        setSelectedCards={setSelectedCards}
       />
       {Object.values(selectedCards).some((isSelected) => isSelected) && (
         <Box display="flex" justifyContent="flex-end" mt={2} mr={2}>
@@ -286,7 +325,6 @@ const AdminLeaves = () => {
           </Button>
         </Box>
       )}
-
       <Dialog
         open={openApproveDialog}
         onClose={() => setOpenApproveDialog(false)}
@@ -315,7 +353,6 @@ const AdminLeaves = () => {
           <Button onClick={approveSelectedLeavesHandler}>Approve</Button>
         </DialogActions>
       </Dialog>
-
       {leaveStatus === "SUBMITTED" &&
       approver !== "All" &&
       resultFilterData?.content?.length > 0 ? (
@@ -332,7 +369,6 @@ const AdminLeaves = () => {
       ) : (
         <></>
       )}
-
       {resultFilterData?.content?.length === 0 ? (
         <Box mt={5} sx={{ display: "flex", justifyContent: "center" }}>
           <Typography>No Leave Applications Available</Typography>
@@ -431,6 +467,21 @@ const AdminLeaves = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      {loading && (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          position="fixed"
+          top="0"
+          left="0"
+          width="100%"
+          height="100%"
+          bgcolor="rgba(255, 255, 255, 0.7)"
+        >
+          <CircularProgress />
+        </Box>
+      )}
     </div>
   );
 };

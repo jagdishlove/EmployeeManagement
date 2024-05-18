@@ -29,7 +29,7 @@ export default function ProjectHeader({
   const dispatch = useDispatch();
 
   const projectStatus = useSelector(
-    (state) => state.persistData.masterData?.projectStatus
+    (state) => state.persistData?.loginDetails?.masterData?.projectStatus
   );
 
   // Handle change for  dropdown
@@ -43,7 +43,7 @@ export default function ProjectHeader({
   };
 
   const clientProjectSearchData = useSelector(
-    (state) => state?.nonPersist?.projectDetails?.clientProjectNameSearchData
+    (state) => state?.persistData?.projectDetails?.clientProjectNameSearchData
   );
 
   const handleInputChangeClientSearch = (e) => {

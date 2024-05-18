@@ -22,7 +22,7 @@ import ApprovalLeaveHeader from "./approvalLeaveHeader";
 const ApprovalLeavesPage = () => {
   const dispatch = useDispatch();
   const { getLeaveData } = useSelector(
-    (state) => state.nonPersist.approvalLeavesData
+    (state) => state.persistData.approvalLeavesData
   );
 
   const [isOpenCalender, setIsOpenCalender] = useState(false);
@@ -33,7 +33,6 @@ const ApprovalLeavesPage = () => {
   const [pageCounter, setPageCounter] = useState(2);
 
   const [loading, setLoading] = useState(false);
-
 
   const [leaveRequestId, setLeaveRequestId] = useState();
 
@@ -92,9 +91,9 @@ const ApprovalLeavesPage = () => {
     setTeamMemberData(e.target.value);
   };
 
-  const validationForm = (approverComment,status) => {
+  const validationForm = (approverComment, status) => {
     let newErrors = "";
-    if (!approverComment && status === 'REJECTED') {
+    if (!approverComment && status === "REJECTED") {
       newErrors = "Please add details in the comments section.";
     }
     return newErrors;
@@ -115,29 +114,30 @@ const ApprovalLeavesPage = () => {
 
   const approveRejectLeavesHandler = async (id, status, approverComment) => {
     const newErrors = validationForm(approverComment, status);
-  
-    if (approverComment == '') {
-      approverComment = 'APPROVED';
+
+    if (approverComment == "") {
+      approverComment = "APPROVED";
     }
-  
+
     const getDataPayload = {
-      empId: TeamMemberData === 'All' ? '' : TeamMemberData || '',
-      fromDate: dateData === 'CALENDER' ? selectedDate.format('YYYY-MM-DD') : '',
-      toDate: dateData === 'CALENDER' ? dayjs().format('YYYY-MM-DD') : '',
+      empId: TeamMemberData === "All" ? "" : TeamMemberData || "",
+      fromDate:
+        dateData === "CALENDER" ? selectedDate.format("YYYY-MM-DD") : "",
+      toDate: dateData === "CALENDER" ? dayjs().format("YYYY-MM-DD") : "",
       dateBand: dateData,
       size: 5 * 2,
     };
-  
+
     if (Object.keys(newErrors).length === 0) {
       setLoading(true);
-  
+
       try {
         const payload = {
           leaveRequestId: id,
           approverComment,
           status,
         };
-  
+
         setLeaveRequestId(id);
         await dispatch(approveRejectLeavesAction(payload, getDataPayload));
         setError({});
@@ -148,7 +148,6 @@ const ApprovalLeavesPage = () => {
       setError({ ...newErrors, [id]: newErrors });
     }
   };
-  
 
   const shouldDisableDate = (date) => {
     return dayjs(date).isAfter(dayjs(), "day"); // Disable future dates
@@ -205,7 +204,7 @@ const ApprovalLeavesPage = () => {
         handleCalendarClick={handleCalendarClick} // Pass the callback function
       />
 
-      {(getLeaveData?.content?.length) === 0 ? (
+      {getLeaveData?.content?.length === 0 ? (
         <Box mt={5} sx={{ display: "flex", justifyContent: "center" }}>
           <Typography> No leave requests found.</Typography>
         </Box>
@@ -247,7 +246,7 @@ const ApprovalLeavesPage = () => {
           height="100%"
           bgcolor="rgba(255, 255, 255, 0.7)"
         >
-          <CircularProgress/>
+          <CircularProgress />
         </Box>
       )}
     </Box>

@@ -13,12 +13,15 @@ import {
 
 import { useSelector } from "react-redux";
 
-function WorkspaceLineChart({ handleClickOpen }) {
+function WorkspaceLineChart({ handleClickOpen, open }) {
   const workSpaceData = useSelector(
-    (state) => state?.nonPersist?.workSpace?.workSpaceData?.durations
+    (state) => state?.persistData?.workSpace?.workSpaceData?.durations
   );
 
-  // Function to calculate tick values based on selected option
+  // Custom tooltip formatter function to display only two decimal places
+  const formatTooltip = (value) => {
+    return parseFloat(value).toFixed(2);
+  };
 
   return (
     <>
@@ -29,12 +32,18 @@ function WorkspaceLineChart({ handleClickOpen }) {
           </Typography>
         </Grid>
         <Grid item xs={1}>
-          <OpenInFullOutlinedIcon
-            sx={{
-              cursor: "pointer",
-            }}
-            onClick={handleClickOpen}
-          />
+          {!open ? (
+            <>
+              <OpenInFullOutlinedIcon
+                sx={{
+                  cursor: "pointer",
+                }}
+                onClick={handleClickOpen}
+              />
+            </>
+          ) : (
+            <> </>
+          )}
         </Grid>
       </Grid>
       <Grid container spacing={3} sx={{ paddingLeft: "20px" }}>
@@ -81,24 +90,33 @@ function WorkspaceLineChart({ handleClickOpen }) {
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="duration" />
-          <YAxis />
-          <Tooltip />
+          <YAxis
+            label={{
+              value: "Time",
+              angle: -90,
+              position: "insideRight",
+              offset: 40,
+              fontWeight: "bold",
+            }}
+          />
+          <Tooltip formatter={formatTooltip} />
           <Line
             type="monotone"
             dataKey="projectedHours"
             stroke="#50C01B"
             activeDot={{ r: 8 }}
-            name="projectedHourst"
+            name="Projected Hours"
           />
           <Line
             type="monotone"
             dataKey="actualHours"
             stroke="#FF66FF"
             activeDot={{ r: 8 }}
-            name="actualHours"
+            name="Actual Hours"
           />
         </LineChart>
       </ResponsiveContainer>
+      <div style={{ textAlign: "center", fontWeight: "bold" }}>Duration</div>
     </>
   );
 }

@@ -16,6 +16,7 @@ const LeavesHeader = ({
   setApprover,
   leaveStatus,
   setLeaveStatus,
+  setSelectedCards,
 }) => {
   const theme = useTheme();
   const style = adminHeaderStyle(theme);
@@ -30,23 +31,25 @@ const LeavesHeader = ({
   };
 
   const userData = useSelector(
-    (state) => state?.nonPersist?.adminTimeSheet?.searchUserData?.result
+    (state) => state?.persistData?.adminTimeSheet?.searchUserData?.result
   );
 
   const handleDateChnage = (e) => {
     setSelectedDate(e.target.value);
+    setSelectedCards([]);
   };
 
   const handleApproveChange = (e) => {
     setApprover(e.target.value);
+    setSelectedCards([]);
   };
 
   const approverList = useSelector(
-    (state) => state?.nonPersist?.adminLeaves?.leavesApproversData
+    (state) => state?.persistData?.adminLeaves?.leavesApproversData
   );
 
   const adminLeavesData = useSelector(
-    (state) => state?.nonPersist?.adminLeaves?.allLeavesForAdmin
+    (state) => state?.persistData?.adminLeaves?.allLeavesForAdmin
   );
 
   const handleStatusChnage = (e) => {
@@ -55,7 +58,7 @@ const LeavesHeader = ({
   };
 
   const status = useSelector(
-    (state) => state.persistData.masterData?.approverStatus
+    (state) => state.persistData?.loginDetails?.masterData?.approverStatus
   );
 
   return (

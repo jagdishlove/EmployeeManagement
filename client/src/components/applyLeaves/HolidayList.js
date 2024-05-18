@@ -1,4 +1,4 @@
-import CloseIcon from '@mui/icons-material/Close';
+import CloseIcon from "@mui/icons-material/Close";
 import InfoIcon from "@mui/icons-material/Info";
 import { Box, IconButton, Modal, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
@@ -20,7 +20,7 @@ const HolidayList = () => {
   const [isModalOpen, setModalOpen] = useState(false);
 
   const { fixedHolidays, optionalHolidays } = useSelector(
-    (state) => state?.nonPersist?.leavesData?.holidayListData
+    (state) => state?.persistData?.leavesData?.holidayListData
   );
 
   useEffect(() => {
@@ -36,7 +36,7 @@ const HolidayList = () => {
   };
 
   return (
-    <div className="holidayListStyle" style={{ height: "100%", width:"100%" }}>
+    <div className="holidayListStyle" style={{ height: "100%", width: "100%" }}>
       <Box variant="h6" className="holidayListHeader">
         <b style={{ textDecoration: "underline" }}> HOLIDAY LIST</b>
         <h6 className="holidayListTitle">Fixed</h6>
@@ -115,12 +115,17 @@ const HolidayList = () => {
             </Box>
 
             <Box sx={{ paddingTop: "30px", backgroundColor: "#ffffff" }}>
-            <IconButton
-              style={{ position: 'absolute', top: '10px', right: '10px', color: '#008080' }}
-              onClick={handleCloseModal}
-            >
-              <CloseIcon />
-            </IconButton>
+              <IconButton
+                style={{
+                  position: "absolute",
+                  top: "10px",
+                  right: "10px",
+                  color: "#008080",
+                }}
+                onClick={handleCloseModal}
+              >
+                <CloseIcon />
+              </IconButton>
               <Typography sx={{ lineHeight: "20px", marginBottom: "10px" }}>
                 <img src={prakat_favicon_list} /> 12 days of public holidays are
                 offered to all employees
@@ -160,9 +165,9 @@ const HolidayList = () => {
                 weeks of maternity leave 6 weeks before the child&apos;s birth
               </Typography>
               <Typography sx={{ lineHeight: "20px", marginBottom: "10px" }}>
-                <img src={prakat_favicon_list} /> 10 Paternity leaves are offered
-                to all male permanent employees. Eligibility of the leaves is
-                only one month from the date of birth of the child
+                <img src={prakat_favicon_list} /> 10 Paternity leaves are
+                offered to all male permanent employees. Eligibility of the
+                leaves is only one month from the date of birth of the child
               </Typography>
               <Typography sx={{ lineHeight: "20px", marginBottom: "10px" }}>
                 <img src={prakat_favicon_list} /> Any employee who adopts a
@@ -182,11 +187,17 @@ const HolidayList = () => {
               </Typography>
             </Box>
 
-            <hr style={{ borderTop: "3px solid #001F1F", margin: "16px 0" , color:'#D9D9D9'}} />
+            <hr
+              style={{
+                borderTop: "3px solid #001F1F",
+                margin: "16px 0",
+                color: "#D9D9D9",
+              }}
+            />
 
             <Typography
               variant="h6"
-              style={{marginBottom:'-2%'}}
+              style={{ marginBottom: "-2%" }}
               sx={{ color: "#008080", textAlign: "center" }}
             >
               For more details on any of the leave policies or any queries,

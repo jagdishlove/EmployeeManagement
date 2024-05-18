@@ -43,12 +43,16 @@ const ProjectList = ({ projectsData }) => {
   const currentDate = dayjs();
 
   // Calculate the total duration in days
-  const totalDuration = endDate.diff(startDate, "day");
+  let totalDuration;
 
-  // Calculate the remaining duration in days
-  const remainingDuration = actualEndDate.isValid()
-    ? actualEndDate.diff(currentDate, "day")
-    : endDate.diff(currentDate, "day");
+  if (actualEndDateString) {
+    // If actualEndDate is available, calculate duration from startDate to actualEndDate
+    totalDuration = actualEndDate.diff(startDate, "day");
+  } else {
+    // Otherwise, calculate duration from startDate to endDate
+    totalDuration = endDate.diff(startDate, "day");
+  }
+
   // Calculate the progress percentage
   let progressPercentage;
 
@@ -59,18 +63,67 @@ const ProjectList = ({ projectsData }) => {
   ) {
     // If both start and end dates are valid and they are the same day
     progressPercentage = 100;
+  } else if (actualEndDate.isValid() && actualEndDate.isSame(endDate, "day")) {
+    // If actual end date is valid and it's the same as the end date
+    if (actualEndDate.isAfter(currentDate)) {
+      // If the actual end date is in the future
+      progressPercentage = Math.max(
+        0,
+        Math.min(
+          100,
+          (((currentDate.diff(startDate, "day"))+1) / (totalDuration+1)) * 100
+        )
+      );
+    } else {
+      progressPercentage = 100;
+    }
   } else if (startDate.isValid() && !endDate.isValid()) {
     // If start date is valid but end date is not
     progressPercentage = 0;
   } else if (actualEndDate.isValid() && actualEndDate.isBefore(endDate)) {
-    // If actual end date is valid and it's before the current date
-    progressPercentage = 100;
-  } else {
-    // Otherwise, calculate the progress based on the duration
+    // If actual end date is valid and it's before the end date
     progressPercentage = Math.max(
       0,
-      Math.min(100, ((totalDuration - remainingDuration) / totalDuration) * 100)
+      Math.min(100, (((currentDate.diff(startDate, "day"))+1) /( totalDuration+1)) * 100)
     );
+  } else if (actualEndDate.isValid() && actualEndDate.isAfter(endDate)) {
+    progressPercentage = Math.max(
+      0,
+      Math.min(100, (((currentDate.diff(startDate, "day") )+1)/ (totalDuration+1)) * 100)
+    );
+  } else if (
+    !actualEndDate.isValid() &&
+    startDate.isValid() &&
+    endDate.isValid()
+  ) {
+    // If actual end date is not provided but start and end dates are present
+    const elapsedDuration = currentDate.diff(startDate, "day");
+    progressPercentage = Math.max(
+      0,
+      Math.min(100, ((elapsedDuration +1)/ (totalDuration+1)) * 100)
+    );
+  } else {
+    // Otherwise, calculate the progress based on the remaining duration
+    const remainingDuration = endDate.diff(currentDate, "day");
+    progressPercentage = Math.max(
+      0,
+      Math.min(100, (((totalDuration - remainingDuration) +1)/ (totalDuration+1)) * 100)
+    );
+  }
+
+  if (actualEndDate.isValid() && startDate.isValid() && !endDate.isValid()) {
+    // If  end date is not provided but start and actual end dates are present
+    const elapsedDuration = currentDate.diff(startDate, "day");
+    progressPercentage = Math.max(
+      0,
+      Math.min(100, (elapsedDuration / totalDuration) * 100)
+    );
+  }
+
+  if (projectsData?.status === "On Time") {
+    progressPercentage = 100;
+  } else if (projectsData?.status === "With Delay") {
+    progressPercentage = 100;
   }
 
   // Format the progress percentage
@@ -99,7 +152,7 @@ const ProjectList = ({ projectsData }) => {
       <CardHeader
         avatar={
           projectsData?.fileStorage?.data ? (
-            <Avatar
+            <img
               src={`data:image/png;base64,${projectsData.fileStorage.data}`}
               alt={projectsData.clientName}
               style={{
@@ -238,7 +291,7 @@ const ProjectList = ({ projectsData }) => {
                 fontWeight: "bold",
                 textAlign: "end",
               }}
-              onClick={handleViewInDetail}
+              onClick={()=>handleViewInDetail()}
             >
               View in detail
             </Button>

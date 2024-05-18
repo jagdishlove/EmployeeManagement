@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,7 +18,7 @@ const TimesheetTab = () => {
   const [counter, setCounter] = useState(2);
 
   const approvalData = useSelector(
-    (state) => state?.nonPersist?.timesheetData?.approvalTimesheetData
+    (state) => state?.persistData?.timesheetData?.approvalTimesheetData
   );
   const [errorValidation, setErrorValidation] = useState({});
   const [projects, setProjects] = useState("All"); // Set default value to "All"
@@ -28,7 +27,9 @@ const TimesheetTab = () => {
   const [loading, setLoading] = useState(false);
   const [setPayloadData] = useState(null);
   const newSize = 10 * counter;
-  const masterData = useSelector((state) => state.persistData.masterData);
+  const masterData = useSelector(
+    (state) => state.persistData?.loginDetails?.masterData
+  );
 
   const newPayload = {
     projectId: projects === "All" ? "" : projects || "",
@@ -66,7 +67,7 @@ const TimesheetTab = () => {
       try {
         const payload = {
           timesheetEntryId: data.timesheetEntryId,
-          comment: comment || 'APPROVED',
+          comment: comment || "APPROVED",
           rating: rating,
           approvalStatus: "APPROVED",
         };
@@ -101,7 +102,7 @@ const TimesheetTab = () => {
 
       const payload = {
         timesheetEntryId: data.timesheetEntryId,
-        comment: comment || '',
+        comment: comment || "",
         rating: rating,
         approvalStatus: "REJECTED",
       };

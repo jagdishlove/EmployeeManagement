@@ -632,7 +632,7 @@ export const masterDataAction = () => {
   };
 };
 
-export const CreateSkillData = (data) => {
+export const CreateSkillData = (data, handleCloseDialog) => {
   return async (dispatch) => {
     dispatch(addNewSkillRequest());
     try {
@@ -651,6 +651,7 @@ export const CreateSkillData = (data) => {
         });
       }
       dispatch(addNewSkillSuccess(response));
+      handleCloseDialog();
     } catch (err) {
       dispatch(addNewSkillFail(err.message));
       toast.error(err.response.data.errorMessage, {
@@ -660,7 +661,7 @@ export const CreateSkillData = (data) => {
   };
 };
 
-export const UpdateSkillData = (data) => {
+export const UpdateSkillData = (data, handleCloseDialog) => {
   return async (dispatch) => {
     dispatch(addNewSkillRequest());
 
@@ -670,6 +671,7 @@ export const UpdateSkillData = (data) => {
         position: toast.POSITION.BOTTOM_CENTER,
       });
       dispatch(addNewSkillSuccess(respone));
+      handleCloseDialog();
     } catch (err) {
       dispatch(addNewSkillFail(err.message));
       toast.error(err.response.data.errorMessage, {
@@ -803,7 +805,7 @@ export const DeleteBandData = (data) => {
   };
 };
 
-export const CreateDesignationData = (data) => {
+export const CreateDesignationData = (data, handleCloseDialog) => {
   return async (dispatch) => {
     dispatch(addNewDesignationRequest());
     try {
@@ -813,17 +815,19 @@ export const CreateDesignationData = (data) => {
         data
       );
       if (data.status === "INACTIVE") {
+        handleCloseDialog();
         toast.success("Designation has been Disabled successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       } else if (data.status === "ACTIVE") {
+        handleCloseDialog();
         toast.success("Designation has been Enabled successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
         dispatch(addNewDesignationSuccess(responsec));
       } else {
         dispatch(addNewDesignationFail());
-
+        handleCloseDialog();
         toast.success("Designation added successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
@@ -836,7 +840,7 @@ export const CreateDesignationData = (data) => {
   };
 };
 
-export const UpdateDesignationData = (data) => {
+export const UpdateDesignationData = (data, handleCloseDialog) => {
   return async (dispatch) => {
     dispatch(addNewDesignationRequest());
 
@@ -846,6 +850,7 @@ export const UpdateDesignationData = (data) => {
         position: toast.POSITION.BOTTOM_CENTER,
       });
       dispatch(addNewDesignationSuccess(respone));
+      handleCloseDialog();
     } catch (err) {
       dispatch(addNewDesignationFail());
 
@@ -886,7 +891,7 @@ export const DeleteDesignationData = (data) => {
   };
 };
 
-export const CreateOfficeLocationnData = (data) => {
+export const CreateOfficeLocationnData = (data, handleCloseDialog) => {
   return async (dispatch) => {
     dispatch(addNewOfficeLocationRequest());
     try {
@@ -909,6 +914,7 @@ export const CreateOfficeLocationnData = (data) => {
         });
       }
       dispatch(addNewOfficeLocationSuccess(respone));
+      handleCloseDialog();
     } catch (err) {
       dispatch(addNewOfficeLocationFail());
 
@@ -919,7 +925,7 @@ export const CreateOfficeLocationnData = (data) => {
   };
 };
 
-export const UpdateOfficeLocationnData = (data) => {
+export const UpdateOfficeLocationnData = (data, handleCloseDialog) => {
   return async (dispatch) => {
     dispatch(addNewOfficeLocationRequest());
 
@@ -933,6 +939,7 @@ export const UpdateOfficeLocationnData = (data) => {
         position: toast.POSITION.BOTTOM_CENTER,
       });
       dispatch(addNewOfficeLocationSuccess(respone));
+      handleCloseDialog();
     } catch (err) {
       dispatch(addNewOfficeLocationFail());
 
@@ -976,7 +983,7 @@ export const GetOfficeLocation = (data) => {
   };
 };
 
-export const CreateManageHoliday = (data) => {
+export const CreateManageHoliday = (data, handleCloseDialog) => {
   return async (dispatch) => {
     dispatch(addNewHolidayRequest());
     try {
@@ -995,17 +1002,18 @@ export const CreateManageHoliday = (data) => {
         });
       }
       dispatch(addNewHolidaySuccess(respone));
+      handleCloseDialog();
     } catch (err) {
       dispatch(addNewHolidayFail());
 
-      toast.error(err.response.data.errorMessage, {
+      toast.error(err?.response?.data?.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
     }
   };
 };
 
-export const UpdateManageHoliday = (data) => {
+export const UpdateManageHoliday = (data, handleCloseDialog) => {
   return async (dispatch) => {
     dispatch(addNewHolidayRequest());
 
@@ -1015,10 +1023,11 @@ export const UpdateManageHoliday = (data) => {
         position: toast.POSITION.BOTTOM_CENTER,
       });
       dispatch(addNewHolidaySuccess(respone));
+      handleCloseDialog();
     } catch (err) {
       dispatch(addNewHolidayFail());
 
-      toast.error(err.response.data.errorMessage, {
+      toast.error(err.response.data?.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
     }
@@ -1040,35 +1049,39 @@ export const GetAllHolidays = () => {
   };
 };
 
-export const GetHoliday = (data) => {
+export const GetHoliday = (data, handleCloseDialog) => {
   return async (dispatch) => {
     dispatch(getHolidayByIdRequest());
     try {
       const response = await makeRequest("GET", `api/holiday/get/${data}`);
       dispatch(getHolidayByIdSuccess(response));
+      handleCloseDialog();
     } catch (err) {
       dispatch(getHolidayByIdFail());
-      toast.error(err.response.data.errorMessage, {
+      toast.error(err?.response?.data?.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
     }
   };
 };
 
-export const CreateDomine = (data) => {
+export const CreateDomine = (data, handleCloseDialog) => {
   return async (dispatch) => {
     dispatch(addNewDomineRequest());
     try {
       const respone = await makeRequest("POST", "api/domain/create", data);
       if (data.status === "INACTIVE") {
+        handleCloseDialog();
         toast.success("Domain has been Disabled successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       } else if (data.status === "ACTIVE") {
+        handleCloseDialog();
         toast.success("Domain has been Enabled successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       } else {
+        handleCloseDialog();
         toast.success("Domain added successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
@@ -1077,14 +1090,14 @@ export const CreateDomine = (data) => {
     } catch (err) {
       dispatch(addNewDomineFail());
 
-      toast.error(err.response.data.errorMessage, {
+      toast.error(err?.response?.data?.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
     }
   };
 };
 
-export const UpdateDomine = (data) => {
+export const UpdateDomine = (data, handleCloseDialog) => {
   return async (dispatch) => {
     dispatch(addNewDomineRequest());
 
@@ -1094,6 +1107,7 @@ export const UpdateDomine = (data) => {
         position: toast.POSITION.BOTTOM_CENTER,
       });
       dispatch(addNewDomineSuccess(respone));
+      handleCloseDialog();
     } catch (err) {
       dispatch(addNewDomineFail());
 
@@ -1104,22 +1118,27 @@ export const UpdateDomine = (data) => {
   };
 };
 
-export const GetAllDomines = () => {
+export const GetAllDomines = (data, handleCloseDialog) => {
   return async (dispatch) => {
     dispatch(getAllDomineRequest());
     try {
-      const response = await makeRequest("GET", "api/domain/getAllDomains");
+      const response = await makeRequest(
+        "GET",
+        "api/domain/getAllDomains",
+        data
+      );
       dispatch(getAlldomineSuccess(response));
+      handleCloseDialog();
     } catch (err) {
       dispatch(getAllDomineFail());
-      toast.error(err.response.data.errorMessage, {
+      toast.error(err.response?.data?.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
     }
   };
 };
 
-export const CreateJobTypeData = (data) => {
+export const CreateJobTypeData = (data, handleCloseDialog) => {
   return async (dispatch) => {
     dispatch(addNewJobTypeRequest());
     try {
@@ -1138,6 +1157,7 @@ export const CreateJobTypeData = (data) => {
         });
       }
       dispatch(addNewJobTypeSuccess(respone));
+      handleCloseDialog();
     } catch (err) {
       dispatch(addNewJobTypeFail(err));
       toast.error(err.response.data.errorMessage, {
@@ -1147,7 +1167,7 @@ export const CreateJobTypeData = (data) => {
   };
 };
 
-export const UpdateJobType = (data) => {
+export const UpdateJobType = (data, handleCloseDialog) => {
   return async (dispatch) => {
     dispatch(addNewJobTypeRequest());
 
@@ -1157,6 +1177,7 @@ export const UpdateJobType = (data) => {
         position: toast.POSITION.BOTTOM_CENTER,
       });
       dispatch(addNewJobTypeSuccess(respone));
+      handleCloseDialog();
     } catch (err) {
       dispatch(addNewJobTypeFail(err));
 
@@ -1220,7 +1241,7 @@ export const getAllState = (data) => {
   };
 };
 
-export const CreateClinetDetails = (data) => {
+export const CreateClinetDetails = (data, handleCloseDialog) => {
   return async () => {
     const formData = new FormData();
     formData.append("file", data.file);
@@ -1233,14 +1254,17 @@ export const CreateClinetDetails = (data) => {
     try {
       await addRequest("POST", "api/client/create", formData);
       if (data.status === "INACTIVE") {
+        handleCloseDialog();
         toast.success("Client has been Disabled successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       } else if (data.status === "ACTIVE") {
+        handleCloseDialog();
         toast.success("Client has been Enabled successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       } else {
+        handleCloseDialog();
         toast.success("Client added successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
@@ -1253,7 +1277,7 @@ export const CreateClinetDetails = (data) => {
   };
 };
 
-export const UpdateClinetDetails = (data) => {
+export const UpdateClinetDetails = (data, handleCloseDialog) => {
   return async () => {
     const formData = new FormData();
     formData.append("file", data.file);
@@ -1264,6 +1288,7 @@ export const UpdateClinetDetails = (data) => {
     }
     try {
       await addRequest("POST", "api/client/create", formData);
+      handleCloseDialog();
       toast.success("Client has been Update successfully", {
         position: toast.POSITION.BOTTOM_CENTER,
       });
@@ -1275,16 +1300,17 @@ export const UpdateClinetDetails = (data) => {
   };
 };
 
-export const GatAllClinetDetails = () => {
+export const GatAllClinetDetails = (handleCloseDialog) => {
   return async (dispatch) => {
     dispatch(getAllClinetDetailsRequest());
     try {
       const response = await makeRequest("GET", "api/client/getAll");
       dispatch(getAllClinetDetailsSuccess(response));
+      handleCloseDialog();
     } catch (err) {
       dispatch(getAllClinetDetailsFail());
 
-      dispatch(GetAllJobTypeFail(err.response.data.errorMessage));
+      dispatch(GetAllJobTypeFail(err?.response?.data?.errorMessage));
     }
   };
 };
@@ -1319,7 +1345,7 @@ export const getLoocations = () => {
   };
 };
 
-export const GetAllOnsiteOfficeLocation = () => {
+export const GetAllOnsiteOfficeLocation = (handleCloseDialog) => {
   return async (dispatch) => {
     dispatch(getOnsiteLocationRequest());
     try {
@@ -1328,19 +1354,21 @@ export const GetAllOnsiteOfficeLocation = () => {
         "api/clientOnsiteOfficeLocation/getAll"
       );
       dispatch(getOnsiteLocationSuccess(response));
+      handleCloseDialog();
     } catch (err) {
       dispatch(getOnsiteLocationFail());
 
-      dispatch(GetAllJobTypeFail(err.response.data.errorMessage));
+      dispatch(GetAllJobTypeFail(err?.response?.data?.errorMessage));
     }
   };
 };
 
-export const CreateOnsiteOfficeLocation = (data) => {
+export const CreateOnsiteOfficeLocation = (data, handleCloseDialog) => {
   return async () => {
     try {
       await makeRequest("POST", "api/clientOnsiteOfficeLocation/create", data);
       if (data.status === "INACTIVE") {
+        handleCloseDialog();
         toast.success(
           "ClientOnsiteOfficeLocation has been Disabled successfully",
           {
@@ -1348,6 +1376,7 @@ export const CreateOnsiteOfficeLocation = (data) => {
           }
         );
       } else if (data.status === "ACTIVE") {
+        handleCloseDialog();
         toast.success(
           "ClientOnsiteOfficeLocation has been Enabled successfully",
           {
@@ -1355,6 +1384,7 @@ export const CreateOnsiteOfficeLocation = (data) => {
           }
         );
       } else {
+        handleCloseDialog();
         toast.success("ClientOnsiteOfficeLocation added successfully", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
@@ -1385,10 +1415,11 @@ export const getClientLocation = (data) => {
   };
 };
 
-export const UpdateOnsiteOfficeLocation = (data) => {
+export const UpdateOnsiteOfficeLocation = (data, handleCloseDialog) => {
   return async () => {
     try {
       await makeRequest("POST", "api/clientOnsiteOfficeLocation/create", data);
+      handleCloseDialog();
       toast.success(
         "ClientOnsiteOfficeLocation has been Updated successfully",
         {

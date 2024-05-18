@@ -41,8 +41,9 @@ export const login = (data, navigate) => {
         jwtAccessToken: response.jwtAccessToken,
         role: decoder.role,
         userName: response.userName,
-        empId:decoder?.empId,
+        empId: decoder?.empId,
       };
+
       dispatch(loginSuccess(auth));
       navigate("/");
     } catch (err) {
@@ -57,7 +58,7 @@ export const getRefreshToken = () => {
     try {
       //  code was commented out
     } catch (err) {
-      dispatch(loginFail(err.response.data.errorMessage));
+      dispatch(loginFail(err?.response?.data?.errorMessage));
       dispatch(errorMessage("Unknown Error"));
     }
   };

@@ -31,17 +31,17 @@ import Pending_Leaves from "../../assets/Pending_Leaves.svg";
 const UsersAppliedLeave = ({ color }) => {
   const dispatch = useDispatch();
   const allemployeesleave = useSelector(
-    (state) => state?.nonPersist?.leavesData.allEmployeesLeaveData.content
+    (state) => state?.persistData?.leavesData.allEmployeesLeaveData.content
   );
   const allemployeesleavesData = useSelector(
-    (state) => state?.nonPersist?.leavesData.allEmployeesLeaveData
+    (state) => state?.persistData?.leavesData.allEmployeesLeaveData
   );
   const searchAPIData = useSelector(
-    (state) => state?.nonPersist?.leavesData?.allEmployeesSearchData?.result
+    (state) => state?.persistData?.leavesData?.allEmployeesSearchData?.result
   );
 
   const leaveTypesData = useSelector(
-    (state) => state.persistData.masterData?.leaveTypes
+    (state) => state.persistData?.loginDetails?.masterData?.leaveTypes
   );
 
   const [isModalOpen, setModalOpen] = useState(false);
@@ -319,7 +319,11 @@ const UsersAppliedLeave = ({ color }) => {
             }}
           >
             <TableContainer
-              sx={{ maxHeight: "calc(92vh - 200px)", overflowY: "scroll" }}
+              sx={{
+                maxHeight: "calc(92vh - 200px)",
+                overflowY: "auto",
+                position: "relative",
+              }}
               onScroll={handleScroll}
               ref={tableRef}
             >
@@ -327,6 +331,9 @@ const UsersAppliedLeave = ({ color }) => {
                 <TableHead
                   sx={{
                     backgroundColor: "red",
+                    position: "sticky", // Make the header sticky
+                    top: 0, // Stick the header to the top
+                    zIndex: 1,
                   }}
                 >
                   <TableRow>
@@ -334,7 +341,8 @@ const UsersAppliedLeave = ({ color }) => {
                       style={{
                         ...tableHead,
                         color: "white",
-                        textAlign: "center",
+                        textAlign: "left",
+                        fontSize:"18px"
                       }}
                     >
                       Name
@@ -343,7 +351,9 @@ const UsersAppliedLeave = ({ color }) => {
                       style={{
                         ...tableHead,
                         color: "white",
-                        textAlign: "center",
+                        textAlign: "left",
+                        width:"30%",
+                        fontSize:"18px"
                       }}
                     >
                       Date
@@ -352,7 +362,8 @@ const UsersAppliedLeave = ({ color }) => {
                       style={{
                         ...tableHead,
                         color: "white",
-                        textAlign: "center",
+                        textAlign: "left",
+                        fontSize:"18px"
                       }}
                     >
                       No. of Days
@@ -361,7 +372,8 @@ const UsersAppliedLeave = ({ color }) => {
                       style={{
                         ...tableHead,
                         color: "white",
-                        textAlign: "center",
+                        textAlign: "left",
+                        fontSize:"18px"
                       }}
                     >
                       Leave Type
@@ -370,7 +382,8 @@ const UsersAppliedLeave = ({ color }) => {
                       style={{
                         ...tableHead,
                         color: "white",
-                        textAlign: "center",
+                        textAlign: "left",
+                        fontSize:"18px"
                       }}
                     >
                       Status
@@ -380,19 +393,19 @@ const UsersAppliedLeave = ({ color }) => {
                 <TableBody>
                   {filtered?.map((row, index) => (
                     <TableRow key={index}>
-                      <TableCell sx={{ textAlign: "center" }}>
+                      <TableCell sx={{ textAlign: "left" ,fontSize:"16px"}}>
                         {row.name}
                       </TableCell>
-                      <TableCell sx={{ textAlign: "center" }}>
-                        {row.date}
+                      <TableCell sx={{ textAlign: "left" ,fontSize:"16px"}}>
+                        {row.date.split(" ").join(" to ")}
                       </TableCell>
-                      <TableCell sx={{ textAlign: "center" }}>
+                      <TableCell sx={{ textAlign: "left",fontSize:"16px" }}>
                         {row.days}
                       </TableCell>
-                      <TableCell sx={{ textAlign: "center" }}>
+                      <TableCell sx={{ textAlign: "left", fontSize:"16px"}}>
                         {row.type}
                       </TableCell>
-                      <TableCell sx={{ textAlign: "center" }}>
+                      <TableCell sx={{ textAlign: "left",fontSize:"16px" }}>
                         {row.status}
                         <img
                           src={

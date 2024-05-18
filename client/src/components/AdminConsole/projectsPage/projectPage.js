@@ -16,7 +16,7 @@ const Projects = () => {
   const [resultFilterData, setResultFilterData] = useState([]);
 
   const projectsData = useSelector(
-    (state) => state?.nonPersist?.projectDetails?.projectsData
+    (state) => state?.persistData?.projectDetails?.projectsData
   );
 
   useEffect(() => {
@@ -27,6 +27,7 @@ const Projects = () => {
     setSearchData(e);
   };
 
+  localStorage.setItem("selectedTabIndex", 0);
   const getProjectpayload = {
     size: 5 * 2,
     status: projects,
@@ -53,6 +54,8 @@ const Projects = () => {
     dispatch(getAllProjects(payload, nextPagePayload));
     setPageCounter((counter) => counter + 1);
   };
+
+  localStorage.removeItem("selectedProject");
   return (
     <div>
       <Typography variant="h4" gutterBottom fontWeight="bold">

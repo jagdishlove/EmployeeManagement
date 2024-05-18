@@ -24,15 +24,15 @@ export default function ReporteesHeader({
   };
 
   const userData = useSelector(
-    (state) => state?.nonPersist?.adminTimeSheet?.searchUserData?.result
+    (state) => state?.persistData?.adminTimeSheet?.searchUserData?.result
   );
 
   useEffect(() => {
     dispatch(projectListAction());
-  }, [dispatch]);
+  }, []);
 
   const projectList = useSelector(
-    (state) => state?.nonPersist?.projectListData?.data
+    (state) => state?.persistData?.projectListData?.data || []
   );
 
   const handleProjectListChnage = (e) => {
@@ -73,11 +73,11 @@ export default function ReporteesHeader({
           )}
         />
       </Grid>
-      <Grid item xs={4}>
+      <Grid item xs={4} mt={-3}>
+        <b>Projects :</b>
         <Dropdown
           dropdownName="Projects"
-          title="Projects"
-          options={[{ id: "All", value: "All" }, ...projectList]}
+          options={[{ id: "All", value: "All" }, ...projectList] || []}
           value={project}
           onChange={handleProjectListChnage}
           style={style.DateTimesheetDateTextField}

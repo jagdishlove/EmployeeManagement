@@ -66,13 +66,15 @@ export const dashboardProjectDetailsAction = (data) => {
   };
 };
 
-export const dashboardProjectResourcesAction = (data) => {
+export const dashboardProjectResourcesAction = (data, params) => {
   return async (dispatch) => {
     dispatch(dashboardProjectResourcesRequest());
     try {
       const response = await makeRequest(
         "GET",
-        `api/projectProgress/projectResources/${data}`
+        `api/projectProgress/projectResources/${data}`,
+        null,
+        params
       );
       dispatch(dashboardProjectResourcesSuccess(response));
     } catch (err) {

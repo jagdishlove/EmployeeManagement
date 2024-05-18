@@ -39,9 +39,11 @@ const CostAllocationFormDetails = () => {
   };
   const [selectedCostIncurredId, setSelectedCostIncurredId] = useState(null);
   const [saveButton, setSaveButton] = useState(false);
+
   const projectId = useSelector(
-    (state) => state.nonPersist.projectDetails?.projectId
+    (state) => state.persistData.projectDetails?.projectId
   );
+
   const [buttonText, setButtonText] = useState("Add");
   const [formData, setFormData] = useState(intialValues);
 
@@ -51,7 +53,10 @@ const CostAllocationFormDetails = () => {
   });
 
   const handleReset = () => {
-    setFormData(intialValues);
+    setFormData({
+      itemName: "",
+      costIncurred: "",
+    });
     setErrors({
       itemName: "",
       costIncurred: "",
@@ -134,7 +139,6 @@ const CostAllocationFormDetails = () => {
 
     await dispatch(saveCreateCostIncurredAction(payload));
     await dispatch(getAllCostIncurredAction(projectId));
-    await dispatch(getProjectDetailsAction(id));
     // Reset the form after dispatching the action
     handleReset();
     setSelectedCostIncurredId(null);
@@ -150,7 +154,7 @@ const CostAllocationFormDetails = () => {
   }, [projectId, id]);
 
   const allCostIncurredData = useSelector(
-    (state) => state.nonPersist.projectDetails?.allCostIncurredData
+    (state) => state.persistData.projectDetails?.allCostIncurredData
   );
 
   const handleEdit = (costIncurredId) => {
@@ -236,8 +240,52 @@ const CostAllocationFormDetails = () => {
 
   // for not clear the form we are calling Projectdetails
   const projectDetailsData = useSelector(
-    (state) => state.nonPersist.projectDetails?.projectDetailsData
+    (state) => state.persistData.projectDetails?.projectDetailsData
   );
+
+  const [profit, setProfit] = useState();
+  const [otherCost, setOtherCost] = useState();
+
+  useEffect(() => {
+    // Calculate total cost incurred
+    const totalCostIncurred = allCostIncurredData.reduce((total, item) => {
+      return total + parseFloat(item.costIncurred);
+    }, 0);
+    setOtherCost(totalCostIncurred);
+    // Parse project revenue and projected implementation cost to integers
+    const projectRevenue = parseInt(formData.projectRevenue, 10) || 0;
+    const projectedImplementationCost =
+      parseFloat(projectDetailsData?.projectedImplementationCost) || 0;
+
+    // Calculate net revenue
+    const netRevenue =
+      projectRevenue - (totalCostIncurred + projectedImplementationCost);
+
+    // Log the net revenue
+
+    setProfit(netRevenue);
+  }, [handleInputChange, handleAdd]);
+
+  useEffect(() => {
+    // Calculate total cost incurred
+    const totalCostIncurred = allCostIncurredData.reduce((total, item) => {
+      return total + parseFloat(item.costIncurred);
+    }, 0);
+
+    setOtherCost(totalCostIncurred);
+    // Parse project revenue and projected implementation cost to integers
+    const projectRevenue = parseInt(formData.projectRevenue, 10) || 0;
+    const projectedImplementationCost =
+      parseFloat(projectDetailsData?.projectedImplementationCost) || 0;
+
+    // Calculate net revenue
+    const netRevenue =
+      projectRevenue - (totalCostIncurred + projectedImplementationCost);
+
+    // Log the net revenu
+
+    setProfit(netRevenue);
+  }, []);
 
   useEffect(() => {
     if (id) {
@@ -463,7 +511,7 @@ const CostAllocationFormDetails = () => {
           <TextField
             placeholder=" Other Costs Incurred"
             name="otherCostsIncurred"
-            value={projectDetailsData?.otherCostsIncurred}
+            value={otherCost}
             onChange={handleInputChange}
             style={{
               ...style.TimesheetTextField,
@@ -484,7 +532,7 @@ const CostAllocationFormDetails = () => {
           <TextField
             placeholder="Project Implementation Cost"
             name="projectImplimentationCost"
-            value={projectDetailsData?.projectedImplementationCost}
+            value={projectDetailsData?.projectedImplementationCost?.toFixed(2)}
             onChange={handleInputChange}
             disabled
             style={{
@@ -529,7 +577,7 @@ const CostAllocationFormDetails = () => {
           <TextField
             placeholder=" Project Profit"
             name="projectProfit"
-            value={projectDetailsData?.projectProfit}
+            value={profit?.toFixed(2)}
             onChange={handleInputChange}
             disabled
             style={{

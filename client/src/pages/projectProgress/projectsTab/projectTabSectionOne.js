@@ -1,20 +1,27 @@
-import { Grid, Avatar, Typography, Tooltip, Box } from "@mui/material";
-import React from "react";
+import { Grid, Avatar, Typography, Tooltip, Box, Button } from "@mui/material";
+import React, { useEffect } from "react";
 import GaugeMeter from "../projectsTab/gaugeMeterProject";
 import LinearProgressThickness from "./linearProgress";
 import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const ProjectTabSectionOne = () => {
+const ProjectTabSectionOne = ({ project }) => {
+  const [refreshData, setRefreshData] = React.useState({});
   const navigate = useNavigate();
-
   const { dashboardProjectdetails } = useSelector(
-    (state) => state?.nonPersist?.dashboardProjectdetails
+    (state) => state?.persistData?.dashboardProjectdetails
   );
-  const projectList = useSelector(
-    (state) => state?.nonPersist?.workSpace?.projectList
-  );
-  console.log("projectList", projectList);
+  useEffect(() => {
+    setRefreshData(dashboardProjectdetails);
+    return () => {
+      setRefreshData([]);
+    };
+  }, [dashboardProjectdetails]);
+  // Check if dashboardProjectdetails.progress is NaN, if NaN set it to 0
+  const progressValue = isNaN(refreshData?.progress)
+    ? 0
+    : Math.floor(refreshData?.progress);
+
   const ColorBox = ({ color, tooltip, children }) => (
     <Tooltip
       title={
@@ -71,27 +78,55 @@ const ProjectTabSectionOne = () => {
             display: "flex",
             alignItems: "center",
             backgroundColor: "#ffffff",
+            borderRadius:"5px"
           }}
         >
-          <Grid item xs={2}>
-            <Avatar
-              alt="Logo"
-              src="https://s3-alpha-sig.figma.com/img/b73f/7d3f/3f97b55b8691134f55142949dcc75229?Expires=1712534400&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=i71qszz5yxZHlZnyS44WOkNW7yY4vpvANkFpV9YWiVpYxeqlnII-Nk8j0fFMQFtkUuno3g62HZujMPofiIZUFkzxKaFka6zAZkZIfBxENC~aUcHcVYGMZQaywgomW69Wi~Pq-o18woRlsnLPZ0v7C20wmbB9er64UWDbvU7xBm0IZ-6c9rjpPK6SLBTSs8aT385agX2E9sTyQizMsGx0FxS5QDlwU2pM0k2XDdTRQUBG79Ez3w2HVHpxgWowanHjuiERZGLdN0f2tRNpoEImvvM-uCeeN-TOEq4QwpWoCvDH4JBFPBGM6e9Hm9mdaL2ZLyV-tnsek3Z~5GziCPybyg__"
-            />
+          <Grid item xs={2.5}>
+            <Grid item>
+              {refreshData?.clientFileStorage?.data ? (
+                <img
+                  src={`data:image/png;base64,${refreshData.clientFileStorage.data}`}
+                  alt={refreshData.clientName}
+                  style={{
+                    width: "55px",
+                    height: "60px",
+                    borderRadius: "4px",
+                    marginTop: "-40px",
+                  }}
+                />
+              ) : (
+                <Avatar
+                  sx={{
+                    color: "#ffffff",
+                    backgroundColor: "#008080",
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "4px",
+                    marginTop: "-40px",
+                  }}
+                >
+                  {refreshData?.clientName?.charAt(0)}
+                </Avatar>
+              )}
+            </Grid>
           </Grid>
-          <Grid item xs={10}>
-            <Typography variant="h6">
-              {dashboardProjectdetails?.clientName}{" "}
-            </Typography>
+          <Grid item xs={9.5}>
+            <Typography variant="h6">{refreshData?.clientName} </Typography>
             <Typography variant="body1">
-              <strong>Project Name:</strong>{" "}
-              {dashboardProjectdetails?.projectName}
+              <strong>Project Name:</strong> {refreshData?.projectName}
             </Typography>
             <Box style={{ textAlign: "right" }}>
               {" "}
-              <Link onClick={() => handleViewInDetail(projectList.id)}>
+              <Button
+                style={{
+                  color: "#1475E7",
+                  textDecoration: "underline",
+                  textTransform: "capitalize",
+                }}
+                onClick={() => handleViewInDetail(project.id)}
+              >
                 View project detail &gt; &gt;
-              </Link>
+              </Button>
             </Box>
           </Grid>
         </Grid>
@@ -100,8 +135,8 @@ const ProjectTabSectionOne = () => {
           item
           xs={12}
           sm={12}
-          md={2.6}
-          lg={2.6}
+          md={2.8}
+          lg={2.8}
           sx={{
             boxShadow: 2,
             p: 2,
@@ -109,6 +144,7 @@ const ProjectTabSectionOne = () => {
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: "#ffffff",
+            borderRadius:"5px"
           }}
         >
           <GaugeMeter />
@@ -125,6 +161,7 @@ const ProjectTabSectionOne = () => {
             p: 2,
             display: "flex",
             backgroundColor: "#ffffff",
+            borderRadius:"5px"
           }}
         >
           <Grid container>
@@ -151,6 +188,7 @@ const ProjectTabSectionOne = () => {
               <LinearProgressThickness />
               <Typography variant="h6" textAlign={"center"}>
                 <strong>Progress</strong>
+                {""} {progressValue}%
               </Typography>
             </Grid>
           </Grid>

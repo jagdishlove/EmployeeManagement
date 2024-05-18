@@ -42,7 +42,8 @@ mainApi.interceptors.response.use(
 const makeRequest = async (method, url, data, queryParams) => {
   // eslint-disable-next-line no-useless-catch
   try {
-    const token = store.getState().persistData.data.jwtAccessToken;
+    const token =
+      store.getState().persistData?.loginDetails?.data.jwtAccessToken;
     const headers = {};
 
     if (token) {
@@ -65,7 +66,8 @@ const makeRequest = async (method, url, data, queryParams) => {
 export const addRequest = async (method, url, data, queryParams) => {
   // eslint-disable-next-line no-useless-catch
   try {
-    const token = store.getState().persistData.data.jwtAccessToken;
+    const token =
+      store.getState().persistData?.loginDetails?.data.jwtAccessToken;
     const headers = {};
 
     if (token) {
@@ -89,7 +91,8 @@ export default makeRequest;
 export const downloadApi = async (method, url, data, queryParams) => {
   // eslint-disable-next-line no-useless-catch
   try {
-    const token = store.getState().persistData.data.jwtAccessToken;
+    const token =
+      store.getState().persistData?.loginDetails?.data.jwtAccessToken;
     const headers = {};
 
     if (token) {

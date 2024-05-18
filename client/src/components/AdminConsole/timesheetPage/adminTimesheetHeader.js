@@ -16,6 +16,8 @@ export default function AdminTimesheetHeader({
   setSelectedDate,
   setSelectedSearchOption,
   setStatus,
+  setSelectedCards,
+  setSelectall,
 }) {
   const theme = useTheme();
   const style = adminHeaderStyle(theme);
@@ -31,31 +33,36 @@ export default function AdminTimesheetHeader({
 
   const handleApproveChange = (e) => {
     setApprover(e.target.value);
+    setSelectedCards([]);
+    setSelectall(false);
   };
 
   const handleDateChnage = (e) => {
     setSelectedDate(e.target.value);
+    setSelectedCards([]);
+    setSelectall(false);
   };
 
   const handleStatusChnage = (e) => {
     setStatus(e.target.value);
+    setSelectedCards([]);
     setApprover("All");
   };
 
   const status = useSelector(
-    (state) => state.persistData.masterData?.approverStatus
+    (state) => state.persistData?.loginDetails?.masterData?.approverStatus
   );
 
   const userData = useSelector(
-    (state) => state?.nonPersist?.adminTimeSheet?.searchUserData?.result
+    (state) => state?.persistData?.adminTimeSheet?.searchUserData?.result
   );
 
   const approverList = useSelector(
-    (state) => state?.nonPersist?.adminTimeSheet?.approversData
+    (state) => state?.persistData?.adminTimeSheet?.approversData
   );
 
   const adminTimeSheetData = useSelector(
-    (state) => state?.nonPersist?.adminTimeSheet?.allTimeSheetsForAdmin
+    (state) => state?.persistData?.adminTimeSheet?.allTimeSheetsForAdmin
   );
 
   return (

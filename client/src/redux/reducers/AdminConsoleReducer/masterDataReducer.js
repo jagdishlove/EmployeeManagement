@@ -27,6 +27,8 @@ import {
   GET_ALL_ONSITE_OFFICE_LOCATION_SUCCESS,
   GET_ONSITE_OFFICE_LOCATION_SUCCESS,
   GET_ALL_CITY_SUCCESS,
+  ADD_NEW_SKILL_SUCCESS,
+  ADD_NEW_SKILL_FAIL,
 } from "../../actions/masterData/masterDataActionType";
 
 const initialState = {
@@ -49,6 +51,7 @@ const initialState = {
   onsiteLocationData: [],
   onsiteLocation: {},
   cities: [],
+  isSuccess:null,
 };
 
 const masterDataReducer = (state = initialState, action) => {
@@ -186,6 +189,18 @@ const masterDataReducer = (state = initialState, action) => {
         ...state,
         cities: action.payload,
       };
+      case ADD_NEW_SKILL_SUCCESS:
+        return {
+          ...state,
+          isSuccess: false,
+          
+        };
+        case ADD_NEW_SKILL_FAIL:
+          return {
+            ...state,
+            isSuccess: true,
+            
+          };
     default:
       return state;
   }

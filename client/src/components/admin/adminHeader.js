@@ -1,124 +1,69 @@
-import { Box } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import { React, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Box, Grid } from "@mui/material";
 import { useSelector } from "react-redux";
-import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
+import { Tab, TabList, Tabs } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
-import ApprovalLeavesPage from "./approvalLeaves/approvalLeavesPage.js";
-import { adminHeaderStyle } from "./approvalTimesheets/adminHeaderStyle.js";
-import TimesheetTab from "./approvalTimesheets/timesheetTab.js";
-import MySpaceTab from "./mySpaceTab.js";
-import ProjectsTab from "./projectsTab.js";
-import ReporteesTab from "./reportees/reporteesTab.js";
+import { adminHeaderStyle } from "./approvalTimesheets/adminHeaderStyle";
+import { Outlet, useNavigate } from "react-router-dom";
 
 const AdminHeader = () => {
-  const theme = useTheme();
-  const style = adminHeaderStyle(theme);
-  const role = useSelector((state) => state?.persistData.data.role);
-  const defaultTabIndex = role?.includes("APPROVER") ? 3 : 0;
-  const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedTabIndex, setSelectedTabIndex] = useState(0); // State to track selected tab index
+  const role = useSelector(
+    (state) => state?.persistData?.loginDetails?.data?.role
+  );
+  const navigate = useNavigate();
+  const style = adminHeaderStyle(); // Ensure adminHeaderStyle returns the correct styles object
 
-  // Check if the user has the "LEAVEAPPROVER" role
-  const isLeaveApprover = role?.includes("LEAVEAPPROVER");
+  // Effect to load previously selected tab index from localStorage on component mount
+  useEffect(() => {
+    const storedIndex = localStorage.getItem("selectedTabIndex");
+    if (storedIndex !== null) {
+      setSelectedTabIndex(parseInt(storedIndex));
+    }
+  }, []);
+
+  // Function to handle tab click and navigation
+  const handleTabClick = (index, type) => {
+    setSelectedTabIndex(index); // Update selectedTabIndex state
+    localStorage.setItem("selectedTabIndex", index); // Save selectedTabIndex to localStorage
+    navigate(type); // Navigate to the specified route
+  };
+
+  const isAdminOrLeaveApprover =
+    role && (role.includes("APPROVER") || role.includes("LEAVEAPPROVER"));
 
   return (
-    <Box>
-      {role.includes("APPROVER") || isLeaveApprover ? (
-        <Tabs defaultIndex={defaultTabIndex}>
+    <>
+      <Box>
+        <Tabs
+          selectedIndex={selectedTabIndex}
+          onSelect={(index) => setSelectedTabIndex(index)}
+        >
           <TabList style={style.tablistStyle}>
-            <Tab>My Space</Tab>
-            <Tab>Projects</Tab>
-            <Tab>Reportees</Tab>
-            <Tab>Approvals</Tab>
-          </TabList>
-          <TabPanel>
-            <MySpaceTab />
-          </TabPanel>
-          <TabPanel>
-            <ProjectsTab />
-          </TabPanel>
-          <TabPanel>
-            <ReporteesTab />
-          </TabPanel>
-          <TabPanel>
-            {/* Nested Tabs for sub-tabs under Approvals */}
-            <Tabs>
-              <TabList
-                style={{
-                  borderBottom: "none",
-                  padding: 0,
-                  margin: "0px !important",
-                  marginLeft: "0px",
-                  marginTop: "-2.5px",
-                }}
-              >
-                {/* No border-bottom for the sub-tabs */}
-                <Tab
-                  style={{
-                    borderRadius: "0px 0px 5px 5px",
-                    ...(selectedTab === 0 && {
-                      backgroundColor: "#008080",
-                      color: "#ffffff",
-                    }),
-                    marginLeft: isLeaveApprover ? "390px" : "454px",
-                    borderBottomRightRadius: "10px",
-                    borderBottomLeftRadius: "10px",
-                    height: "40px",
-                    width: "130px",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    cursor: "pointer",
-                    border: "2px solid #008080",
-                  }}
-                  onClick={() => setSelectedTab(0)}
-                >
-                  <p style={{ marginLeft: "-10px" }}>Timesheet </p>
+            {isAdminOrLeaveApprover ? (
+              <>
+                <Tab onClick={() => handleTabClick(0, "/workspace")}>
+                  My Space
                 </Tab>
-                {/* Render the "Leaves" tab only for users with "LEAVEAPPROVER" role */}
-                {isLeaveApprover && (
-                  <Tab
-                    style={{
-                      borderRadius: "0px 0px 5px 5px",
-                      ...(selectedTab === 1 && {
-                        backgroundColor: "#008080",
-                        color: "#ffffff",
-                      }),
-                      borderBottomRightRadius: "10px",
-                      borderBottomLeftRadius: "10px",
-                      height: "40px",
-                      width: "130px",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      cursor: "pointer",
-                      border: "2px solid #008080",
-                    }}
-                    onClick={() => setSelectedTab(1)}
-                  >
-                    Leaves
-                  </Tab>
-                )}
-              </TabList>
-              <TabPanel>
-                <TimesheetTab />
-              </TabPanel>
-              <TabPanel>
-                {/* Render the "ApprovalLeavesPage" only for users with "LEAVEAPPROVER" role */}
-                {isLeaveApprover && <ApprovalLeavesPage />}
-              </TabPanel>
-            </Tabs>
-          </TabPanel>
-        </Tabs>
-      ) : (
-        <Tabs>
-          <TabList style={style.tablistStyle}>
-            <Tab>My space</Tab>
+                <Tab onClick={() => handleTabClick(1, "reportees")}>
+                 My Reportees
+                </Tab>
+                <Tab onClick={() => handleTabClick(2, "Approval")}>
+                  Approvals
+                </Tab>
+              </>
+            ) : (
+              <Tab onClick={() => handleTabClick(0, "/workspace")}>
+                My Space
+              </Tab>
+            )}
           </TabList>
-          <TabPanel>
-            <MySpaceTab />
-          </TabPanel>
         </Tabs>
-      )}
-    </Box>
+      </Box>
+      <Grid>
+        <Outlet />
+      </Grid>
+    </>
   );
 };
 

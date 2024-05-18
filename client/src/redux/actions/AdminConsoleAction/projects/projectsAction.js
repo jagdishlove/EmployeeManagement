@@ -570,27 +570,47 @@ export const GetAllCountryCityStateAction = () => {
   };
 };
 
-export const saveCreateProjectAction = (payload, saveProjectStagePayload) => {
+export const saveCreateProjectAction = (
+  payload,
+  saveProjectStagePayload,
+
+  navigate,
+  type
+) => {
   return async (dispatch) => {
     try {
       dispatch(saveCreateProjectRequest());
+
       const response = await makeRequest(
         "POST",
         "/api/projects/createProject",
         payload,
         saveProjectStagePayload
       );
+
       dispatch(saveCreateProjectSuccess(response));
-      // toast.success("Project Created Successfully", {
-      //   position: toast.POSITION.BOTTOM_CENTER,
-      // });
+
+      if (type === "save") {
+        navigate(`/projectDetailPage/${response.id}`);
+        toast.success("Project Details Saved Successfully", {
+          position: toast.POSITION.BOTTOM_CENTER,
+        });
+      } else {
+        if (payload.id) {
+          navigate(`/EditResourcesForm/${response.id}`);
+        } else {
+          // navigate to resource allocation
+          navigate("/resourceallocation");
+        }
+      }
+
       return response;
     } catch (err) {
-      if (err.response.data.errorCode === 403) {
+      if (err.response?.data?.errorCode === 403) {
         dispatch(getRefreshToken());
-      } else if (err.response.data.errorCode === 500) {
-        dispatch(saveCreateProjectFail(err.response.data.errorMessage));
-        toast.error(err.response.data.errorMessage, {
+      } else if (err.response?.data?.errorCode === 500) {
+        dispatch(saveCreateProjectFail(err.response?.data?.errorMessage));
+        toast.error(err.response?.data?.errorMessage, {
           position: toast.POSITION.BOTTOM_CENTER,
         });
       }

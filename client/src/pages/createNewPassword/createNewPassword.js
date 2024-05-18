@@ -1,10 +1,9 @@
-
 import { Box, Container, Grid, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import InputAdornment from "@mui/material/InputAdornment";
 import { useTheme } from "@mui/material/styles";
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import InputFields from "../../components/forms/customInputs/inputFields";
@@ -27,7 +26,7 @@ const CreateNewPassword = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const errorData = useSelector(
-    (state) => state.nonPersist.errorMessages.error
+    (state) => state.persistData.errorMessages.error
   );
 
   useEffect(() => {
@@ -74,24 +73,24 @@ const CreateNewPassword = () => {
 
   const onHandleSubmit = (e) => {
     e.preventDefault();
-   
+
     if (!otp) {
       setOtpError("Please enter the OTP");
-       dispatch(resetErrorMessage());
-       return;
+      dispatch(resetErrorMessage());
+      return;
     }
     if (!password) {
       setPasswordError("Enter new Password");
-       dispatch(resetErrorMessage());
+      dispatch(resetErrorMessage());
     }
-    
+
     if (!confirmNewPassword) {
       setConfirmNewPasswordError("Confirm new Password");
       dispatch(resetErrorMessage());
     } else if (password !== confirmNewPassword) {
       setConfirmNewPasswordError("Password do not match");
       dispatch(resetErrorMessage());
-    }  else {
+    } else {
       const passwordError = getPasswordErrorMessage();
       if (passwordError) {
         setPasswordError(passwordError);
@@ -106,8 +105,8 @@ const CreateNewPassword = () => {
         otpsealedobject,
         newPassword: password,
       };
-         dispatch(resetPassword(payload, navigate));
-      } 
+      dispatch(resetPassword(payload, navigate));
+    }
   };
 
   const theme = useTheme();
@@ -115,7 +114,8 @@ const CreateNewPassword = () => {
   const validationCriteria = [
     {
       condition: password.length < 8,
-      message: "Password must contain 8 characters, one digit [0-9], one special character[~!@#$%^&*()]",
+      message:
+        "Password must contain 8 characters, one digit [0-9], one special character[~!@#$%^&*()]",
     },
     {
       condition: !/[A-Z]/.test(password),
@@ -143,7 +143,7 @@ const CreateNewPassword = () => {
         failedCriteria.push(criterion.message);
       }
     }
-  
+
     if (failedCriteria.length > 0) {
       return failedCriteria.join(", ");
     }
@@ -159,13 +159,20 @@ const CreateNewPassword = () => {
           <Grid item sx={style.gridRight} xs={12} sm={12} md={6} square>
             {/* OTP Box Section Starts  */}
             <Box>
-              <Typography sx={{...style.inboxHeading, "@media (min-width: 1024px) and (min-height: 768px)": {
-                      fontSize:"19px"
-                      },
-                      "@media (min-width: 768px) and (min-height: 1024px) and (min-width: 820px) and (min-height: 1180px)": {
-                        fontSize:"24px"
-                      }}} variant="h2">
-              ENTER VERIFICATION CODE
+              <Typography
+                sx={{
+                  ...style.inboxHeading,
+                  "@media (min-width: 1024px) and (min-height: 768px)": {
+                    fontSize: "19px",
+                  },
+                  "@media (min-width: 768px) and (min-height: 1024px) and (min-width: 820px) and (min-height: 1180px)":
+                    {
+                      fontSize: "24px",
+                    },
+                }}
+                variant="h2"
+              >
+                ENTER VERIFICATION CODE
               </Typography>
               <Typography sx={style.inboxHeadingtwo} variant="h6">
                 <i> Hint: Look for it in your Inbox</i>
@@ -194,54 +201,75 @@ const CreateNewPassword = () => {
                     padding: "10px",
                   }}
                 >
-                  <Typography variant="h6" sx={{...style.resend,"@media (min-width: 1024px) and (min-height: 768px)": {
-                      fontSize:"13px"
-                      }}}>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      ...style.resend,
+                      "@media (min-width: 1024px) and (min-height: 768px)": {
+                        fontSize: "13px",
+                      },
+                    }}
+                  >
                     If you did not receieve code
                   </Typography>
-                 
-                  <Typography
-                      
-                      color="ActiveBorder"
-                      onClick={handleResendOtp}
-                      style={{ cursor: "pointer",transition: "font-weight 0.2s", 
-                      fontWeight: "normal", paddingTop:"3px" }}
-                      onMouseEnter={(e) => {e.target.style.color = "#008080";
-                                             e.target.style.fontWeight = "bolder";
-                                             e.target.style.fontSize = "18px"; }} 
-                      onMouseLeave={(e) => {e.target.style.color = "ActiveBorder";
-                                             e.target.style.fontWeight = "normal";
-                                             e.target.style.fontSize = "16px"; }}
-                    >
-                      RESEND
-                    </Typography>
 
-                 
-                  
+                  <Typography
+                    color="ActiveBorder"
+                    onClick={handleResendOtp}
+                    style={{
+                      cursor: "pointer",
+                      transition: "font-weight 0.2s",
+                      fontWeight: "normal",
+                      paddingTop: "3px",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.color = "#008080";
+                      e.target.style.fontWeight = "bolder";
+                      e.target.style.fontSize = "18px";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.color = "ActiveBorder";
+                      e.target.style.fontWeight = "normal";
+                      e.target.style.fontSize = "16px";
+                    }}
+                  >
+                    RESEND
+                  </Typography>
                 </Box>
               </Box>
             </Box>
             {/* OTP Box Section Ends  */}
             {/* Create New PW Box Section Starts  */}
             <Box>
-              <Typography sx={{...style.inboxHeading, "@media (min-width: 1024px) and (min-height: 768px)": {
-                      fontSize:"19px"
-                      },
-                      "@media (min-width: 768px) and (min-height: 1024px) and (min-width: 820px) and (min-height: 1180px)": {
-                        fontSize:"24px"
-                      }}} variant="h2">
-              CREATE NEW PASSWORD
+              <Typography
+                sx={{
+                  ...style.inboxHeading,
+                  "@media (min-width: 1024px) and (min-height: 768px)": {
+                    fontSize: "19px",
+                  },
+                  "@media (min-width: 768px) and (min-height: 1024px) and (min-width: 820px) and (min-height: 1180px)":
+                    {
+                      fontSize: "24px",
+                    },
+                }}
+                variant="h2"
+              >
+                CREATE NEW PASSWORD
               </Typography>
-              <Typography sx={{...style.inboxHeadingtwo, "@media (min-width: 1024px) and (min-height: 768px)": {
-                      fontSize:"11px"
-                      },
-                      "@media (min-width: 768px) and (min-height: 1024px) and (min-width: 820px) and (min-height: 1180px)": {
-                        fontSize:"15px"
-                      }}} variant="h6">
-                <i>
-                  Tip: Pick a strong, yet
-                  unforgettable one this time
-                </i>
+              <Typography
+                sx={{
+                  ...style.inboxHeadingtwo,
+                  "@media (min-width: 1024px) and (min-height: 768px)": {
+                    fontSize: "11px",
+                  },
+                  "@media (min-width: 768px) and (min-height: 1024px) and (min-width: 820px) and (min-height: 1180px)":
+                    {
+                      fontSize: "15px",
+                    },
+                }}
+                variant="h6"
+              >
+                <i>Tip: Pick a strong, yet unforgettable one this time</i>
               </Typography>
               <Box
                 component="form"
@@ -256,9 +284,7 @@ const CreateNewPassword = () => {
                   name="password"
                   inputProps={{
                     endAdornment: (
-                      <InputAdornment position="end">
-                        
-                      </InputAdornment>
+                      <InputAdornment position="end"></InputAdornment>
                     ),
                   }}
                   onChange={handleOnChange}
@@ -274,9 +300,7 @@ const CreateNewPassword = () => {
                   name="confirmNewPassword"
                   inputProps={{
                     endAdornment: (
-                      <InputAdornment position="end">
-                       
-                      </InputAdornment>
+                      <InputAdornment position="end"></InputAdornment>
                     ),
                   }}
                   onChange={handleOnChange}
@@ -285,14 +309,16 @@ const CreateNewPassword = () => {
                 />
                 <Box>
                   <Button
-                     sx={{
+                    sx={{
                       ...style.GreenButton, // Apply the default or custom styles
                     }}
                     variant="contained"
                     type="submit"
                     onClick={onHandleSubmit}
                   >
-                    <Typography variant="h6" sx={style.capitalizefont} >Sign In</Typography>
+                    <Typography variant="h6" sx={style.capitalizefont}>
+                      Sign In
+                    </Typography>
                   </Button>
                 </Box>
               </Box>

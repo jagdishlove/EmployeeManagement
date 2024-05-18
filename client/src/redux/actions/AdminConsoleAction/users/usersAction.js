@@ -23,6 +23,12 @@ import {
   FETCH_STATES_REQUEST,
   FETCH_STATES_SUCCESS,
   FETCH_STATES_FAILURE,
+  GET_ALL_COUNTRY_REQUEST,
+  GET_ALL_STATE_REQUEST,
+  GET_ALL_COUNTRY_SUCCESS,
+  GET_ALL_STATE_DATA_SUCCESS,
+  GET_ALL_COUNTRY_FAIL,
+  GET_ALL_STATE_FAIL,
   FETCH_LOCATION_DATA_SUCCESS,
   SET_SELECTED_COUNTRY_ID,
   GET_ALL_CITYS,
@@ -32,6 +38,7 @@ import {
   SAVE_SKILLS_REQUEST,
   SAVE_SKILLS_FAILURE,
   SAVE_SKILLS_SUCCESS,
+  GET_ALL_CITY_DATA,
 } from "./usersActionTypes";
 import { getRefreshToken } from "../../login/loginAction";
 
@@ -48,6 +55,44 @@ const saveSkillsFailure = () => ({
 });
 
 //country state city
+const getAllcountryRequest = () => {
+  return {
+    type: GET_ALL_COUNTRY_REQUEST,
+  };
+};
+
+const getAllCountrySuccess = (response) => {
+  return {
+    type: GET_ALL_COUNTRY_SUCCESS,
+    payload: response,
+  };
+};
+
+const getAllCountryFail = () => {
+  return {
+    type: GET_ALL_COUNTRY_FAIL,
+  };
+};
+
+const getAllStateRequest = () => {
+  return {
+    type: GET_ALL_STATE_REQUEST,
+  };
+};
+
+const getAllStateSuccess = (response) => {
+  return {
+    type: GET_ALL_STATE_DATA_SUCCESS,
+    payload: response,
+  };
+};
+
+const getAllStateFail = () => {
+  return {
+    type: GET_ALL_STATE_FAIL,
+  };
+};
+
 export const fetchCountriesRequest = () => ({
   type: FETCH_COUNTRIES_REQUEST,
 });
@@ -86,6 +131,21 @@ export const fetchCitiesSuccess = (cities) => ({
 export const fetchCitiesFailure = () => ({
   type: FETCH_CITIES_FAILURE,
 });
+
+const getAllCitys = (data) => {
+  return {
+    type: GET_ALL_CITYS,
+    payload: data,
+  };
+};
+
+export const getAllCityData = (data) => {
+  return {
+    type: GET_ALL_CITY_DATA,
+    payload: data,
+  };
+};
+
 //location id
 
 export const fetchLocationDataSuccess = (locationData) => ({
@@ -173,12 +233,6 @@ export const createUserFail = (error) => {
   };
 };
 
-const getAllCitys = (data) => {
-  return {
-    type: GET_ALL_CITYS,
-    payload: data,
-  };
-};
 const searchEmployeeAndProjectRequest = () => {
   return {
     type: SEARCH_EMPLOYEEANDPROJECT_REQUEST,
@@ -235,7 +289,7 @@ export const getUserById = (data) => {
   };
 };
 
-export const CreateUserForm = (data, setIsNaviget) => {
+export const CreateUserForm = (data, navigate) => {
   return async (dispatch) => {
     let formData = new FormData();
     formData.append("file", data.file);
@@ -249,10 +303,16 @@ export const CreateUserForm = (data, setIsNaviget) => {
       dispatch(createUserRequest());
       const response = await addRequest("POST", "/employee/create", formData);
       dispatch(createUserSuccess(response));
-      toast.success("Create User is  Successfully.", {
-        position: toast.POSITION.BOTTOM_CENTER,
-      });
-      setIsNaviget(true);
+      navigate(`/userDetailPage/${response?.id}`);
+      if (data?.id) {
+        toast.success("User is updated successfully", {
+          position: toast.POSITION.BOTTOM_CENTER,
+        });
+      } else {
+        toast.success("User is created successfully", {
+          position: toast.POSITION.BOTTOM_CENTER,
+        });
+      }
     } catch (err) {
       if (
         err.response &&
@@ -484,6 +544,65 @@ export const getAllCitysAction = (data) => {
         data
       );
       dispatch(getAllCitys(response));
+    } catch (err) {
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  };
+};
+
+export const getAllCountryAction = (data) => {
+  return async (dispatch) => {
+    dispatch(getAllcountryRequest());
+    try {
+      const response = await makeRequest(
+        "GET",
+        "/api/masterData/getAll",
+        null,
+        data
+      );
+      dispatch(getAllCountrySuccess(response));
+    } catch (err) {
+      dispatch(getAllCountryFail());
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  };
+};
+
+export const getAllStateAction = (data) => {
+  return async (dispatch) => {
+    dispatch(getAllStateRequest());
+    try {
+      const response = await makeRequest(
+        "GET",
+        "/api/masterData/getAll",
+        null,
+        data
+      );
+
+      dispatch(getAllStateSuccess(response));
+    } catch (err) {
+      dispatch(getAllStateFail());
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
+  };
+};
+
+export const getAllPermentCitysAction = (data) => {
+  return async (dispatch) => {
+    try {
+      const response = await makeRequest(
+        "GET",
+        "/api/masterData/getAll",
+        null,
+        data
+      );
+      dispatch(getAllCityData(response));
     } catch (err) {
       toast.error(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,

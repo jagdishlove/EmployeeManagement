@@ -12,10 +12,11 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  Button,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Edit as EditIcon } from "@mui/icons-material";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const UserDataListPage = ({ userData }) => {
   const [menuAnchor, setMenuAnchor] = useState(null);
@@ -23,11 +24,11 @@ const UserDataListPage = ({ userData }) => {
   const Navigate = useNavigate();
 
   const handleViewInDetail = () => {
-    Navigate("/userDetailPage");
+    Navigate(`/userDetailPage/${userData?.id}`);
   };
 
-  const handleEditProfile = (id) => {
-    Navigate(`/editUser/${id}`);
+  const handleEditProfile = () => {
+    Navigate(`/editUser/${userData?.id}`);
   };
 
   return (
@@ -73,10 +74,7 @@ const UserDataListPage = ({ userData }) => {
                 <ListItemIcon>
                   <EditIcon fontSize="small" />
                 </ListItemIcon>
-                <ListItemText
-                  primary="Edit"
-                  onClick={() => handleEditProfile(userData?.id)}
-                />
+                <ListItemText primary="Edit" onClick={handleEditProfile} />
               </MenuItem>
             </Menu>
           </>
@@ -141,11 +139,11 @@ const UserDataListPage = ({ userData }) => {
         justifyContent="flex-end"
       >
         <Box display="flex" justifyContent="space-between" alignItems="end">
-          <Link
-            to={`/userDetailPage/${userData?.id}`}
+          <Button
             style={{
               textDecoration: "none",
             }}
+            onClick={handleViewInDetail}
           >
             <Typography
               variant="body2"
@@ -166,11 +164,10 @@ const UserDataListPage = ({ userData }) => {
                 fontWeight: "bold",
                 textAlign: "end",
               }}
-              onClick={handleViewInDetail}
             >
               VIEW IN DETAIL
             </Typography>
-          </Link>
+          </Button>
         </Box>
       </Grid>
     </Card>

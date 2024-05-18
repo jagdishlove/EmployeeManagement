@@ -2,7 +2,7 @@ import { Box, Grid, Typography } from "@mui/material";
 import moment from "moment";
 import React, { useRef } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
-import "react-big-calendar/lib/css/react-big-calendar.css"; 
+import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useDispatch, useSelector } from "react-redux";
 import { getTimesheetEntryAction } from "../../../redux/actions/timeSheet/timeSheetAction";
 import VerticalBarGraph from "../VerticalBarGraph";
@@ -33,9 +33,9 @@ const HistoryCalendar = ({
   ];
 
   const historyData = useSelector(
-    (state) => state?.nonPersist?.historyData.historyData
+    (state) => state?.persistData?.historyData.historyData
   );
-
+  console.log("historyData", historyData)
   const transformedData = historyData?.timesheetUtilizationEntryList?.map(
     (item) => {
       const date = new Date(item.date);
@@ -48,6 +48,7 @@ const HistoryCalendar = ({
         meetings: 0,
         breaks: 0,
         others: 0,
+        legendList: item.legendList || [],
       };
 
       if (item.legendList) {
@@ -124,38 +125,89 @@ const HistoryCalendar = ({
       );
     }
 
-    // Check if the event type is in DATETYPES
-    if (DATETYPES.includes(event.type)) {
-      return (
-        <Typography
-          color="primary"
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            // height: "100px",
-            width: "100%",
-            textAlign: "center",
-            wordWrap: "wrap",
-            whiteSpace: "break-spaces",
-            fontSize: "12px",
-          }}
-        >
-          {event.type === "HOLIDAY" ? (
-            <Box display={"flex"} flexDirection={"column"}>
-              <div>Holiday</div>
-              {event.dayTypeDescription && (
-                <div>{event.dayTypeDescription}</div>
-              )}
-            </Box>
-          ) : event.type === getDataType(event.type) ? (
-            event.dayTypeDescription
-          ) : (
-            "UNKNOWN"
-          )}
-        </Typography>
-      );
-    }
+ // Check if the event type is in DATETYPES
+if (DATETYPES.includes(event.type)) {
+  console.log("Event type is in DATETYPES");
+  console.log("getDataType(event.type):", getDataType(event.type));
+  console.log("event.type:", event.type);
+  console.log("event.legendList:", event.legendList);
+  console.log("event.legendList.length:", event.legendList ? event.legendList.length : "null");
+
+  // Check if getDataType(event.type) is equal to event.type and legendList is not null and not empty
+  if (
+    getDataType(event.type) === event.type &&
+    event?.legendList &&
+    event?.legendList?.length > 0
+  ) {
+    console.log("Condition met: graph should be displayed");
+    // Render the graph
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-around",
+          marginTop: "1%",
+        }}
+      >
+        <Box sx={{ marginInline: "-1.5rem" }}>
+          <VerticalBarGraph
+            value={event.tasks}
+            color=" #4285F4"
+            border="#4285F4"
+          />
+        </Box>
+        <Box sx={{ marginInline: "-1.5rem" }}>
+          <VerticalBarGraph
+            value={event.meetings}
+            color="#FFA50080"
+            border="#FBBC04"
+          />
+        </Box>
+        <Box sx={{ marginInline: "-1.5rem" }}>
+          <VerticalBarGraph
+            value={event.breaks}
+            color="#34A85380"
+            border="#34A853"
+          />
+        </Box>
+        <Box sx={{ marginInline: "-1.5rem" }}>
+          <VerticalBarGraph
+            value={event.others}
+            color="#FFC0CB80"
+            border="#FFC0CB"
+          />
+        </Box>
+      </Box>
+    );
+  } else {
+    // If legendList is null or empty, display event.dayTypeDescription
+    return (
+      <Typography
+        color="primary"
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+          textAlign: "center",
+          wordWrap: "wrap",
+          whiteSpace: "break-spaces",
+          fontSize: "12px",
+        }}
+      >
+        {event.type === "HOLIDAY" ? (
+          <Box display={"flex"} flexDirection={"column"}>
+            <div>Holiday</div>
+            {event.dayTypeDescription && (
+              <div>{event.dayTypeDescription}</div>
+            )}
+          </Box>
+        ) : event.dayTypeDescription}
+      </Typography>
+    );
+  }
+}
+
 
     // Render the graph if none of the conditions are met
     return (

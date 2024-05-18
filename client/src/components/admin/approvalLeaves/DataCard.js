@@ -31,9 +31,15 @@ const DataCard = ({
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [comments, setComments] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleApproval = (status, leaveRequestId) => {
-    approveRejectLeavesHandler(leaveRequestId, status, comments);
+  const handleApproval = async (status, leaveRequestId) => {
+    try {
+      setLoading(true);
+      await approveRejectLeavesHandler(leaveRequestId, status, comments);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCommentInputChange = (e) => {
@@ -42,7 +48,9 @@ const DataCard = ({
       onCommentChange(e.target.value);
     }
   };
-  const masterData = useSelector((state) => state?.persistData?.masterData);
+  const masterData = useSelector(
+    (state) => state?.persistData?.loginDetails?.masterData
+  );
 
   const handleAccordionToggle = () => {
     setExpanded(!expanded);
@@ -214,9 +222,11 @@ const DataCard = ({
                   onClick={() =>
                     handleApproval("APPROVED", cardData.leaveRequestId)
                   }
+                  disabled={loading} // Disable button when loading
                 >
-                  APPROVE
+                  {loading ? "Loading..." : "APPROVE"}
                 </Button>
+
                 <Button
                   sx={{
                     border: "2px solid red",
@@ -238,14 +248,15 @@ const DataCard = ({
               {(approval || superAdmin) && (
                 <>
                   {
-                    <Grid item xs={12} sm={12} md={12} lg={12}>
+                    <Grid style={{ width: "100%" }}>
                       <p
                         style={{
                           color: "red",
                           position: "absolute",
                           width: "100%",
-                          fontSize: "14.5px",
                           lineHeight: "20px",
+                          left: "30px",
+                          bottom: "-2px",
                         }}
                       >
                         {error?.[index]}
@@ -267,6 +278,8 @@ const DataCard = ({
               comments={comments}
               onCardSelect={onCardSelect}
               superAdmin={superAdmin}
+              selectedCards={selectedCards}
+              handleCheckboxChange={handleCheckboxChange}
             />
           )}
         </AccordionSummary>

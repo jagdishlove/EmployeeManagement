@@ -27,22 +27,18 @@ const ApprovalLeaveHeader = ({
 
   const dispatch = useDispatch();
 
- 
-
-
-
   const { getLeaveData } = useSelector(
-    (state) => state.nonPersist.approvalLeavesData
+    (state) => state.persistData.approvalLeavesData
   );
 
   const dates = useSelector(
     (state) =>
-      state?.nonPersist?.approvalLeavesData?.approvalLeaveDatesData
+      state?.persistData?.approvalLeavesData?.approvalLeaveDatesData
         ?.dateRangeDto
   );
 
   const { content } = useSelector(
-    (state) => state.nonPersist.approvalLeavesData.approvalLeaveTeamMemberData
+    (state) => state.persistData.approvalLeavesData.approvalLeaveTeamMemberData
   );
 
   const [getTeamMembersFromApi, setGetTeamMembersFromApi] = useState([]);
@@ -60,7 +56,7 @@ const ApprovalLeaveHeader = ({
     dispatch(getApprovalLeaveDatesAction());
   }, [dispatch]);
 
-  const color = useState(true)
+  const color = useState(true);
 
   return (
     <div>
@@ -71,9 +67,16 @@ const ApprovalLeaveHeader = ({
           gap={{ sm: 0, md: 2, lg: 2, xs: 2 }}
         >
           <Grid item xs={12} sm={3} md={3} lg={3}>
-            <Typography sx={{ color: "#ffffff",fontSize:'15px' ,marginTop:"5px" }}>Period</Typography>
+            <Typography
+              sx={{ color: "#ffffff", fontSize: "15px", marginTop: "5px" }}
+            >
+              Period
+            </Typography>
 
-            <FormControl style={{ background: "white" , borderRadius:"5px"}} fullWidth>
+            <FormControl
+              style={{ background: "white", borderRadius: "5px" }}
+              fullWidth
+            >
               <Select
                 value={dateData}
                 onChange={dateChangeHandler}
@@ -104,29 +107,31 @@ const ApprovalLeaveHeader = ({
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={3} md={3} lg={3}>
-            <Typography sx={{ color: "#ffffff",fontSize:'15px',marginTop:"5px" }}>Team Member</Typography>
+            <Typography
+              sx={{ color: "#ffffff", fontSize: "15px", marginTop: "5px" }}
+            >
+              Team Member
+            </Typography>
             <Dropdown
               options={teamMemberOptions} // Pass any additional options if needed
               value={TeamMemberData}
               onChange={teamMemberSelectHandler} // Pass the onChange dates
               title=""
               dropdownName="teamMember" // Pass the dropdown name
-              style={{ background: "white", borderRadius:"5px" }}
+              style={{ background: "white", borderRadius: "5px" }}
               approve={true}
             />
           </Grid>
           <Grid item xs={12} sm={12} md={1} lg={2} sx={{ marginTop: "30px" }}>
-            <UsersAppliedLeave
-            color={color}
-            />
+            <UsersAppliedLeave color={color} />
           </Grid>
           <Grid item xs={12} sm={12} md={4} lg={3} margin={"auto"}>
-          <Typography
-            variant="h6"
-            color={"secondary"}
-            textAlign={"right"}
-            sx={{ textWrap: "nowrap" }}
-            marginTop={4}
+            <Typography
+              variant="h6"
+              color={"secondary"}
+              textAlign={"right"}
+              sx={{ textWrap: "nowrap" }}
+              marginTop={4}
             >
               <b>
                 {" "}

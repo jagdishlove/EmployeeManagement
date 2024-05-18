@@ -103,7 +103,9 @@ const Sidebar = ({ children }) => {
     localStorage.getItem("selectedItem") || "Timesheet"
   );
 
-  const role = useSelector((state) => state?.persistData.data.role);
+  const role = useSelector(
+    (state) => state?.persistData?.loginDetails?.data.role
+  );
 
   const superAdmin = role?.includes("SUPERADMIN");
   const admin = role?.includes("ADMIN");
@@ -158,7 +160,7 @@ const Sidebar = ({ children }) => {
   };
 
   const [dashboardMenuOpen, setDashboardMenuOpen] = useState(false);
-
+ 
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
