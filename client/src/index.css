@@ -294,8 +294,12 @@ input::-webkit-inner-spin-button {
 
 }
 
+.recharts-cartesian-axis-ticks{
+  font-weight: bold !important;
+}
+
 .project-progress-body {
-  background-color: #f0f0f0;
+  background-color: #f0f0f0 !important;
 }
 
 .recharts-text .recharts-label{

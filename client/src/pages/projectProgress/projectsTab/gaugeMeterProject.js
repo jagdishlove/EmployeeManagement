@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 
 const GaugeMeterProject = () => {
   const { dashboardProjectdetails } = useSelector(
-    (state) => state?.nonPersist?.dashboardProjectdetails
+    (state) => state?.persistData?.dashboardProjectdetails
   );
 
   // Calculate the percent based on the complexity level

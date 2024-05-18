@@ -7,7 +7,7 @@ import ActivityChart from "./activityChart/activityChart";
 
 function Chart() {
   const historyData = useSelector(
-    (state) => state?.nonPersist?.historyData.historyData
+    (state) => state?.persistData?.historyData.historyData
   );
 
   const legendItems = [

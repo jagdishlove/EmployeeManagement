@@ -114,6 +114,7 @@ const BottomNavigationMobile = ({ children, handleMenuClose }) => {
         <MenuItem
           onClick={() => {
             localStorage.removeItem("selectedItem");
+            localStorage.removeItem("selectedProject");
             persistor.purge(["login"]);
             window.location.href = "/";
             handleMenuClose;

@@ -101,14 +101,16 @@ export default function UserHerders({
   const handleDesignationChnage = (e) => {
     setDesignationId(e.target.value);
   };
-  const skills = useSelector((state) => state.persistData.masterData?.skill);
+  const skills = useSelector(
+    (state) => state.persistData?.loginDetails?.masterData?.skill
+  );
 
   const designation = useSelector(
-    (state) => state.persistData.masterData?.designation
+    (state) => state.persistData?.loginDetails?.masterData?.designation
   );
 
   const searchData = useSelector(
-    (state) => state?.nonPersist?.userDetails?.searchData
+    (state) => state?.persistData?.userDetails?.searchData
   );
 
   const CustomMenu = (props) => {
@@ -302,7 +304,7 @@ export default function UserHerders({
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={12} md={5} lg={3}></Grid>
+          <Grid item xs={12} sm={12} md={5} lg={4}></Grid>
           <Grid item margin={"auto"} alignItems="flex-end">
             <Typography
               variant="h7"
@@ -310,7 +312,6 @@ export default function UserHerders({
               textAlign={"right"}
               sx={{ textWrap: "nowrap", marginLeft: "30px" }}
               marginTop={4}
-              marginLeft={6}
             >
               <b>
                 {" "}

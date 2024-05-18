@@ -15,7 +15,11 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AccountCircleTwoToneIcon from "@mui/icons-material/AccountCircleTwoTone";
-import { masterDataAction } from "../../../redux/actions/masterData/masterDataAction";
+import {
+  getAllCountry,
+  getAllState,
+  masterDataAction,
+} from "../../../redux/actions/masterData/masterDataAction";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import Dropdown from "../../forms/dropdown/dropdown";
 import { useTheme } from "@mui/material/styles";
@@ -29,12 +33,12 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import {
   CreateUserForm,
   SearchEmployeeAction,
-  fetchCountriesAction,
-  fetchStatesAction,
-  fetchCitiesAction,
   fetchLocationData,
   getUserById,
-  EditUserForm,
+  getAllCitysAction,
+  getAllCountryAction,
+  getAllStateAction,
+  getAllPermentCitysAction,
 } from "../../../redux/actions/AdminConsoleAction/users/usersAction";
 import dayjs from "dayjs";
 
@@ -44,7 +48,7 @@ export default function CreateUser() {
   const dispatch = useDispatch();
   const [selectedImage, setSelectedImage] = useState("");
   const [errors, setErrors] = useState({});
-  const [enable, setEnable] = useState(true);
+ 
   const { id } = useParams();
 
   useEffect(() => {
@@ -54,10 +58,8 @@ export default function CreateUser() {
   }, [id]);
 
   const { usersDataLoading, userDataError } = useSelector(
-    (state) => state?.nonPersist?.userDetails
+    (state) => state?.persistData?.userDetails
   );
-
-  const userId = useSelector((state) => state?.nonPersist?.userDetails?.userId);
 
   const [validationErrors, setValidationErrors] = useState({});
   const [formData, setFormData] = useState({
@@ -101,7 +103,6 @@ export default function CreateUser() {
     productType: "",
     Bank_Name: "",
   });
-
   const handleClearAll = () => {
     setFormData({
       firstName: "",
@@ -186,11 +187,21 @@ export default function CreateUser() {
 
     // Fetch states and cities based on permanent address if country and state are selected
     if (newIsChecked && formData.currentcountry) {
-      await fetchStatesAction(formData?.currentcountry, setStates);
+      await dispatch(
+        getAllStateAction({
+          parentId: formData.currentcountry || "",
+          dataType: "state",
+        })
+      );
     }
 
     if (newIsChecked && formData.currentstate) {
-      await fetchCitiesAction(formData.currentstate, setCities);
+      await dispatch(
+        getAllCitysAction({
+          parentId: formData.currentstate || "",
+          dataType: "city",
+        })
+      );
     }
   };
 
@@ -199,7 +210,7 @@ export default function CreateUser() {
   }, [dispatch]);
 
   const LocationData = useSelector(
-    (state) => state?.nonPersist?.userDetails?.locationData
+    (state) => state?.persistData?.userDetails?.locationData
   );
 
   const countryCode = {};
@@ -258,37 +269,38 @@ export default function CreateUser() {
   }, [dispatch]);
 
   const masterdata1 = useSelector(
-    (state) => state.persistData.masterData?.gender
+    (state) => state.persistData?.loginDetails?.masterData?.gender
   );
 
   const employeeStatus = useSelector(
-    (state) => state.persistData.masterData?.employeeStatus
+    (state) => state.persistData?.loginDetails?.masterData?.employeeStatus
   );
 
   const masterdata3 = useSelector(
-    (state) => state.persistData.masterData?.employmentType
+    (state) => state.persistData?.loginDetails?.masterData?.employmentType
   );
   const masterdata4 = useSelector(
-    (state) => state.persistData.masterData?.designation
+    (state) => state.persistData?.loginDetails?.masterData?.designation
   );
 
   const employeeBy = useSelector(
-    (state) => state.persistData.masterData?.employedBy
+    (state) => state.persistData?.loginDetails?.masterData?.employedBy
   );
+ 
   const Client_location = useSelector(
-    (state) => state.persistData.masterData?.clientLocation
+    (state) => state.persistData?.loginDetails?.masterData?.clientLocation
   );
 
   const work_mode = useSelector(
-    (state) => state.persistData.masterData?.workMode
+    (state) => state.persistData?.loginDetails?.masterData?.workMode
   );
 
   const managerName = useSelector(
-    (state) => state?.nonPersist?.userDetails?.employees.result
+    (state) => state?.persistData?.userDetails?.employees.result
   );
 
   const employeeDetails = useSelector(
-    (state) => state?.nonPersist?.userDetails?.userByIdData
+    (state) => state?.persistData?.userDetails?.userByIdData
   );
 
   useEffect(() => {
@@ -339,15 +351,58 @@ export default function CreateUser() {
           ? `data:image/png;base64,${employeeDetails?.fileStorage?.data}`
           : ""
       );
+      if (employeeDetails.permanentAddress?.countryId) {
+        dispatch(
+          getAllState({
+            parentId: employeeDetails.permanentAddress?.countryId || "",
+            dataType: "state",
+          })
+        );
+      }
+  
+      if (employeeDetails.permanentAddress?.stateId) {
+        dispatch(
+          getAllPermentCitysAction({
+            parentId: employeeDetails.permanentAddress?.stateId || "",
+            dataType: "city",
+          })
+        );
+      }
+  
+      // Fetch state and city data for current address
+      if (employeeDetails.presentAddress?.countryId) {
+        dispatch(
+          getAllStateAction({
+            parentId: employeeDetails.presentAddress?.countryId || "",
+            dataType: "state",
+          })
+        );
+      }
+  
+      if (employeeDetails.presentAddress?.stateId) {
+        dispatch(
+          getAllCitysAction({ parentId: employeeDetails.presentAddress?.stateId || "",
+          dataType: "city",
+        })
+      );
+    }
       if (
-        (employeeDetails.permanentAddress?.addressLine1 || "",
-        employeeDetails.permanentAddress?.addressLine2 || "",
-        employeeDetails.permanentAddress?.postalCode || "",
-        employeeDetails.permanentAddress?.countryId || "",
-        employeeDetails.permanentAddress?.stateId || "",
-        employeeDetails.permanentAddress?.cityId || "")
+        employeeDetails.permanentAddress?.addressLine1 ===
+          employeeDetails.presentAddress?.addressLine1 &&
+        employeeDetails.permanentAddress?.addressLine2 ===
+          employeeDetails.presentAddress?.addressLine2 &&
+        employeeDetails.permanentAddress?.postalCode ===
+          employeeDetails.presentAddress?.postalCode &&
+        employeeDetails.permanentAddress?.countryId ===
+          employeeDetails.presentAddress?.countryId &&
+        employeeDetails.permanentAddress?.stateId ===
+          employeeDetails.presentAddress?.stateId &&
+        employeeDetails.permanentAddress?.cityId ===
+          employeeDetails.presentAddress?.cityId
       ) {
         setIsChecked(true);
+      } else {
+        setIsChecked(false);
       }
     } else {
       setFormData({
@@ -435,20 +490,11 @@ export default function CreateUser() {
   };
 
   const handleProductTypeChange = (event, type) => {
-    // let updatedFormData = {
-    //   ...formData,
-    //   productType: event.target.value,
-    // };
     if (type === "CLIENT_LOCATION") {
       setFormData((prevFormData) => ({
         ...prevFormData,
         productType: event.target.value,
       }));
-      // updatedFormData = {
-      //   ...updatedFormData,
-
-      // };
-      setEnable(false);
     }
     if (type === "PRAKAT_LOCATION") {
       setFormData((prevFormData) => ({
@@ -456,21 +502,11 @@ export default function CreateUser() {
         productType: event.target.value,
         Client_loc: "",
       }));
-      // updatedFormData = {
-
-      //   ...updatedFormData,
-      //   Client_loc: "",
-      // };
-      setEnable(true);
     }
-
-    // setProductType(event.target.value);
-    // setFormData(updatedFormData);
-    // setWorkMode("");
   };
   const handleWorkModeChange = (event) => {
     const newWorkMode = event.target.value;
-    // setWorkMode(newWorkMode);
+
     setFormData((prevFormData) => ({
       ...prevFormData,
       workMode: newWorkMode,
@@ -499,7 +535,9 @@ export default function CreateUser() {
     });
   };
 
-  const skill = useSelector((state) => state.persistData.masterData?.skill);
+  const skill = useSelector(
+    (state) => state.persistData?.loginDetails?.masterData?.skill
+  );
 
   const handleChange = (selectedOptions) => {
     setFormData({
@@ -538,13 +576,13 @@ export default function CreateUser() {
     if (isChecked) {
       setFormData((formData) => ({
         ...formData,
-        [name]: value,
         address1: formData.currentAddress1,
         address2: formData.currentAddress2,
         city: formData.currentcity,
         state: formData.currentstate,
         country: formData.currentcountry,
         Zip: formData.currentZIP,
+        [name]: value,
       }));
     } else {
       // If checkbox is not checked, update all fields independently
@@ -561,29 +599,36 @@ export default function CreateUser() {
   };
 
   //country state city
-  const [countries, setCountries] = useState([]);
-  const [states, setStates] = useState([]);
-  const [cities, setCities] = useState([]);
 
   useEffect(() => {
-    fetchCountriesAction(setCountries);
+    dispatch(getAllCountryAction({ parentId: 0, dataType: "country" }));
+
+    dispatch(getAllCountry({ parentId: 0, dataType: "country" }));
   }, []);
 
-  useEffect(() => {
-    // Fetch states based on country ID
-    if (formData.country) {
-      fetchStatesAction(formData.country, setStates);
-    }
-  }, [formData.country]);
+  const country = useSelector(
+    (state) => state?.persistData?.userDetails?.countrydata
+  );
 
-  useEffect(() => {
-    // Fetch cities based on state ID
-    if (formData.state) {
-      fetchCitiesAction(formData.state, setCities);
-    }
-  }, [formData.state]);
+  const countryData = useSelector(
+    (state) => state?.persistData?.masterDataDetails?.countrydata
+  );
 
-  const handleCountryChange = (type, event, value) => {
+  const stateData = useSelector(
+    (state) => state?.persistData?.masterDataDetails?.statedata
+  );
+
+  const cityData = useSelector(
+    (state) => state?.persistData?.userDetails?.cityData
+  );
+
+  const state = useSelector(
+    (state) => state?.persistData?.userDetails?.statedata
+  );
+
+  const city = useSelector((state) => state?.persistData?.userDetails?.cities);
+
+  const handleCountryChange = async (type, event, value) => {
     if (type === "country") {
       setFormData((formData) => ({
         ...formData,
@@ -591,15 +636,10 @@ export default function CreateUser() {
         state: "",
         city: "",
       }));
-    }
 
-    if (type === "currentcountry") {
-      setFormData((formData) => ({
-        ...formData,
-        currentcountry: value?.id || "",
-        currentstate: "",
-        currentcity: "",
-      }));
+      await dispatch(
+        getAllState({ parentId: value?.id || "", dataType: "state" })
+      );
     }
 
     if (isChecked) {
@@ -610,8 +650,20 @@ export default function CreateUser() {
         city: "",
       }));
     }
+  };
 
-    fetchStatesAction(value?.id, setStates);
+  const handleCountryChange2 = async (type, event, value) => {
+    if (type === "currentcountry") {
+      setFormData((formData) => ({
+        ...formData,
+        currentcountry: value?.id || "",
+        currentstate: "",
+        currentcity: "",
+      }));
+    }
+    await dispatch(
+      getAllStateAction({ parentId: value?.id || "", dataType: "state" })
+    );
   };
 
   const handleCity = (type, event, value) => {
@@ -621,12 +673,7 @@ export default function CreateUser() {
         city: value?.id || "",
       }));
     }
-    if (type === "currentcity") {
-      setFormData((formData) => ({
-        ...formData,
-        currentcity: value?.id || "",
-      }));
-    }
+
     if (isChecked) {
       setFormData((formData) => ({
         ...formData,
@@ -635,15 +682,39 @@ export default function CreateUser() {
     }
   };
 
-  const handleStateChange = (type, event, value) => {
+  const handleCity2 = (type, event, value) => {
+    if (type === "currentcity") {
+      setFormData((formData) => ({
+        ...formData,
+        currentcity: value?.id || "",
+      }));
+    }
+  };
+
+  const handleStateChange = async (type, event, value) => {
     if (type === "state") {
       setFormData((formData) => ({
         ...formData,
         state: value?.id || "",
         city: "",
       }));
+      await dispatch(
+        getAllPermentCitysAction({
+          parentId: value?.id || "",
+          dataType: "city",
+        })
+      );
     }
+    if (isChecked) {
+      setFormData((formData) => ({
+        ...formData,
+        state: formData.currentstate,
+        city: "",
+      }));
+    }
+  };
 
+  const handleStateChange2 = async (type, event, value) => {
     if (type === "currentstate") {
       setFormData((formData) => ({
         ...formData,
@@ -653,75 +724,106 @@ export default function CreateUser() {
         ...formData,
         currentcity: "",
       }));
+      await dispatch(
+        getAllCitysAction({
+          parentId: value?.id || "",
+          dataType: "city",
+        })
+      );
     }
-    if (isChecked) {
-      setFormData((formData) => ({
-        ...formData,
-        state: formData.currentstate,
-        city: "",
-      }));
-    }
-    fetchCitiesAction(value?.id, setCities);
   };
-
-  const [isNaviget, setIsNaviget] = useState(false);
 
   const handleSave = async () => {
     const validationErrors = validateForm();
 
-    if (validationErrors == undefined) {
-      const payload = {
-        id: id ? id : "",
-        file: formData.file,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        genderId: formData.gender,
-        dob: formData.DOB,
-        phoneNumber: formData.number,
-        email: formData.email,
-        employeeSkills: formData.skill,
-        empTypeId: formData.employeeType,
-        managerId: formData.ManagerName.id,
-        ctc: formData.CTC,
-        joiningDate: formData.DOJ,
-        acNo: formData.ACNo,
-        bankName: formData.Bank_Name,
-        nameAsOnBank: formData.Bank,
-        ifscCode: formData.IFSCCode,
-        aadhaarNo: formData.AadhaarNo,
-        uanNo: formData.UANNo,
-        workMode: formData.workMode,
-        employeeCoordinates: formData.productType,
-        empId: formData.employeeID,
-        clientLocationId: formData.Client_loc,
-        officeLocationId: formData.employedBy,
-        designationId: formData.designation,
-        status: formData.Status,
-        "presentAddress.addressLine1": formData.currentAddress1,
-        " presentAddress.addressLine2": formData.currentAddress2,
-        "presentAddress.countryId": formData.currentcountry,
-        "presentAddress.stateId": formData.currentstate,
-        "presentAddress.cityId": formData.currentcity,
-        "presentAddress.postalCode": formData.currentZIP,
-        "permanentAddress.addressLine1": formData.address1,
-        "permanentAddress.addressLine2": formData.address2,
-        "permanentAddress.countryId": formData.country,
-        "permanentAddress.stateId": formData.state,
-        "permanentAddress.cityId": formData.city,
-        "permanentAddress.postalCode": formData.Zip,
-      };
+    if (Object.keys(validationErrors).length === 0) {
+      let payload;
+      if (isChecked) {
+        payload = {
+          id: id ? id : "",
+          file: formData.file,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          genderId: formData.gender,
+          dob: formData.DOB,
+          phoneNumber: formData.number,
+          email: formData.email,
+          employeeSkills: formData.skill,
+          empTypeId: formData.employeeType,
+          managerId: formData.ManagerName.id,
+          ctc: formData.CTC,
+          joiningDate: formData.DOJ,
+          acNo: formData.ACNo,
+          bankName: formData.Bank_Name,
+          nameAsOnBank: formData.Bank,
+          ifscCode: formData.IFSCCode,
+          aadhaarNo: formData.AadhaarNo,
+          uanNo: formData.UANNo,
+          workMode: formData.workMode,
+          employeeCoordinates: formData.productType,
+          empId: formData.employeeID,
+          clientLocationId: formData.Client_loc,
+          officeLocationId: formData.employedBy,
+          designationId: formData.designation,
+          status: formData.Status,
 
-      if (id) {
-        await dispatch(EditUserForm(payload, setIsNaviget));
+          "presentAddress.addressLine1": formData.currentAddress1,
+          " presentAddress.addressLine2": formData.currentAddress2,
+          "presentAddress.countryId": formData.currentcountry,
+          "presentAddress.stateId": formData.currentstate,
+          "presentAddress.cityId": formData.currentcity,
+          "presentAddress.postalCode": formData.currentZIP,
+          "permanentAddress.addressLine1": formData.currentAddress1,
+          "permanentAddress.addressLine2": formData.currentAddress2,
+          "permanentAddress.countryId": formData.currentcountry,
+          "permanentAddress.stateId": formData.currentstate,
+          "permanentAddress.cityId": formData.currentcity,
+          "permanentAddress.postalCode": formData.currentZIP,
+        };
       } else {
-        await dispatch(CreateUserForm(payload, setIsNaviget));
+        payload = {
+          id: id ? id : "",
+          file: formData.file,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          genderId: formData.gender,
+          dob: formData.DOB,
+          phoneNumber: formData.number,
+          email: formData.email,
+          employeeSkills: formData.skill,
+          empTypeId: formData.employeeType,
+          managerId: formData.ManagerName.id,
+          ctc: formData.CTC,
+          joiningDate: formData.DOJ,
+          acNo: formData.ACNo,
+          bankName: formData.Bank_Name,
+          nameAsOnBank: formData.Bank,
+          ifscCode: formData.IFSCCode,
+          aadhaarNo: formData.AadhaarNo,
+          uanNo: formData.UANNo,
+          workMode: formData.workMode,
+          employeeCoordinates: formData.productType,
+          empId: formData.employeeID,
+          clientLocationId: formData.Client_loc,
+          officeLocationId: formData.employedBy,
+          designationId: formData.designation,
+          status: formData.Status,
+          "presentAddress.addressLine1": formData.currentAddress1,
+          " presentAddress.addressLine2": formData.currentAddress2,
+          "presentAddress.countryId": formData.currentcountry,
+          "presentAddress.stateId": formData.currentstate,
+          "presentAddress.cityId": formData.currentcity,
+          "presentAddress.postalCode": formData.currentZIP,
+          "permanentAddress.addressLine1": formData.address1,
+          "permanentAddress.addressLine2": formData.address2,
+          "permanentAddress.countryId": formData.country,
+          "permanentAddress.stateId": formData.state,
+          "permanentAddress.cityId": formData.city,
+          "permanentAddress.postalCode": formData.Zip,
+        };
       }
 
-      if (isNaviget === true && userId) {
-        navigate(`/userDetailPage/${userId}`);
-      } else if (isNaviget === true && id) {
-        navigate(`/userDetailPage/${id}`);
-      }
+      await dispatch(CreateUserForm(payload, navigate));
       setErrors({});
     } else {
       setErrors(validationErrors);
@@ -771,15 +873,15 @@ export default function CreateUser() {
         Bank_Name: "",
       });
       setIsChecked(false);
-      setIsNaviget(true);
     }
   }, [usersDataLoading, userDataError]);
 
   const validateForm = () => {
     const errors = {};
+
     if (!formData.firstName) {
       errors.firstName = "First name is mandatory.";
-    } else if (!/^[a-zA-Z]+$/.test(formData.firstName)) {
+    } else if (!/^[a-zA-Z\s]+$/.test(formData.firstName)) {
       errors.firstName = "First name should contain only alphabets.";
     }
 
@@ -801,142 +903,132 @@ export default function CreateUser() {
         errors.currentZIP = "Error validating postal code";
       }
     }
-    if (formData.Zip) {
-      if (!formData.Zip) {
-        errors.Zip = "Postal Code is mandatory";
-      } else if (!/^\d+$/.test(formData.Zip)) {
-        errors.Zip = "Invalid postal code or contains non-numeric characters";
-      } else {
-        try {
-          const isValid = postcodeValidator(
-            formData.Zip,
-            "" || countryCode[formData.country]
-          );
-          if (!isValid) {
-            errors.Zip = "Invalid postal code";
-          }
-        } catch (error) {
-          errors.Zip = "Error validating postal code";
-        }
-      }
-    }
 
-    if (!formData.UANNo) {
-      errors.UANNo = "UAN number is mandatory";
-    } else if (!/^\d{12}$/.test(formData.UANNo)) {
+    if (formData.UANNo && !/^\d{12}$/.test(formData.UANNo)) {
       errors.UANNo = "UAN number should contain exactly 12 digits";
     }
 
     if (!formData.gender) {
       errors.gender = "Gender is mandatory";
     }
-    if (formData.productType !== "PRAKAT_LOCATION" && !formData.Client_loc) {
-      if (formData.productType !== "PRAKAT_LOCATION" && !formData.Client_loc) {
+
+    if (formData.productType !== "PRAKAT_LOCATION") {
+      if (!formData.Client_loc) {
         errors.Client_loc = "Office Location is mandatory";
       }
-
-      if (!formData.employedBy) {
-        errors.employedBy = "Employee By Location is mandatory";
-      }
-
-      if (!formData.designation) {
-        errors.designation = "Designation is mandatory";
-      }
-      if (!formData.skill) {
-        errors.skill = "Skills is mandatory";
-      }
-
-      if (!formData.employeeID) {
-        errors.employeeID = "Employee ID  is mandatory";
-      }
-
-      if (!formData.ManagerName.name) {
-        errors.ManagerName = "Manager name is mandatory";
-      }
-      if (!formData.Status) {
-        errors.Status = "Status is mandatory";
-      }
-
-      if (!formData.email) {
-        errors.email = "Email is mandatory";
-      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-        errors.email = "Please enter a valid email address";
-      }
-      if (!formData.currentAddress1) {
-        errors.currentAddress1 = "Current Address is mandatory";
-      }
-      if (!formData.currentcountry) {
-        errors.currentcountry = "Country is mandatory";
-      }
-      if (!formData.currentstate) {
-        errors.currentstate = "State is mandatory";
-      }
-      if (!formData.currentcity) {
-        errors.currentcity = "City is mandatory";
-      }
-
-      if (!formData.number) {
-        errors.number = "Mobile number is mandatory";
-      } else if (!/^\d+$/.test(formData.number)) {
-        errors.number = "Mobile number should contain only Number";
-      }
-      if (!formData.DOB) {
-        errors.DOB = "Date of birth is mandatory";
-      }
-      if (!formData.DOJ) {
-        errors.DOJ = "Date of joining is mandatory";
-      }
-      if (!formData.lastName) {
-        errors.lastName = "Last name is mandatory";
-      } else if (!/^[a-zA-Z]+$/.test(formData.lastName)) {
-        errors.lastName = "Last name should contain only alphabets.";
-      }
-
-      if (!formData.AadhaarNo) {
-        errors.AadhaarNo = "Aadhaar number is mandatory";
-      } else if (!/^\d+$/.test(formData.AadhaarNo)) {
-        errors.AadhaarNo = "Aadhaar number should contain only Number";
-      } else if (!/^[0-9]{12}$/.test(formData.AadhaarNo)) {
-        errors.AadhaarNo = "Aadhaar number should contains only 12 Number";
-      }
-
-      if (!formData.CTC) {
-        errors.CTC = "Employee CTC is mandatory";
-      } else if (!/^\d+(\.\d{1,2})?$/.test(formData.CTC)) {
-        errors.CTC =
-          "Please enter a valid numeric value for CTC with up to two decimal places.";
-      } else {
-        const ctcNumber = parseFloat(formData.CTC);
-        if (isNaN(ctcNumber) || ctcNumber < 0) {
-          errors.CTC =
-            "Please enter a valid non-negative numeric value for Employee CTC";
-        }
-      }
-
-      if (!formData.workMode) {
-        errors.workMode = "Work Mode is mandatory";
-      }
-      if (!formData.employeeType) {
-        errors.employeeType = "Employee type is mandatory";
-      }
-      if (formData.ACNo) {
-        if (!/^\d+$/.test(formData.ACNo)) {
-          errors.ACNo = "A/C No must be an digit";
-        }
-      }
-      if (formData.IFSCCode) {
-        if (!/^[A-Za-z0-9]+$/.test(formData.IFSCCode)) {
-          errors.IFSCCode = "IFSC Code must not contain special characters";
-        }
-      }
-      if (formData.Bank_Name) {
-        if (!/^[A-Za-z\s]+$/.test(formData.Bank_Name)) {
-          errors.BankName = "Bank Name must contain only alphabetic characters";
-        }
-      }
-
-      return errors;
     }
+
+    if (formData.employedBy==0) {
+      errors.employedBy = "Employee By Location is mandatory";
+    }
+
+    if (!formData.designation) {
+      errors.designation = "Designation is mandatory";
+    }
+
+    if (formData.skill==0) {
+      errors.skill = "Skills is mandatory";
+    }
+
+    if (!formData.employeeID) {
+      errors.employeeID = "Employee ID  is mandatory";
+    }
+
+    if (!formData.ManagerName || !formData.ManagerName.name) {
+      errors.ManagerName = "Manager name is mandatory";
+    }
+
+    if (!formData.Status) {
+      errors.Status = "Status is mandatory";
+    }
+
+    if (!formData.email) {
+      errors.email = "Email is mandatory";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = "Please enter a valid email address";
+    }
+
+    if (!formData.currentAddress1) {
+      errors.currentAddress1 = "Current Address is mandatory";
+    }
+
+    if (!formData.currentcountry) {
+      errors.currentcountry = "Country is mandatory";
+    }
+
+    if (!formData.currentstate) {
+      errors.currentstate = "State is mandatory";
+    }
+
+    if (!formData.currentcity) {
+      errors.currentcity = "City is mandatory";
+    }
+
+    if (!formData.number) {
+      errors.number = "Mobile number is mandatory";
+    } else if (!/^\d+$/.test(formData.number)) {
+      errors.number = "Mobile number should contain only Number";
+    }
+
+    if (!formData.DOB) {
+      errors.DOB = "Date of birth is mandatory";
+    }
+
+    if (!formData.DOJ) {
+      errors.DOJ = "Date of joining is mandatory";
+    }
+
+    if (!formData.lastName) {
+      errors.lastName = "Last name is mandatory";
+    } else if (!/^[a-zA-Z]+$/.test(formData.lastName)) {
+      errors.lastName = "Last name should contain only alphabets.";
+    }
+
+    if (!formData.AadhaarNo) {
+      errors.AadhaarNo = "Aadhaar number is mandatory";
+    } else if (!/^\d+$/.test(formData.AadhaarNo)) {
+      errors.AadhaarNo = "Aadhaar number should contain only Number";
+    } else if (!/^[0-9]{12}$/.test(formData.AadhaarNo)) {
+      errors.AadhaarNo = "Aadhaar number should contains only 12 Number";
+    }
+
+    if (!formData.CTC) {
+      errors.CTC = "Employee CTC is mandatory";
+    } else if (!/^\d+(\.\d{1,2})?$/.test(formData.CTC)) {
+      errors.CTC =
+        "Please enter a valid numeric value for CTC with up to two decimal places.";
+    } else {
+      const ctcNumber = parseFloat(formData.CTC);
+      if (isNaN(ctcNumber) || ctcNumber < 0) {
+        errors.CTC =
+          "Please enter a valid non-negative numeric value for Employee CTC";
+      }
+    }
+
+    if (!formData.workMode) {
+      errors.workMode = "Work Mode is mandatory";
+    }
+
+    if (!formData.employeeType) {
+      errors.employeeType = "Employee type is mandatory";
+    }
+
+    if (formData.ACNo && !/^\d+$/.test(formData.ACNo)) {
+      errors.ACNo = "A/C No must be an digit";
+    }
+
+    if (formData.IFSCCode && !/^[A-Za-z0-9]+$/.test(formData.IFSCCode)) {
+      errors.IFSCCode = "IFSC Code must not contain special characters";
+    }
+
+    if (formData.Bank_Name && !/^[A-Za-z\s]+$/.test(formData.Bank_Name)) {
+      errors.BankName = "Bank Name must contain only alphabetic characters";
+    }
+    if (formData.Bank && !/^[A-Za-z\s]+$/.test(formData.Bank)) {
+      errors.Bank = "Bank as per Name must contain only alphabetic ";
+    }
+
+    return errors;
   };
 
   return (
@@ -1305,7 +1397,7 @@ export default function CreateUser() {
         </Typography>
         <div
           style={{
-            width: "100%",
+            // width: "100%",
             margin: "auto",
             marginLeft: "12px",
             marginBottom: "18px",
@@ -1357,20 +1449,20 @@ export default function CreateUser() {
                 disableClearable
                 disableInput
                 id="currentcountry"
-                options={countries || []}
-                getOptionLabel={(option) => option.label}
+                options={countryData || []}
+                getOptionLabel={(option) => option.dataValue}
                 getOptionValue={(option) => option.id}
                 style={{
                   borderRadius: "10px",
                   width: "90%",
                 }}
                 value={
-                  countries.find(
+                  countryData?.find(
                     (country) => country.id === formData.currentcountry
                   ) || null
                 }
                 onChange={(e, value) =>
-                  handleCountryChange("currentcountry", e, value)
+                  handleCountryChange2("currentcountry", e, value)
                 }
                 renderInput={(params) => (
                   <TextField
@@ -1397,19 +1489,19 @@ export default function CreateUser() {
                 disableClearable
                 disableInput
                 id="currentstate"
-                options={formData.currentcountry ? states : []}
-                getOptionLabel={(option) => option.label}
+                options={formData.currentcountry ? state : []}
+                getOptionLabel={(option) => option.dataValue}
                 getOptionValue={(option) => option.id}
                 style={{
                   borderRadius: "10px",
                   width: "90%",
                 }}
                 value={
-                  states.find((state) => state.id === formData.currentstate) ||
+                  state?.find((state) => state.id === formData.currentstate) ||
                   null
                 }
                 onChange={(e, value) => {
-                  handleStateChange("currentstate", e, value);
+                  handleStateChange2("currentstate", e, value);
                   // Clear the city field when state changes
                   setFormData((prevData) => ({
                     ...prevData,
@@ -1442,18 +1534,17 @@ export default function CreateUser() {
                 disableInput
                 id="currentcity"
                 disableClearable={true} // Disable clear icon
-                options={formData.currentstate ? cities : []}
+                options={formData.currentstate ? city : []}
                 style={{
                   borderRadius: "10px",
                   width: "90%",
                 }}
-                getOptionLabel={(option) => option.label}
+                getOptionLabel={(option) => option.dataValue}
                 onChange={(e, value) => {
-                  handleCity("currentcity", e, value);
+                  handleCity2("currentcity", e, value);
                 }}
                 value={
-                  cities?.find((city) => city.id === formData.currentcity) ||
-                  null
+                  city?.find((city) => city.id === formData.currentcity) || null
                 }
                 renderInput={(params) => (
                   <TextField
@@ -1569,15 +1660,15 @@ export default function CreateUser() {
                 id="country"
                 value={
                   isChecked
-                    ? countries.find(
-                        (country) => country.id === formData.currentcountry
+                    ? countryData?.find(
+                        (country) => country?.id === formData.currentcountry
                       ) || null
-                    : countries.find(
-                        (country) => country.id === formData.country
+                    : country?.find(
+                        (country) => country?.id === formData.country
                       ) || null
                 }
-                options={countries || []}
-                getOptionLabel={(option) => option.label}
+                options={country || []}
+                getOptionLabel={(option) => option.dataValue}
                 getOptionValue={(option) => option.id}
                 style={{ width: "90%" }}
                 onChange={(e, value) =>
@@ -1595,21 +1686,21 @@ export default function CreateUser() {
               <Autocomplete
                 disableFreeSolo
                 id="state"
-                options={isChecked ? states : formData.country ? states : []}
+                options={isChecked ? state : formData.country ? stateData : []}
                 value={
                   isChecked
-                    ? states.find(
-                        (state) => state.id === formData.currentstate
+                    ? state?.find(
+                        (state) => state?.id === formData.currentstate
                       ) || null
-                    : states.find((state) => state.id === formData.state) ||
+                    : stateData?.find((state) => state?.id === formData.state) ||
                       null
                 }
-                getOptionLabel={(option) => option.label}
+                getOptionLabel={(option) => option.dataValue}
                 getOptionValue={(option) => option.id}
                 style={{ width: "90%" }}
                 onChange={(e, value) =>
                   isChecked
-                    ? handleStateChange("currentstate", e, value)
+                    ? handleStateChange2("currentstate", e, value)
                     : handleStateChange("state", e, value)
                 }
                 renderInput={(params) => (
@@ -1624,25 +1715,17 @@ export default function CreateUser() {
               <Autocomplete
                 disableFreeSolo
                 id="city"
-                options={
-                  isChecked
-                    ? cities
-                    : formData.state
-                    ? cities
-                    : formData.country
-                    ? cities
-                    : []
-                }
+                options={isChecked ? city : formData.country ? cityData : []}
                 value={
                   isChecked
-                    ? cities.find((city) => city.id === formData.currentcity) ||
+                    ? city?.find((city) => city.id === formData.currentcity) ||
                       null
-                    : cities.find((city) => city.id === formData.city) || null
+                    : cityData?.find((city) => city.id === formData.city) || null
                 }
-                getOptionLabel={(option) => option.label}
+                getOptionLabel={(option) => option.dataValue}
                 onChange={(e, value) =>
                   isChecked
-                    ? handleCity("currentcity", e, value)
+                    ? handleCity2("currentcity", e, value)
                     : handleCity("city", e, value)
                 }
                 renderInput={(params) => (
@@ -1658,7 +1741,7 @@ export default function CreateUser() {
                 name="Zip"
                 label={
                   <>
-                    Zip/Postal Code<span style={{ color: "red" }}>*</span>
+                    Zip/Postal Code
                   </>
                 }
                 value={isChecked ? formData.currentZIP : formData.Zip}
@@ -1666,11 +1749,7 @@ export default function CreateUser() {
                 onChange={(e) => handlezipChange(e, "Zip")}
                 disabled={isChecked} // Disable the field if checkbox is checked
               />
-              {errors?.Zip && (
-                <Box>
-                  <Typography color="error">{errors?.Zip}</Typography>
-                </Box>
-              )}
+              
             </Grid>
           </Grid>
         </Grid>
@@ -1774,7 +1853,7 @@ export default function CreateUser() {
                   borderRadius: "10px",
                   width: "90%",
                 }}
-                // onKeyDown={handleEnterKey}
+        
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -1811,7 +1890,11 @@ export default function CreateUser() {
                   width: "90%",
                   border: "1px solid silver",
                 }}
-                options={masterdata4}
+                options={
+                  masterdata4.filter(
+                    (location) => location.status === "ACTIVE"
+                  ) || []
+                }
               />
               {errors?.designation && (
                 <Box>
@@ -1917,7 +2000,11 @@ export default function CreateUser() {
                 }
                 dropdownName="Employee by"
                 name="EMPby"
-                options={employeeBy || []}
+                options={
+                  employeeBy.filter(
+                    (location) => location.status === "ACTIVE"
+                  ) || []
+                }
                 labelKey="name"
                 valueKey="locationId"
                 style={{
@@ -1953,10 +2040,14 @@ export default function CreateUser() {
                   width: "90%",
                   border: "1px solid silver",
                 }}
-                options={Client_location || []}
+                options={
+                  Client_location.filter(
+                    (location) => location.status === "ACTIVE"
+                  ) || []
+                }
                 labelKey="name"
                 valueKey="locationId"
-                disabled={enable}
+                disabled={formData.productType !== "CLIENT_LOCATION"}
               />
               {formData.productType !== "PRAKAT_LOCATION" && (
                 <Box>

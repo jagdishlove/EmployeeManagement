@@ -17,6 +17,12 @@ import {
   FETCH_STATES_FAILURE,
   FETCH_STATES_REQUEST,
   FETCH_STATES_SUCCESS,
+  GET_ALL_COUNTRY_REQUEST,
+  GET_ALL_COUNTRY_FAIL,
+  GET_ALL_COUNTRY_SUCCESS,
+  GET_ALL_STATE_FAIL,
+  GET_ALL_STATE_REQUEST,
+  GET_ALL_STATE_DATA_SUCCESS,
   FETCH_LOCATION_DATA_SUCCESS,
   SET_SELECTED_COUNTRY_ID,
   GET_ALL_CITYS,
@@ -24,6 +30,7 @@ import {
   CREATE_USER_FAIL,
   CREATE_USER_REQUEST,
   CREATE_USER_SUCCESS,
+  GET_ALL_CITY_DATA,
 } from "../../actions/AdminConsoleAction/users/usersActionTypes";
 
 const initialState = {
@@ -39,6 +46,10 @@ const initialState = {
   selectedCountryId: null,
   searchData: [],
   userId: null,
+  countrydata: [],
+  statedata: [],
+  cityData: [],
+  userByIDLoading:false,
 };
 
 const usersReducer = (state = initialState, action) => {
@@ -63,15 +74,18 @@ const usersReducer = (state = initialState, action) => {
     case GET_USER_BY_ID_REQUEST:
       return {
         ...state,
+        userByIDLoading:true,
       };
     case GET_USER_BY_ID_SUCCESS:
       return {
         ...state,
         userByIdData: action.payload,
+        userByIDLoading:false,
       };
     case GET_USER_BY_ID_FAILURE:
       return {
         ...state,
+        userByIDLoading:false,
       };
 
     case SEARCH_EMPLOYEE_REQUEST:
@@ -132,6 +146,32 @@ const usersReducer = (state = initialState, action) => {
         ...state,
         cities: [],
       };
+    case GET_ALL_COUNTRY_REQUEST:
+      return {
+        ...state,
+      };
+    case GET_ALL_COUNTRY_SUCCESS:
+      return {
+        ...state,
+        countrydata: action.payload,
+      };
+    case GET_ALL_COUNTRY_FAIL:
+      return {
+        ...state,
+      };
+    case GET_ALL_STATE_REQUEST:
+      return {
+        ...state,
+      };
+    case GET_ALL_STATE_DATA_SUCCESS:
+      return {
+        ...state,
+        statedata: action.payload,
+      };
+    case GET_ALL_STATE_FAIL:
+      return {
+        ...state,
+      };
     case FETCH_LOCATION_DATA_SUCCESS:
       return {
         ...state,
@@ -171,6 +211,11 @@ const usersReducer = (state = initialState, action) => {
         ...state,
         usersDataLoading: false,
         userDataError: true,
+      };
+    case GET_ALL_CITY_DATA:
+      return {
+        ...state,
+        cityData: action.payload,
       };
     default:
       return state;

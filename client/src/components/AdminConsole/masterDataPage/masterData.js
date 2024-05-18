@@ -136,73 +136,74 @@ export default function MasterData() {
     addressId: "",
   });
   const skillData = useSelector(
-    (state) => state?.nonPersist?.masterDataDetails?.skillData
+    (state) => state?.persistData?.masterDataDetails?.skillData
   );
+
   const jobTypeData = useSelector(
-    (state) => state?.nonPersist?.masterDataDetails?.jobTypeData
+    (state) => state?.persistData?.masterDataDetails?.jobTypeData
   );
 
   const holidayType = useSelector(
-    (state) => state.persistData.masterData?.holidayTypes
+    (state) => state.persistData?.loginDetails?.masterData?.holidayTypes
   );
 
   const designationData = useSelector(
-    (state) => state?.nonPersist?.masterDataDetails?.designationData
+    (state) => state?.persistData?.masterDataDetails?.designationData
   );
   const bandData = useSelector(
-    (state) => state?.nonPersist?.masterDataDetails?.bandData
+    (state) => state?.persistData?.masterDataDetails?.bandData
   );
 
   const officeLocationData = useSelector(
-    (state) => state?.nonPersist?.masterDataDetails?.officeLocationData
+    (state) => state?.persistData?.masterDataDetails?.officeLocationData
   );
 
   const officeLocation = useSelector(
-    (state) => state?.nonPersist?.masterDataDetails?.officeLocation
+    (state) => state?.persistData?.masterDataDetails?.officeLocation
   );
 
   const bandByID = useSelector(
-    (state) => state?.nonPersist?.masterDataDetails.bandValue
+    (state) => state?.persistData?.masterDataDetails.bandValue
   );
 
   const holidayData = useSelector(
-    (state) => state?.nonPersist?.masterDataDetails?.holidayData
+    (state) => state?.persistData?.masterDataDetails?.holidayData
   );
 
   const holiday = useSelector(
-    (state) => state?.nonPersist?.masterDataDetails?.holiday
+    (state) => state?.persistData?.masterDataDetails?.holiday
   );
 
   const domineData = useSelector(
-    (state) => state?.nonPersist?.masterDataDetails?.domineData
+    (state) => state?.persistData?.masterDataDetails?.domineData
   );
 
   const country = useSelector(
-    (state) => state?.nonPersist?.masterDataDetails?.countrydata
+    (state) => state?.persistData?.masterDataDetails?.countrydata
   );
 
   const state = useSelector(
-    (state) => state?.nonPersist?.masterDataDetails?.statedata
+    (state) => state?.persistData?.masterDataDetails?.statedata
   );
 
   const clinetData = useSelector(
-    (state) => state?.nonPersist?.masterDataDetails?.clientdata
+    (state) => state?.persistData?.masterDataDetails?.clientdata
   );
 
   const clientDetails1 = useSelector(
-    (state) => state?.nonPersist?.masterDataDetails?.clientDetails
+    (state) => state?.persistData?.masterDataDetails?.clientDetails
   );
 
   const LocationData = useSelector(
-    (state) => state?.nonPersist?.masterDataDetails?.LocationData
+    (state) => state?.persistData?.masterDataDetails?.LocationData
   );
 
   const onsiteLocationData = useSelector(
-    (state) => state?.nonPersist?.masterDataDetails?.onsiteLocationData
+    (state) => state?.persistData?.masterDataDetails?.onsiteLocationData
   );
 
   const onsiteLocation = useSelector(
-    (state) => state?.nonPersist?.masterDataDetails?.onsiteLocation
+    (state) => state?.persistData?.masterDataDetails?.onsiteLocation
   );
 
   const DataValue = {};
@@ -215,7 +216,8 @@ export default function MasterData() {
     countryCode[location.id] = location.code;
   });
 
-  const city = useSelector((state) => state?.nonPersist?.userDetails?.cities);
+  const city = useSelector((state) => state?.persistData?.userDetails?.cities);
+  localStorage.setItem("selectedTabIndex", 0);
 
   const handleBack = () => {
     navigate(-1);
@@ -736,12 +738,6 @@ export default function MasterData() {
   const handleSubmit = async (type, id, status) => {
     const validationErrors = validateForm(type);
 
-    console.log("validationErrors", validationErrors);
-    console.log(
-      "Object.keys(validationErrors).length",
-      Object.keys(validationErrors).length
-    );
-
     if (Object.keys(validationErrors).length == 0) {
       setErrors({});
       try {
@@ -753,7 +749,7 @@ export default function MasterData() {
           if (status) {
             payload.status = status;
           }
-          await dispatch(CreateSkillData(payload));
+          await dispatch(CreateSkillData(payload, handleCloseDialog));
           await dispatch(GetAllSkillData());
           setValue("");
         } else if (type === "Job Type") {
@@ -764,7 +760,7 @@ export default function MasterData() {
           if (status) {
             payload.status = status;
           }
-          await dispatch(CreateJobTypeData(payload));
+          await dispatch(CreateJobTypeData(payload, handleCloseDialog));
           await dispatch(GetAllJobTypeData());
           setValue("");
         } else if (type === "band") {
@@ -787,7 +783,7 @@ export default function MasterData() {
           if (status) {
             payload.status = status;
           }
-          await dispatch(CreateDesignationData(payload));
+          await dispatch(CreateDesignationData(payload, handleCloseDialog));
           await dispatch(GetAllDesignationData());
         } else if (type === "officeLocation") {
           const payload = {
@@ -809,7 +805,7 @@ export default function MasterData() {
           if (status) {
             payload.status = status;
           }
-          await dispatch(CreateOfficeLocationnData(payload));
+          await dispatch(CreateOfficeLocationnData(payload, handleCloseDialog));
           await dispatch(GetAllOfficeLocationData());
         } else if (type === "holiday") {
           const payload = {
@@ -821,7 +817,7 @@ export default function MasterData() {
           if (status) {
             payload.status = status;
           }
-          await dispatch(CreateManageHoliday(payload));
+          await dispatch(CreateManageHoliday(payload, handleCloseDialog));
           await dispatch(GetAllHolidays());
         } else if (type === "Domain") {
           const payload = {
@@ -831,7 +827,7 @@ export default function MasterData() {
           if (status) {
             payload.status = status;
           }
-          await dispatch(CreateDomine(payload));
+          await dispatch(CreateDomine(payload, handleCloseDialog));
           await dispatch(GetAllDomines());
         } else if (type === "clinetDetails") {
           const payload = {
@@ -850,7 +846,7 @@ export default function MasterData() {
           if (status) {
             payload.status = status;
           }
-          await dispatch(CreateClinetDetails(payload));
+          await dispatch(CreateClinetDetails(payload, handleCloseDialog));
           await dispatch(GatAllClinetDetails());
         } else if (type === "clientOfficeLocation") {
           const payload = {
@@ -870,11 +866,11 @@ export default function MasterData() {
           if (status) {
             payload.status = status;
           }
-          await dispatch(CreateOnsiteOfficeLocation(payload));
+          await dispatch(CreateOnsiteOfficeLocation(payload, handleCloseDialog));
           await dispatch(GetAllOnsiteOfficeLocation());
         }
       } finally {
-        handleCloseDialog();
+        console.log("object");
       }
     } else {
       setErrors(validationErrors);
@@ -894,7 +890,7 @@ export default function MasterData() {
           if (status) {
             payload.status = status;
           }
-          await dispatch(UpdateSkillData(payload));
+          await dispatch(UpdateSkillData(payload, handleCloseDialog));
           await dispatch(GetAllSkillData());
           setValue("");
         } else if (type === "band") {
@@ -907,7 +903,7 @@ export default function MasterData() {
           if (status) {
             payload.status = status;
           }
-          await dispatch(UpdateBandlData(payload));
+          await dispatch(UpdateBandlData(payload, ));
           await dispatch(GetAllBandData());
         } else if (type === "Designation") {
           const payload = {
@@ -917,7 +913,7 @@ export default function MasterData() {
           if (status) {
             payload.status = status;
           }
-          await dispatch(UpdateDesignationData(payload));
+          await dispatch(UpdateDesignationData(payload, handleCloseDialog));
           await dispatch(GetAllDesignationData());
         } else if (type === "officeLocation") {
           const payload = {
@@ -941,7 +937,7 @@ export default function MasterData() {
           if (status) {
             payload.status = status;
           }
-          await dispatch(UpdateOfficeLocationnData(payload));
+          await dispatch(UpdateOfficeLocationnData(payload, handleCloseDialog));
           await dispatch(GetAllOfficeLocationData());
         } else if (type === "holiday") {
           const payload = {
@@ -953,7 +949,7 @@ export default function MasterData() {
           if (status) {
             payload.status = status;
           }
-          await dispatch(UpdateManageHoliday(payload));
+          await dispatch(UpdateManageHoliday(payload, handleCloseDialog));
           await dispatch(GetAllHolidays());
         } else if (type === "Domain") {
           const payload = {
@@ -963,7 +959,7 @@ export default function MasterData() {
           if (status) {
             payload.status = status;
           }
-          await dispatch(UpdateDomine(payload));
+          await dispatch(UpdateDomine(payload, handleCloseDialog));
           await dispatch(GetAllDomines());
         } else if (type === "Job Type") {
           const payload = {
@@ -973,7 +969,7 @@ export default function MasterData() {
           if (status) {
             payload.status = status;
           }
-          await dispatch(UpdateJobType(payload));
+          await dispatch(UpdateJobType(payload, handleCloseDialog));
           await dispatch(GetAllJobTypeData());
           setValue("");
         } else if (type === "clinetDetails") {
@@ -993,7 +989,7 @@ export default function MasterData() {
           if (status) {
             payload.status = status;
           }
-          await dispatch(UpdateClinetDetails(payload));
+          await dispatch(UpdateClinetDetails(payload, handleCloseDialog));
           await dispatch(GatAllClinetDetails());
         } else if (type === "clientOfficeLocation") {
           const payload = {
@@ -1013,11 +1009,11 @@ export default function MasterData() {
           if (status) {
             payload.status = status;
           }
-          await dispatch(UpdateOnsiteOfficeLocation(payload));
+          await dispatch(UpdateOnsiteOfficeLocation(payload, handleCloseDialog));
           await dispatch(GetAllOnsiteOfficeLocation());
         }
       } finally {
-        handleCloseDialog();
+        console.log("object");
       }
     } else {
       setErrors(validationErrors);
@@ -1188,6 +1184,8 @@ export default function MasterData() {
 
     return errors;
   };
+
+  localStorage.removeItem("selectedProject");
   return (
     <>
       <MasterDataPage

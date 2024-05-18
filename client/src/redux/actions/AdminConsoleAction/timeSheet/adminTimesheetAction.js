@@ -10,6 +10,9 @@ import {
   GET_ALL_TIMESHEET_FOR_ADMIN_FAILURE,
   GET_ALL_TIMESHEET_FOR_ADMIN_REQUEST,
   GET_ALL_TIMESHEET_FOR_ADMIN_SUCCESS,
+  ADMIN_CONSOLE_APPROVE_TIMESHEET_REQUEST,
+  ADMIN_CONSOLE_APPROVE_TIMESHEET_SUCCESS,
+  ADMIN_CONSOLE_APPROVE_TIMESHEET_FAILURE,
 } from "./adminTimesheetActionType";
 import { getRefreshToken } from "../../login/loginAction";
 
@@ -65,6 +68,44 @@ const getAllTimesheetForAdminSuccess = (data) => {
 const getAllTimesheetForAdminFailure = () => {
   return {
     type: GET_ALL_TIMESHEET_FOR_ADMIN_FAILURE,
+  };
+};
+
+const adminConsoleTimesheetRequest = () => {
+  return {
+    type: ADMIN_CONSOLE_APPROVE_TIMESHEET_REQUEST,
+  };
+};
+
+const adminConsoleTimesheetSuccess = () => {
+  return {
+    type: ADMIN_CONSOLE_APPROVE_TIMESHEET_SUCCESS,
+   
+  };
+};
+
+const adminConsoleTimesheetFailure = () => {
+  return {
+    type: ADMIN_CONSOLE_APPROVE_TIMESHEET_FAILURE,
+  };
+};
+
+const adminConsoleTimesheetRejectRequest = () => {
+  return {
+    type: ADMIN_CONSOLE_APPROVE_TIMESHEET_REQUEST,
+  };
+};
+
+const adminConsoleTimesheetRejectSuccess = () => {
+  return {
+    type: ADMIN_CONSOLE_APPROVE_TIMESHEET_SUCCESS,
+   
+  };
+};
+
+const adminConsoleTimesheetRejectFailure = () => {
+  return {
+    type: ADMIN_CONSOLE_APPROVE_TIMESHEET_FAILURE,
   };
 };
 export const searchUserAction = (data) => {
@@ -134,12 +175,13 @@ export const getAllTimeSheetForAdmin = (data, payload) => {
 export const adminRejectTimesheet = (data, newPayload, search, params) => {
   return async (dispatch) => {
     try {
+      dispatch(adminConsoleTimesheetRejectRequest());
       await makeRequest(
         "POST",
         `/api/timesheetentry/setTimesheetEntryApprovalStatusByAdmin`,
         data
       );
-
+      dispatch(adminConsoleTimesheetRejectSuccess());
       dispatch(getAllTimeSheetForAdmin(newPayload, search));
       dispatch(getAllTimeSheetApprovers(params));
       toast.success("Timesheet Rejected Successfully.", {
@@ -154,6 +196,7 @@ export const adminRejectTimesheet = (data, newPayload, search, params) => {
       toast.info(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
+      dispatch(adminConsoleTimesheetRejectFailure());
     }
   };
 };
@@ -161,11 +204,13 @@ export const adminRejectTimesheet = (data, newPayload, search, params) => {
 export const adminApproveTimesheet = (data, newPayload, search, params) => {
   return async (dispatch) => {
     try {
+      dispatch(adminConsoleTimesheetRequest());
       await makeRequest(
         "POST",
         `/api/timesheetentry/setTimesheetEntryApprovalStatusByAdmin`,
         data
       );
+      dispatch(adminConsoleTimesheetSuccess());
       dispatch(getAllTimeSheetForAdmin(newPayload, search));
       dispatch(getAllTimeSheetApprovers(params));
 
@@ -181,6 +226,7 @@ export const adminApproveTimesheet = (data, newPayload, search, params) => {
       toast.info(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
+      dispatch(adminConsoleTimesheetFailure());
     }
   };
 };

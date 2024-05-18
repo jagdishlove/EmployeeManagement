@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -36,16 +37,14 @@ function AdminTimeSheet() {
 
   const [selectedSearchOption, setSelectedSearchOption] = useState("");
   const dispatch = useDispatch();
-
+  localStorage.setItem("selectedTabIndex", 0);
   const [comments, setComments] = useState({});
   const [ratings, setRatings] = useState({});
   const [selectedTimesheets, setSelectedTimesheets] = useState([]);
   const [openApproveDialog, setOpenApproveDialog] = useState(false);
-  const [selectedCards, setSelectedCards] = useState({});
-  const [isChecked, setIsChecked] = useState(false);
+  const [selectedCards, setSelectedCards] = useState([]);
+  // const [isChecked, setIsChecked] = useState(false);
   const [selectall, setSelectall] = useState(false);
-
-
 
   const params = {
     status: states,
@@ -103,13 +102,18 @@ function AdminTimeSheet() {
   ]);
 
   const adminTimeSheetData = useSelector(
-    (state) => state?.nonPersist?.adminTimeSheet?.allTimeSheetsForAdmin
+    (state) => state?.persistData?.adminTimeSheet?.allTimeSheetsForAdmin
   );
 
-  const masterData = useSelector((state) => state.persistData.masterData);
+  const {adminConsoleApproveTimesheetLoading} = useSelector(
+    (state) => state?.persistData?.adminTimeSheet
+  );
+  const masterData = useSelector(
+    (state) => state.persistData?.loginDetails?.masterData
+  );
 
   const approverList = useSelector(
-    (state) => state?.nonPersist?.adminTimeSheet?.approversData
+    (state) => state?.persistData?.adminTimeSheet?.approversData
   );
 
   const approverNameMapping = {};
@@ -144,15 +148,16 @@ function AdminTimeSheet() {
   const handleSelectAll = () => {
     const entriesToApprove = adminTimeSheetData?.content || [];
     const updatedSelectedCards = {};
+    const allSelected = !selectall;
 
     for (const entry of entriesToApprove) {
-      updatedSelectedCards[entry.timesheetEntryId] = !isChecked;
+      updatedSelectedCards[entry.timesheetEntryId] = allSelected;
     }
 
     setSelectedCards(updatedSelectedCards);
-    setIsChecked((prevIsChecked) => !prevIsChecked);
-    setSelectall(!selectall);
+    setSelectall(allSelected);
   };
+
   const handleClosePopup = () => {
     setOpenPopup(false);
   };
@@ -213,6 +218,9 @@ function AdminTimeSheet() {
     );
     setErrorValidation({});
   };
+
+ 
+ 
 
   const bulkApproveHandler = async () => {
     const entriesToApprove = adminTimeSheetData?.content || [];
@@ -348,9 +356,34 @@ function AdminTimeSheet() {
     if (Object.keys(errors).length === 0) {
       try {
         // Dispatch the approval action for selected leaves
-        dispatch(adminApproveTimesheet(approvedEntries));
+        dispatch(
+          adminApproveTimesheet(
+            approvedEntries,
+            {
+              status: states,
+              date:
+                selectedDate !== "All"
+                  ? dayjs(selectedDate, { format: "YYYY-MM-DD" }).format(
+                      "YYYY-MM-DD"
+                    )
+                  : "",
+              approverId: approver === "All" ? "" : approver,
+              size: pageCounter * 5,
+            },
+            selectedSearchOption,
+            {
+              status: states,
+              date:
+                selectedDate !== "All"
+                  ? dayjs(selectedDate, { format: "YYYY-MM-DD" }).format(
+                      "YYYY-MM-DD"
+                    )
+                  : "",
+            }
+          )
+        );
         setErrorValidation({});
-        setSelectedCards({});
+        setSelectedCards([]);
       } catch (error) {
         console.error("Error during selected leaves approval:", error);
       } finally {
@@ -384,16 +417,44 @@ function AdminTimeSheet() {
       return updatedSelectedCards;
     });
   };
+
+  const setApproverHandler = (newApprover) => {
+    setApprover(newApprover);
+    setSelectedCards({});
+    setSelectall(false);
+  };
+  localStorage.removeItem("selectedProject");
+
+
+
   return (
     <Grid>
+    {adminConsoleApproveTimesheetLoading && (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          position="fixed"
+          top="0"
+          left="0"
+          width="100%"
+          height="100%"
+          bgcolor="rgba(255, 255, 255, 0.7)"
+          zIndex="1000"
+        >
+          <CircularProgress />
+        </Box>
+      )}
       <AdminTimesheetHeader
-        setApprover={setApprover}
+        setApprover={setApproverHandler}
         approver={approver}
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
         states={states}
         setStatus={setStatus}
         setSelectedSearchOption={setSelectedSearchOption}
+        setSelectedCards={setSelectedCards}
+        setSelectall={setSelectall}
       />
       {Object.values(selectedCards).some((isSelected) => isSelected) && (
         <Box display="flex" justifyContent="flex-end" mt={2} mr={2}>
@@ -493,6 +554,7 @@ function AdminTimeSheet() {
                 selectedCards={selectedCards}
                 setSelectedCards={setSelectedCards}
                 handleCheckboxChange={handleCheckboxChange}
+              
               />
             ))
           ) : (
@@ -562,6 +624,7 @@ function AdminTimeSheet() {
           </Button>
         </DialogActions>
       </Dialog>
+
     </Grid>
   );
 }

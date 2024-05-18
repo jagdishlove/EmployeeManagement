@@ -8,12 +8,16 @@ import {
   GET_ALL_TIMESHEET_FOR_ADMIN_FAILURE,
   GET_ALL_TIMESHEET_FOR_ADMIN_REQUEST,
   GET_ALL_TIMESHEET_FOR_ADMIN_SUCCESS,
+  ADMIN_CONSOLE_APPROVE_TIMESHEET_REQUEST,
+  ADMIN_CONSOLE_APPROVE_TIMESHEET_SUCCESS,
+  ADMIN_CONSOLE_APPROVE_TIMESHEET_FAILURE,
 } from "../../actions/AdminConsoleAction/timeSheet/adminTimesheetActionType";
 
 const initialState = {
   searchUserData: [],
   approversData: [],
   allTimeSheetsForAdmin: [],
+  adminConsoleApproveTimesheetLoading:false,
 };
 
 const adminTimeSheetReducer = (state = initialState, action) => {
@@ -57,6 +61,21 @@ const adminTimeSheetReducer = (state = initialState, action) => {
       return {
         ...state,
       };
+      case ADMIN_CONSOLE_APPROVE_TIMESHEET_REQUEST:
+        return {
+          ...state,
+          adminConsoleApproveTimesheetLoading:true,
+        };
+      case ADMIN_CONSOLE_APPROVE_TIMESHEET_SUCCESS:
+        return {
+          ...state,
+          adminConsoleApproveTimesheetLoading:false,
+        };
+      case ADMIN_CONSOLE_APPROVE_TIMESHEET_FAILURE:
+        return {
+          ...state,
+          adminConsoleApproveTimesheetLoading:false,
+        };
     default:
       return state;
   }

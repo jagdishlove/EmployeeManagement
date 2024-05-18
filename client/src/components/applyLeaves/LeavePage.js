@@ -25,11 +25,11 @@ import LeaveRequestForm from "./leaveRequestForm";
 
 const LeavePage = () => {
   const managerData = useSelector(
-    (state) => state.persistData.masterData?.manager
+    (state) => state.persistData?.loginDetails?.masterData?.manager
   );
 
   const { leaveFormError, formDataLoading } = useSelector(
-    (state) => state?.nonPersist?.leavesData
+    (state) => state?.persistData?.leavesData
   );
 
   const [historyData, setHistoryData] = useState([]);
@@ -64,15 +64,15 @@ const LeavePage = () => {
   const dispatch = useDispatch();
 
   const leaveHistory = useSelector(
-    (state) => state?.nonPersist?.leaveHistoryData?.data
+    (state) => state?.persistData?.leaveHistoryData?.data
   );
 
   const leaveBalances = useSelector(
-    (state) => state?.nonPersist?.leavesData?.leaveBalanceData
+    (state) => state?.persistData?.leavesData?.leaveBalanceData
   );
 
   const leaveTypeMasterData = useSelector(
-    (state) => state.persistData.masterData?.leaveTypes
+    (state) => state.persistData?.loginDetails?.masterData?.leaveTypes
   );
 
   const result = leaveBalances.map((item) => {
@@ -88,9 +88,9 @@ const LeavePage = () => {
     };
   });
   const leaveRequestType = useSelector(
-    (state) => state.persistData.masterData?.leaveTypes
+    (state) => state.persistData?.loginDetails?.masterData?.leaveTypes
   );
-
+  localStorage.setItem("selectedTabIndex", 0);
   const findLeaveMasterId = (leaveType) => {
     const foundLeave = leaveRequestType.find(
       (leave) => leave.leaveType === leaveType
@@ -202,7 +202,9 @@ const LeavePage = () => {
     leaveRqstData.leaveMasterId,
   ]);
 
-  const { numberOfDays } = useSelector((state) => state?.nonPersist.leavesData);
+  const { numberOfDays } = useSelector(
+    (state) => state?.persistData.leavesData
+  );
   useEffect(() => {
     setLeaveReqstData((prevData) => ({
       ...prevData,
@@ -252,7 +254,7 @@ const LeavePage = () => {
   const clearErrorOnEdit = () => {
     setErrors({});
   };
-
+  localStorage.removeItem("selectedProject");
   return (
     <>
       <Modal

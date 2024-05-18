@@ -13,7 +13,8 @@ const SavedTimesheetEntry = ({
 }) => {
   const dispatch = useDispatch();
   const getTimesheetData = useSelector(
-    (state) => state?.nonPersist?.timesheetData?.timeSheetData?.timesheetEntryId
+    (state) =>
+      state?.persistData?.timesheetData?.timeSheetData?.timesheetEntryId
   );
 
   const [editingId, setEditingId] = useState(null);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Grid,
   Box,
@@ -11,10 +11,12 @@ import {
   Button,
   IconButton,
   Slider,
+  CircularProgress,
 } from "@mui/material";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -50,18 +52,21 @@ export default function UserDetailsPage() {
   const [payRollExpanded, setPayRollExpanded] = useState(false);
   const [bankExpand, setBankExpand] = useState(false);
   const [skillExpanded, setSkillExpanded] = useState(false);
-  const role = useSelector((state) => state?.persistData.data.role);
+  const role = useSelector(
+    (state) => state?.persistData?.loginDetails?.data.role
+  );
   const isSuperAdmin = role?.includes("SUPERADMIN");
 
-  const empId = useSelector((state) => state?.persistData.data?.empId);
-
-  console.log("empId", empId);
-  console.log("id", id);
+  const empId = useSelector(
+    (state) => state?.persistData?.loginDetails?.data?.empId
+  );
 
   const handleAddSkillClick = () => {
     setShowAddSkills(!showAddSkills);
   };
-  const skills = useSelector((state) => state.persistData.masterData?.skill);
+  const skills = useSelector(
+    (state) => state.persistData?.loginDetails?.masterData?.skill
+  );
 
   const InputOption = ({
     getStyles,
@@ -200,7 +205,7 @@ export default function UserDetailsPage() {
   };
 
   const { projectDetailsData } = useSelector(
-    (state) => state.nonPersist?.projectDetails
+    (state) => state.persistData?.projectDetails
   );
 
   const handleExpand = () => {
@@ -229,11 +234,11 @@ export default function UserDetailsPage() {
   }, []);
 
   const LocationData = useSelector(
-    (state) => state?.nonPersist?.masterDataDetails?.LocationData
+    (state) => state?.persistData?.masterDataDetails?.LocationData
   );
 
   const officeLocation = useSelector(
-    (state) => state?.nonPersist?.masterDataDetails?.officeLocation
+    (state) => state?.persistData?.masterDataDetails?.officeLocation
   );
 
   const DataValue = {};
@@ -242,9 +247,11 @@ export default function UserDetailsPage() {
   });
 
   const userData = useSelector(
-    (state) => state?.nonPersist?.userDetails?.userByIdData
+    (state) => state?.persistData?.userDetails?.userByIdData
   );
-
+  const { userByIDLoading } = useSelector(
+    (state) => state?.persistData?.userDetails
+  );
   const [selectedSkills, setSelectedSkills] = useState();
 
   useEffect(() => {
@@ -263,7 +270,9 @@ export default function UserDetailsPage() {
     }
   }, [userData]);
 
-  const managerData = useSelector((state) => state.persistData.masterData);
+  const managerData = useSelector(
+    (state) => state.persistData?.loginDetails?.masterData
+  );
 
   const skillIdToName = {};
   managerData.skill?.forEach((skill) => {
@@ -292,7 +301,7 @@ export default function UserDetailsPage() {
   });
 
   const { clientDetailsData } = useSelector(
-    (state) => state.nonPersist.projectDetails
+    (state) => state.persistData.projectDetails
   );
 
   const skillItemStyle = {
@@ -317,36 +326,51 @@ export default function UserDetailsPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [showAddSkills, setShowAddSkills] = useState(false);
   const [addSkills, setAddSkills] = useState();
+
   const [skillValues, setSkillValues] = useState({});
+
+  const previousSelectedSkills = useRef();
 
   const handleEditButtonClick = () => {
     setIsEditing(!isEditing);
     setShowAddSkills(false);
+    previousSelectedSkills.current = [...selectedSkills];
   };
 
   const handleSliderChange = (skillId, newValue) => {
+    // Update skill values
     setSkillValues((prevValues) => ({
       ...prevValues,
       [skillId]: newValue,
     }));
 
-    // setValue(newValue);
+    // Update selected skills
     const updatedSkills = selectedSkills.map((skill) =>
       skill.skillId === skillId ? { ...skill, rating: newValue } : skill
     );
     setSelectedSkills(updatedSkills);
+
+    // Update add skills
     const updatedAddSkills = updatedSkills.map(({ skillId, rating }) => ({
       skillId,
-      rating: rating !== undefined ? rating : 0,
+      rating: rating !== undefined ? rating : 8,
     }));
     setAddSkills(updatedAddSkills);
   };
 
   const handleRemoveSkill = (skillIndex) => {
-    // Remove the selected skill when the "X" button is clicked
-    const updatedSkills = [...selectedSkills];
-    updatedSkills.splice(skillIndex, 1);
-    setSelectedSkills(updatedSkills);
+    const updatedSelectedSkills = selectedSkills.filter(
+      (_, index) => index !== skillIndex
+    );
+    setSelectedSkills(updatedSelectedSkills);
+
+    const updatedAddSkills = updatedSelectedSkills.map(
+      ({ skillId, rating }) => ({
+        skillId,
+        rating: rating !== undefined ? rating : 0,
+      })
+    );
+    setAddSkills(updatedAddSkills);
   };
 
   const ValueLabelComponent = (props) => {
@@ -363,15 +387,18 @@ export default function UserDetailsPage() {
       </Tooltip>
     );
   };
+
   const handleCancel = () => {
     setIsEditing(false);
+    setSelectedSkills(previousSelectedSkills.current);
+    setAddSkills([]);
   };
   const handleSave = () => {
     setIsEditing(false);
     dispatch(saveSkills(addSkills));
   };
   const renderSkills = () => {
-    return selectedSkills?.map((skill, id) => (
+    return selectedSkills?.map((skill, skillId) => (
       <div key={id} style={isEditing ? editedSkillItemStyle : skillItemStyle}>
         {!isEditing && (
           <Typography variant="body1" sx={{ width: "100%" }}>
@@ -398,7 +425,9 @@ export default function UserDetailsPage() {
                   marginLeft: "10px",
                   width: "500px",
                   color:
-                    (skillValues[skill.skillId] || skill.rating) < 4
+                    (skillValues[skill.skillId] ||
+                      skill.rating ||
+                      skill.rating === undefined) < 4
                       ? "#90DC90"
                       : ((skillValues[skill.skillId] > 4 &&
                           skillValues[skill.skillId]) ||
@@ -411,7 +440,7 @@ export default function UserDetailsPage() {
                 }}
               />
             </LightTooltip>
-            <IconButton onClick={() => handleRemoveSkill(id)}>
+            <IconButton onClick={() => handleRemoveSkill(skillId)}>
               <ClearIcon
                 sx={{
                   marginTop: -0.3,
@@ -425,7 +454,7 @@ export default function UserDetailsPage() {
             <StarOutlinedIcon
               style={{
                 backgroundColor:
-                  skill.rating < 4
+                  skill.rating < 4 || skill.rating === undefined
                     ? "#90DC90"
                     : skill.rating >= 4 && skill.rating < 7
                     ? "#E6E62C"
@@ -439,7 +468,7 @@ export default function UserDetailsPage() {
                 marginRight: 4,
               }}
             />
-            {skill?.rating}
+            {skill?.rating || 0}
           </>
         )}
       </div>
@@ -487,1044 +516,1098 @@ export default function UserDetailsPage() {
     flexWrap: "wrap",
   };
 
+  const Navigate = useNavigate();
+
   const handleBack = () => {
-    if (isSuperAdmin) {
-      navigate(-1);
-    } else {
-      navigate(-1);
-    }
+    Navigate(-1);
   };
 
   const handleEdit = (id) => {
     navigate(`/editUser/${id}`);
   };
 
+  const updateBottomSkills = () => {
+    const updatedSkills = [...addSkills];
+    selectedSkills.forEach((topSkill) => {
+      const exists = updatedSkills.find(
+        (skill) => skill.skillId === topSkill.skillId
+      );
+      if (!exists) {
+        updatedSkills.push({
+          esmId: topSkill.esmId,
+          skillName: topSkill.skillName,
+          skillId: topSkill.skillId,
+          rating: topSkill.rating,
+        });
+      }
+    });
+
+    setAddSkills(updatedSkills);
+  };
+
+  const selectedSkillFunc = (skill) => {
+    updateBottomSkills();
+    setSelectedSkills(skill);
+    setAddSkills(skill);
+  };
+
   return (
     <>
-      <Grid container alignItems="center">
-        <KeyboardBackspaceIcon
-          style={{ fontSize: 30, cursor: "pointer" }}
-          onClick={() => handleBack()}
-        />
-        <Typography variant="h2" component="div" sx={{ marginLeft: 1 }}>
-          User Details
-        </Typography>
-      </Grid>
-      <div
-        style={{
-          width: "100%",
-          margin: "auto",
-          marginBottom: "18px",
-          border: "1px solid #008080",
-          marginTop: "10px",
-        }}
-      />
-      {isSuperAdmin ? (
-        <>
-          <Grid sx={{ textAlign: "end" }}>
-            <Button
-              sx={{
-                border: "1px solid #008080",
-                color: "#008080",
-                textTransform: "capitalize",
-              }}
-              onClick={() => handleEdit(userData?.id)}
-            >
-              <BorderColorOutlinedIcon fontSize="small" />
-              Edit
-            </Button>
-          </Grid>
-        </>
+      {userByIDLoading ? (
+      <div style={{textAlign:"center"}}> <CircularProgress/></div> 
       ) : (
-        <></>
-      )}
-
-      <Grid container spacing={2} mt={1}>
-        <Grid item xs={3.5}>
-          <Grid
-            sx={{
-              border: "2px solid #A4A4A4",
-              boxShadow: "#000000",
-              height: "600px",
-              padding: 2,
-              borderRadius: "25px",
+        <>
+          <Grid container alignItems="center">
+            <KeyboardBackspaceIcon
+              style={{ fontSize: 30, cursor: "pointer" }}
+              onClick={handleBack}
+            />
+            <Typography variant="h2" component="div" sx={{ marginLeft: 1 }}>
+              User Details
+            </Typography>
+          </Grid>
+          <div
+            style={{
+              width: "100%",
+              margin: "auto",
+              marginBottom: "18px",
+              border: "1px solid #008080",
+              marginTop: "10px",
             }}
-          >
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Box
+          />
+          {isSuperAdmin ? (
+            <>
+              <Grid sx={{ textAlign: "end" }}>
+                <Button
                   sx={{
-                    display: "flex",
-                    height: "178px",
-                    justifyContent: "center",
-                    alignItems: "center",
+                    border: "1px solid #008080",
+                    color: "#008080",
+                    textTransform: "capitalize",
                   }}
+                  onClick={() => handleEdit(userData?.id)}
                 >
-                  <Avatar
-                    alt="Profile Picture"
-                    src={`data:image/png;base64,${userData?.fileStorage?.data}`}
-                    sx={{
-                      width: "180px",
-                      height: "180px",
-                      border: "2px solid #A4A4A4",
-                    }}
-                  >
-                    {!userData?.fileStorage?.data && userData.firstName && (
-                      <Typography
-                        variant="h1"
-                        sx={{
-                          width: "100%",
-                          height: "100%",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          color: "#ffff",
-                          backgroundColor: "#008080",
-                        }}
-                      >
-                        {userData.firstName[0].toUpperCase()}
-                      </Typography>
-                    )}
-                  </Avatar>
-                </Box>
+                  <BorderColorOutlinedIcon fontSize="small" />
+                  Edit
+                </Button>
               </Grid>
-              <Grid container spacing={2} sx={{ textAlign: "center" }}>
-                <Grid item xs={12} mt={1}>
-                  <Typography variant="h4">{userData.firstName}</Typography>
-                </Grid>
-                <Grid item xs={12} mt={-2}>
-                  <Typography variant="h3">
-                    {designationIdToName[userData.designationId]}
-                  </Typography>
-                </Grid>
-                <Grid container spacing={2} mt={2}>
-                  <Grid md={3}></Grid>
-                  <Grid md={9} sx={{ alignItems: "start", textAlign: "start" }}>
-                    <Grid>
-                      <Typography
-                        variant="subtitle1"
-                        gutterBottom
-                        sx={{ color: "#898989" }}
-                      >
-                        Status
-                      </Typography>
-                      <Typography
-                        variant="body1"
+            </>
+          ) : (
+            <></>
+          )}
+
+          <Grid container spacing={2} mt={1}>
+            <Grid item xs={3.5}>
+              <Grid
+                sx={{
+                  border: "2px solid #A4A4A4",
+                  boxShadow: "#000000",
+                  height: "600px",
+                  padding: 2,
+                  borderRadius: "25px",
+                }}
+              >
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        height: "178px",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Avatar
+                        alt="Profile Picture"
+                        src={`data:image/png;base64,${userData?.fileStorage?.data}`}
                         sx={{
-                          color: "black",
-                          fontWeight: "bold",
-                          marginBottom: "5px",
+                          width: "180px",
+                          height: "180px",
+                          border: "2px solid #A4A4A4",
                         }}
                       >
-                        {userData.status &&
-                          userData.status.charAt(0).toUpperCase() +
-                            userData.status.slice(1).toLowerCase()}
+                        {!userData?.fileStorage?.data && userData.firstName && (
+                          <Typography
+                            variant="h1"
+                            sx={{
+                              width: "100%",
+                              height: "100%",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              color: "#ffff",
+                              backgroundColor: "#008080",
+                            }}
+                          >
+                            {userData.firstName[0].toUpperCase()}
+                          </Typography>
+                        )}
+                      </Avatar>
+                    </Box>
+                  </Grid>
+                  <Grid container spacing={2} sx={{ textAlign: "center" }}>
+                    <Grid item xs={12} mt={1}>
+                      <Typography variant="h4">{userData.firstName}</Typography>
+                    </Grid>
+                    <Grid item xs={12} mt={-2}>
+                      <Typography variant="h3">
+                        {designationIdToName[userData.designationId]}
                       </Typography>
-                      <Typography sx={{ color: "#898989" }}>
-                        Date Of Birth
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{ color: "#53939C", marginBottom: "7px" }}
+                    </Grid>
+                    <Grid container spacing={2} mt={2}>
+                      <Grid md={3}></Grid>
+                      <Grid
+                        md={9}
+                        sx={{ alignItems: "start", textAlign: "start" }}
                       >
-                        {userData.dob}
-                      </Typography>
-                      <Typography sx={{ color: "#898989" }}>Email</Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{ color: "#53939C", marginBottom: "7px" }}
-                      >
-                        {userData.email}
-                      </Typography>
-                      <Typography sx={{ color: "#898989" }}>
-                        Mobile Number
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{ color: "#53939C", marginBottom: "7px" }}
-                      >
-                        {userData.phoneNumber}
-                      </Typography>
-                      <Typography sx={{ color: "#898989" }}>Office</Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          color: "#53939C",
-                          marginBottom: "7px",
-                          fontSize: "14px",
-                        }}
-                      >
-                        {`${officeLocation?.address?.addressLine1}, 
+                        <Grid>
+                          <Typography
+                            variant="subtitle1"
+                            gutterBottom
+                            sx={{ color: "#898989" }}
+                          >
+                            Status
+                          </Typography>
+                          <Typography
+                            variant="body1"
+                            sx={{
+                              color: "black",
+                              fontWeight: "bold",
+                              marginBottom: "5px",
+                            }}
+                          >
+                            {userData.status &&
+                              userData.status.charAt(0).toUpperCase() +
+                                userData.status.slice(1).toLowerCase()}
+                          </Typography>
+                          <Typography sx={{ color: "#898989" }}>
+                            Date Of Birth
+                          </Typography>
+                          <Typography
+                            variant="body1"
+                            sx={{ color: "#53939C", marginBottom: "7px" }}
+                          >
+                            {userData.dob}
+                          </Typography>
+                          <Typography sx={{ color: "#898989" }}>
+                            Email
+                          </Typography>
+                          <Typography
+                            variant="body1"
+                            sx={{ color: "#53939C", marginBottom: "7px" }}
+                          >
+                            {userData.email}
+                          </Typography>
+                          <Typography sx={{ color: "#898989" }}>
+                            Mobile Number
+                          </Typography>
+                          <Typography
+                            variant="body1"
+                            sx={{ color: "#53939C", marginBottom: "7px" }}
+                          >
+                            {userData.phoneNumber}
+                          </Typography>
+                          <Typography sx={{ color: "#898989" }}>
+                            Office
+                          </Typography>
+                          <Typography
+                            variant="body1"
+                            sx={{
+                              color: "#53939C",
+                              marginBottom: "7px",
+                              fontSize: "14px",
+                            }}
+                          >
+                            {`${officeLocation?.address?.addressLine1}, 
                           ${officeLocation?.address?.addressLine2}, 
                           ${DataValue[officeLocation?.address?.stateId]}, 
                           ${officeLocation?.address?.postalCode}`
-                          .split(",")
-                          .map((item, index) => (
-                            <React.Fragment key={index}>
-                              {item.trim()}
-                              {index !== 3 && ","}{" "}
-                              {/* Add a comma if it's not the last item */}
-                              {index !== 3 && " "}{" "}
-                              {/* Add a space if it's not the last item */}
-                            </React.Fragment>
-                          ))}
-                      </Typography>
+                              .split(",")
+                              .map((item, index) => (
+                                <React.Fragment key={index}>
+                                  {item.trim()}
+                                  {index !== 3 && ","}{" "}
+                                  {/* Add a comma if it's not the last item */}
+                                  {index !== 3 && " "}{" "}
+                                  {/* Add a space if it's not the last item */}
+                                </React.Fragment>
+                              ))}
+                          </Typography>
+                        </Grid>
+                      </Grid>
                     </Grid>
                   </Grid>
                 </Grid>
               </Grid>
             </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={8.5}>
-          <Box
-            sx={{
-              border: "2px solid #A4A4A4",
-              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-              height: "600px",
-              padding: 8.4,
-              borderRadius: "25px",
-              width: "97%",
-            }}
-          >
-            <Typography variant="h5" gutterBottom>
-              <b> Basic Details :</b>
-            </Typography>
-            <Grid container spacing={2} mt={1.3}>
-              <Grid item xs={12}>
-                <Grid container spacing={2}>
-                  <Grid item xs={4}>
-                    <Typography variant="body1">
-                      <strong>Employee ID:</strong>
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={8}>
-                    <Typography variant="body1">{userData.empId}</Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid item xs={12}>
-                <Grid container spacing={2}>
-                  <Grid item xs={4}>
-                    <Typography variant="body1">
-                      <strong>Date Of Joining:</strong>
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={8}>
-                    <Typography variant="body1">
-                      {userData.joiningDate}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid item xs={12}>
-                <Grid container spacing={2}>
-                  <Grid item xs={4}>
-                    <Typography variant="body1">
-                      <strong>Gender:</strong>
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={8}>
-                    <Typography variant="body1">
-                      {genderIdToName[userData.genderId]}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid item xs={12}>
-                <Grid container spacing={2}>
-                  <Grid item xs={4}>
-                    <Typography variant="body1">
-                      <strong>Employment Type:</strong>
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={8}>
-                    <Typography variant="body1">
-                      {empTypeIdToName[userData.empTypeId]}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
-              {userData.clientLocationId ? (
-                <>
+            <Grid item xs={8.5}>
+              <Box
+                sx={{
+                  border: "2px solid #A4A4A4",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  height: "600px",
+                  padding: 8.4,
+                  borderRadius: "25px",
+                  width: "97%",
+                }}
+              >
+                <Typography variant="h5" gutterBottom>
+                  <b> Basic Details :</b>
+                </Typography>
+                <Grid container spacing={2} mt={1.3}>
                   <Grid item xs={12}>
                     <Grid container spacing={2}>
                       <Grid item xs={4}>
                         <Typography variant="body1">
-                          <strong>Client Location :</strong>
+                          <strong>Employee ID:</strong>
                         </Typography>
                       </Grid>
                       <Grid item xs={8}>
                         <Typography variant="body1">
-                          {`${clientDetailsData?.clientName}, ${
-                            clientDetailsData?.address?.addressLine1
-                          }, ${clientDetailsData?.address?.addressLine2}, 
+                          {userData.empId}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={4}>
+                        <Typography variant="body1">
+                          <strong>Date Of Joining:</strong>
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={8}>
+                        <Typography variant="body1">
+                          {userData.joiningDate}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={4}>
+                        <Typography variant="body1">
+                          <strong>Gender:</strong>
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={8}>
+                        <Typography variant="body1">
+                          {genderIdToName[userData.genderId]}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={4}>
+                        <Typography variant="body1">
+                          <strong>Employment Type:</strong>
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={8}>
+                        <Typography variant="body1">
+                          {empTypeIdToName[userData.empTypeId]}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  {userData.clientLocationId ? (
+                    <>
+                      <Grid item xs={12}>
+                        <Grid container spacing={2}>
+                          <Grid item xs={4}>
+                            <Typography variant="body1">
+                              <strong>Client Location :</strong>
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={8}>
+                            <Typography variant="body1">
+                              {`${clientDetailsData?.clientName}, ${
+                                clientDetailsData?.address?.addressLine1
+                              }, ${clientDetailsData?.address?.addressLine2}, 
                             ${
                               DataValue[clientDetailsData?.address?.cityId]
                             } - ${clientDetailsData?.address?.postalCode}, 
                             ${
                               DataValue[clientDetailsData?.address?.stateId]
                             }, ${
-                            DataValue[clientDetailsData?.address?.countryId]
-                          }.`}{" "}
+                                DataValue[clientDetailsData?.address?.countryId]
+                              }.`}{" "}
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    </>
+                  ) : (
+                    <>
+                      <Grid>
+                        {""}
+                        {""} {""}
+                      </Grid>
+                    </>
+                  )}
+                  <Grid item xs={12}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={4}>
+                        <Typography variant="body1">
+                          <strong>Work Mode:</strong>
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={8}>
+                        <Typography variant="body1">
+                          {userData.workMode}
                         </Typography>
                       </Grid>
                     </Grid>
                   </Grid>
-                </>
-              ) : (
-                <>
-                  <Grid>
-                    {""}
-                    {""} {""}
+                  <Grid item xs={12}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={4}>
+                        <Typography variant="body1">
+                          <strong>Reporting Manager:</strong>
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={8}>
+                        <Typography variant="body1">
+                          {userData.managerFirstName} {userData.managerLastName}
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   </Grid>
-                </>
-              )}
-              <Grid item xs={12}>
-                <Grid container spacing={2}>
-                  <Grid item xs={4}>
-                    <Typography variant="body1">
-                      <strong>Work Mode:</strong>
-                    </Typography>
+                  <Grid item xs={12}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={4}>
+                        <Typography variant="body1">
+                          <strong>Currect Address:</strong>
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={8}>
+                        <Typography variant="body1">
+                          {userData?.presentAddress?.name}
+                          {userData?.presentAddress?.addressLine1}
+                          {", "}
+                          {userData?.presentAddress?.addressLine2}
+                          {", "}
+                          {DataValue[userData?.presentAddress?.stateId]}
+                          {", "}
+                          {userData?.presentAddress?.postalCode}
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={8}>
-                    <Typography variant="body1">{userData.workMode}</Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid item xs={12}>
-                <Grid container spacing={2}>
-                  <Grid item xs={4}>
-                    <Typography variant="body1">
-                      <strong>Reporting Manager:</strong>
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={8}>
-                    <Typography variant="body1">
-                      {userData.managerFirstName} {userData.managerLastName}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid item xs={12}>
-                <Grid container spacing={2}>
-                  <Grid item xs={4}>
-                    <Typography variant="body1">
-                      <strong>Currect Address:</strong>
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={8}>
-                    <Typography variant="body1">
-                      {userData?.presentAddress?.name}
-                      {userData?.presentAddress?.addressLine1}
-                      {userData?.presentAddress?.addressLine2}{" "}
-                      {DataValue[userData?.presentAddress?.stateId]}{" "}
-                      {userData?.presentAddress?.postalCode}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid item xs={12}>
-                <Grid container spacing={2}>
-                  <Grid item xs={4}>
-                    <Typography variant="body1">
-                      <strong>Permanent Address:</strong>
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={8}>
-                    <Typography variant="body1">
-                      {userData?.permanentAddress?.name}
-                      {userData?.permanentAddress?.addressLine1}
-                      {userData?.permanentAddress?.addressLine2}{" "}
-                      {DataValue[userData?.permanentAddress?.stateId]}{" "}
-                      {userData?.permanentAddress?.postalCode}
-                    </Typography>
+                  <Grid item xs={12}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={4}>
+                        <Typography variant="body1">
+                          <strong>Permanent Address:</strong>
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={8}>
+                        <Typography variant="body1">
+                          {userData?.permanentAddress?.name}
+                          {userData?.permanentAddress?.addressLine1}
+                          {", "}
+                          {userData?.permanentAddress?.addressLine2}
+                          {", "}
+                          {DataValue[userData?.permanentAddress?.stateId]}
+                          {", "}
+                          {userData?.permanentAddress?.postalCode}
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
+              </Box>
             </Grid>
-          </Box>
-        </Grid>
-      </Grid>
-      <Grid container mt={2}>
-        <Grid item xs={12}>
-          <Typography variant="h3" gutterBottom>
-            Skill
-          </Typography>
-        </Grid>
-        <Grid
-          sx={{
-            boxShadow: "#000000",
-            padding: 0,
-            borderRadius: "25px",
-            width: "100%",
-          }}
-        >
-          <Grid container spacing={1} sx={{ padding: "10px" }}>
-            <Accordion
+          </Grid>
+          <Grid container mt={2}>
+            <Grid item xs={12}>
+              <Typography variant="h3" gutterBottom>
+                Skill
+              </Typography>
+            </Grid>
+            <Grid
               sx={{
-                border: "1px solid #898989",
-                backgroundColor: "#F0F0F0",
+                boxShadow: "#000000",
+                padding: 0,
+                borderRadius: "25px",
                 width: "100%",
               }}
-              onChange={handleSkillExpand}
             >
-              <AccordionSummary
-                sx={{
-                  flexDirection: "row",
-                  "&.Mui-focusVisible": {
-                    background: "none",
-                  },
-                  width: "100%",
-                  backgroundColor: "#008080",
-                  color: "#fff",
-                }}
-              >
-                <Typography variant="h6" ml={3}>
-                  Skill
-                </Typography>
-                <Box
+              <Grid container spacing={1} sx={{ padding: "10px" }}>
+                <Accordion
                   sx={{
-                    position: "absolute", // Absolute positioning for the icons
-                    right: 10,
-                    display: "flex",
-                    alignItems: "center",
-                    color: "#fff",
+                    border: "1px solid #898989",
+                    backgroundColor: "#F0F0F0",
+                    width: "100%",
                   }}
+                  onChange={handleSkillExpand}
                 >
-                  {skillExpanded ? <RemoveIcon /> : <AddIcon />}
-                </Box>
-              </AccordionSummary>
-
-              {!skillExpanded ? (
-                <></>
-              ) : (
-                <>
-                  <AccordionDetails
+                  <AccordionSummary
                     sx={{
-                      padding: "20px 20px 20px 50px",
+                      flexDirection: "row",
+                      "&.Mui-focusVisible": {
+                        background: "none",
+                      },
+                      width: "100%",
+                      backgroundColor: "#008080",
+                      color: "#fff",
                     }}
                   >
-                    <Grid
-                      item
+                    <Typography variant="h6" ml={3}>
+                      Skill
+                    </Typography>
+                    <Box
                       sx={{
+                        position: "absolute", // Absolute positioning for the icons
+                        right: 10,
                         display: "flex",
-                        alignItems: "flex-end",
-                        justifyContent: "flex-end",
-                        textAlign: "end",
+                        alignItems: "center",
+                        color: "#fff",
                       }}
                     >
-                      <Grid
-                        display="flex"
-                        justifyContent="space-between"
-                        alignItems="end"
-                        mb={1}
-                      >
-                        <Grid
-                          item
-                          justifyContent="space-between"
-                          alignItems="end"
-                          sx={{
-                            textAlign: "end",
-                          }}
-                        >
-                          <HtmlTooltip
-                            sx={{
-                              "& .MuiTooltip-tooltip": {
-                                backgroundColor: "#fff !important",
-                                // Add additional styles if needed
-                              },
-                            }}
-                            title={
-                              <Grid
-                                sx={{
-                                  backgroundColor: "#fff",
-                                  width: "100%",
-                                  zIndex: 9999,
-                                }}
-                              >
-                                <Box
-                                  sx={{
-                                    color: "#000",
-                                    padding: "2px",
-                                    borderRadius: "2px",
-                                  }}
-                                >
-                                  <Typography variant="body2">
-                                    <StarOutlinedIcon
-                                      style={{
-                                        backgroundColor: "#90DC90",
-                                        color: "#ffff",
-                                        borderRadius: "50%",
-                                        width: 15,
-                                        height: 15,
-                                        marginRight: 5,
-                                      }}
-                                    />
-                                    1 to 3 – Beginner
-                                  </Typography>
-                                </Box>
-                                <Box
-                                  sx={{
-                                    color: "#000",
-                                    padding: "2px",
-                                    borderRadius: "2px",
-                                  }}
-                                >
-                                  <Typography variant="body2">
-                                    <StarOutlinedIcon
-                                      style={{
-                                        backgroundColor: "#C6C620",
-                                        color: "#ffff",
-                                        borderRadius: "50%",
-                                        width: 15,
-                                        height: 15,
-                                        marginRight: 5,
-                                      }}
-                                    />
-                                    4 to 6 – Intermediate
-                                  </Typography>
-                                </Box>
-                                <Box
-                                  sx={{
-                                    color: "#000",
-                                    padding: "2px",
-                                    borderRadius: "2px",
-                                  }}
-                                >
-                                  <Typography variant="body2">
-                                    <StarOutlinedIcon
-                                      style={{
-                                        backgroundColor: "#FF5722",
-                                        color: "#ffff",
-                                        borderRadius: "50%",
-                                        width: 15,
-                                        height: 15,
-                                        marginRight: 5,
-                                      }}
-                                    />
-                                    7 to 10 – Advanced
-                                  </Typography>
-                                </Box>
-                              </Grid>
-                            }
-                          >
-                            <IconButton>
-                              <InfoIcon
-                                sx={{
-                                  fontSize: "25px",
-                                  marginTop: "-3px",
+                      {skillExpanded ? <RemoveIcon /> : <AddIcon />}
+                    </Box>
+                  </AccordionSummary>
 
-                                  color: "#008080",
-                                }}
-                              />
-                            </IconButton>
-                          </HtmlTooltip>
-                        </Grid>
-
-                        <Grid
-                          item
-                          sx={{
-                            textAlign: "start",
-                          }}
-                        >
-                          {!isEditing ? (
-                            <>
-                              {empId == id ? (
-                                <>
-                                  <Button
-                                    variant="outlined"
-                                    color="primary"
-                                    onClick={handleEditButtonClick}
-                                    style={{
-                                      backgroundColor: "white",
-                                      textTransform: "capitalize",
-                                    }}
-                                  >
-                                    <BorderColorOutlinedIcon />
-                                    {"Edit"}
-                                  </Button>
-                                </>
-                              ) : (
-                                <></>
-                              )}
-                            </>
-                          ) : (
-                            <>
-                              <Button
-                                variant="outlined"
-                                color="primary"
-                                onClick={handleAddSkillClick}
-                                style={{
-                                  backgroundColor: "white",
-                                  textTransform: "capitalize",
-                                }}
-                              >
-                                Add Skills
-                                <KeyboardArrowDownIcon
-                                  sx={{
-                                    marginLeft: 2,
-                                  }}
-                                />
-                              </Button>
-                              {showAddSkills && (
-                                <>
-                                  <Select
-                                    isSearchable={false}
-                                    isMulti
-                                    closeMenuOnSelect={false}
-                                    hideSelectedOptions={false}
-                                    onChange={(selectedOptions) => {
-                                      setSelectedSkills(selectedOptions);
-                                    }}
-                                    options={skills}
-                                    value={selectedSkills}
-                                    components={{
-                                      Option: (props) => (
-                                        <InputOption
-                                          {...props}
-                                          skillsCheckedData={selectedSkills}
-                                        />
-                                      ),
-                                      Menu: CustomMenu,
-                                    }}
-                                    isClearable={false}
-                                    controlShouldRenderValue={true}
-                                    getOptionValue={(option) => option.skillId}
-                                    getOptionLabel={(option) =>
-                                      option.skillName
-                                    }
-                                    isLoading={skills?.length === 0}
-                                    styles={{
-                                      menuPortal: (base) => ({
-                                        ...base,
-                                        zIndex: 9999,
-                                      }),
-                                      control: (baseStyles) => ({
-                                        ...baseStyles,
-                                        overflow: "auto",
-                                        height: "55px",
-                                        width: "300px",
-                                      }),
-                                    }}
-                                  />
-                                </>
-                              )}
-                            </>
-                          )}
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                    <Grid
-                      sx={{
-                        backgroundColor: "#fff",
-                        padding: "30px",
-                        border: "1px solid #707071",
-                        borderRadius: "20px",
-                      }}
-                    >
-                      <Grid item container>
-                        <div style={skillsContainerStyle}>{renderSkills()}</div>
-                        {isEditing && (
-                          <Grid
-                            container
-                            sx={{
-                              bottom: 0,
-                              left: 0,
-                              width: "100%",
-                              padding: "10px",
-                              backgroundColor: "#fff",
-                              justifyContent: "flex-end",
-                            }}
-                          >
-                            <Button
-                              variant="outlined"
-                              sx={{
-                                color: "#000",
-                                bgcolor: "white",
-                                marginRight: "10px",
-                                textTransform: "capitalize",
-                              }}
-                              onClick={handleCancel}
-                            >
-                              Cancel
-                            </Button>
-                            <Button
-                              variant="contained"
-                              sx={{
-                                color: "white",
-                                bgcolor: "#008080",
-                                textTransform: "capitalize",
-                              }}
-                              onClick={handleSave}
-                            >
-                              Save
-                            </Button>
-                          </Grid>
-                        )}
-                      </Grid>
-                    </Grid>
-                  </AccordionDetails>
-                </>
-              )}
-            </Accordion>
-          </Grid>
-        </Grid>
-      </Grid>
-
-      <Grid container mt={2}>
-        <Grid item xs={12}>
-          <Typography variant="h3" gutterBottom>
-            Current Project Details
-          </Typography>
-          <Grid
-            mt={-1}
-            sx={{
-              boxShadow: "#000000",
-              padding: 0,
-              borderRadius: "25px",
-              width: "100%",
-            }}
-          >
-            <Grid container spacing={1} sx={{ padding: "10px 10px 10px 0px" }}>
-              {userData?.projectDetails?.length > 0 ? (
-                userData?.projectDetails?.map((project) => (
-                  <Grid item key={project.id} xs={12}>
-                    <Accordion
-                      sx={{
-                        border: "1px solid #898989",
-                        width: "100%",
-                      }}
-                      expanded={expanded === project.id}
-                      onChange={() => handleAccordionToggle(project.id)}
-                    >
-                      <AccordionSummary
-                        sx={{
-                          flexDirection: "row",
-                          "&.Mui-focusVisible": {
-                            background: "none",
-                          },
-                          width: "100%",
-                          backgroundColor: "#008080",
-                          color: "#fff",
-                        }}
-                      >
-                        <Typography variant="h6" ml={3}>
-                          {project.projectName}
-                        </Typography>
-                        <Box
-                          sx={{
-                            position: "absolute", // Absolute positioning for the icons
-                            right: 10,
-                            display: "flex",
-                            alignItems: "center",
-                            color: "#fff",
-                          }}
-                        >
-                          {expanded === project.id ? (
-                            <RemoveIcon />
-                          ) : (
-                            <AddIcon />
-                          )}
-                        </Box>
-                      </AccordionSummary>
+                  {!skillExpanded ? (
+                    <></>
+                  ) : (
+                    <>
                       <AccordionDetails
                         sx={{
                           padding: "20px 20px 20px 50px",
                         }}
                       >
                         <Grid
+                          item
                           sx={{
-                            padding: "10px",
-                            border: "1px solid black",
-                            borderRadius: "10px",
-                            backgroundColor: "#F0F0F0",
+                            display: "flex",
+                            alignItems: "flex-end",
+                            justifyContent: "flex-end",
+                            textAlign: "end",
                           }}
                         >
-                          <Grid container spacing={2}>
-                            <Grid item xs={4}>
-                              <Typography variant="body1">
-                                <strong>Project Manager:</strong>
-                              </Typography>
+                          <Grid
+                            display="flex"
+                            justifyContent="space-between"
+                            alignItems="end"
+                            mb={1}
+                          >
+                            <Grid
+                              item
+                              justifyContent="space-between"
+                              alignItems="end"
+                              sx={{
+                                textAlign: "end",
+                              }}
+                            >
+                              <HtmlTooltip
+                                sx={{
+                                  "& .MuiTooltip-tooltip": {
+                                    backgroundColor: "#fff !important",
+                                    // Add additional styles if needed
+                                  },
+                                }}
+                                title={
+                                  <Grid
+                                    sx={{
+                                      backgroundColor: "#fff",
+                                      width: "100%",
+                                      zIndex: 9999,
+                                    }}
+                                  >
+                                    <Box
+                                      sx={{
+                                        color: "#000",
+                                        padding: "2px",
+                                        borderRadius: "2px",
+                                      }}
+                                    >
+                                      <Typography variant="body2">
+                                        <StarOutlinedIcon
+                                          style={{
+                                            backgroundColor: "#90DC90",
+                                            color: "#ffff",
+                                            borderRadius: "50%",
+                                            width: 15,
+                                            height: 15,
+                                            marginRight: 5,
+                                          }}
+                                        />
+                                        1 to 3 – Beginner
+                                      </Typography>
+                                    </Box>
+                                    <Box
+                                      sx={{
+                                        color: "#000",
+                                        padding: "2px",
+                                        borderRadius: "2px",
+                                      }}
+                                    >
+                                      <Typography variant="body2">
+                                        <StarOutlinedIcon
+                                          style={{
+                                            backgroundColor: "#C6C620",
+                                            color: "#ffff",
+                                            borderRadius: "50%",
+                                            width: 15,
+                                            height: 15,
+                                            marginRight: 5,
+                                          }}
+                                        />
+                                        4 to 6 – Intermediate
+                                      </Typography>
+                                    </Box>
+                                    <Box
+                                      sx={{
+                                        color: "#000",
+                                        padding: "2px",
+                                        borderRadius: "2px",
+                                      }}
+                                    >
+                                      <Typography variant="body2">
+                                        <StarOutlinedIcon
+                                          style={{
+                                            backgroundColor: "#FF5722",
+                                            color: "#ffff",
+                                            borderRadius: "50%",
+                                            width: 15,
+                                            height: 15,
+                                            marginRight: 5,
+                                          }}
+                                        />
+                                        7 to 10 – Advanced
+                                      </Typography>
+                                    </Box>
+                                  </Grid>
+                                }
+                              >
+                                <IconButton>
+                                  <InfoIcon
+                                    sx={{
+                                      fontSize: "25px",
+                                      marginTop: "-3px",
+
+                                      color: "#008080",
+                                    }}
+                                  />
+                                </IconButton>
+                              </HtmlTooltip>
                             </Grid>
-                            <Grid item xs={8}>
-                              <Typography variant="body1">
-                                {projectDetailsData?.projectManager?.name}
-                              </Typography>
+
+                            <Grid
+                              item
+                              sx={{
+                                textAlign: "start",
+                              }}
+                            >
+                              {!isEditing ? (
+                                <>
+                                  {empId == id ? (
+                                    <>
+                                      <Button
+                                        variant="outlined"
+                                        color="primary"
+                                        onClick={handleEditButtonClick}
+                                        style={{
+                                          backgroundColor: "white",
+                                          textTransform: "capitalize",
+                                        }}
+                                      >
+                                        <BorderColorOutlinedIcon />
+                                        {"Edit"}
+                                      </Button>
+                                    </>
+                                  ) : (
+                                    <></>
+                                  )}
+                                </>
+                              ) : (
+                                <>
+                                  <Button
+                                    variant="outlined"
+                                    color="primary"
+                                    onClick={handleAddSkillClick}
+                                    style={{
+                                      backgroundColor: "white",
+                                      textTransform: "capitalize",
+                                    }}
+                                  >
+                                    Add Skills
+                                    <KeyboardArrowDownIcon
+                                      sx={{
+                                        marginLeft: 2,
+                                      }}
+                                    />
+                                  </Button>
+                                  {showAddSkills && (
+                                    <>
+                                      <Select
+                                        isSearchable={false}
+                                        isMulti
+                                        closeMenuOnSelect={false}
+                                        hideSelectedOptions={false}
+                                        onChange={(selectedOptions) => {
+                                          selectedSkillFunc(selectedOptions);
+                                        }}
+                                        options={skills}
+                                        value={selectedSkills}
+                                        components={{
+                                          Option: (props) => (
+                                            <InputOption
+                                              {...props}
+                                              skillsCheckedData={selectedSkills}
+                                            />
+                                          ),
+                                          Menu: CustomMenu,
+                                        }}
+                                        isClearable={false}
+                                        controlShouldRenderValue={true}
+                                        getOptionValue={(option) =>
+                                          option.skillId
+                                        }
+                                        getOptionLabel={(option) =>
+                                          option.skillName
+                                        }
+                                        isLoading={skills?.length === 0}
+                                        styles={{
+                                          menuPortal: (base) => ({
+                                            ...base,
+                                            zIndex: 9999,
+                                          }),
+                                          control: (baseStyles) => ({
+                                            ...baseStyles,
+                                            overflow: "auto",
+                                            height: "55px",
+                                            width: "300px",
+                                          }),
+                                        }}
+                                      />
+                                    </>
+                                  )}
+                                </>
+                              )}
                             </Grid>
-                            <Grid item xs={4}>
-                              <Typography variant="body1">
-                                <strong>Project Lead:</strong>
-                              </Typography>
-                            </Grid>
-                            <Grid item xs={8}>
-                              <Typography variant="body1">
-                                {projectDetailsData?.projectLead}
-                              </Typography>
-                            </Grid>
-                            <Grid item xs={4}>
-                              <Typography variant="body1">
-                                <strong>Project Status:</strong>
-                              </Typography>
-                            </Grid>
-                            <Grid item xs={8}>
-                              <Typography variant="body1">
-                                {projectDetailsData?.status}
-                              </Typography>
-                            </Grid>
-                            <Grid item xs={4}>
-                              <Typography variant="body1">
-                                <strong>Starting Date:</strong>
-                              </Typography>
-                            </Grid>
-                            <Grid item xs={8}>
-                              <Typography variant="body1">
-                                {projectDetailsData?.startDate}
-                              </Typography>
-                            </Grid>
-                            <Grid item xs={4}>
-                              <Typography variant="body1">
-                                <strong>Ending Date:</strong>
-                              </Typography>
-                            </Grid>
-                            <Grid item xs={8}>
-                              <Typography variant="body1">
-                                {projectDetailsData?.endDate}
-                              </Typography>
-                            </Grid>
-                            <Grid item xs={4}>
-                              <Typography variant="body1">
-                                <strong>Actual End Date:</strong>
-                              </Typography>
-                            </Grid>
-                            <Grid item xs={8}>
-                              <Typography variant="body1">
-                                {projectDetailsData?.actualEndDate}
-                              </Typography>
-                            </Grid>
-                            <Grid item xs={4}>
-                              <Typography variant="body1">
-                                <strong>Team Members:</strong>
-                              </Typography>
-                            </Grid>
-                            <Grid item xs={8}>
-                              <Typography variant="body1">
-                                {projectDetailsData?.projectResources?.map(
-                                  (resource, index, array) => (
-                                    <span key={resource.resourceId}>
-                                      {resource.employeeName}
-                                      {index < array.length - 1 && ", "}
-                                    </span>
-                                  )
-                                )}
-                              </Typography>
-                            </Grid>
+                          </Grid>
+                        </Grid>
+                        <Grid
+                          sx={{
+                            backgroundColor: "#fff",
+                            padding: "30px",
+                            border: "1px solid #707071",
+                            borderRadius: "20px",
+                          }}
+                        >
+                          <Grid item container>
+                            <div style={skillsContainerStyle}>
+                              {renderSkills()}
+                            </div>
+                            {isEditing && (
+                              <Grid
+                                container
+                                sx={{
+                                  bottom: 0,
+                                  left: 0,
+                                  width: "100%",
+                                  padding: "10px",
+                                  backgroundColor: "#fff",
+                                  justifyContent: "flex-end",
+                                }}
+                              >
+                                <Button
+                                  variant="outlined"
+                                  sx={{
+                                    color: "#000",
+                                    bgcolor: "white",
+                                    marginRight: "10px",
+                                    textTransform: "capitalize",
+                                  }}
+                                  onClick={handleCancel}
+                                >
+                                  Cancel
+                                </Button>
+                                <Button
+                                  variant="contained"
+                                  sx={{
+                                    color: "white",
+                                    bgcolor: "#008080",
+                                    textTransform: "capitalize",
+                                  }}
+                                  onClick={handleSave}
+                                >
+                                  Save
+                                </Button>
+                              </Grid>
+                            )}
                           </Grid>
                         </Grid>
                       </AccordionDetails>
-                    </Accordion>
-                  </Grid>
-                ))
-              ) : (
-                <Grid item xs={12} sx={{ textAlign: "center" }}>
-                  <Typography variant="h3">
-                    No projects allocated yet.
-                  </Typography>
-                </Grid>
-              )}
+                    </>
+                  )}
+                </Accordion>
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
-        <Grid container mt={2}>
-          <Grid item xs={12} mb={2}>
-            <Typography variant="h3" gutterBottom>
-              Pay Roll
-            </Typography>
-          </Grid>
-          <Grid
-            mt={-1}
-            sx={{
-              boxShadow: "#000000",
-              padding: 0,
-              borderRadius: "25px",
-              width: "100%",
-            }}
-          >
-            <Grid container spacing={1} sx={{ padding: "10px" }}>
-              <Accordion
+
+          <Grid container mt={2}>
+            <Grid item xs={12}>
+              <Typography variant="h3" gutterBottom>
+                Current Project Details
+              </Typography>
+              <Grid
+                mt={-1}
                 sx={{
-                  border: "1px solid #898989",
+                  boxShadow: "#000000",
+                  padding: 0,
+                  borderRadius: "25px",
                   width: "100%",
                 }}
-                onChange={handleExpand}
               >
-                <AccordionSummary
-                  sx={{
-                    flexDirection: "row",
-                    "&.Mui-focusVisible": {
-                      background: "none",
-                    },
-                    width: "100%",
-                    color: "#fff",
-
-                    backgroundColor: "#008080",
-                  }}
+                <Grid
+                  container
+                  spacing={1}
+                  sx={{ padding: "10px 10px 10px 0px" }}
                 >
-                  <Typography variant="h6" ml={3}>
-                    Bank Details
-                  </Typography>
-                  <Box
-                    sx={{
-                      position: "absolute", // Absolute positioning for the icons
-                      right: 10,
-                      display: "flex",
-                      alignItems: "center",
-                      color: "#fff",
-                    }}
-                  >
-                    {payRollExpanded ? <RemoveIcon /> : <AddIcon />}
-                  </Box>
-                </AccordionSummary>
-
-                {!payRollExpanded ? (
-                  <></>
-                ) : (
-                  <>
-                    <AccordionDetails
-                      sx={{
-                        padding: "20px 20px 20px 50px",
-                      }}
-                    >
-                      <Grid
-                        sx={{
-                          padding: "10px",
-                          border: "1px solid black",
-                          borderRadius: "10px",
-                          backgroundColor: "#F0F0F0",
-                        }}
-                      >
-                        <Grid container spacing={2}>
-                          <Grid item xs={4}>
-                            <Typography variant="body1">
-                              <b>Name as on the Bank</b>
+                  {userData?.projectDetails?.length > 0 ? (
+                    userData?.projectDetails?.map((project) => (
+                      <Grid item key={project.id} xs={12}>
+                        <Accordion
+                          sx={{
+                            border: "1px solid #898989",
+                            width: "100%",
+                          }}
+                          expanded={expanded === project.id}
+                          onChange={() => handleAccordionToggle(project.id)}
+                        >
+                          <AccordionSummary
+                            sx={{
+                              flexDirection: "row",
+                              "&.Mui-focusVisible": {
+                                background: "none",
+                              },
+                              width: "100%",
+                              backgroundColor: "#008080",
+                              color: "#fff",
+                            }}
+                          >
+                            <Typography variant="h6" ml={3}>
+                              {project.projectName}
                             </Typography>
-                          </Grid>
-                          <Grid item xs={8}>
-                            <Typography variant="body1">
-                              {userData.nameAsOnBank}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={4}>
-                            <Typography variant="body1">
-                              <b>Bank Name:</b>
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={8}>
-                            <Typography variant="body1">
-                              {userData.bankName}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={4}>
-                            <Typography variant="body1">
-                              <b>Account Number:</b>
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={8}>
-                            <Typography variant="body1">
-                              {userData.acNo}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={4}>
-                            <Typography variant="body1">
-                              <b>IFSC code:</b>
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={8}>
-                            <Typography variant="body1">
-                              {userData.ifscCode}
-                            </Typography>
-                          </Grid>
-                        </Grid>
+                            <Box
+                              sx={{
+                                position: "absolute", // Absolute positioning for the icons
+                                right: 10,
+                                display: "flex",
+                                alignItems: "center",
+                                color: "#fff",
+                              }}
+                            >
+                              {expanded === project.id ? (
+                                <RemoveIcon />
+                              ) : (
+                                <AddIcon />
+                              )}
+                            </Box>
+                          </AccordionSummary>
+                          <AccordionDetails
+                            sx={{
+                              padding: "20px 20px 20px 50px",
+                            }}
+                          >
+                            <Grid
+                              sx={{
+                                padding: "10px",
+                                border: "1px solid black",
+                                borderRadius: "10px",
+                                backgroundColor: "#F0F0F0",
+                              }}
+                            >
+                              <Grid container spacing={2}>
+                                <Grid item xs={4}>
+                                  <Typography variant="body1">
+                                    <strong>Project Manager:</strong>
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={8}>
+                                  <Typography variant="body1">
+                                    {projectDetailsData?.projectManager?.name}
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={4}>
+                                  <Typography variant="body1">
+                                    <strong>Project Lead:</strong>
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={8}>
+                                  <Typography variant="body1">
+                                    {projectDetailsData?.projectTechLead?.name}
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={4}>
+                                  <Typography variant="body1">
+                                    <strong>Project Status:</strong>
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={8}>
+                                  <Typography variant="body1">
+                                    {projectDetailsData?.status}
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={4}>
+                                  <Typography variant="body1">
+                                    <strong>Starting Date:</strong>
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={8}>
+                                  <Typography variant="body1">
+                                    {projectDetailsData?.startDate}
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={4}>
+                                  <Typography variant="body1">
+                                    <strong>Ending Date:</strong>
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={8}>
+                                  <Typography variant="body1">
+                                    {projectDetailsData?.endDate}
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={4}>
+                                  <Typography variant="body1">
+                                    <strong>Actual End Date:</strong>
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={8}>
+                                  <Typography variant="body1">
+                                    {projectDetailsData?.actualEndDate}
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={4}>
+                                  <Typography variant="body1">
+                                    <strong>Team Members:</strong>
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={8}>
+                                  <Typography variant="body1">
+                                    {projectDetailsData?.projectResources?.map(
+                                      (resource, index, array) => (
+                                        <span key={resource.resourceId}>
+                                          {resource.employeeName}
+                                          {index < array.length - 1 && ", "}
+                                        </span>
+                                      )
+                                    )}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                            </Grid>
+                          </AccordionDetails>
+                        </Accordion>
                       </Grid>
-                    </AccordionDetails>
-                  </>
-                )}
-              </Accordion>
+                    ))
+                  ) : (
+                    <Grid item xs={12} sx={{ textAlign: "center" }}>
+                      <Typography variant="h3">
+                        No projects allocated yet.
+                      </Typography>
+                    </Grid>
+                  )}
+                </Grid>
+              </Grid>
             </Grid>
-            <Grid>
-              <Accordion
+            <Grid container mt={2}>
+              <Grid item xs={12} mb={2}>
+                <Typography variant="h3" gutterBottom>
+                  Pay Roll
+                </Typography>
+              </Grid>
+              <Grid
+                mt={-1}
                 sx={{
-                  border: "1px solid #898989",
-                  width: "99.3%",
-                  marginTop: 1,
+                  boxShadow: "#000000",
+                  padding: 0,
+                  borderRadius: "25px",
+                  width: "100%",
                 }}
-                onChange={handleBankExpand}
               >
-                <AccordionSummary
-                  sx={{
-                    flexDirection: "row",
-                    "&.Mui-focusVisible": {
-                      background: "none",
-                    },
-                    width: "100%",
-                    backgroundColor: "#008080",
-                    color: "#fff",
-                  }}
-                >
-                  <Typography variant="h6" ml={3}>
-                    Current Compensation
-                  </Typography>
-                  <Box
+                <Grid container spacing={1} sx={{ padding: "10px" }}>
+                  <Accordion
                     sx={{
-                      position: "absolute", // Absolute positioning for the icons
-                      right: 10,
-                      display: "flex",
-                      alignItems: "center",
-                      color: "#fff",
+                      border: "1px solid #898989",
+                      width: "100%",
                     }}
+                    onChange={handleExpand}
                   >
-                    {bankExpand ? <RemoveIcon /> : <AddIcon />}
-                  </Box>
-                </AccordionSummary>
-
-                {!bankExpand ? (
-                  <></>
-                ) : (
-                  <>
-                    <AccordionDetails
+                    <AccordionSummary
                       sx={{
-                        padding: "20px 20px 20px 50px",
+                        flexDirection: "row",
+                        "&.Mui-focusVisible": {
+                          background: "none",
+                        },
+                        width: "100%",
+                        color: "#fff",
+
+                        backgroundColor: "#008080",
                       }}
                     >
-                      <Grid
-                        container
+                      <Typography variant="h6" ml={3}>
+                        Bank Details
+                      </Typography>
+                      <Box
                         sx={{
-                          padding: "10px",
-                          border: "1px solid black",
-                          borderRadius: "10px",
-                          backgroundColor: "#F0F0F0",
+                          position: "absolute", // Absolute positioning for the icons
+                          right: 10,
+                          display: "flex",
+                          alignItems: "center",
+                          color: "#fff",
                         }}
                       >
-                        <Grid item xs={4}>
-                          <Typography variant="body1">
-                            <b>Cost to Company :</b>
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={8}>
-                          <Typography variant="body1">
-                            <CurrencyRupeeIcon sx={{ padding: "4px" }} />
-                            {userData.ctc}
-                          </Typography>
-                        </Grid>
-                      </Grid>
-                    </AccordionDetails>
-                  </>
-                )}
-              </Accordion>
+                        {payRollExpanded ? <RemoveIcon /> : <AddIcon />}
+                      </Box>
+                    </AccordionSummary>
+
+                    {!payRollExpanded ? (
+                      <></>
+                    ) : (
+                      <>
+                        <AccordionDetails
+                          sx={{
+                            padding: "20px 20px 20px 50px",
+                          }}
+                        >
+                          <Grid
+                            sx={{
+                              padding: "10px",
+                              border: "1px solid black",
+                              borderRadius: "10px",
+                              backgroundColor: "#F0F0F0",
+                            }}
+                          >
+                            <Grid container spacing={2}>
+                              <Grid item xs={4}>
+                                <Typography variant="body1">
+                                  <b>Name as on the Bank</b>
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={8}>
+                                <Typography variant="body1">
+                                  {userData.nameAsOnBank}
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={4}>
+                                <Typography variant="body1">
+                                  <b>Bank Name:</b>
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={8}>
+                                <Typography variant="body1">
+                                  {userData.bankName}
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={4}>
+                                <Typography variant="body1">
+                                  <b>Account Number:</b>
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={8}>
+                                <Typography variant="body1">
+                                  {userData.acNo}
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={4}>
+                                <Typography variant="body1">
+                                  <b>IFSC code:</b>
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={8}>
+                                <Typography variant="body1">
+                                  {userData.ifscCode}
+                                </Typography>
+                              </Grid>
+                            </Grid>
+                          </Grid>
+                        </AccordionDetails>
+                      </>
+                    )}
+                  </Accordion>
+                </Grid>
+                <Grid>
+                  <Accordion
+                    sx={{
+                      border: "1px solid #898989",
+                      width: "99.3%",
+                      marginTop: 1,
+                    }}
+                    onChange={handleBankExpand}
+                  >
+                    <AccordionSummary
+                      sx={{
+                        flexDirection: "row",
+                        "&.Mui-focusVisible": {
+                          background: "none",
+                        },
+                        width: "100%",
+                        backgroundColor: "#008080",
+                        color: "#fff",
+                      }}
+                    >
+                      <Typography variant="h6" ml={3}>
+                        Current Compensation
+                      </Typography>
+                      <Box
+                        sx={{
+                          position: "absolute", // Absolute positioning for the icons
+                          right: 10,
+                          display: "flex",
+                          alignItems: "center",
+                          color: "#fff",
+                        }}
+                      >
+                        {bankExpand ? <RemoveIcon /> : <AddIcon />}
+                      </Box>
+                    </AccordionSummary>
+
+                    {!bankExpand ? (
+                      <></>
+                    ) : (
+                      <>
+                        <AccordionDetails
+                          sx={{
+                            padding: "20px 20px 20px 50px",
+                          }}
+                        >
+                          <Grid
+                            container
+                            sx={{
+                              padding: "10px",
+                              border: "1px solid black",
+                              borderRadius: "10px",
+                              backgroundColor: "#F0F0F0",
+                            }}
+                          >
+                            <Grid item xs={4}>
+                              <Typography variant="body1">
+                                <b>Cost to Company :</b>
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={8}>
+                              <Typography variant="body1">
+                                <CurrencyRupeeIcon sx={{ padding: "4px" }} />
+                                {userData.ctc}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                        </AccordionDetails>
+                      </>
+                    )}
+                  </Accordion>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
-      </Grid>
+        </>
+      )}
     </>
   );
 }

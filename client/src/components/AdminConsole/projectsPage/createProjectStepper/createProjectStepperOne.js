@@ -13,7 +13,7 @@ const steps = ["Create Project", "Resource Allocation", "Cost Allocation"];
 const CreateProjectStepperOne = () => {
   const Navigate = useNavigate();
   const handleBackClick = () => {
-    Navigate("/projects");
+    Navigate(-1);
   };
 
   return (

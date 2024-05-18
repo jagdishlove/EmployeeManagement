@@ -1,0 +1,19 @@
+.marquee-container {
+    width: 100%;
+    overflow: hidden;
+}
+
+.marquee {
+    display: flex;
+    flex-direction: column;
+    animation: scroll 20s linear infinite; /* Adjust the animation duration and timing function */
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-100%);
+    }
+}

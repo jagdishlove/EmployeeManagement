@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AddIcon from "@mui/icons-material/Add";
@@ -17,13 +17,14 @@ import {
   Button,
   Avatar,
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { getProjectDetailsAction } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
+// import { useDispatch, useSelector } from "react-redux";
+// import { useParams } from "react-router-dom";
+// import { getProjectDetailsAction } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 import StarOutlinedIcon from "@mui/icons-material/StarOutlined";
 import ProjectedHoursWatch from "./ProjectedHoursComponent";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import { useSelector } from "react-redux";
 
 const ProjectAccordion = () => {
   const [accordionDetails1, setAccordionDetails1] = useState(false);
@@ -31,17 +32,17 @@ const ProjectAccordion = () => {
   const [accordionDetails3, setAccordionDetails3] = useState(false);
   // State to track whether full description is shown or not
   const [showFullDescription, setShowFullDescription] = useState(false);
-  const dispatch = useDispatch();
-  const { id } = useParams();
+  // const dispatch = useDispatch();
+  // const { id } = useParams();
   const [expandedRows, setExpandedRows] = useState([]);
   // Project Details
   const { projectDetailsData } = useSelector(
-    (state) => state.nonPersist?.projectDetails
+    (state) => state.persistData?.projectDetails
   );
 
-  useEffect(() => {
-    dispatch(getProjectDetailsAction(id));
-  }, [id]);
+  // useEffect(() => {
+  //   dispatch(getProjectDetailsAction(id));
+  // }, [id]);
 
   const handleExpand1 = () => {
     setAccordionDetails1(!accordionDetails1);
@@ -270,16 +271,16 @@ const ProjectAccordion = () => {
                             color: "#ffffff",
                           }}
                         >
-                          <TableCell style={{ color: "#ffffff", width: "10%" }}>
+                          <TableCell style={{ color: "#ffffff", width: "15%" }}>
                             Sl. No
                           </TableCell>
-                          <TableCell style={{ color: "#ffffff", width: "20%" }}>
+                          <TableCell style={{ color: "#ffffff", width: "25%" }}>
                             Name
                           </TableCell>
                           <TableCell style={{ color: "#ffffff", width: "20%" }}>
                             Designation
                           </TableCell>
-                          <TableCell style={{ color: "#ffffff", width: "55%" }}>
+                          <TableCell style={{ color: "#ffffff", width: "50%" }}>
                             Skill
                           </TableCell>
                           <TableCell style={{ color: "#ffffff", width: "20%" }}>
@@ -299,14 +300,29 @@ const ProjectAccordion = () => {
                                 <TableCell>
                                   <Grid container spacing={2}>
                                     <Grid item xs={4}>
-                                      <Avatar
-                                        sx={{
-                                          color: "#fff",
-                                          backgroundColor: " #4813B8",
-                                        }}
-                                      >
-                                        {resources?.employeeName.charAt(0)}
-                                      </Avatar>
+                                      {resources?.fileStorage ? (
+                                        <>
+                                          <Avatar
+                                            alt="Profile Picture"
+                                            src={`data:image/png;base64,${resources?.fileStorage?.data}`}
+                                            sx={{
+                                              border: "2px solid #A4A4A4",
+
+                                            }}
+                                          />
+                                        </>
+                                      ) : (
+                                        <>
+                                          <Avatar
+                                            sx={{
+                                              color: "#fff",
+                                              backgroundColor: " #4813B8",
+                                            }}
+                                          >
+                                            {resources?.employeeName.charAt(0)}
+                                          </Avatar>
+                                        </>
+                                      )}
                                     </Grid>
                                     <Grid item xs={8} mt={1}>
                                       {resources.employeeName}
@@ -352,36 +368,39 @@ const ProjectAccordion = () => {
                                             <span style={{ color: "black" }}>
                                               {employeeSkill.skillName}
                                             </span>{" "}
-                                            {employeeSkill.rating && (
-                                              <>
-                                                <StarOutlinedIcon
-                                                  style={{
-                                                    backgroundColor:
-                                                      employeeSkill.rating < 5
-                                                        ? "#90DC90"
-                                                        : employeeSkill.rating >=
-                                                            5 &&
-                                                          employeeSkill.rating <=
-                                                            7
+
+                                            <>
+                                              <StarOutlinedIcon
+                                                style={{
+                                                  backgroundColor:
+                                                    employeeSkill.rating <
+                                                      5
+                                                      ? "#90DC90"
+                                                      : employeeSkill.rating >=
+                                                        5 &&
+                                                        employeeSkill.rating <=
+                                                        7
                                                         ? "#E6E62C"
                                                         : "#E38F75",
-                                                    color: "#ffff",
-                                                    borderRadius: "50%",
-                                                    width: 15,
-                                                    height: 15,
-                                                    marginTop: 0,
-                                                    marginLeft: 2,
-                                                    marginRight: 2,
-                                                  }}
-                                                />
-                                                {employeeSkill.rating}
-                                              </>
-                                            )}
+                                                  color: "#ffff",
+                                                  borderRadius: "50%",
+                                                  width: 15,
+                                                  height: 15,
+                                                  marginTop: 0,
+                                                  marginLeft: 2,
+                                                  marginRight: 2,
+                                                }}
+                                              />
+                                              {employeeSkill.rating}
+                                            </>
+
                                           </Grid>
                                         ))}
                                       {resources.employeeSkills.length > 2 && (
                                         <Grid
                                           item
+                                          xs={2}
+                                          alignItems="center"
                                           sx={{
                                             display: "flex",
                                             alignItems: "center",
@@ -424,45 +443,49 @@ const ProjectAccordion = () => {
                                     sx={{ border: "5px solid #EBEBEB" }}
                                   >
                                     <TableCell colSpan={5}>
-                                      <Grid sx={{ backgroundColor: "#fff" }}>
+                                      <Grid container>
                                         {expandedRows.includes(index) &&
-                                          resources.employeeSkills.map(
-                                            (employeeSkill, skillIndex) => (
-                                              <Grid
-                                                item
-                                                key={skillIndex}
-                                                sx={{
-                                                  border: "1px solid #AEAEAE",
-                                                  borderRadius: "8px",
-                                                  padding: "4px",
-                                                  margin: "5px",
-                                                  display: "block",
-                                                  alignItems: "center",
-                                                  justifyContent: "flex-end",
-                                                  color: "#000000",
-                                                  backgroundColor: "#ffffff",
-                                                  float: "left",
-                                                }}
-                                              >
-                                                <span
-                                                  style={{ color: "black" }}
+                                          resources.employeeSkills
+                                            .slice(2)
+                                            .map(
+                                              (employeeSkill, skillIndex) => (
+                                                <Grid
+                                                  item
+                                                  key={skillIndex}
+                                                  sx={{
+                                                    border: "1px solid #AEAEAE",
+                                                    borderRadius: "8px",
+                                                    padding: "4px",
+                                                    margin: "5px",
+                                                    display: "block",
+                                                    alignItems: "center",
+                                                    justifyContent: "flex-end",
+                                                    color: "#000000",
+                                                    // backgroundColor: "#ffffff",
+                                                    float: "left",
+                                                  }}
                                                 >
-                                                  {employeeSkill.skillName}
-                                                </span>{" "}
-                                                {employeeSkill.rating && (
+                                                  <span
+                                                    style={{ color: "black" }}
+                                                  >
+                                                    {employeeSkill.skillName}
+                                                  </span>{" "}
+
                                                   <>
                                                     <StarOutlinedIcon
                                                       style={{
                                                         backgroundColor:
                                                           employeeSkill.rating <
-                                                          5
+                                                            5 ||
+                                                            employeeSkill?.rating ===
+                                                            0
                                                             ? "#90DC90"
                                                             : employeeSkill.rating >=
-                                                                5 &&
+                                                              5 &&
                                                               employeeSkill.rating <=
-                                                                7
-                                                            ? "#E6E62C"
-                                                            : "#E38F75",
+                                                              7
+                                                              ? "#E6E62C"
+                                                              : "#E38F75",
                                                         color: "#ffff",
                                                         borderRadius: "50%",
                                                         width: 15,
@@ -472,46 +495,46 @@ const ProjectAccordion = () => {
                                                         marginRight: 2,
                                                       }}
                                                     />
-                                                    {employeeSkill.rating}
+                                                    {employeeSkill.rating ||
+                                                      0}
                                                   </>
-                                                )}
-                                              </Grid>
-                                            )
-                                          )}
-                                        {resources.employeeSkills?.length >
-                                          1 && (
-                                          <Grid
-                                            container
-                                            justifyContent="flex-end"
-                                            display={"flex"}
-                                            flexDirection={"row"}
-                                            width={"auto"}
-                                          >
-                                            <Button
-                                              style={{ padding: "0px" }}
-                                              onClick={() =>
-                                                toggleRowExpansion(index)
-                                              }
-                                            >
-                                              {expandedRows.includes(index) ? (
-                                                <div
-                                                  style={{
-                                                    fontSize: "12px",
-                                                    color: "#000000",
-                                                  }}
-                                                >
-                                                  View Less
-                                                  <KeyboardArrowUpIcon
-                                                    style={{ color: "#008080" }}
-                                                  />
-                                                </div>
-                                              ) : (
-                                                <KeyboardArrowDownIcon />
-                                              )}
-                                            </Button>
-                                          </Grid>
-                                        )}
+
+                                                </Grid>
+                                              )
+                                            )}
                                       </Grid>
+                                      {resources.employeeSkills?.length > 1 && (
+                                        <Grid
+                                          container
+                                          justifyContent="flex-end"
+                                          display={"flex"}
+                                          flexDirection={"row"}
+                                          width={"auto"}
+                                        >
+                                          <Button
+                                            style={{ padding: "0px" }}
+                                            onClick={() =>
+                                              toggleRowExpansion(index)
+                                            }
+                                          >
+                                            {expandedRows.includes(index) ? (
+                                              <div
+                                                style={{
+                                                  fontSize: "12px",
+                                                  color: "#000000",
+                                                }}
+                                              >
+                                                View Less
+                                                <KeyboardArrowUpIcon
+                                                  style={{ color: "#008080" }}
+                                                />
+                                              </div>
+                                            ) : (
+                                              <KeyboardArrowDownIcon />
+                                            )}
+                                          </Button>
+                                        </Grid>
+                                      )}
                                     </TableCell>
                                   </TableRow>
                                 </>
@@ -683,7 +706,10 @@ const ProjectAccordion = () => {
                 </Grid>
                 <Grid item xs={7}>
                   <Typography variant="body1">
-                    ₹ {projectDetailsData?.projectedImplementationCost}
+                    ₹{" "}
+                    {projectDetailsData?.projectedImplementationCost?.toFixed(
+                      2
+                    ) || 0}
                   </Typography>
                 </Grid>
               </Grid>
@@ -702,7 +728,7 @@ const ProjectAccordion = () => {
                 </Grid>
                 <Grid item xs={7}>
                   <Typography variant="body1">
-                    ₹ {projectDetailsData?.otherCostsIncurred}
+                    ₹ {projectDetailsData?.otherCostsIncurred?.toFixed(2) || 0}
                   </Typography>
                 </Grid>
               </Grid>
@@ -721,7 +747,7 @@ const ProjectAccordion = () => {
                 </Grid>
                 <Grid item xs={7}>
                   <Typography variant="body1">
-                    ₹ {projectDetailsData?.projectRevenue}
+                    ₹ {projectDetailsData?.projectRevenue?.toFixed(2) || 0}
                   </Typography>
                 </Grid>
               </Grid>
@@ -740,7 +766,7 @@ const ProjectAccordion = () => {
                 </Grid>
                 <Grid item xs={7}>
                   <Typography variant="body1">
-                    ₹ {projectDetailsData?.projectProfit}
+                    ₹ {projectDetailsData?.projectProfit?.toFixed(2)}
                   </Typography>
                 </Grid>
               </Grid>

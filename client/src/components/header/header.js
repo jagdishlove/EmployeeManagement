@@ -18,14 +18,18 @@ const Header = ({ anchorEl, open, handleMenuOpen, handleMenuClose }) => {
 
   const navigate = useNavigate();
 
-  const empId = useSelector((state) => state?.persistData.data?.empId);
+  const empId = useSelector(
+    (state) => state?.persistData?.loginDetails?.data?.empId
+  );
 
   const handleUSerDetails = () => {
     navigate(`/userDetailPage/${empId}`);
     handleMenuClose();
   };
 
-  const userName = useSelector((state) => state?.persistData?.data.userName);
+  const userName = useSelector(
+    (state) => state?.persistData?.loginDetails?.data.userName
+  );
 
   const isLG = useMediaQuery(theme.breakpoints.up("lg"));
   return (
@@ -98,7 +102,7 @@ const Header = ({ anchorEl, open, handleMenuOpen, handleMenuClose }) => {
             </div>
             <MenuItem
               onClick={() => {
-                localStorage.removeItem("selectedItem");
+                localStorage.clear();
                 persistor.purge(["login"]);
                 window.location.href = "/";
                 handleMenuClose;

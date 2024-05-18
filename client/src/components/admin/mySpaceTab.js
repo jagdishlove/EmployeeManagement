@@ -3,6 +3,11 @@ import {
   Card,
   Grid,
   Box,
+  Dialog,
+  DialogContent,
+  DialogActions,
+  Button,
+  CircularProgress,
 } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import TimesheetBreakdown from "../../assets/Time sheet Breakdown.svg";
@@ -10,13 +15,17 @@ import ratingIcon from "../../assets/Performance.svg";
 import Star from "../../components/stars/star";
 import TimesheetBreakDown from "./mySpaceComponents/TimesheetBreakDown";
 import SimpleBarChart from "../admin/mySpaceComponents/Barchart";
-import ActivityCard from "../admin/mySpaceComponents/Activity"
-import ConsistencyMeters from "../admin/mySpaceComponents/ConsistencyMeters"
+import ActivityCard from "../admin/mySpaceComponents/Activity";
+import ConsistencyMeters from "../admin/mySpaceComponents/ConsistencyMeters";
 import OpenInFullOutlinedIcon from "@mui/icons-material/OpenInFullOutlined";
 import moment from "moment";
-import { RatingDataAction, getProjectPerformanceAction, getTodayActivityAction } from "../../redux/actions/workSpace/workSpaceAction"
+import {
+  RatingDataAction,
+  getProjectPerformanceAction,
+  getTodayActivityAction,
+} from "../../redux/actions/workSpace/workSpaceAction";
 import ConsistencyMeter from "../../assets/ConsistencyMeter.svg";
-import { Rating } from "react-simple-star-rating";
+import TodayActivity from "../admin/mySpaceComponents/TodayActivity";
 
 const MySpaceTab = () => {
   const dispatch = useDispatch();
@@ -25,8 +34,14 @@ const MySpaceTab = () => {
   const [years, setYears] = useState([]);
   const [months, setMonths] = useState([]);
   const [open, setOpen] = useState(false);
+  const [open1, setOpen1] = useState(false);
   const monthRef = useRef(null);
 
+  const userName = useSelector(
+    (state) => state?.persistData?.loginDetails?.data.userName
+  );
+  localStorage.setItem("selectedTabIndex", 0);
+  localStorage.setItem("selectedSubTabIndex", 0);
   const getHistoryData = (month, year) => {
     const params = {
       month: parseInt(month) + 1,
@@ -34,12 +49,13 @@ const MySpaceTab = () => {
     };
     dispatch(RatingDataAction(params));
     dispatch(getProjectPerformanceAction(params));
-    dispatch(getTodayActivityAction(params))
+    dispatch(getTodayActivityAction(params));
   };
 
   const handleYearChange = (e) => {
+    const { value } = e.target;
+    setSelectedYear(value);
     handleYearMonth(e);
-    setYears();
   };
 
   const changeMonthAccordingly = () => {
@@ -81,9 +97,15 @@ const MySpaceTab = () => {
   const handleClickOpen = () => {
     setOpen(true);
   };
+  const handleClickOpen1 = () => {
+    setOpen1(true);
+  };
 
   const handleClose = () => {
     setOpen(false);
+  };
+  const handleClose1 = () => {
+    setOpen1(false);
   };
 
   const handleMonthChange = (e) => {
@@ -101,6 +123,13 @@ const MySpaceTab = () => {
       },
     };
     handleYearMonth(e, true);
+  }, []);
+
+  useEffect(() => {
+    document.body.classList.add("project-progress-body");
+    return () => {
+      document.body.classList.remove("project-progress-body");
+    };
   }, []);
 
   useEffect(() => {
@@ -154,225 +183,253 @@ const MySpaceTab = () => {
   };
 
   const ratingData = useSelector(
-    (state) => state?.nonPersist?.workSpace?.ratingData
+    (state) => state?.persistData?.workSpace?.ratingData
   );
-
-  const todayActivityData = useSelector(
-    (state) => state?.nonPersist?.workSpace?.todayActivity
-  ) || [];
 
   const ProjectPerfomanceData = useSelector(
-    (state) => state?.nonPersist?.workSpace?.projectperformance
+    (state) => state?.persistData?.workSpace?.projectperformance
   );
 
-  const [currentLineIndex, setCurrentLineIndex] = useState(0);
+  const Rating = ({ rating }) => {
+    const stars = [];
+    const isZero = rating === 0;
 
-  // Map todayActivityData into lines array
-  const lines = todayActivityData.map(activity => (
-    `• ${activity.description}` // Assuming description is the property you want to display
-  ));
+    for (let i = 0; i < 5; i++) {
+      stars.push(
+        <span
+          key={i}
+          style={{
+            color: isZero ? "lightgray" : i < rating ? "gold" : "lightgray",
+            fontSize: "20px",
+          }}
+        >
+          ★
+        </span>
+      );
+    }
+    return <>{stars}</>;
+  };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentLineIndex((prevIndex) => (prevIndex + 1) % lines.length);
-    }, 5000); // Change the interval duration to 5000 milliseconds (5 seconds)
+  const colorPalette = [
+    "#00C49F",
+    "#0088FE",
+    "#FFBB28",
+    "#FF8042",
+    "#FF6B6B",
+    "#4CAF50",
+    "#9C27B0",
+  ];
 
-    return () => clearInterval(interval);
-  }, [lines]);
+  localStorage.removeItem("selectedProject");
 
   return (
-    
-    <Grid style={{ position: 'relative', display: 'flex', flexDirection: 'column', }}>
-      <Grid container spacing={3}>
+    <Grid
+      mt={4}
+      style={{ position: "relative", display: "flex", flexDirection: "column" }}
+    >
+      <Grid container spacing={1}>
         <Grid item xs={12} md={6}>
-          <Card sx={{
-            border: '1px solid silver',
-            borderRadius: '10px',
-            marginTop: '10px',
-            marginLeft: '3px',
-            width: '100%',
-            height: '170px',
-            backgroundColor: 'white',
-          }}>
-            <Box sx={{
-              background: 'linear-gradient(45deg, #2196F3, #FF9800)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              display: 'inline-block',
-              marginLeft: '30px',
-              marginTop: '3px',
-              fontSize: '26px',
-            }}>
-              Hello, Karthik Raj S
+          <Card
+            sx={{
+              borderRadius: "5px",
+              marginTop: "10px",
+              marginLeft: "3px",
+              width: "99.5%",
+              height: "190px",
+              backgroundColor: "white",
+            }}
+          >
+            <Box
+              sx={{
+                background: "linear-gradient(45deg, #2196F3, #FF9800)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                display: "inline-block",
+                marginLeft: "30px",
+                marginTop: "3px",
+                fontSize: "26px",
+              }}
+            >
+              Hello, {userName}
             </Box>
-            <Box sx={{
-              border: '1px solid silver',
-              height: '100px',
-              width: '90%',
-              marginLeft: '30px',
-              borderRadius: '5px',
-              fontSize: '13px',
-              marginTop: '20px',
-            }}>
-              <Grid item xs={12} sx={{ color: 'silver', ml: '10px' }}>Todays Activities</Grid>
-              <Grid item xs={12} sx={{ ml: '10px' }}>
-                <div className="marquee-container">
-                  <marquee direction="up" className="marquee">
-                    {lines.map((line, index) => (
-                      <div key={index} style={{ display: index === currentLineIndex ? 'block' : 'none' }}>
-                        <b>{line}</b>
-                      </div>
-                    ))}
-                  </marquee>
-                </div>
-              </Grid>
-            </Box>
+            <TodayActivity />
           </Card>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Box sx={{ position: 'relative' }}>
-            <Box sx={{
-              position: 'absolute',
-              top: '20px',
-              right: '-90px',
-              display: 'flex',
-              alignItems: 'center',
-            }}>
+          <Box sx={{ position: "relative" }}>
+            <Box
+              sx={{
+                position: "absolute",
+                top: "10px",
+                right: "-22px",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
               <div
+                className="dropdowns"
                 style={{
-                  padding: "10px",
-                  marginBottom: "20px",
+                  display: "block",
+                  justifyContent: "space-between",
+                  maxWidth: "300px",
                 }}
               >
-                <div
-                  className="dropdowns"
+                <select
+                  value={selectedMonth}
+                  onChange={handleMonthChange}
+                  ref={monthRef}
                   style={{
-                    display: "block",
-                    justifyContent: "space-between",
-                    width: "300px",
+                    flex: "1",
+                    padding: " 2px",
+                    height: "45px",
+                    border: "1px  solid #ECECEC",
+                    borderRadius: "5px",
+                    backgroundColor: "white",
+                    marginRight: "6px",
+                    marginLeft: "-40%",
+                    width: "270px",
+                    fontSize: " 16px",
+                    outline: " none",
+                    fontWeight: "bolder",
                   }}
                 >
-                  <select
-                    value={selectedMonth}
-                    onChange={handleMonthChange}
-                    ref={monthRef}
-                    style={{
-                      flex: "1",
-                      padding: " 10px",
-                      border: "none",
-                      borderRadius: "5px",
-                      backgroundColor: "transparent",
-                      fontSize: " 16px",
-                      outline: " none",
-                      fontWeight: "bolder",
-                    }}
-                  >
-                    {months?.map((month) => (
-                      <option key={month.value} value={month.value}>
-                        {month.label}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    value={selectedYear}
-                    onChange={handleYearChange}
-                    style={{
-                      flex: "1",
-                      padding: " 10px",
-                      border: "none",
-                      borderRadius: "5px",
-                      backgroundColor: "transparent",
-                      fontSize: " 16px",
-                      outline: " none",
-                      fontWeight: "bolder",
-                    }}
-                  >
-                    {years?.map((year) => (
-                      <option
-                        key={year}
-                        value={year}
-                        style={{
-                          fontSize: "16px",
-                        }}
-                      >
-                        {year}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                  {months?.map((month) => (
+                    <option key={month.value} value={month.value}>
+                      {month.label}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={selectedYear}
+                  onChange={handleYearChange}
+                  style={{
+                    flex: "1",
+                    padding: " 2px",
+                    borderRadius: "5px",
+                    height: "45px",
+                    width: "40%",
+                    border: "1px  solid #ECECEC",
+                    backgroundColor: "white",
+                    fontSize: " 16px",
+                    outline: " none",
+                    fontWeight: "bolder",
+                  }}
+                >
+                  {years?.map((year) => (
+                    <option
+                      key={year}
+                      value={year}
+                      style={{
+                        fontSize: "16px",
+                      }}
+                    >
+                      {year}
+                    </option>
+                  ))}
+                </select>
               </div>
-
             </Box>
-            <Grid container spacing={2}>
+            <Grid container spacing={0}>
               <Grid item xs={12} md={6}>
-                <Card sx={{
-                  border: '1px solid silver',
-                  borderRadius: '10px',
-                  width: '100%',
-                  height: '130px',
-                  marginTop: "45px",
-                  backgroundColor: 'white',
-                }}>
-                  <Grid container spacing={1} mb={2}>
-                    <Grid item xs={3} ml={2} mt={1}>
+                <Card
+                  sx={{
+                    borderRadius: "5px",
+                    width: "110%",
+                    height: "135px",
+                    marginTop: "65px",
+                    backgroundColor: "white",
+                  }}
+                >
+                  <Grid container spacing={0} mb={1}>
+                    <Grid item xs={2} ml={1} mt={1}>
                       <img src={ratingIcon} />
                     </Grid>
-                    <Grid item xs={4} mt={2}>
-                    <b>Performance </b>
-                    </Grid>{" "}
-                    <Grid item xs={2} mt={2}>
-                      3.0
+                    <Grid item xs={8} mt={2.5} ml={0.5}>
+                      <b >Over all Performance</b>
+                    </Grid>
+                    <Grid item xs={1} mt={2.5} ml={-1} color="#A4504A">
+                      <b>
+                        {ratingData?.performanceRating !== undefined
+                          ? ratingData?.performanceRating.toFixed(2)
+                          : ""}
+                      </b>
                     </Grid>
                   </Grid>
-                  <Grid item ml={6}>
+                  <Grid item ml={12}>
                     <Star value={ratingData?.performanceRating} />
                   </Grid>
                 </Card>
               </Grid>
               <Grid item xs={12} md={6}>
-                <Card sx={{
-                  border: '1px solid silver',
-                  borderRadius: '10px',
-                  width: '100%',
-                  height: 'auto',
-                  marginLeft: "5px",
-                  marginTop: "45px",
-                  backgroundColor: 'white',
-                }}>
-                  <Grid container spacing={-4} mb={-2}>
-                    <Grid item xs={4} mt={1} ml={2}>
+                <Card
+                  sx={{
+                    borderRadius: "5px",
+                    width: "86%",
+                    height: "8.5rem", // Use rem for responsive height
+                    marginLeft: "2.5rem", // Use rem for responsive margin
+                    marginTop: "4rem", // Use rem for responsive margin
+                    backgroundColor: "white",
+                    display: "flex", // Add flex display
+                    flexDirection: "column", // Add flex direction
+                    alignItems: "center", // Add align items
+                    justifyContent: "space-around", // Add justify content
+                    "@media (max-width: 600px)": { // Add media query for small screens
+                      width: "90%",
+                      height: "10rem",
+                      marginLeft: "1rem",
+                      marginTop: "2rem",
+                    },
+                  }}
+                >
+                  <Grid container spacing={0} mb={-2}> 
+                    <Grid item xs={1} mt={1} ml={1}>
                       <img src={ConsistencyMeter} />
                     </Grid>
-                    <Grid item xs={4} sx={{ marginTop: '12px', whiteSpace: 'nowrap' }}>
-                     <b> Consistency Meter </b>
+                    <Grid
+                      item
+                      xs={2}
+                      sx={{ marginTop: "1rem", whiteSpace: "nowrap" }} // Use rem for responsive margin
+                      ml={4.5}
+                    >
+                      <b> Consistency Meter </b>
                     </Grid>
                   </Grid>
-                  <Box sx={{ textAlign: "center", marginLeft: "20%" }}>
-                    <ConsistencyMeters value={Math.floor(ratingData?.consistencyMeter?.value)} />
+                  <Box sx={{ textAlign: "center", marginLeft: "10%",marginBottom:"5%" }}>
+                    {ratingData?.consistencyMeter?.value !== undefined ? (
+                      <ConsistencyMeters
+                        value={Math.floor(ratingData?.consistencyMeter?.value)}
+                      />
+                    ) : (
+                      <CircularProgress /> // Or any other loading indicator
+                    )}
                   </Box>
                 </Card>
               </Grid>
             </Grid>
-
           </Box>
         </Grid>
       </Grid>
-      <Grid container spacing={2}>
+      <Grid container spacing={1} mt={-2}>
         <Grid item xs={12} md={6} style={{ marginTop: "20px" }}>
           <Card
             style={{
-              border: "1px solid silver",
-              borderRadius: "10px",
+              borderRadius: "5px",
               backgroundColor: "white",
               height: "420px",
+              width: "100%"
             }}
           >
-            <Grid container spacing={2} style={{ paddingLeft: "20px" }}>
-              <Grid item xs={2}>
+            <Grid container spacing={0} mb={-2} ml={3} mt={2}>
+              <Grid item xs={1} mt={1} ml={1}>
                 <img src={TimesheetBreakdown} alt="Timesheet Breakdown" />
               </Grid>
-              <Grid item xs={10} style={{ textAlign: "start", marginTop: "10px" }}>
-              <b> Overall Timesheet Breakdown </b>
+              <Grid
+                item
+                xs={2}
+                sx={{ marginTop: "1rem", whiteSpace: "nowrap" }} // Use rem for responsive margin
+                ml={1.5}
+              >
+                <strong>Overall Timesheet Breakdown </strong>
               </Grid>
             </Grid>
             <TimesheetBreakDown />
@@ -380,71 +437,328 @@ const MySpaceTab = () => {
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}
-
-            // style={{ position: "relative" }}
-            >
+          <Grid container spacing={1}>
+            <Grid item xs={12}>
               <Card
                 style={{
-                  border: "1px solid silver",
-                  borderRadius: "10px",
+                  borderRadius: "5px",
                   width: "100%",
                   height: "200px",
                   marginTop: "20px",
                   backgroundColor: "white",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
                   position: "relative",
+                  overflow: "hidden",
                 }}
-                open={open}
-                onClose={handleClose}
               >
                 <Grid
                   item
                   xs={1}
                   style={{
                     position: "absolute",
-                    top: "8px",
-                    right: "10px",
+                    top: "5px",
+                    right: "20px",
                     cursor: "pointer",
                   }}
                 >
-                  <OpenInFullOutlinedIcon onClick={handleClickOpen} fontSize="10px" color="silver" />
+                  <OpenInFullOutlinedIcon
+                    onClick={handleClickOpen}
+                    fontSize="10px"
+                    color="silver"
+                  />
                 </Grid>
-                <ul> {ProjectPerfomanceData?.performanceRating?.map((item, index) => ( <li key={index} style={{ display: "flex", alignItems: "center" }}> <span style={{ marginLeft: "10px" }}>{item.project.projectName}</span> <div style={{ display: "flex", alignItems: "center" }}> <div style={{ width: "50px", height: "20px", backgroundColor: "lightgray", position: "relative" }}> <div style={{ position: "absolute", height: "100%", width: `${(item.performanceRating / 5) * 100}%`, backgroundColor: "gold", left: 0 }}> </div> </div> </div> <div style={{ display: "flex", alignItems: "center" }}> <Rating initialValue={item.performanceRating} emptyStyle={{ color: "lightgray" }} fillStyle={{ color: "gold" }} transition ratingValue={item.performanceRating} size={25} style={{ marginLeft: "10px" }} /> <span>{item.performanceRating}</span> </div> </li>))} </ul>
+                <Grid
+                  style={{
+                    overflowY: "auto",
+                    marginTop: "15px",
+                    marginLeft:"6px",
+                    overflowX: "hidden",
+                    maxHeight: "100%",
+                    paddingRight: "10px",
+                    width: "100%",
+                    boxSizing: "content-box",
+                    maxWidth: "97.5%",
+                  }}
+                >
+                  <Grid item width={420} ml={3}>
+                    {ProjectPerfomanceData?.performanceRating &&
+                      ProjectPerfomanceData?.performanceRating.length > 0 ? (
+                      <ul style={{ marginTop: "17px", padding: 0 }}>
+                        {ProjectPerfomanceData?.performanceRating
+                          .sort(
+                            (a, b) =>
+                              (b.performanceRating || 0) -
+                              (a.performanceRating || 0)
+                          )
+                          .map((item, index) => (
+                            <li
+                              key={index}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                marginBottom: "10px",
+                                flexWrap: "wrap",
+                              }}
+                            >
+                              <span
+                                style={{
+                                  marginLeft: "10px",
+                                  fontSize: "13px",
+                                  minWidth: "100px",
+                                  flex: "1 0 auto",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                  color: "black",
+                                  maxWidth: "80px",
+                                }}
+                                title={item.project.projectName}
+                              >
+                                <b> {item.project.projectName}</b>
+                              </span>
+
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  marginRight: "10px",
+                                  width: "150px",
+                                  flex: "2 0 auto",
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    width: `${((item.performanceRating || 0) / 5) * 100
+                                      }%`,
+                                    height: "20px",
+                                    backgroundColor:
+                                      colorPalette[index % colorPalette.length],
+                                    position: "relative",
+                                  }}
+                                ></div>
+                              </div>
+                              <div
+                                style={{
+                                  alignItems: "center",
+                                  flex: "1 0 auto",
+                                  textAlign: "right",
+                                }}
+                              >
+                                <Rating rating={item.performanceRating || 0} />
+                                <span
+                                  style={{
+                                    color: "#A4504A",
+                                    marginLeft: "5px",
+                                  }}
+                                >
+                                  {item.performanceRating
+                                    ? item.performanceRating.toFixed(2)
+                                    : "0.0"}
+                                </span>
+                              </div>
+                            </li>
+                          ))}
+                      </ul>
+                    ) : (
+                      <p
+                        style={{
+                          marginTop: "80px",
+                          marginBottom: "80px",
+                          marginLeft: "200px",
+                        }}
+                      >
+                        No data available
+                      </p>
+                    )}
+                  </Grid>
+                </Grid>
               </Card>
             </Grid>
+
+            <Dialog open={open} onClose={handleClose}>
+              <DialogContent>
+                {/* Popup content */}
+                <Box>
+                  <Grid
+                    style={{
+                      overflowY: "auto",
+                      maxHeight: "100%",
+                      paddingRight: "10px",
+                      boxSizing: "content-box",
+                    }}
+                  >
+                    <Grid item width={500} ml={2}>
+                      {ProjectPerfomanceData?.performanceRating &&
+                        ProjectPerfomanceData?.performanceRating.length > 0 ? (
+                        <ul style={{ marginTop: "17px", padding: 0 }}>
+                          {ProjectPerfomanceData?.performanceRating
+                            .sort(
+                              (a, b) =>
+                                (b.performanceRating || 0) -
+                                (a.performanceRating || 0)
+                            )
+                            .map((item, index) => (
+                              <li
+                                key={index}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  marginBottom: "10px",
+                                  flexWrap: "wrap",
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    marginLeft: "10px",
+                                    fontSize: "12px",
+                                    minWidth: "100px",
+                                    flex: "1 0 auto",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    whiteSpace: "nowrap",
+                                    color: "black",
+                                    maxWidth: "80px",
+                                  }}
+                                >
+                                  <b title={item.project.projectName}>
+                                    {item.project.projectName}
+                                  </b>
+                                </span>
+
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    marginRight: "10px",
+                                    width: "200px",
+                                    flex: "2 0 auto",
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      width: `${((item.performanceRating || 0) / 5) *
+                                        100
+                                        }%`,
+                                      height: "20px",
+                                      backgroundColor:
+                                        colorPalette[
+                                        index % colorPalette.length
+                                        ],
+                                      position: "relative",
+                                    }}
+                                  ></div>
+                                </div>
+                                <div
+                                  style={{
+                                    alignItems: "center",
+                                    flex: "1 0 auto",
+                                    textAlign: "right",
+                                  }}
+                                >
+                                  <Rating
+                                    rating={item.performanceRating || 0}
+                                  />
+                                  <span
+                                    style={{
+                                      color: "#A4504A",
+                                      marginLeft: "5px",
+                                    }}
+                                  >
+                                    {item.performanceRating
+                                      ? item.performanceRating.toFixed(2)
+                                      : "0.0"}
+                                  </span>
+                                </div>
+                              </li>
+                            ))}
+                        </ul>
+                      ) : (
+                        <p
+                          style={{
+                            marginTop: "80px",
+                            marginBottom: "80px",
+                            marginLeft: "150px",
+                          }}
+                        >
+                          No data available
+                        </p>
+                      )}
+                    </Grid>
+                  </Grid>
+                </Box>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleClose} color="primary">
+                  Close
+                </Button>
+              </DialogActions>
+            </Dialog>
 
             <Grid item xs={12} style={{ position: "relative" }}>
               <Card
                 style={{
-                  border: "1px solid silver",
-                  borderRadius: "10px",
+                  borderRadius: "5px",
                   width: "100%",
-                  height: "100%",
+                  height: "210px",
                   backgroundColor: "white",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   position: "relative",
+                  overflow: "hidden",
+                  overflowY: "auto",
                 }}
               >
-                <SimpleBarChart />
+                <Grid
+                  style={{
+                    position: "absolute",
+                    top: "8px",
+                    right: "20px",
+                    zIndex: 1,
+                    cursor: "pointer",
+                  }}
+                >
+                  <OpenInFullOutlinedIcon
+                    onClick={handleClickOpen1}
+                    fontSize="10px"
+                    color="silver"
+                  />
+                </Grid>
+                <Grid
+                  style={{
+                    
+                    maxHeight: "100%",
+                    boxSizing: "content-box",
+                    marginRight:"30px"
+                  }}
+                >
+                  <SimpleBarChart />
+                </Grid>
               </Card>
             </Grid>
+
+            <Dialog open={open1} onClose={handleClose1}>
+              <DialogContent>
+                {/* Popup content */}
+                <Box>
+                  <SimpleBarChart />
+                </Box>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleClose1} color="primary">
+                  Close
+                </Button>
+              </DialogActions>
+            </Dialog>
           </Grid>
         </Grid>
       </Grid>
-      <Grid item xs={12} sm={10} md={8} lg={12} mt={2}>
-        <Card style={{ border: '1px solid silver', borderRadius: '10px', backgroundColor: 'white' }}>
-          <ActivityCard />
-        </Card >
+      <Grid item xs={12} sm={10} md={8} lg={12} mt={1}>
+        <Card style={{ borderRadius: "10px", backgroundColor: "white" }}>
+          <ActivityCard selectedMonth={selectedMonth} selectedYear={selectedYear} />
+        </Card>
       </Grid>
     </Grid>
-
-  )
-}
+  );
+};
 
 export default MySpaceTab;

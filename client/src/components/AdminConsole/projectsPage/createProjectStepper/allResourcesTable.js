@@ -21,10 +21,10 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { deleteResourcesAction } from "../../../../redux/actions/AdminConsoleAction/projects/projectsAction";
 
-const AllResourcesTable = ({ handleEdit }) => {
+const AllResourcesTable = ({ handleEdit, id }) => {
   const dispatch = useDispatch();
   const allResourcesData = useSelector(
-    (state) => state.nonPersist.projectDetails?.allResourcesData
+    (state) => state.persistData.projectDetails?.allResourcesData
   );
 
   const [expandedRows, setExpandedRows] = useState([]);
@@ -42,7 +42,7 @@ const AllResourcesTable = ({ handleEdit }) => {
   }
 
   const projectId = useSelector(
-    (state) => state.nonPersist.projectDetails?.projectId
+    (state) => state.persistData.projectDetails?.projectId
   );
 
   return (
@@ -63,10 +63,10 @@ const AllResourcesTable = ({ handleEdit }) => {
                     color: "#ffffff",
                   }}
                 >
-                  <TableCell style={{ color: "#ffffff", width: "10%" }}>
+                  <TableCell style={{ color: "#ffffff", width: "15%" }}>
                     Sl. No
                   </TableCell>
-                  <TableCell style={{ color: "#ffffff", width: "20%" }}>
+                  <TableCell style={{ color: "#ffffff", width: "25%" }}>
                     Name
                   </TableCell>
                   <TableCell style={{ color: "#ffffff", width: "20%" }}>
@@ -92,19 +92,34 @@ const AllResourcesTable = ({ handleEdit }) => {
                       <TableCell>
                         <Grid container spacing={2}>
                           <Grid item xs={4}>
-                            <Avatar
-                              sx={{
-                                color: "#fff",
-                                backgroundColor: " #4813B8",
-                              }}
-                            >
-                              {allResources?.employeeName.charAt(0)}
-                            </Avatar>
+                            {allResources?.fileStorage ? (
+                              <>
+                                <Avatar
+                                  alt="Profile Picture"
+                                  src={`data:image/png;base64,${allResources?.fileStorage?.data}`}
+                                  sx={{
+                                    border: "2px solid #A4A4A4",
+
+                                  }}
+                                />
+                              </>
+                            ) : (
+                              <>
+                                <Avatar
+                                  sx={{
+                                    color: "#fff",
+                                    backgroundColor: " #4813B8",
+                                  }}
+                                >
+                                  {allResources?.employeeName.charAt(0)}
+                                </Avatar>
+                                </>
+                            )}
+                              </Grid>
+                            <Grid item xs={8} mt={1}>
+                              {allResources.employeeName}
+                            </Grid>
                           </Grid>
-                          <Grid item xs={8} mt={1}>
-                            {allResources.employeeName}
-                          </Grid>
-                        </Grid>
                       </TableCell>
                       <TableCell>{allResources.designation}</TableCell>
                       <TableCell
@@ -145,29 +160,27 @@ const AllResourcesTable = ({ handleEdit }) => {
                                   <span style={{ color: "black" }}>
                                     {employeeSkill.skillName}
                                   </span>{" "}
-                                  {employeeSkill.rating && (
-                                    <>
-                                      <StarOutlinedIcon
-                                        style={{
-                                          backgroundColor:
-                                            employeeSkill.rating < 5
-                                              ? "#90DC90"
-                                              : employeeSkill.rating >= 5 &&
-                                                employeeSkill.rating <= 7
+                                  <>
+                                    <StarOutlinedIcon
+                                      style={{
+                                        backgroundColor:
+                                          employeeSkill.rating < 5
+                                            ? "#90DC90"
+                                            : employeeSkill.rating >= 5 &&
+                                              employeeSkill.rating <= 7
                                               ? "#E6E62C"
                                               : "#E38F75",
-                                          color: "#ffff",
-                                          borderRadius: "50%",
-                                          width: 15,
-                                          height: 15,
-                                          marginTop: 0,
-                                          marginLeft: 2,
-                                          marginRight: 2,
-                                        }}
-                                      />
-                                      {employeeSkill.rating}
-                                    </>
-                                  )}
+                                        color: "#ffff",
+                                        borderRadius: "50%",
+                                        width: 15,
+                                        height: 15,
+                                        marginTop: 0,
+                                        marginLeft: 2,
+                                        marginRight: 2,
+                                      }}
+                                    />
+                                    {employeeSkill.rating}
+                                  </>
                                 </Grid>
                               ))}
                             {allResources.employeeSkills.length > 1 && (
@@ -180,7 +193,13 @@ const AllResourcesTable = ({ handleEdit }) => {
                                   marginLeft: "auto",
                                 }}
                               >
-                                <Button onClick={() => toggleExpand(index)}>
+                                <Button
+                                  style={{
+                                    padding: "0px",
+                                    minWidth: "auto",
+                                  }}
+                                  onClick={() => toggleExpand(index)}
+                                >
                                   {expandedRows.includes(index) ? (
                                     <>
                                       <KeyboardArrowUpIcon />
@@ -216,7 +235,7 @@ const AllResourcesTable = ({ handleEdit }) => {
                               dispatch(
                                 deleteResourcesAction(
                                   allResources.resourceId,
-                                  projectId
+                                  projectId || id
                                 )
                               )
                             }
@@ -228,10 +247,11 @@ const AllResourcesTable = ({ handleEdit }) => {
                       <>
                         <TableRow sx={{ border: "5px solid #EBEBEB" }}>
                           <TableCell colSpan={6}>
-                            <Grid sx={{ backgroundColor: "#fff" }}>
+                            <Grid container sx={{ backgroundColor: "#fff" }}>
                               {expandedRows.includes(index) &&
-                                allResources.employeeSkills.map(
-                                  (employeeSkill, skillIndex) => (
+                                allResources.employeeSkills
+                                  .slice(1)
+                                  .map((employeeSkill, skillIndex) => (
                                     <Grid
                                       item
                                       key={skillIndex}
@@ -251,55 +271,57 @@ const AllResourcesTable = ({ handleEdit }) => {
                                       <span style={{ color: "black" }}>
                                         {employeeSkill.skillName}
                                       </span>{" "}
-                                      {employeeSkill.rating && (
-                                        <>
-                                          <StarOutlinedIcon
-                                            style={{
-                                              backgroundColor:
-                                                employeeSkill.rating < 5
-                                                  ? "#90DC90"
-                                                  : employeeSkill.rating >= 5 &&
-                                                    employeeSkill.rating <= 7
+
+                                      <>
+                                        <StarOutlinedIcon
+                                          style={{
+                                            backgroundColor:
+                                              employeeSkill.rating < 5
+                                                ? "#90DC90"
+                                                : employeeSkill.rating >= 5 &&
+                                                  employeeSkill.rating <= 7
                                                   ? "#E6E62C"
                                                   : "#E38F75",
-                                              color: "#ffff",
-                                              borderRadius: "50%",
-                                              width: 15,
-                                              height: 15,
-                                              marginTop: 0,
-                                              marginLeft: 2,
-                                              marginRight: 2,
-                                            }}
-                                          />
-                                          {employeeSkill.rating}
-                                        </>
-                                      )}
+                                            color: "#ffff",
+                                            borderRadius: "50%",
+                                            width: 15,
+                                            height: 15,
+                                            marginTop: 0,
+                                            marginLeft: 2,
+                                            marginRight: 2,
+                                          }}
+                                        />
+                                        {employeeSkill.rating}
+                                      </>
+
                                     </Grid>
-                                  )
-                                )}
-                              {allResources.employeeSkills?.length > 1 && (
-                                <Grid
-                                  container
-                                  justifyContent="flex-end"
-                                  display={"flex"}
-                                  flexDirection={"row"}
-                                  width={"auto"}
-                                >
-                                  <Button onClick={() => toggleExpand(index)}>
-                                    {expandedRows.includes(index) ? (
-                                      <>
-                                        View Less
-                                        <KeyboardArrowUpIcon />
-                                      </>
-                                    ) : (
-                                      <>
-                                        <KeyboardArrowDownIcon />
-                                      </>
-                                    )}
-                                  </Button>
-                                </Grid>
-                              )}
+                                  ))}
                             </Grid>
+                            {allResources.employeeSkills?.length > 1 && (
+                              <Grid
+                                container
+                                justifyContent="flex-end"
+                                display={"flex"}
+                                flexDirection={"row"}
+                                width={"auto"}
+                              >
+                                <Button
+                                  style={{ padding: "0px" }}
+                                  onClick={() => toggleExpand(index)}
+                                >
+                                  {expandedRows.includes(index) ? (
+                                    <>
+                                      View Less
+                                      <KeyboardArrowUpIcon />
+                                    </>
+                                  ) : (
+                                    <>
+                                      <KeyboardArrowDownIcon />
+                                    </>
+                                  )}
+                                </Button>
+                              </Grid>
+                            )}
                           </TableCell>
                         </TableRow>
                       </>

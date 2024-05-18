@@ -15,21 +15,28 @@ import {
   Paper,
   Button,
   FormControl,
+  CircularProgress,
 } from "@mui/material";
 import WorkspaceProjectsTab from "./projectsTab/workspaceProjectsTab";
 import WorkspaceEffortsTab from "./effortsTab/workspaceEffortsTab";
 import StarOutlinedIcon from "@mui/icons-material/StarOutlined";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { Stack, IconButton } from "@mui/material";
-import TeamMemebrs from "../../assets/Team Members.svg";
+import TeamMemebrs from "../../assets/Team_Members.svg";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardArrowLeftOutlined";
 import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProjectListAction } from "../../redux/actions/workSpace/workSpaceAction";
-import { dashboardProjectResourcesAction } from "../../redux/actions/dashboard/project/dashboardProjectAction";
+import {
+  dashboardProjectDetailsAction,
+  dashboardProjectResourcesAction,
+} from "../../redux/actions/dashboard/project/dashboardProjectAction";
 import Select, { components } from "react-select";
+import smileAnimated from "../../assets/No_Data_found.json";
+import Lottie from "lottie-react";
+import { useNavigate } from "react-router-dom";
 
 const InputOption = ({
   getStyles,
@@ -90,56 +97,92 @@ const ProjectProgress = () => {
   const dispatch = useDispatch();
   const [expandedRows, setExpandedRows] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+
   const { dashboardProjectResources } = useSelector(
-    (state) => state?.nonPersist?.dashboardProjectdetails
+    (state) => state?.persistData?.dashboardProjectdetails
   );
+
+  const { dashboardProjectdetails } = useSelector(
+    (state) => state?.persistData?.dashboardProjectdetails
+  );
+
+  const { dashboardProjectdetailsLoading } = useSelector(
+    (state) => state?.persistData?.dashboardProjectdetails
+  );
+  console.log("dashboardProjectdetailsLoading", dashboardProjectdetailsLoading);
+  const projectList = useSelector(
+    (state) => state?.persistData?.workSpace?.projectList
+  );
+
+  const role = useSelector(
+    (state) => state?.persistData?.loginDetails?.data.role
+  );
+
+  localStorage.setItem("selectedTabIndex", 0);
+
+  const superAdmin = role?.includes("SUPERADMIN");
 
   useEffect(() => {
     dispatch(getAllProjectListAction());
   }, []);
 
-  const projectList = useSelector(
-    (state) => state?.nonPersist?.workSpace?.projectList
-  );
-  console.log("projectList", projectList);
-  const [project, setProject] = useState(
-    projectList.length > 0 ? projectList[0] : ""
-  );
-
+  const [project, setProject] = useState(null);
+  // const [loading, setIsLoading] = useState(false);
+  const params = {
+    page: currentPage,
+    size: 3,
+  };
+  let storedProject = localStorage.getItem("selectedProject");
+  storedProject = JSON.parse(storedProject);
+  console.log("project", project);
   useEffect(() => {
-    if (projectList?.length > 0) {
+    // setIsLoading(true);
+    if (projectList?.length > 0 && !storedProject) {
+      // setIsLoading(false);
       setProject(projectList[0]);
-      dispatch(dashboardProjectResourcesAction(projectList[0]?.id));
+    } else {
+      // setIsLoading(false);
+      setProject(storedProject);
     }
   }, [projectList]);
 
+  useEffect(() => {
+    if (project) {
+      dispatch(dashboardProjectResourcesAction(project?.id, params));
+      // setDataLoaded(true);
+    }
+  }, [projectList, currentPage, project]);
+
   const handleProjectListChnage = (selectedOption) => {
+    if (selectedOption.id !== project.id) {
+      setExpandedRows([]);
+    }
     setProject(selectedOption);
-    dispatch(dashboardProjectResourcesAction(selectedOption?.id));
+    localStorage.setItem("selectedProject", JSON.stringify(selectedOption));
   };
 
-  const [currentPage, setCurrentPage] = useState(0);
+  useEffect(() => {
+    if (project) {
+      // Simulating fetching project details
+      setTimeout(() => {
+        dashboardProjectdetailsLoading;
+      }, 500);
+    }
+  }, [project]);
 
   const handlePrevPage = () => {
     if (currentPage > 0) {
       setCurrentPage((prevPage) => prevPage - 1);
     }
   };
+  const totalPages = dashboardProjectResources?.totalPages;
 
   const handleNextPage = () => {
     if (currentPage < totalPages - 1) {
       setCurrentPage((prevPage) => prevPage + 1);
     }
   };
-
-  const rowsPerPage = 3; // Number of rows per page
-  const totalRows = dashboardProjectResources?.content?.length || 0;
-  const totalPages = Math.ceil(totalRows / rowsPerPage);
-  const startIndex = currentPage * rowsPerPage;
-  const endIndex = Math.min(
-    startIndex + rowsPerPage,
-    dashboardProjectResources?.content?.length
-  );
 
   const toggleRowExpansion = (index) => {
     if (expandedRows.includes(index)) {
@@ -164,6 +207,27 @@ const ProjectProgress = () => {
     };
   }, []);
 
+  const Navigate = useNavigate();
+
+  const handleNavigate = () => {
+    Navigate(`/EditForm/${project?.id}`);
+  };
+
+  useEffect(() => {
+    if (project) {
+      dispatch(dashboardProjectDetailsAction(project.id));
+    }
+  }, [project]);
+
+  // Check if any of the required fields are missing or null
+
+  const showNoDataMessage =
+    !dashboardProjectdetails?.startDate ||
+    !dashboardProjectdetails?.endDate ||
+    !dashboardProjectdetails?.totalResources;
+  const recordsPerPage = 3; // Number of records to display per page
+  const startIndex = currentPage * recordsPerPage;
+
   return (
     <Grid>
       <Grid container>
@@ -185,6 +249,7 @@ const ProjectProgress = () => {
               getOptionValue={(option) => option.id}
               getOptionLabel={(option) => option.projectName}
               isLoading={projectList?.length === 0}
+              disabled={dashboardProjectdetailsLoading}
               styles={{
                 menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                 control: (baseStyles) => ({
@@ -243,144 +308,315 @@ const ProjectProgress = () => {
             </Tab>
           </TabList>
           <TabPanel>
-            <WorkspaceProjectsTab project={project?.id} />
+            {!project || dashboardProjectdetailsLoading ? (
+              <Grid
+                container
+                spacing={0}
+                mt={1}
+                direction="column"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <CircularProgress />
+              </Grid>
+            ) : showNoDataMessage ? (
+              <Grid
+                container
+                spacing={0}
+                mt={1}
+                direction="column"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Grid
+                  container
+                  spacing={0}
+                  mt={1}
+                  direction="column"
+                  alignItems="center"
+                  justifyContent="center"
+                  style={{
+                    backgroundColor: "#fff",
+                    height: "400px",
+                  }}
+                >
+                  <Lottie
+                    animationData={smileAnimated}
+                    loop
+                    autoplay
+                    style={{
+                      color: "yellow",
+                      width: "100px",
+                    }}
+                  />
+
+                  <Typography
+                    mt={5}
+                    sx={{
+                      color: "#B2B2B2",
+                      fontSize: "28px",
+                    }}
+                  >
+                    No Data Present
+                  </Typography>
+
+                  <Typography
+                    mt={5}
+                    sx={{
+                      color: "#B2B2B2",
+                      fontSize: "22px",
+                    }}
+                  >
+                    Project Data is mandatory to view the progress in dashboard
+                  </Typography>
+                  <Grid
+                    container
+                    justifyContent="flex-end"
+                    sx={{
+                      textAlign: "right",
+                      color: "#1475E7",
+                      fontSize: "18px",
+                      textDecoration: "underline",
+                      textDecorationColor: "#1475E7",
+                    }}
+                  >
+                    {superAdmin ? (
+                      <>
+                        <Typography mt={5} mr={4} onClick={handleNavigate}>
+                          Complete The Data For {project?.projectName}
+                        </Typography>
+                      </>
+                    ) : (
+                      <>
+                        <Typography mt={5} mr={4}>
+                          Contact Admin to Complete The Data For{" "}
+                          {project?.projectName}
+                        </Typography>
+                      </>
+                    )}
+                  </Grid>
+                </Grid>
+              </Grid>
+            ) : (
+              <>
+                <WorkspaceProjectsTab project={project} />
+              </>
+            )}
           </TabPanel>
           <TabPanel>
             <WorkspaceEffortsTab project={project?.id} role={project?.role} />
           </TabPanel>
         </Tabs>
       </Box>
-      {/* <Outlet /> */}
-      <Grid
-        container
-        mt={"20px"}
-        sx={{
-          padding: "20px",
-          boxShadow: "2",
-          marginRight: "10px",
-          backgroundColor: "#FFFFFF",
-        }}
-      >
-        <Grid container spacing={2} mb={2}>
-          <Grid item xs={6} display={"flex"} flexDirection={"row"}>
-            <img src={TeamMemebrs} />
-            <Typography margin={2}> Timesheet Members</Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <Grid container justifyContent="flex-end">
-              <Stack
-                direction="row"
-                spacing={2}
-                alignItems="center"
-                justifyContent="flex-end"
-              >
-                <Typography variant="body1" sx={{ color: "#5E5E5E" }}>
-                  {currentPage + 1} of {totalPages} Pages
+
+      {!project || dashboardProjectdetailsLoading ? (
+        <></>
+      ) : showNoDataMessage ? (
+        <></>
+      ) : (
+        <>
+          <Grid
+            container
+            mt={"10px"}
+            sx={{
+              padding: "20px",
+              boxShadow: "2",
+              marginRight: "10px",
+              backgroundColor: "#FFFFFF",
+              borderRadius: "5px",
+            }}
+          >
+            <Grid container spacing={2} mb={2}>
+              <Grid item xs={6} display={"flex"} flexDirection={"row"}>
+                <img src={TeamMemebrs} />
+                <Typography
+                  margin={2}
+                  variant="h5"
+                  style={{ fontWeight: "600" }}
+                >
+                  {" "}
+                  Team Members
                 </Typography>
-                <IconButton
-                  onClick={handlePrevPage}
-                  disabled={currentPage === 0}
-                >
-                  <KeyboardArrowLeftOutlinedIcon />
-                </IconButton>
-                <IconButton
-                  onClick={handleNextPage}
-                  disabled={currentPage === totalPages - 1}
-                >
-                  <ChevronRightOutlinedIcon />
-                </IconButton>
-              </Stack>
+              </Grid>
+              <Grid item xs={6}>
+                <Grid container justifyContent="flex-end">
+                  <Stack
+                    direction="row"
+                    spacing={2}
+                    alignItems="center"
+                    justifyContent="flex-end"
+                  >
+                    <Typography variant="body1" sx={{ color: "#5E5E5E" }}>
+                      {currentPage + 1} of {totalPages} Pages
+                    </Typography>
+                    <IconButton
+                      onClick={handlePrevPage}
+                      disabled={currentPage === 0}
+                    >
+                      <KeyboardArrowLeftOutlinedIcon />
+                    </IconButton>
+                    <IconButton
+                      onClick={handleNextPage}
+                      disabled={currentPage === totalPages - 1}
+                    >
+                      <ChevronRightOutlinedIcon />
+                    </IconButton>
+                  </Stack>
+                </Grid>
+              </Grid>
             </Grid>
-          </Grid>
-        </Grid>
 
-        <TableContainer component={Paper}>
-          <Table style={{ tableLayout: "fixed" }}>
-            <TableHead>
-              <TableRow>
-                <TableCell style={{ fontWeight: "bold", width: "30%" }}>
-                  Name
-                </TableCell>
-                <TableCell style={{ fontWeight: "bold", width: "20%" }}>
-                  Designation
-                </TableCell>
-                <TableCell style={{ fontWeight: "bold", width: "30%" }}>
-                  Skills
-                </TableCell>
-                <TableCell style={{ fontWeight: "bold", width: "20%" }}>
-                  Total No. of Hours
-                </TableCell>
-                <TableCell style={{ fontWeight: "bold", width: "20%" }}>
-                  Logged In Hours
-                </TableCell>
+            <TableContainer component={Paper} sx={{ overflowY: "auto" }}>
+              <Table style={{ tableLayout: "fixed" }}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell
+                      style={{
+                        fontWeight: "600",
+                        width: "10%",
+                        fontSize: "18px",
+                      }}
+                    >
+                      S.No
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        fontWeight: "600",
+                        width: "30%",
+                        fontSize: "18px",
+                      }}
+                    >
+                      Name
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        fontWeight: "600",
+                        width: "20%",
+                        fontSize: "18px",
+                      }}
+                    >
+                      Designation
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        fontWeight: "600",
+                        width: "35%",
+                        fontSize: "18px",
+                      }}
+                    >
+                      Skills
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        fontWeight: "600",
+                        width: "20%",
+                        fontSize: "18px",
+                      }}
+                    >
+                      Total No. of Hours
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        fontWeight: "600",
+                        width: "20%",
+                        fontSize: "18px",
+                      }}
+                    >
+                      Logged In Hours
+                    </TableCell>
 
-                <TableCell style={{ fontWeight: "bold", width: "20%" }}>
-                  Hours Left
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {dashboardProjectResources?.content
-                ?.slice(startIndex, endIndex)
-                .map((row, index) => (
-                  <React.Fragment key={row.resourceId}>
-                    <TableRow>
-                      <TableCell>
-                        <Grid container alignItems="center" spacing={1}>
-                          <Grid item>
-                            <Avatar
-                              sx={{
-                                color: "#fff",
-                                backgroundColor: " #4813B8",
-                              }}
-                            >
-                              {row?.employeeName.charAt(0)}
-                            </Avatar>
-                          </Grid>
-                          <Grid item>{row.employeeName}</Grid>
-                        </Grid>
-                      </TableCell>
-                      <TableCell>{row.designation}</TableCell>
-                      <TableCell
-                        style={{
-                          maxWidth: "240px",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
-                        {row.employeeSkills?.length > 0 && (
-                          <React.Fragment>
-                            <Grid
-                              container
-                              sx={{
-                                border: "1px solid #F3F3F3",
-                                borderRadius: "5px",
-                                backgroundColor: "#F3F3F3",
-                                overflow: "auto",
-                              }}
-                            >
-                              {row.employeeSkills
-                                .slice(0, 1)
-                                .map((employeeSkill, skillIndex) => (
-                                  <Grid
-                                    item
-                                    key={skillIndex}
+                    <TableCell
+                      style={{
+                        fontWeight: "600",
+                        width: "20%",
+                        fontSize: "18px",
+                      }}
+                    >
+                      Hours Left
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {dashboardProjectResources?.content?.map((row, index) => (
+                    <React.Fragment key={row.resourceId}>
+                      <TableRow>
+                        <TableCell style={{ fontSize: "16px" }}>
+                          {startIndex + index + 1}
+                        </TableCell>
+                        <TableCell>
+                          <Grid container alignItems="center" spacing={1}>
+                            <Grid item>
+                              {row?.fileStorage ? (
+                                <>
+                                  <Avatar
+                                    alt="Profile Picture"
+                                    src={`data:image/png;base64,${row?.fileStorage?.data}`}
                                     sx={{
-                                      border: "1px solid #AEAEAE",
-                                      borderRadius: "8px",
-                                      padding: "4px",
-                                      margin: "5px",
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "flex-end",
-                                      color: "#000000",
-                                      backgroundColor: "#ffffff",
+                                      border: "2px solid #A4A4A4",
+                                    }}
+                                  />
+                                </>
+                              ) : (
+                                <>
+                                  <Avatar
+                                    sx={{
+                                      color: "#fff",
+                                      backgroundColor: " #4813B8",
                                     }}
                                   >
-                                    <span style={{ color: "black" }}>
-                                      {employeeSkill.skillName}
-                                    </span>{" "}
-                                    {employeeSkill.rating && (
+                                    {row?.employeeName.charAt(0)}
+                                  </Avatar>
+                                </>
+                              )}
+                            </Grid>
+                            <Grid item style={{ fontSize: "16px" }}>
+                              {row.employeeName}
+                            </Grid>
+                          </Grid>
+                        </TableCell>
+                        <TableCell style={{ fontSize: "16px" }}>
+                          {row.designation}
+                        </TableCell>
+                        <TableCell
+                          style={{
+                            maxWidth: "240px",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {row.employeeSkills?.length > 0 && (
+                            <React.Fragment>
+                              <Grid
+                                container
+                                sx={{
+                                  border: "1px solid #F3F3F3",
+                                  borderRadius: "5px",
+                                  backgroundColor: "#F3F3F3",
+                                  overflow: "auto",
+                                }}
+                              >
+                                {row.employeeSkills
+                                  .slice(0, 1)
+                                  .map((employeeSkill, skillIndex) => (
+                                    <Grid
+                                      item
+                                      key={skillIndex}
+                                      alignItems="center"
+                                      sx={{
+                                        border: "1px solid #AEAEAE",
+                                        borderRadius: "8px",
+                                        padding: "4px",
+                                        margin: "5px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "flex-end",
+                                        color: "#000000",
+                                        backgroundColor: "#ffffff",
+                                      }}
+                                    >
+                                      <span style={{ color: "black" }}>
+                                        {employeeSkill.skillName}
+                                      </span>{" "}
                                       <>
                                         <StarOutlinedIcon
                                           style={{
@@ -402,25 +638,172 @@ const ProjectProgress = () => {
                                         />
                                         {employeeSkill.rating}
                                       </>
-                                    )}
+                                    </Grid>
+                                  ))}
+                                {row.employeeSkills.length > 2 && (
+                                  <Grid
+                                    item
+                                    xs={2}
+                                    alignItems="center"
+                                    sx={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "flex-end",
+                                      marginLeft: "auto",
+                                    }}
+                                  >
+                                    <Button
+                                      onClick={() => toggleRowExpansion(index)}
+                                      style={{ justifyContent: " flexEnd" }}
+                                    >
+                                      {expandedRows.includes(index) ? (
+                                        <>
+                                          <KeyboardArrowUpIcon />
+                                        </>
+                                      ) : (
+                                        <>
+                                          <KeyboardArrowDownIcon />
+                                        </>
+                                      )}
+                                    </Button>
                                   </Grid>
-                                ))}
-                              {row.employeeSkills.length > 0 && (
+                                )}
+                              </Grid>
+                            </React.Fragment>
+                          )}
+                        </TableCell>
+
+                        <TableCell style={{ fontSize: "16px" }}>
+                          {row.occupancyHours}
+                        </TableCell>
+
+                        <TableCell style={{ fontSize: "16px" }}>
+                          {" "}
+                          {row.loggedInHours}{" "}
+                        </TableCell>
+                        <TableCell>
+                          <Box
+                            sx={{
+                              position: "relative",
+                              display: "inline-flex",
+                            }}
+                          >
+                            <CircularProgressbar
+                              value={row.hoursLeft}
+                              styles={{
+                                root: { width: "80px" },
+                                path: {
+                                  stroke:
+                                    parseInt(row.loggedInHours) >
+                                    parseInt(row.occupancyHours)
+                                      ? "#FF0000"
+                                      : "#4CAF50",
+                                },
+                                text: { fontSize: "14px", fill: "#000" },
+                              }}
+                            />
+                            <Box
+                              sx={{
+                                top: 0,
+                                left: 0,
+                                bottom: 0,
+                                right: 0,
+                                position: "absolute",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+                                component="div"
+                                style={{
+                                  lineHeight: "15px",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                {`${Math.abs(row.hoursLeft.split(" ")[0])} Hrs`}
+                                <br />
+                                {`${Math.abs(
+                                  row.hoursLeft.split(" ")[2]
+                                )} Mins`}
+                                <br />
+                                {parseFloat(row.loggedInHours) >
+                                parseFloat(row.occupancyHours)
+                                  ? "exceed"
+                                  : "left"}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                      {expandedRows.includes(index) && (
+                        <TableRow sx={{ border: "5px solid #EBEBEB" }}>
+                          <TableCell colSpan={7}>
+                            <Grid container>
+                              {expandedRows.includes(index) &&
+                                row.employeeSkills
+                                  .slice(1)
+                                  .map((employeeSkill, skillIndex) => (
+                                    <Grid
+                                      item
+                                      key={skillIndex}
+                                      sx={{
+                                        border: "1px solid #AEAEAE",
+                                        borderRadius: "8px",
+                                        padding: "4px",
+                                        margin: "5px",
+                                        display: "block",
+                                        alignItems: "center",
+                                        justifyContent: "flex-end",
+                                        color: "#000000",
+                                        backgroundColor: "#ffffff",
+                                        float: "left",
+                                      }}
+                                    >
+                                      <span style={{ color: "black" }}>
+                                        {employeeSkill.skillName}
+                                      </span>{" "}
+                                      <>
+                                        <StarOutlinedIcon
+                                          style={{
+                                            backgroundColor:
+                                              employeeSkill.rating < 5
+                                                ? "#90DC90"
+                                                : employeeSkill.rating >= 5 &&
+                                                  employeeSkill.rating <= 7
+                                                ? "#E6E62C"
+                                                : "#E38F75",
+                                            color: "#ffff",
+                                            borderRadius: "50%",
+                                            width: 15,
+                                            height: 15,
+                                            marginTop: 0,
+                                            marginLeft: 2,
+                                            marginRight: 2,
+                                          }}
+                                        />
+                                        {employeeSkill?.rating || 0}
+                                      </>
+                                    </Grid>
+                                  ))}
+
+                              {row.employeeSkills?.length > 1 && (
                                 <Grid
-                                  item
-                                  sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "flex-end",
-                                    marginLeft: "auto",
-                                    width: "0px",
-                                  }}
+                                  container
+                                  justifyContent="flex-end"
+                                  display={"flex"}
+                                  flexDirection={"row"}
                                 >
                                   <Button
+                                    style={{
+                                      padding: "0px",
+                                    }}
                                     onClick={() => toggleRowExpansion(index)}
                                   >
                                     {expandedRows.includes(index) ? (
                                       <>
+                                        View Less
                                         <KeyboardArrowUpIcon />
                                       </>
                                     ) : (
@@ -432,112 +815,17 @@ const ProjectProgress = () => {
                                 </Grid>
                               )}
                             </Grid>
-                          </React.Fragment>
-                        )}
-                      </TableCell>
-
-                      <TableCell>{row.occupancyHours}</TableCell>
-
-                      <TableCell> {row.loggedInHours.split(" ")[0]} </TableCell>
-                      <TableCell>
-                        <CircularProgressbar
-                          value={row.hoursLeft} // Assuming `row.hoursLeft` is a numerical value
-                          text={`${row.hoursLeft.split(" ")[0]}hrs left`}
-                          styles={{
-                            root: { width: "80px" },
-                            path: { stroke: "#4CAF50" },
-                            text: { fontSize: "14px", fill: "#000" },
-                          }}
-                        />
-                      </TableCell>
-                    </TableRow>
-                    {expandedRows.includes(index) && (
-                      <TableRow sx={{ border: "5px solid #EBEBEB" }}>
-                        <TableCell colSpan={6}>
-                          <Grid sx={{ backgroundColor: "#fff" }}>
-                            {expandedRows.includes(index) &&
-                              row.employeeSkills.map(
-                                (employeeSkill, skillIndex) => (
-                                  <Grid
-                                    item
-                                    key={skillIndex}
-                                    sx={{
-                                      border: "1px solid #AEAEAE",
-                                      borderRadius: "8px",
-                                      padding: "4px",
-                                      margin: "5px",
-                                      display: "block",
-                                      alignItems: "center",
-                                      justifyContent: "flex-end",
-                                      color: "#000000",
-                                      backgroundColor: "#ffffff",
-                                      float: "left",
-                                    }}
-                                  >
-                                    <span style={{ color: "black" }}>
-                                      {employeeSkill.skillName}
-                                    </span>{" "}
-                                    {employeeSkill.rating && (
-                                      <>
-                                        <StarOutlinedIcon
-                                          style={{
-                                            backgroundColor:
-                                              employeeSkill.rating < 5
-                                                ? "#90DC90"
-                                                : employeeSkill.rating >= 5 &&
-                                                  employeeSkill.rating <= 7
-                                                ? "#E6E62C"
-                                                : "#E38F75",
-                                            color: "#ffff",
-                                            borderRadius: "50%",
-                                            width: 15,
-                                            height: 15,
-                                            marginTop: 0,
-                                            marginLeft: 2,
-                                            marginRight: 2,
-                                          }}
-                                        />
-                                        {employeeSkill.rating}
-                                      </>
-                                    )}
-                                  </Grid>
-                                )
-                              )}
-                            {row.employeeSkills?.length > 1 && (
-                              <Grid
-                                container
-                                justifyContent="flex-end"
-                                display={"flex"}
-                                flexDirection={"row"}
-                                width={"auto"}
-                              >
-                                <Button
-                                  style={{ padding: "0px" }}
-                                  onClick={() => toggleRowExpansion(index)}
-                                >
-                                  {expandedRows.includes(index) ? (
-                                    <>
-                                      View Less
-                                      <KeyboardArrowUpIcon />
-                                    </>
-                                  ) : (
-                                    <>
-                                      <KeyboardArrowDownIcon />
-                                    </>
-                                  )}
-                                </Button>
-                              </Grid>
-                            )}
-                          </Grid>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </React.Fragment>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Grid>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Grid>
+        </>
+      )}
     </Grid>
   );
 };

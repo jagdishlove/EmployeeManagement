@@ -47,11 +47,11 @@ const LeaveRequestForm = ({
   };
 
   const leaveRequestSession = useSelector(
-    (state) => state.persistData.masterData?.sessionList
+    (state) => state.persistData?.loginDetails?.masterData?.sessionList
   );
 
   const leaveRequestType = useSelector(
-    (state) => state.persistData.masterData?.leaveTypes
+    (state) => state.persistData?.loginDetails?.masterData?.leaveTypes
   );
 
   useEffect(() => {
@@ -59,7 +59,7 @@ const LeaveRequestForm = ({
   }, [dispatch]);
 
   const searchEmailType = useSelector(
-    (state) => state?.nonPersist?.leavesData?.searchEmailData
+    (state) => state?.persistData?.leavesData?.searchEmailData
   );
 
   useEffect(() => {

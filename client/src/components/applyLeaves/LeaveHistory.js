@@ -114,11 +114,11 @@ const LeaveHistory = ({
   const [leaveToDelete, setLeaveToDelete] = useState(null);
 
   const managerData = useSelector(
-    (state) => state.persistData.masterData?.manager
+    (state) => state.persistData?.loginDetails?.masterData?.manager
   );
 
   const { data: leaveHistory, loading } = useSelector(
-    (state) => state?.nonPersist?.leaveHistoryData
+    (state) => state?.persistData?.leaveHistoryData
   );
 
   const handleEditAction = (data) => {
@@ -137,6 +137,7 @@ const LeaveHistory = ({
     });
 
     setDisableSave(data.status);
+    window.scroll(1, 1);
   };
 
   const isPastOrCurrentDate = (dateString) => {
@@ -251,7 +252,12 @@ const LeaveHistory = ({
                         className="leaveHistorycolumn"
                         style={{ textAlign: "center" }}
                       >
-                        {entry?.leaveTransaction?.leaveMaster?.leaveTypes === "Adoption Leave For Female" || entry?.leaveTransaction?.leaveMaster?.leaveTypes === "Adoption Leave For Male" ? 'Adoption Leave' : entry?.leaveTransaction?.leaveMaster?.leaveTypes}
+                        {entry?.leaveTransaction?.leaveMaster?.leaveTypes ===
+                          "Adoption Leave For Female" ||
+                        entry?.leaveTransaction?.leaveMaster?.leaveTypes ===
+                          "Adoption Leave For Male"
+                          ? "Adoption Leave"
+                          : entry?.leaveTransaction?.leaveMaster?.leaveTypes}
                       </TableCell>
                       <TableCell
                         className="leaveHistorycolumn"

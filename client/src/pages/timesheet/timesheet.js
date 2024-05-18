@@ -1,5 +1,13 @@
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
-import { Box, Button, CircularProgress, Grid, Tab, Tabs, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Grid,
+  Tab,
+  Tabs,
+  Typography,
+} from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { format } from "date-fns";
 import moment from "moment";
@@ -32,13 +40,15 @@ const Timesheet = () => {
 
   const [disableWhileEditing, setDisabledWhileEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  localStorage.setItem("selectedTabIndex", 0);
 
   const navigate = useNavigate();
 
   const [value, setValue] = useState(0);
 
   const getTimesheetData = useSelector(
-    (state) => state?.nonPersist?.timesheetData?.timeSheetData?.timesheetEntryId
+    (state) =>
+      state?.persistData?.timesheetData?.timeSheetData?.timesheetEntryId
   );
 
   const formattedDurations = getTimesheetData?.map((duration) => {
@@ -260,7 +270,7 @@ const Timesheet = () => {
           height="100%"
           bgcolor="rgba(255, 255, 255, 0.7)"
         >
-          <CircularProgress/>
+          <CircularProgress />
         </Box>
       )}
     </Box>

@@ -114,15 +114,29 @@ const ResourceAllocationFormDetails = () => {
   const [saveButton, setSaveButton] = useState(false);
   const [occupenyhoursValue, setOccupencyHoursValue] = useState("");
   const [render, setRender] = useState(true);
+  const [employeeId, setEmployeeId] = useState();
+  const { id } = useParams();
+
+  const projectId = useSelector(
+    (state) => state.persistData.projectDetails?.projectId
+  );
+
+  let localProjectIdData = localStorage?.getItem("projectData");
+  localProjectIdData = JSON.parse(localProjectIdData);
 
   useEffect(() => {
     const params = {
       query: searchData || "",
       skillIds: "",
     };
+    const newProjectId = projectId || localProjectIdData?.id;
 
-    dispatch(getAllocationSearch(params, projectId));
-  }, [debouncedValue]);
+    if (projectId || localProjectIdData?.id) {
+      dispatch(getAllocationSearch(params, newProjectId));
+    } else if (id) {
+      dispatch(getAllocationSearch(params, id));
+    }
+  }, [debouncedValue, id]);
 
   const masterSkillData = useSelector(
     (state) => state?.persistData?.masterData?.skill
@@ -130,9 +144,6 @@ const ResourceAllocationFormDetails = () => {
   const masterDesigData = useSelector(
     (state) => state?.persistData?.masterData?.designation
   );
-  // const { getProjectData } = useSelector(
-  //   (state) => state?.nonPersist?.projectDetails
-  // );
 
   const theme = useTheme();
   const style = TimesheetStyle(theme);
@@ -154,7 +165,7 @@ const ResourceAllocationFormDetails = () => {
   });
 
   const [selectedOccupancyHours, setSelectedOccupancyHours] = useState(null);
-  const { id } = useParams();
+
   const handleInputChange = (event, data) => {
     setSelectedOptions(data);
     const { name, value } = event.target;
@@ -165,10 +176,10 @@ const ResourceAllocationFormDetails = () => {
   };
 
   const { allocationSearchData } = useSelector(
-    (state) => state?.nonPersist?.projectDetails
+    (state) => state?.persistData?.projectDetails
   );
   const { resourceDetailsPopupData } = useSelector(
-    (state) => state?.nonPersist?.projectDetails
+    (state) => state?.persistData?.projectDetails
   );
 
   const handleRadioSelect = (id) => {
@@ -187,12 +198,6 @@ const ResourceAllocationFormDetails = () => {
       [name]: value,
     }));
   };
-
-  const projectId = useSelector(
-    (state) => state.nonPersist.projectDetails?.projectId
-  );
-
-  const [employeeId, setEmployeeId] = useState();
 
   const handleConfirm = async (e) => {
     e.preventDefault();
@@ -228,13 +233,14 @@ const ResourceAllocationFormDetails = () => {
       payload.resourceId = selectedOccupancyHours;
     }
 
-    await dispatch(saveCreateResourcesAction(payload));
-    await dispatch(getAllResourcesAction(projectId));
+    await dispatch(saveCreateResourcesAction(payload, navigate));
+    await dispatch(getAllResourcesAction(projectId || id));
 
-    setFormData({
+    setFormData((prevData) => ({
+      ...prevData,
       occupancyHours: "",
       occupancyMinutes: "",
-    });
+    }));
     setSelectedOccupancyHours(null);
     setIsModalOpen(false); // Close the modal after confirmation
     setRender(true);
@@ -266,7 +272,7 @@ const ResourceAllocationFormDetails = () => {
 
   //Edit
   const allResourcesData = useSelector(
-    (state) => state.nonPersist.projectDetails?.allResourcesData
+    (state) => state.persistData.projectDetails?.allResourcesData
   );
 
   useEffect(() => {
@@ -378,7 +384,7 @@ const ResourceAllocationFormDetails = () => {
     if (type === "save") {
       setSaveButton(true);
     } else if (type === "next") {
-      setSaveButton(true);
+      setSaveButton(false);
     }
     e.preventDefault();
 
@@ -612,7 +618,7 @@ const ResourceAllocationFormDetails = () => {
 
   // for not clear the form we are calling Projectdetails
   const projectDetailsData = useSelector(
-    (state) => state.nonPersist.projectDetails?.projectDetailsData
+    (state) => state.persistData.projectDetails?.projectDetailsData
   );
 
   useEffect(() => {
@@ -788,6 +794,19 @@ const ResourceAllocationFormDetails = () => {
                       <TableCell>
                         <Grid container spacing={2}>
                           <Grid item xs={4}>
+                          {option?.fileStorage ? (
+                              <>
+                                <Avatar
+                                  alt="Profile Picture"
+                                  src={`data:image/png;base64,${option?.fileStorage?.data}`}
+                                  sx={{
+                                    border: "2px solid #A4A4A4",
+
+                                  }}
+                                />
+                              </>
+                            ) : (
+                              <>
                             <Avatar
                               sx={{
                                 color: "#fff",
@@ -796,6 +815,8 @@ const ResourceAllocationFormDetails = () => {
                             >
                               {option?.employeeName.charAt(0)}
                             </Avatar>
+                            </>
+                            )}
                           </Grid>{" "}
                           <Grid item xs={8} mt={1}>
                             {option.employeeName}
@@ -803,6 +824,7 @@ const ResourceAllocationFormDetails = () => {
                         </Grid>
                       </TableCell>
                       <TableCell>{option.employeeDesignation}</TableCell>
+                      <TableCell />
                       <TableCell>
                         {option.employeeSkills?.length > 0 && (
                           <Grid
@@ -812,13 +834,14 @@ const ResourceAllocationFormDetails = () => {
                               borderRadius: "5px",
                               backgroundColor: "#F3F3F3",
                               overflow: "auto",
+                              width: "450px",
                             }}
                           >
                             {option.employeeSkills
                               .slice(
                                 0,
                                 !expanded && option.employeeSkills.length > 5
-                                  ? 5
+                                  ? 2
                                   : option.employeeSkills.length
                               )
                               .map((employeeSkill, index) => (
@@ -842,29 +865,27 @@ const ResourceAllocationFormDetails = () => {
                                     <span style={{ color: "black" }}>
                                       {employeeSkill.skillName}
                                     </span>{" "}
-                                    {employeeSkill.rating && (
-                                      <>
-                                        <StarOutlinedIcon
-                                          style={{
-                                            backgroundColor:
-                                              employeeSkill.rating < 5
-                                                ? "#90DC90"
-                                                : employeeSkill.rating >= 5 &&
-                                                  employeeSkill.rating <= 7
-                                                ? "#E6E62C"
-                                                : "#E38F75",
-                                            color: "#ffff",
-                                            borderRadius: "50%",
-                                            width: 15,
-                                            height: 15,
-                                            marginTop: 0,
-                                            marginLeft: 2,
-                                            marginRight: 2,
-                                          }}
-                                        />
-                                        {employeeSkill.rating}
-                                      </>
-                                    )}
+                                    <>
+                                      <StarOutlinedIcon
+                                        style={{
+                                          backgroundColor:
+                                            employeeSkill.rating < 5
+                                              ? "#90DC90"
+                                              : employeeSkill.rating >= 5 &&
+                                                employeeSkill.rating <= 7
+                                              ? "#E6E62C"
+                                              : "#E38F75",
+                                          color: "#ffff",
+                                          borderRadius: "50%",
+                                          width: 15,
+                                          height: 15,
+                                          marginTop: 0,
+                                          marginLeft: 2,
+                                          marginRight: 2,
+                                        }}
+                                      />
+                                      {employeeSkill.rating}
+                                    </>
                                   </React.Fragment>
                                 </Grid>
                               ))}
@@ -1041,7 +1062,7 @@ const ResourceAllocationFormDetails = () => {
         </Grid>
         <Grid item xs={12} sm={8} md={10} lg={10}>
           {showAllResourcesTable && (
-            <AllResourcesTable handleEdit={handleEdit} />
+            <AllResourcesTable handleEdit={handleEdit} id={id} />
           )}
         </Grid>
       </Grid>

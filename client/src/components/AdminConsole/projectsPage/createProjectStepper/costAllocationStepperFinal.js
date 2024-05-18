@@ -15,7 +15,7 @@ const CostAllocationStepperFinal = () => {
   const Navigate = useNavigate();
   const { id } = useParams();
   const projectId = useSelector(
-    (state) => state.nonPersist.projectDetails?.projectId
+    (state) => state.persistData.projectDetails?.projectId
   );
 
   const handleBackClick = () => {
@@ -35,7 +35,7 @@ const CostAllocationStepperFinal = () => {
   };
 
   const { getProjectData } = useSelector(
-    (state) => state?.nonPersist?.projectDetails
+    (state) => state?.persistData?.projectDetails
   );
   return (
     <div>

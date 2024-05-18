@@ -17,11 +17,11 @@ export default function User() {
   const [selectedSearchOption, setSelectedSearchOption] = useState("");
   const [filteredSkills, setFilteredSkills] = useState([]);
 
-
   const userData = useSelector(
-    (state) => state?.nonPersist?.userDetails?.usersData
+    (state) => state?.persistData?.userDetails?.usersData
   );
 
+  localStorage.setItem("selectedTabIndex", 0);
   const removeSkill = (skillToRemove) => {
     setSkillsCheckedData((prevSkills) =>
       prevSkills.filter((skill) => skill.skillId !== skillToRemove.skillId)
@@ -63,7 +63,7 @@ export default function User() {
     setPageCounter((counter) => counter + 1);
   };
 
- 
+  localStorage.removeItem("selectedProject");
   return (
     <Box>
       <Typography variant="h2" gutterBottom>

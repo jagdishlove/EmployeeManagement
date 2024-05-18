@@ -30,7 +30,6 @@ import {
   calculateTimeDifference,
   dateOptions,
   formatDateForApi,
-  modifyDataFormat,
 } from "../../utils/dateOptions";
 import { timeValidation } from "../../utils/timeValidation";
 import TimePicker from "../forms/customInputs/timePicker";
@@ -58,19 +57,37 @@ const TimesheetRow = ({
   onRatingChange,
   comments,
   ratings,
-
   selectedCards,
   handleCheckboxChange,
+ 
 }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
-  const masterData = useSelector((state) => state.persistData.masterData);
+  const masterData = useSelector(
+    (state) => state.persistData?.loginDetails?.masterData
+  );
+  const allActivities = useSelector(
+    (state) => state.persistData?.loginDetails?.masterData?.activity
+  );
+ 
+  
 
-  const updatedMasterData = modifyDataFormat(masterData);
   const style = TimesheetStyle(theme);
+  let filterJobType; // Declare filterJobType outside the if-else block
+
+  if (superAdmin || approval) {
+    filterJobType = masterData?.jobtype?.filter(
+      (item) => item.status === "ACTIVE"
+    );
+  } else {
+    filterJobType = masterData?.jobTypeForLoggedInUser?.filter(
+      (item) => item.status === "ACTIVE"
+    );
+  }
 
   const getTimesheetData = useSelector(
-    (state) => state?.nonPersist?.timesheetData?.timeSheetData?.timesheetEntryId
+    (state) =>
+      state?.persistData?.timesheetData?.timeSheetData?.timesheetEntryId
   );
   const [managerCommentProvided, setManagerCommentProvided] = useState(false);
   const [timeError, setTimeError] = useState("");
@@ -81,13 +98,15 @@ const TimesheetRow = ({
   const [loading, setLoading] = useState(false);
 
   const isSuccessSaveTimesheet = useSelector(
-    (state) => state?.nonPersist?.timesheetData.isSuccess
+    (state) => state?.persistData?.timesheetData.isSuccess
   );
   const errorTimesheetEdit = useSelector(
-    (state) => state?.nonPersist?.timesheetData.errorTimesheetEdit
+    (state) => state?.persistData?.timesheetData.errorTimesheetEdit
   );
 
-  const role = useSelector((state) => state?.persistData?.data.role);
+  const role = useSelector(
+    (state) => state?.persistData?.loginDetails?.data.role
+  );
   useEffect(() => {
     setErrors({});
     setTimeError("");
@@ -154,7 +173,6 @@ const TimesheetRow = ({
   const [selectedValues, setSelectedValues] = useState(
     data ? editedSelectedValues : initialSelectedValues
   );
-
   useEffect(() => {
     if (updatedActivityameList?.length > 1 && timesheetForm) {
       setSelectedValues({
@@ -163,42 +181,55 @@ const TimesheetRow = ({
       });
     }
   }, [updatedActivityameList]);
-
   const handleEditClick = () => {
     editButtonHandler(id);
     setDisabledWhileEditing(true);
   };
 
   const getProjectName = (value) => {
-    const updatedprojName = masterData?.jobtype
-      ?.filter((data) => data.jobId === value)
-      .map((data) => data.projectList)
-      .flat();
-    setUpdatedProjectNameList(updatedprojName);
+    let updatedprojName; // Declare filterJobType outside the if-else block
+
+    if (superAdmin || approval) {
+      updatedprojName = masterData?.jobtype
+        ?.filter((data) => data.jobId === value)
+        .map((data) => data.projectList)
+        .flat();
+      setUpdatedProjectNameList(updatedprojName);
+    } else {
+      updatedprojName = masterData?.jobTypeForLoggedInUser
+        ?.filter((data) => data.jobId === value)
+        .map((data) => data.projectList)
+        .flat();
+      setUpdatedProjectNameList(updatedprojName);
+    }
   };
+
   useEffect(() => {
     getProjectName(selectedValues.jobType);
   }, [masterData, selectedValues.jobType]);
 
   const getActivity = (value) => {
     let jobType = selectedValues.jobType;
-    let jobTypeItems = masterData.jobtype?.find(
-      (value) => value.jobId === jobType
-    );
+
+    let jobTypeItems; // Declare filterJobType outside the if-else block
+
+    if (superAdmin || approval) {
+      jobTypeItems = masterData.jobtype?.find(
+        (value) => value.jobId === jobType
+      );
+    } else {
+      jobTypeItems = masterData.jobTypeForLoggedInUser?.find(
+        (value) => value.jobId === jobType
+      );
+    }
+
     let projectItem = jobTypeItems?.projectList?.find(
       (val) => val.id === value
     );
+
     const projectList = projectItem?.activities;
-    if (projectList && projectList.length > 0) {
-      let filteredActivities = updatedMasterData.activity.filter(
-        (updatedItem) =>
-          projectList.some((project) => updatedItem.id === project.activityId)
-      );
-      setUpdatedActivityNameList(filteredActivities);
-    } else {
-      const allActivities = updatedMasterData.activity;
-      setUpdatedActivityNameList(allActivities);
-    }
+
+    setUpdatedActivityNameList(projectList);
   };
 
   useEffect(() => {
@@ -206,23 +237,20 @@ const TimesheetRow = ({
   }, [masterData, selectedValues.projectName]);
 
   const automaticSelection = () => {
-    if (
-      updatedProjectNameList?.length === 1 &&
-      !selectedValues.projectName &&
-      !errors.projectNameError
-    ) {
+    if (updatedProjectNameList?.length === 1 && !errors.projectNameError) {
       // If there's only one option and the projectName is not selected
       setSelectedValues((prevSelectedValues) => ({
         ...prevSelectedValues,
-        projectName:
-          updatedProjectNameList[0].id ||
-          updatedProjectNameList[0].value ||
-          updatedProjectNameList[0].projectName,
+        projectName: updatedProjectNameList[0].id,
       }));
       setErrors((prevErrors) => ({
         ...prevErrors,
         projectNameError: "",
       }));
+    }
+
+    if (updatedActivityameList?.length === 0) {
+      setUpdatedActivityNameList(allActivities);
     }
     if (
       updatedActivityameList?.length === 1 &&
@@ -232,10 +260,7 @@ const TimesheetRow = ({
       // If there's only one option and the activity is not selected
       setSelectedValues((prevSelectedValues) => ({
         ...prevSelectedValues,
-        activity:
-          updatedActivityameList[0].id ||
-          updatedActivityameList[0].value ||
-          updatedActivityameList[0].activity,
+        activity: updatedActivityameList[0]?.activityId,
       }));
       setErrors((prevErrors) => ({
         ...prevErrors,
@@ -243,13 +268,20 @@ const TimesheetRow = ({
       }));
     }
   };
+
   useEffect(() => {
     automaticSelection();
   }, [updatedProjectNameList, updatedActivityameList]);
 
   const onChangeHandler = (event, dropdownName) => {
     const { value } = event.target;
-    if (dropdownName === "jobType") getProjectName(value);
+    if (dropdownName === "jobType") {
+      setSelectedValues({
+        ...selectedValues,
+        activity: "",
+      });
+      getProjectName(value);
+    }
     if (dropdownName === "projectName") getActivity(value);
     setSelectedValues((prevSelectedValues) => ({
       ...prevSelectedValues,
@@ -307,10 +339,11 @@ const TimesheetRow = ({
 
   const handleSaveData = async () => {
     setLoading(true);
+
     try {
       const newErrors = validationForm();
       const timeError = timeValidation(getTimesheetData, newEnteryTime);
-     
+
       setErrors(newErrors);
       setTimeError(timeError);
 
@@ -322,14 +355,13 @@ const TimesheetRow = ({
         await dispatch(
           saveTimeSheetEntryAction(payload, formatDateForApi(selectedDate))
         );
-        getProjectName(selectedValues.jobType);
+        setSelectedValues(initialSelectedValues);
         setNewEnteryTime({
           fromTime: "",
           toTime: "",
         });
       }
     } finally {
-    
       setLoading(false);
     }
   };
@@ -502,6 +534,8 @@ const TimesheetRow = ({
     color: "white", // Change this to the text color
     padding: "8px", // Adjust padding as needed
   };
+
+  localStorage.removeItem("selectedProject");
   return (
     <Box
       sx={{
@@ -559,25 +593,27 @@ const TimesheetRow = ({
       ) : null}
       {superAdmin ? (
         <>
-          <div
-            style={{
-              position: "absolute",
-              top: "-0.5rem",
-              right: "0rem",
-
-              padding: "0.50rem 0.50rem",
-            }}
-          >
-            <Checkbox
-              checked={selectedCards[data.timesheetEntryId] || false}
-              onChange={() => handleCheckboxChange(data.timesheetEntryId)}
-              inputProps={{ "aria-label": "controlled" }}
-            />
-          </div>
+          {data.status !== "APPROVED" && data.status !== "REJECTED" && (
+            <div
+              style={{
+                position: "absolute",
+                top: "-0.5rem",
+                right: "0rem",
+                padding: "0.50rem 0.50rem",
+              }}
+            >
+              <Checkbox
+                checked={selectedCards[data.timesheetEntryId] || false}
+                onChange={() => handleCheckboxChange(data.timesheetEntryId)}
+                inputProps={{ "aria-label": "controlled" }}
+              />
+            </div>
+          )}
         </>
       ) : (
         <></>
       )}
+
       <Grid container spacing={2}>
         {/* First Row */}
         <Grid container item spacing={2} xs={12} sm={12} md={6} lg={6}>
@@ -631,7 +667,7 @@ const TimesheetRow = ({
           >
             <Grid item xs={12} sm={6} md={6} lg={6}>
               <Dropdown
-                options={updatedMasterData.jobtype}
+                options={filterJobType}
                 value={selectedValues.jobType}
                 onChange={onChangeHandler}
                 title={!data ? "Job Type" : null}
@@ -642,6 +678,8 @@ const TimesheetRow = ({
                   borderRadius: "10px",
                 }}
                 disabled={disabled || approval || superAdmin}
+                labelKey="jobType"
+                valueKey="jobId"
               />
             </Grid>
             <Grid item xs={12} sm={6} md={6} lg={6}>
@@ -661,8 +699,8 @@ const TimesheetRow = ({
             </Grid>
             <Grid item xs={12} sm={12} md={12} lg={12}>
               <Dropdown
-                options={updatedActivityameList}
-                value={selectedValues.activity}
+                options={updatedActivityameList || allActivities}
+                value={selectedValues?.activity}
                 onChange={onChangeHandler}
                 title={!data ? "Activity" : null}
                 dropdownName="activity"
@@ -672,6 +710,8 @@ const TimesheetRow = ({
                   borderRadius: "10px",
                 }}
                 disabled={disabled || approval || superAdmin}
+                labelKey="activityType"
+                valueKey="activityId"
               />
             </Grid>
           </Grid>
@@ -876,7 +916,7 @@ const TimesheetRow = ({
                               },
                           }}
                         >
-                          Approve
+                         Approve
                         </Typography>
                       </Button>
                       <Button

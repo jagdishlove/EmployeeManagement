@@ -316,7 +316,7 @@ export const RatingDataAction = (params) => {
   };
 };
 
-export const getMySpaceActivityAction = (selectedOption) => {
+export const getMySpaceActivityAction = (params) => {
   return async (dispatch) => {
     dispatch(getActivityRequest());
     try {
@@ -324,7 +324,7 @@ export const getMySpaceActivityAction = (selectedOption) => {
         "GET",
         "api/workspace/activity",
         null,
-        { dashboardActivity: selectedOption }
+        params
       );
       dispatch(getActivitySuccess(response));
     } catch (err) {

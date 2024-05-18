@@ -32,6 +32,7 @@ import {
 const initialData = {
   projectList: [],
   workSpaceData: [],
+  workSpaceDataLoading:false,
   projectperformance:[],
   myspaceActivity:[],
   ratingData:[],
@@ -61,17 +62,20 @@ const workspaceReducer = (state = initialData, action) => {
     case GET_WORKSPACE_DATA_REQUEST:
       return {
         ...state,
-        workSpaceData: [],
+        workSpaceData:[],
+        workSpaceDataLoading:true,
       };
     case GET_WORKSPACE_DATA_SUCCESS:
       return {
         ...state,
         workSpaceData: action.payload,
+        workSpaceDataLoading:false,
       };
     case GET_WORKSPACE_DATA_FAIL:
       return {
         ...state,
         projectList: [],
+        workSpaceDataLoading:false,
       };
       case GET_PROJECT_PERFORMANCE_REQUEST:
         return {

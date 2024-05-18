@@ -5,11 +5,11 @@ import { useSelector } from "react-redux";
 
 const LeaveBalance = () => {
   const leaveBalance = useSelector(
-    (state) => state?.nonPersist?.leavesData?.leaveBalanceData
+    (state) => state?.persistData?.leavesData?.leaveBalanceData
   );
 
   const leaveTypeMasterData = useSelector(
-    (state) => state.persistData.masterData?.leaveTypesForView
+    (state) => state.persistData?.loginDetails?.masterData?.leaveTypesForView
   );
 
   const result = leaveBalance.map((item) => {

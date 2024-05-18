@@ -3,10 +3,10 @@ import GaugeChart from "react-gauge-chart";
 
 const ConsistencyMeter = ({ value }) => {
   // Convert the value to hours
-  const valueInHours = value / 60;
+  const valueInHours = value ? value / 60 : 0;
   // Define colors based on value condition
   const arcColors = ["red", "green", "#690CE1"];
-  const percentage = valueInHours > 12 ? 1 : valueInHours / 12; 
+  const percentage = valueInHours > 12 ? 1 : valueInHours / 12;
 
   return (
     <div>
@@ -24,10 +24,15 @@ const ConsistencyMeter = ({ value }) => {
         animate={false}
         textColor="black"
         formatTextValue={() => {
+          if (valueInHours === 0) {
+            return `00 hours 00 minutes`;
+          }
           const totalMinutes = valueInHours * 60;
           const hours = Math.floor(totalMinutes / 60);
           const minutes = Math.round(totalMinutes % 60); // Round the minutes
-          return `${hours} hours ${minutes} minutes`;
+          return hours > 0 || minutes > 0
+            ? `${hours} hours ${minutes} minutes`
+            : `00 hours 00 minutes`;
         }}
       />
     </div>

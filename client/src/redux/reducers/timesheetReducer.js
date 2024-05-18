@@ -8,14 +8,19 @@ import {
   CLEAR_SUCCESS_FLAG,
   UPDATE_TIME_SHEET_ENTRY_FAIL,
   RESET_UPDATE_TIME_SHEET_ENTRY_FAIL,
+  APPROVE_TIME_SHEET_SUCCESS,
+  APPROVE_TIME_SHEET_REQUEST,
+  APPROVE_TIME_SHEET_FAIL,
 } from "../actions/timeSheet/timeSheetActionType";
 
 // Initial state
 const initialState = {
   timeSheetData: [],
+  approveTimesheetLoading: false,
   approvalTimesheetData: null,
   isSuccess: false,
   errorTimesheetEdit: false,
+  
 };
 
 // Reducer function
@@ -73,7 +78,24 @@ const timesheetReducer = (state = initialState, action) => {
         isSuccess: null,
       };
     }
-
+    case APPROVE_TIME_SHEET_REQUEST: {
+      return {
+        ...state,
+        approveTimesheetLoading: true,
+      };
+    }
+    case APPROVE_TIME_SHEET_SUCCESS: {
+      return {
+        ...state,
+        approveTimesheetLoading: false,
+      };
+    }
+    case APPROVE_TIME_SHEET_FAIL: {
+      return {
+        ...state,
+        approveTimesheetLoading: false,
+      };
+    }
     default:
       return state;
   }

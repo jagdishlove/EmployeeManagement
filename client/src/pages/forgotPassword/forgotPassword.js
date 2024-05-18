@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import InputAdornment from "@mui/material/InputAdornment";
 import { useTheme } from "@mui/material/styles";
-import React, { useState, useEffect}from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import InputFields from "../../components/forms/customInputs/inputFields";
@@ -19,7 +19,7 @@ const ForgotPassword = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const errorData = useSelector(
-    (state) => state.nonPersist.errorMessages.error
+    (state) => state.persistData.errorMessages.error
   );
 
   useEffect(() => {
@@ -77,17 +77,25 @@ const ForgotPassword = () => {
               <Typography sx={style.inboxHeading} variant="h2">
                 Forgot Password?
               </Typography>
-              
-                  <Typography sx={{...style.inboxHeadingtwo, "@media (min-width: 1024px) and (min-height: 768px)": {
-                      fontSize:"12px"
-                      },
-                      "@media (min-width: 768px) and (min-height: 1024px) and (min-width: 820px) and (min-height: 1180px)": {
-                        fontWeight:"bold", 
-                        fontSize:"15px"
-                      },}}><i>
+
+              <Typography
+                sx={{
+                  ...style.inboxHeadingtwo,
+                  "@media (min-width: 1024px) and (min-height: 768px)": {
+                    fontSize: "12px",
+                  },
+                  "@media (min-width: 768px) and (min-height: 1024px) and (min-width: 820px) and (min-height: 1180px)":
+                    {
+                      fontWeight: "bold",
+                      fontSize: "15px",
+                    },
+                }}
+              >
+                <i>
                   Don’t worry. It happens to the best of us. <br />
                   Luckily for you, help is one-step away.
-                </i> </Typography>
+                </i>{" "}
+              </Typography>
               <Box component="form" onSubmit={handleSubmit} sx={style.formBox}>
                 <InputFields
                   label="Please enter your email address"
@@ -111,7 +119,7 @@ const ForgotPassword = () => {
                 )}
                 <Box>
                   <Button
-                     sx={{
+                    sx={{
                       ...style.GreenButton, // Apply the default or custom styles
                     }}
                     variant="contained"
@@ -122,7 +130,6 @@ const ForgotPassword = () => {
                       sx={{
                         color: theme.palette.secondary.main,
                         textTransform: "none",
-                       
                       }}
                     >
                       Click to send OTP
