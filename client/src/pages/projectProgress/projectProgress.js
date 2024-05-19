@@ -104,7 +104,6 @@ const ProjectProgress = () => {
     (state) => state?.persistData?.dashboardProjectdetails
   );
 
-
   var { dashboardProjectdetailsLoading } = useSelector(
     (state) => state?.persistData?.dashboardProjectdetails
   );
@@ -309,7 +308,7 @@ const ProjectProgress = () => {
             </Tab>
           </TabList>
           <TabPanel>
-            {projectListLoading ? (
+            {projectListLoading || dashboardProjectdetailsLoading ? (
               <Grid
                 container
                 spacing={0}
@@ -410,7 +409,7 @@ const ProjectProgress = () => {
         </Tabs>
       </Box>
 
-      {projectListLoading ? (
+      {projectListLoading || dashboardProjectdetailsLoading ? (
         <></>
       ) : showNoDataMessage ? (
         <></>
