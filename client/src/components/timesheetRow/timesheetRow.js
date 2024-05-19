@@ -59,7 +59,6 @@ const TimesheetRow = ({
   ratings,
   selectedCards,
   handleCheckboxChange,
- 
 }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -69,8 +68,6 @@ const TimesheetRow = ({
   const allActivities = useSelector(
     (state) => state.persistData?.loginDetails?.masterData?.activity
   );
- 
-  
 
   const style = TimesheetStyle(theme);
   let filterJobType; // Declare filterJobType outside the if-else block
@@ -128,6 +125,7 @@ const TimesheetRow = ({
       setSelectedValues({
         ...selectedValues,
         projectName: "",
+        activity: "",
       });
     }
   }, [updatedProjectNameList]);
@@ -916,7 +914,7 @@ const TimesheetRow = ({
                               },
                           }}
                         >
-                         Approve
+                          Approve
                         </Typography>
                       </Button>
                       <Button
