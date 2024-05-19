@@ -98,6 +98,7 @@ const ProjectProgress = () => {
   const [expandedRows, setExpandedRows] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
+  const [showNoDataMessage, setShowNoDataMessage] = useState(null);
 
   const { dashboardProjectResources } = useSelector(
     (state) => state?.persistData?.dashboardProjectdetails
@@ -107,12 +108,12 @@ const ProjectProgress = () => {
     (state) => state?.persistData?.dashboardProjectdetails
   );
 
-  const { dashboardProjectdetailsLoading } = useSelector(
+  var { dashboardProjectdetailsLoading } = useSelector(
     (state) => state?.persistData?.dashboardProjectdetails
   );
-  console.log("dashboardProjectdetailsLoading", dashboardProjectdetailsLoading);
-  const projectList = useSelector(
-    (state) => state?.persistData?.workSpace?.projectList
+
+  const { projectList, projectListLoading } = useSelector(
+    (state) => state?.persistData?.workSpace
   );
 
   const role = useSelector(
@@ -135,7 +136,6 @@ const ProjectProgress = () => {
   };
   let storedProject = localStorage.getItem("selectedProject");
   storedProject = JSON.parse(storedProject);
-  console.log("project", project);
   useEffect(() => {
     // setIsLoading(true);
     if (projectList?.length > 0 && !storedProject) {
@@ -215,16 +215,20 @@ const ProjectProgress = () => {
 
   useEffect(() => {
     if (project) {
-      dispatch(dashboardProjectDetailsAction(project.id));
+      dispatch(dashboardProjectDetailsAction(project.id)).then((response) => {
+        if (response) {
+          setShowNoDataMessage(
+            !response?.startDate ||
+              !response?.endDate ||
+              !response?.totalResources
+          );
+        }
+      });
     }
   }, [project]);
 
   // Check if any of the required fields are missing or null
 
-  const showNoDataMessage =
-    !dashboardProjectdetails?.startDate ||
-    !dashboardProjectdetails?.endDate ||
-    !dashboardProjectdetails?.totalResources;
   const recordsPerPage = 3; // Number of records to display per page
   const startIndex = currentPage * recordsPerPage;
 
@@ -308,7 +312,7 @@ const ProjectProgress = () => {
             </Tab>
           </TabList>
           <TabPanel>
-            {!project || dashboardProjectdetailsLoading ? (
+            {projectListLoading ? (
               <Grid
                 container
                 spacing={0}
@@ -409,7 +413,7 @@ const ProjectProgress = () => {
         </Tabs>
       </Box>
 
-      {!project || dashboardProjectdetailsLoading ? (
+      {projectListLoading ? (
         <></>
       ) : showNoDataMessage ? (
         <></>

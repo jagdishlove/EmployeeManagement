@@ -57,6 +57,7 @@ export const dashboardProjectDetailsAction = (data) => {
         `api/projectProgress/progressDetails/${data}`
       );
       dispatch(dashboardProjectDetailsSuccess(response));
+      return response;
     } catch (err) {
       dispatch(dashboardProjectDetailsFail());
       toast.error(err.response.data.errorMessage, {
