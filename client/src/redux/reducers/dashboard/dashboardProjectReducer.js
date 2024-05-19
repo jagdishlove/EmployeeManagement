@@ -19,7 +19,6 @@ const workspaceReducer = (state = initialData, action) => {
     case DASHBOARD_PROJECT_DETAILS_REQUEST:
       return {
         ...state,
-        
         dashboardProjectdetailsLoading: true,
       };
     case DASHBOARD_PROJECT_DETAILS_SUCCESS:

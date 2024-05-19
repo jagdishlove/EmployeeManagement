@@ -38,7 +38,8 @@ const initialData = {
   ratingData:[],
   reports: [],
   teamMembers: [],
-  projectProgressGraphData:[]
+  projectProgressGraphData:[],
+  projectListLoading:false
 };
 
 const workspaceReducer = (state = initialData, action) => {
@@ -46,17 +47,19 @@ const workspaceReducer = (state = initialData, action) => {
     case GET_ALL_PROJECTLIST_REQUEST:
       return {
         ...state,
-        projectList: [],
+        projectListLoading:true
       };
     case GET_ALL_PROJECTLIST_SUCCESS:
       return {
         ...state,
         projectList: action.payload,
+         projectListLoading:false
       };
     case GET_ALL_PROJECTLIST_FAIL: {
       return {
         ...state,
         projectList: [],
+         projectListLoading:false
       };
     }
     case GET_WORKSPACE_DATA_REQUEST:
