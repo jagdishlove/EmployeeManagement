@@ -104,9 +104,6 @@ const ProjectProgress = () => {
     (state) => state?.persistData?.dashboardProjectdetails
   );
 
-  const { dashboardProjectdetails } = useSelector(
-    (state) => state?.persistData?.dashboardProjectdetails
-  );
 
   var { dashboardProjectdetailsLoading } = useSelector(
     (state) => state?.persistData?.dashboardProjectdetails
