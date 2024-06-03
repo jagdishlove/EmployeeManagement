@@ -1,7 +1,7 @@
 import { CloudDownload } from "@mui/icons-material";
 import { Button, Grid, IconButton, TextField, Typography } from "@mui/material";
 import dayjs from "dayjs";
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { downloadFileAction } from "../../../redux/actions/leaves/approvalLeaveAction";
 import Checkbox from "@mui/material/Checkbox";
@@ -25,7 +25,6 @@ const HiddenDataCard = ({
 
   const [loading, setLoading] = useState(false);
 
-
   const handleApproval = async (status, leaveRequestId) => {
     try {
       setLoading(true);
@@ -34,7 +33,20 @@ const HiddenDataCard = ({
       setLoading(false);
     }
   };
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
+
   
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 600);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const dispatch = useDispatch();
 
@@ -239,16 +251,7 @@ const HiddenDataCard = ({
           </Typography>
         </Grid>
       </Grid>
-      <Grid
-        item
-        container
-        xs={12}
-        sm={12}
-        md={4}
-        lg={4}
-        gap={2}
-        style={{ height: "100px" }}
-      >
+      <Grid item container xs={12} sm={12} md={4} lg={4} gap={2}>
         <TextField
           fullWidth
           label="Comments"
@@ -272,13 +275,13 @@ const HiddenDataCard = ({
         md={2}
         lg={2}
         gap={3}
-        style={{ height: "100%", position: "relative" }}
+        marginTop={{ xs: "0px", md: "0px", lg: "0px", sm: "0px" }}
       >
         <Grid
           item
           xs={12}
+          height={{ xs: "none", sm: "47%", md: "47%", lg: "47%" }}
           style={{
-            height: "47%",
             display: "flex",
             justifyContent: "center",
             position: "relative",
@@ -309,13 +312,18 @@ const HiddenDataCard = ({
             {loading ? "Loading..." : "APPROVE"}
           </Button>
         </Grid>
+        <br/>
         <Grid
           item
           xs={12}
+          xm={12}
+          md={12}
+          lg={12}
+          height={{ xs: "none", sm: "47%", md: "47%", lg: "47%" }}
+          marginTop= {{ xs: "0px", sm: "0px", md: "-8px", lg: "-8px" }} 
           style={{
-            height: "47%",
             display: "flex",
-            marginTop: "10px", // Add margin-top to create space
+           
             justifyContent: "center",
             position: "relative",
           }}
@@ -350,13 +358,14 @@ const HiddenDataCard = ({
         sm={12}
         md={4}
         lg={4}
+       
         display={"inline-flex"}
         flexDirection={"row"}
         style={{ lineHeight: "20px", marginLeft: "20px" }}
       >
-        <Grid item xs={12} style={{ marginTop: "-20px" }}>
+        <Grid item xs={12}  marginTop={{xs:"20px",md:"0ox", lg:"0px"}} >
           {cardData.fileName && (
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div className={isMobile ? "startContainer" : "centerContainer"} >
               <IconButton
                 style={{ marginRight: "8px" }}
                 onClick={() => handleDownload(cardData?.fileDownloadLink)}
@@ -368,12 +377,13 @@ const HiddenDataCard = ({
           )}
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={12}  textAlign={{xs:"center",md:"left", lg:"left"}}>
           {cardData.fileName && (
             <Typography
               style={{
                 fontSize: "10px",
                 marginTop: "-10px",
+               
               }}
             >
               please click on the icon to download the file
@@ -384,7 +394,7 @@ const HiddenDataCard = ({
         {(approval || superAdmin) && (
           <>
             {
-              <Grid item xs={12}>
+              <Grid item xs={12}  textAlign={{xs:"center",md:"left", lg:"left"}}>
                 <p
                   style={{
                     color: "red",

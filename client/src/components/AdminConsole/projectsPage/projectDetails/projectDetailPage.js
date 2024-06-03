@@ -352,7 +352,7 @@ const ProjectDetailPage = () => {
                         border: "1px solid #008080",
                         borderRadius: "8px",
                         padding: "4px",
-                        margin: "5px",
+                        margin: "1px",
                         alignItems: "center",
                         justifyContent: "flex-end",
                         color: "#000000",
@@ -360,7 +360,7 @@ const ProjectDetailPage = () => {
                         display: "inline-block",
                         marginRight:
                           index !== projectDetailsData.activities.length - 1
-                            ? "5px"
+                            ? "1px"
                             : "0px",
                       }}
                     >

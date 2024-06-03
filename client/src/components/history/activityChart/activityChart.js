@@ -1,9 +1,10 @@
-import { Typography } from "@mui/material";
+import { Typography, useMediaQuery } from "@mui/material";
 import React from "react";
 import { useSelector } from "react-redux";
 import { Cell, Pie, PieChart, Tooltip } from "recharts";
 
 const ActivityChart = () => {
+  const isMobile = useMediaQuery("(max-width: 600px)");
   const historyData = useSelector(
     (state) => state?.persistData?.historyData.historyData
   );
@@ -68,7 +69,8 @@ const ActivityChart = () => {
           color: "#000000",
           textAlign: "center",
           margin: "0",
-        }}
+          marginTop: isMobile ? '20px' : '0px' }}
+       
         variant="h6"
       >
         <b> MONTHLY ACTIVITY CHART</b>

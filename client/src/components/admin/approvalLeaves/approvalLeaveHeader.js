@@ -64,7 +64,7 @@ const ApprovalLeaveHeader = ({
         <Grid
           container
           justifyContent="flex-start"
-          gap={{ sm: 0, md: 2, lg: 2, xs: 2 }}
+          gap={{ sm: 2, md: 2, lg: 2, xs: 2 }}
         >
           <Grid item xs={12} sm={3} md={3} lg={3}>
             <Typography
@@ -122,16 +122,16 @@ const ApprovalLeaveHeader = ({
               approve={true}
             />
           </Grid>
-          <Grid item xs={12} sm={12} md={1} lg={2} sx={{ marginTop: "30px" }}>
+          <Grid item xs={12} sm={1} md={1} lg={2} sx={{ marginTop: "30px" }}>
             <UsersAppliedLeave color={color} />
           </Grid>
-          <Grid item xs={12} sm={12} md={4} lg={3} margin={"auto"}>
+          <Grid item xs={12} sm={3} md={4} lg={3} margin={"auto"}>
             <Typography
               variant="h6"
               color={"secondary"}
-              textAlign={"right"}
+              textAlign={{xs:"left", md:"right", sm:"right", lg:"right"}}
               sx={{ textWrap: "nowrap" }}
-              marginTop={4}
+              marginTop={{lg:"40px",sm:"40px",md:"40px", xs:"0"}}
             >
               <b>
                 {" "}

@@ -1,4 +1,4 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Grid, Typography, useMediaQuery } from "@mui/material";
 import React from "react";
 import { useSelector } from "react-redux";
 import Star from "../../components/stars/star";
@@ -9,7 +9,7 @@ function Chart() {
   const historyData = useSelector(
     (state) => state?.persistData?.historyData.historyData
   );
-
+  const isMobile = useMediaQuery("(max-width: 600px)");
   const legendItems = [
     { name: "TASKS", color: "#0088FE" },
     { name: "MEETINGS", color: "#FFBB28" },
@@ -108,7 +108,7 @@ function Chart() {
             height: "auto",
             borderLeft: "3px dotted  rgba(0, 128, 128, 0.4) ",
             borderRight: "3px dotted  rgba(0, 128, 128, 0.4) ",
-            "@media (max-width: 768px)  ": {
+            "@media (max-width: 900px)  ": {
               borderRight: "none",
               borderLeft: "none",
               borderTop: "3px dotted  rgba(0, 128, 128, 0.4)",
@@ -140,6 +140,7 @@ function Chart() {
               color: "#000000",
               textAlign: "center",
               marginBottom: "10px",
+              marginTop: isMobile ? "20px" : "0px",
             }}
             variant="h6"
           >
@@ -155,13 +156,22 @@ function Chart() {
             style={{
               color: "#000000",
               textAlign: "center",
-              marginTop: "10px", // Adjust margin-top for spacing
+              marginTop: isMobile ? "-20px" : "10px",
+             
             }}
             variant="h6"
           >
             <b>PERFORMANCE RATING</b>
           </Typography>
-          <Star value={historyData?.performanceRating} />
+         <div  style={{
+               marginTop: isMobile ? "20px" : "10px",
+              marginBottom: isMobile ? "20px" : "10px",
+             
+            }}>
+          <Star
+            value={historyData?.performanceRating}
+          />
+          </div>
         </Grid>
       </Grid>
 

@@ -71,7 +71,7 @@ const ProjectList = ({ projectsData }) => {
         0,
         Math.min(
           100,
-          (((currentDate.diff(startDate, "day"))+1) / (totalDuration+1)) * 100
+          (((((currentDate.diff(startDate, "day"))+1))+1) / ((totalDuration+1)+1)) * 100
         )
       );
     } else {
@@ -101,6 +101,7 @@ const ProjectList = ({ projectsData }) => {
     progressPercentage = Math.max(
       0,
       Math.min(100, ((elapsedDuration +1)/ (totalDuration+1)) * 100)
+     
     );
   } else {
     // Otherwise, calculate the progress based on the remaining duration
@@ -108,15 +109,6 @@ const ProjectList = ({ projectsData }) => {
     progressPercentage = Math.max(
       0,
       Math.min(100, (((totalDuration - remainingDuration) +1)/ (totalDuration+1)) * 100)
-    );
-  }
-
-  if (actualEndDate.isValid() && startDate.isValid() && !endDate.isValid()) {
-    // If  end date is not provided but start and actual end dates are present
-    const elapsedDuration = currentDate.diff(startDate, "day");
-    progressPercentage = Math.max(
-      0,
-      Math.min(100, (elapsedDuration / totalDuration) * 100)
     );
   }
 

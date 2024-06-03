@@ -1,7 +1,7 @@
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle"; // Import the profile icon
-import Dashboard from "@mui/icons-material/Dashboard";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium"; // Import an icon for the new link
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import Box from "@mui/material/Box";
@@ -10,9 +10,10 @@ import MenuItem from "@mui/material/MenuItem";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { persistor } from "../../redux/store/store";
+import { useSelector } from "react-redux";
 
 const pathToIndex = {
-  "/dashboard": 0,
+  "/workspace/Approval": 0,
   "/timesheet": 1,
   "/history": 2,
 };
@@ -22,6 +23,13 @@ const BottomNavigationMobile = ({ children, handleMenuClose }) => {
   const location = useLocation();
   const [value, setValue] = useState(pathToIndex[location.pathname] || 0);
   const [anchorEl, setAnchorEl] = useState(null);
+
+  const role = useSelector(
+    (state) => state?.persistData?.loginDetails?.data?.role
+  );
+
+  const superAdmin = role?.includes("SUPERADMIN");
+  const admin = role?.includes("ADMIN");
 
   const handleProfileClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -34,8 +42,7 @@ const BottomNavigationMobile = ({ children, handleMenuClose }) => {
   const handleProfileOptionClick = (option) => {
     // Handle profile option click (e.g., navigate to profile or sign out)
     if (option === "profile") {
-      // Handle profile click, for example, navigate to the profile page
-      // ...
+      navigate('/userDetailPage/2');
     } else if (option === "signout") {
       // Handle signout click, for example, perform signout logic
       // ...
@@ -94,13 +101,12 @@ const BottomNavigationMobile = ({ children, handleMenuClose }) => {
         }}
       >
         <BottomNavigation showLabels value={value} onChange={handleChange}>
-          <BottomNavigationAction icon={<Dashboard />} />
+          {(superAdmin || admin) && (
+            <BottomNavigationAction icon={<WorkspacePremiumIcon />} />
+          )}
           <BottomNavigationAction icon={<AccessTimeIcon />} />
           <BottomNavigationAction icon={<LibraryBooksIcon />} />
-          <BottomNavigationAction
-           
-            icon={<AccountCircleIcon />}
-          />
+          <BottomNavigationAction icon={<AccountCircleIcon />} />
         </BottomNavigation>
       </Box>
       <Menu

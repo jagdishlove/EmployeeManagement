@@ -8,6 +8,7 @@ import {
   Grid,
   TextField,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import React, { useState } from "react";
 import HiddenDataCard from "./HiddenDataCard";
@@ -32,7 +33,7 @@ const DataCard = ({
   const [expanded, setExpanded] = useState(false);
   const [comments, setComments] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const isMobile = useMediaQuery("(max-width: 600px)");
   const handleApproval = async (status, leaveRequestId) => {
     try {
       setLoading(true);
@@ -63,15 +64,17 @@ const DataCard = ({
   };
 
   return (
-    <Box sx={{ marginTop: "25px" }}>
+    <Box sx={{ marginTop: "25px", marginBottom: "50px" }}>
       <Accordion
         elevation={0}
         sx={{
           border: "2px solid #008080",
         }}
         expanded={expanded}
+        style={{ marginBottom: "50px" }}
       >
         <AccordionSummary
+        
           expandIcon={
             <Box display={!expanded ? "block" : "none"}>
               <ExpandMoreIcon onClick={handleAccordionToggle} />
@@ -82,11 +85,16 @@ const DataCard = ({
             "&.Mui-focusVisible": {
               background: "none",
             },
-            width: "100%",
+           
+           
           }}
         >
           {!expanded ? (
-            <Grid container spacing={3} sx={{ padding: "10px", width: "100%" }}>
+            <Grid
+              container
+              spacing={isMobile ? 5 : 3}
+              sx={{ padding: "10px", justifyContent:"center"}}
+            >
               <div
                 style={{
                   position: "absolute",
@@ -158,7 +166,7 @@ const DataCard = ({
                   value={dayjs(cardData.toDate).format("ddd, DD-MMM-YY")}
                   disabled
                   variant="outlined"
-                  sx={{ marginLeft: 2 }}
+                  sx={{ marginLeft: isMobile ? "5px" : "15px" }}
                 />
 
                 <Typography
@@ -167,9 +175,9 @@ const DataCard = ({
                     color: "white",
                     padding: "15px 10px",
                     borderRadius: "5px",
-                    marginLeft: 2,
+                    marginLeft: isMobile ? "5px" : "15px",
                     whiteSpace: "nowrap",
-                    width: "20%",
+                    width: isMobile ? "none" : "20%",
                     textAlign: "center",
                   }}
                 >
@@ -181,12 +189,12 @@ const DataCard = ({
                     color: "white",
                     padding: "15px 10px",
                     borderRadius: "5px",
-                    marginLeft: 2,
+                    marginLeft: isMobile ? "5px" : "15px",
                     whiteSpace: "nowrap",
-                    overflow: "hidden",
+                    // overflow: "hidden",
                     textOverflow: "ellipsis",
                     fontSize: "15px",
-                    width: "23%",
+                    width: isMobile ? "none" : "23%",
                     textAlign: "center",
                   }}
                 >
@@ -213,11 +221,12 @@ const DataCard = ({
                   sx={{
                     background: "#008080",
                     color: "white",
-                    marginLeft: 2,
+                    marginLeft:isMobile ? "5px" : "15px",
                     padding: "15px",
                     "&:hover": {
                       background: "#006666",
                     },
+                    fontSize: isMobile ? "12px" : "16px",
                   }}
                   onClick={() =>
                     handleApproval("APPROVED", cardData.leaveRequestId)
@@ -230,7 +239,7 @@ const DataCard = ({
                 <Button
                   sx={{
                     border: "2px solid red",
-                    marginLeft: 2,
+                    marginLeft: isMobile ? "5px" : "15px",
                     padding: "15px",
                     transition: "background 0.5s",
                     "&:hover": {

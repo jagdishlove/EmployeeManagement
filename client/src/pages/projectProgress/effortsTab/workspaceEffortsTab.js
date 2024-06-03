@@ -50,29 +50,9 @@ export default function WorkspaceEffortsTab({ project, role }) {
       state?.persistData?.workSpace?.workSpaceData?.durations?.[0]?.daysCount
   );
 
-  // Determine initial selected option based on daysDifference
-  let initialSelectedOption;
-  if (daysCount <= 7) {
-    initialSelectedOption = options.find(
-      (option) => option.value === "SEVEN_DAYS"
-    );
-  } else if (daysCount > 7 && daysCount <= 31) {
-    initialSelectedOption = options.find(
-      (option) => option.value === "ONE_MONTH"
-    );
-  } else if (daysCount > 31 && daysCount <= 6 * 30 + 1) {
-    initialSelectedOption = options.find(
-      (option) => option.value === "SIX_MONTHS"
-    );
-  } else if (daysCount > 6 * 30 + 1 && daysCount <= 365) {
-    initialSelectedOption = options.find(
-      (option) => option.value === "ONE_YEAR"
-    );
-  } else {
-    initialSelectedOption = options.find((option) => option.value === "ALL");
-  }
+ 
 
-  const [selectedOption, setSelectedOption] = useState(initialSelectedOption);
+  const [selectedOption, setSelectedOption] = useState(options[0]);
 
   const dispatch = useDispatch();
 
@@ -103,6 +83,7 @@ export default function WorkspaceEffortsTab({ project, role }) {
   useEffect(() => {
     if (project) {
       dispatch(getAllTeamMembersAction({ projectId: project }));
+      setSelectedOption(options[0]);
     }
   }, [project]);
 
@@ -116,6 +97,7 @@ export default function WorkspaceEffortsTab({ project, role }) {
 
   const handleClose = () => {
     setOpen(false);
+
   };
 
   const handleOptionClick = (selectedOption) => {
@@ -253,64 +235,62 @@ export default function WorkspaceEffortsTab({ project, role }) {
                     alignItems: "center",
                     flexDirection: "row",
                     justifyContent: "flex-end",
-                    marginRight: "90px",
+                   
                   }}
                 >
                   {options.map((option) => {
-                    // Determine active options based on daysCount
-                    let activeOptions = [];
-                    if (daysCount > 365) {
-                      activeOptions = [
-                        "SEVEN_DAYS",
-                        "ONE_MONTH",
-                        "SIX_MONTHS",
-                        "ONE_YEAR",
-                        "ALL",
-                      ];
-                    } else if (daysCount > 6 * 30) {
-                      activeOptions = [
-                        "SEVEN_DAYS",
-                        "ONE_MONTH",
-                        "SIX_MONTHS",
-                        "ONE_YEAR",
-                      ];
-                    } else if (daysCount > 31) {
-                      activeOptions = ["SEVEN_DAYS", "ONE_MONTH", "SIX_MONTHS"];
-                    } else if (daysCount > 7) {
-                      activeOptions = ["SEVEN_DAYS", "ONE_MONTH"];
-                    } else if (daysCount <= 7) {
-                      activeOptions = ["SEVEN_DAYS"];
-                    }
+                  // Determine active options based on daysCount
+                  let activeOptions = [];
+                  if (daysCount > 365) {
+                    activeOptions = [
+                      "SEVEN_DAYS",
+                      "ONE_MONTH",
+                      "SIX_MONTHS",
+                      "ONE_YEAR",
+                      "ALL",
+                    ];
+                  } else if (daysCount > 6 * 30) {
+                    activeOptions = [
+                      "SEVEN_DAYS",
+                      "ONE_MONTH",
+                      "SIX_MONTHS",
+                      "ONE_YEAR",
+                    ];
+                  } else if (daysCount > 31) {
+                    activeOptions = ["SEVEN_DAYS", "ONE_MONTH", "SIX_MONTHS"];
+                  } else if (daysCount > 7) {
+                    activeOptions = ["SEVEN_DAYS", "ONE_MONTH"];
+                  } else if (daysCount <= 7) {
+                    activeOptions = ["SEVEN_DAYS"];
+                  }
 
-                    const isActive = activeOptions.includes(option.value);
-                    const isInitialSelected =
-                      option.value === initialSelectedOption;
+                  const isActive = activeOptions.includes(option.value);
+                  const isSelected = option.value === selectedOption.value;
 
-                    return (
-                      <Grid item key={option.value}>
-                        <button
-                          style={{
-                            fontWeight: "bold",
-                            border: "none",
-                            background: "transparent",
-                            cursor: isActive ? "pointer" : "default",
-                            textDecoration: isInitialSelected
-                              ? "underline"
-                              : "none",
-                            color: isInitialSelected
-                              ? "#3689EA"
-                              : isActive
-                              ? "black"
-                              : "inherit",
-                            pointerEvents: isActive ? "auto" : "none", // Disable pointer events if not active
-                          }}
-                          onClick={() => handleOptionClick(option)}
-                        >
-                          {option.label}
-                        </button>
-                      </Grid>
-                    );
-                  })}
+                  return (
+                    <Grid item key={option.value}>
+                      <button
+                        style={{
+                          fontWeight: "bold",
+                          border: "none",
+                          background: "transparent",
+                          cursor: isActive ? "pointer" : "default",
+                          textDecoration: isSelected ? "underline" : "none",
+
+                          color: isSelected
+                            ? "blue"
+                            : isActive
+                            ? "black"
+                            : "gray",
+                          pointerEvents: isActive ? "auto" : "none", // Disable pointer events if not active
+                        }}
+                        onClick={() => handleOptionClick(option)}
+                      >
+                        {option.label}
+                      </button>
+                    </Grid>
+                  );
+                })}
                 </Grid>
 
                 <Grid container mt={0}>
@@ -344,7 +324,7 @@ export default function WorkspaceEffortsTab({ project, role }) {
                   >
                     <WorkspaceLineChart
                       handleClickOpen={handleClickOpen}
-                      selectedOption={selectedOption}
+                      selectedOption = {selectedOption}
                     />
                   </Grid>
 
@@ -538,7 +518,7 @@ export default function WorkspaceEffortsTab({ project, role }) {
                     <DialogContentText>
                       <WorkspaceLineChart
                         handleClickOpen={handleClickOpen}
-                        selectedOption={selectedOption}
+                        selectedOption = {selectedOption}
                         open={true}
                       />
                     </DialogContentText>
@@ -559,3 +539,4 @@ export default function WorkspaceEffortsTab({ project, role }) {
     </>
   );
 }
+

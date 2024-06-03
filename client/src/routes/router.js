@@ -12,6 +12,7 @@ import ResourceAllocationStepperTwo from "../components/AdminConsole/projectsPag
 import CreateUser from "../components/AdminConsole/usersPage/CreateUser";
 import UserDetailsPage from "../components/AdminConsole/usersPage/userDetailsPage";
 import User from "../components/AdminConsole/usersPage/userPage";
+import Reports from "../pages/reports/reports";
 import LeavePage from "../components/applyLeaves/LeavePage";
 import ConditionalSidebar from "../components/bottomNavigation/conditionalSidebar";
 
@@ -200,6 +201,21 @@ const Router = () => {
           isAuthenticated ? (
             <ConditionalSidebar>
               <User />
+            </ConditionalSidebar>
+          ) : (
+            <>
+              <Navigate to="/" />
+              <Login />
+            </>
+          )
+        }
+      />
+      <Route
+        path="/reports"
+        element={
+          isAuthenticated ? (
+            <ConditionalSidebar>
+              < Reports/>
             </ConditionalSidebar>
           ) : (
             <>

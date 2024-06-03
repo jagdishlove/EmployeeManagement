@@ -53,28 +53,7 @@ const ProjectTebSectionThree = ({ project }) => {
 
   const daysCount = projectProgressGraphData[0]?.daysCount;
 
-  let initialSelectedOption;
-  if (daysCount <= 7) {
-    initialSelectedOption = options.find(
-      (option) => option.value === "SEVEN_DAYS"
-    );
-  } else if (daysCount > 7 && daysCount <= 31) {
-    initialSelectedOption = options.find(
-      (option) => option.value === "ONE_MONTH"
-    );
-  } else if (daysCount > 31 && daysCount <= 6 * 30 + 1) {
-    initialSelectedOption = options.find(
-      (option) => option.value === "SIX_MONTHS"
-    );
-  } else if (daysCount > 6 * 30 + 1 && daysCount <= 365) {
-    initialSelectedOption = options.find(
-      (option) => option.value === "ONE_YEAR"
-    );
-  } else {
-    initialSelectedOption = options.find((option) => option.value === "ALL");
-  }
-
-  const [selectedOption, setSelectedOption] = useState(initialSelectedOption);
+  const [selectedOption, setSelectedOption] = useState(options[0]);
 
   const dispatch = useDispatch();
   const handleClickOpen = () => {
@@ -527,7 +506,7 @@ const ProjectTebSectionThree = ({ project }) => {
               }
 
               const isActive = activeOptions.includes(option.value);
-              const isSelected = option.value === selectedOption;
+              const isSelected = option.value === selectedOption.value;
 
               return (
                 <Grid item key={option.value}>
@@ -537,13 +516,13 @@ const ProjectTebSectionThree = ({ project }) => {
                       border: "none",
                       background: "transparent",
                       cursor: isActive ? "pointer" : "default",
-                      textDecoration: isActive ? "underline" : "none",
+                     textDecoration: isSelected ? "underline" : "none",
 
                       color: isSelected
-                        ? "green"
-                        : isActive
                         ? "blue"
-                        : "inherit",
+                        : isActive
+                        ? "black"
+                        : "gray",
                       pointerEvents: isActive ? "auto" : "none", // Disable pointer events if not active
                     }}
                     onClick={() => handleOptionClick(option)}
@@ -639,9 +618,8 @@ const ProjectTebSectionThree = ({ project }) => {
                     activeOptions = ["SEVEN_DAYS"];
                   }
 
-                  const isActive = activeOptions.includes(option.value);
-                  const isInitialSelected =
-                    option.value === initialSelectedOption;
+              const isActive = activeOptions.includes(option.value);
+              const isSelected = option.value === selectedOption.value;
 
                   return (
                     <Grid item key={option.value}>
@@ -651,14 +629,13 @@ const ProjectTebSectionThree = ({ project }) => {
                           border: "none",
                           background: "transparent",
                           cursor: isActive ? "pointer" : "default",
-                          textDecoration: isInitialSelected
-                            ? "underline"
-                            : "none",
-                          color: isInitialSelected
-                            ? "#3689EA"
+                          textDecoration: isSelected ? "underline" : "none",
+
+                          color: isSelected
+                            ? "blue"
                             : isActive
                             ? "black"
-                            : "inherit",
+                            : "gray",
                           pointerEvents: isActive ? "auto" : "none", // Disable pointer events if not active
                         }}
                         onClick={() => handleOptionClick(option)}

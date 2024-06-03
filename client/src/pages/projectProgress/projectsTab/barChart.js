@@ -68,7 +68,7 @@ const BarChartComponent = () => {
 
   return (
     <DialogContentText>
-      <BarChart width={350} height={360} data={data}>
+      <BarChart width={350} height={360} data={data} style={{maxWidth:"90%"}}>
         <XAxis
           dataKey="none"
           label={{
