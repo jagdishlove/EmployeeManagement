@@ -1,5 +1,5 @@
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+// import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Collapse, Typography } from "@mui/material";
@@ -160,7 +160,7 @@ const Sidebar = ({ children }) => {
   };
 
   const [dashboardMenuOpen, setDashboardMenuOpen] = useState(false);
- 
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -218,7 +218,7 @@ const Sidebar = ({ children }) => {
               marginLeft: "10px",
             }}
           />
-          <IconButton
+          {/* <IconButton
             onClick={handleDrawerClose}
             sx={{
               marginLeft: "0px",
@@ -229,7 +229,7 @@ const Sidebar = ({ children }) => {
             }}
           >
             <ChevronLeftIcon style={{ color: "#FFFFFF" }} />
-          </IconButton>
+          </IconButton> */}
         </Box>
 
         <List sx={{ color: "secondary.main", marginTop: "50px" }}>
@@ -278,6 +278,7 @@ const Sidebar = ({ children }) => {
                 {[
                   { text: "ProjectProgress", url: "/projectProgress" },
                   { text: "Workspace", url: "/workspace" },
+                  ...(superAdmin || admin ? [{ text: "Reports", url: "/reports" }] : [])
                 ].map((item) => (
                   <ListItem
                     key={item.text}
@@ -305,20 +306,20 @@ const Sidebar = ({ children }) => {
                             color: "white",
                           }}
                         >
-                          {/* Add appropriate icons for Project Progress and Workspace */}
+                          {/* Add appropriate icons for Project Progress, Workspace, and Reports */}
                           {item.icon}
                         </ListItemIcon>
                         <ListItemText
-                          primary=<Typography
-                            variant="body1"
-                            fontWeight="bold"
-                            sx={style.sidebarItem}
-                            style={{ textAlign: "end" }}
-                          >
-                            {item.text === "ProjectProgress"
-                              ? "Project Progress"
-                              : item.text}
-                          </Typography>
+                          primary={
+                            <Typography
+                              variant="body1"
+                              fontWeight="bold"
+                              sx={style.sidebarItem}
+                              style={{ textAlign: "end" }}
+                            >
+                              {item.text === "ProjectProgress" ? "Project Progress" : item.text}
+                            </Typography>
+                          }
                           sx={{ opacity: open ? 1 : 0 }}
                         />
                       </ListItemButton>
@@ -327,6 +328,7 @@ const Sidebar = ({ children }) => {
                 ))}
               </List>
             </Collapse>
+
           </ListItem>
 
           {[
@@ -463,8 +465,8 @@ const Sidebar = ({ children }) => {
                               {item.text === "Adminleaves"
                                 ? "Leaves"
                                 : item.text === "Admintimesheet"
-                                ? "Timesheet"
-                                : item.text}
+                                  ? "Timesheet"
+                                  : item.text}
                             </Typography>
                             sx={{ opacity: open ? 1 : 0 }}
                           />

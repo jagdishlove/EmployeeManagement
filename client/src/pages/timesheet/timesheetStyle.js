@@ -20,12 +20,12 @@ export const TimesheetStyle = (theme, approval, data) => ({
   },
   timesheetEntryUI: {
     backgroundColor: "#fffff",
-    marginTop: "2rem",
+   
     border: "2px solid #008080",
     padding: approval && data ? "1.5rem" : "1rem",
     position: "relative",
-    "@media (max-width: 900px)": {
-      marginBottom: data ? "3rem" : "0rem",
+    "@media (max-width: 900px )": {
+      marginBottom: data ? "2rem" : "3rem",
     },
   },
   TimesheetTextFieldToTime: {
@@ -147,7 +147,7 @@ export const TimesheetStyle = (theme, approval, data) => ({
   },
   AddIconStyle: {
     cursor: "pointer",
-    margin: "2px",
+   
     color: "#ffffff",
   },
   timesheetManagerCol: {

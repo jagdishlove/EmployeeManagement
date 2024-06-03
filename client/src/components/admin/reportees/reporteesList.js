@@ -284,9 +284,7 @@ export default function ReporteesList({ currentPage, setCurrentPage }) {
                           {row?.managerFirstName} {row?.managerLastName}
                         </TableCell>
                         <TableCell sx={{ fontSize: "16px" }}>
-                          <Grid
-                            container
-                            item
+                          <Box
                             sx={{
                               border: "1px solid #F3F3F3",
                               borderRadius: "5px",
@@ -294,21 +292,49 @@ export default function ReporteesList({ currentPage, setCurrentPage }) {
                               display: "flex",
                               justifyContent: "space-between",
                               alignItems: "center",
-                              width: "170px",
+                              width: {
+                                xs: "100%", // Full width on small screens
+                                sm: "200px", // Specific width on medium and larger screens
+                                md: "170px",
+                              },
                               height: "40px",
+                              padding: "0 8px",
                             }}
                           >
-                            {row?.projectName?.map((project, projectIndex) => (
-                              <div key={projectIndex} style={{ marginLeft: "3px" }}>
-                                {projectIndex < 1 ? project : null}
-                              </div>
-                            ))}
+                            <Box
+                              sx={{
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                                display: "flex",
+                                alignItems: "center",
+                                flex: 1,
+                              }}
+                            >
+                              {row?.projectName?.map((project, projectIndex) => (
+                                <Typography
+                                  key={projectIndex}
+                                  sx={{
+                                    marginLeft: projectIndex === 0 ? 0 : "3px",
+                                    display: projectIndex < 1 ? "block" : "none", // Hide extra projects initially
+                                    fontSize: "inherit",
+                                  }}
+                                >
+                                  {project}
+                                </Typography>
+                              ))}
+                            </Box>
                             {/* Conditionally render the button */}
                             {row.projectName.length > 1 && (
                               <Button
                                 variant="text"
                                 onClick={() => toggleProjectExpansion(index)}
-                                style={{ fontSize: "20px", color: "#1475E7", paddingRight: "8px" }} // Adjusted paddingRight
+                                sx={{
+                                  fontSize: "20px",
+                                  color: "#1475E7",
+                                  paddingRight: "8px",
+                                  minWidth: "auto", // Adjust button width to fit content
+                                }}
                               >
                                 {expandedProjects.includes(index) ? (
                                   <KeyboardArrowUpIcon />
@@ -317,9 +343,8 @@ export default function ReporteesList({ currentPage, setCurrentPage }) {
                                 )}
                               </Button>
                             )}
-                          </Grid>
+                          </Box>
                         </TableCell>
-
                         <TableCell
                           sx={{
                             color: "#1475E7",
@@ -341,7 +366,6 @@ export default function ReporteesList({ currentPage, setCurrentPage }) {
                           </div>
                         </TableCell>
                       </TableRow>
-
                       {expandedProjects.includes(index) && row.projectName.length > 1 ? (
                         <TableRow sx={{ border: "5px solid #EBEBEB" }}>
                           <TableCell colSpan={8}>

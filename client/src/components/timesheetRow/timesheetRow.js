@@ -13,6 +13,7 @@ import {
   TextField,
   Tooltip,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { DemoItem } from "@mui/x-date-pickers/internals/demo";
@@ -68,7 +69,7 @@ const TimesheetRow = ({
   const allActivities = useSelector(
     (state) => state.persistData?.loginDetails?.masterData?.activity
   );
-
+  const isMobile = useMediaQuery("(max-width: 600px)");
   const style = TimesheetStyle(theme);
   let filterJobType; // Declare filterJobType outside the if-else block
 
@@ -538,6 +539,7 @@ const TimesheetRow = ({
     <Box
       sx={{
         ...style.timesheetEntryUI,
+        marginTop: isMobile ? "2rem" : "2rem",
         border:
           data?.dayType === "HOLIDAY" || data?.dayType === "WEEKEND"
             ? "2px solid #800000"
@@ -850,7 +852,6 @@ const TimesheetRow = ({
                         variant="contained"
                         type="submit"
                         disabled={true}
-                        style={{ marginLeft: 50 }}
                       >
                         <Typography
                           variant="h6"
@@ -920,7 +921,8 @@ const TimesheetRow = ({
                       <Button
                         sx={{
                           "&:hover": {
-                            bgcolor: "Red", // Set the same color as the background color to remove the hover effect
+                            bgcolor: "Red",
+                            // Set the same color as the background color to remove the hover effect
                           },
                           backgroundColor: "Transparent",
                           border: "1px solid red",
@@ -948,7 +950,7 @@ const TimesheetRow = ({
                       >
                         <Typography
                           variant="h6"
-                          color="ActiveBorder"
+                          color="#000000"
                           sx={{
                             "@media (min-width: 768px) and (min-height: 1024px)":
                               {

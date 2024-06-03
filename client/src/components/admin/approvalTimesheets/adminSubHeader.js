@@ -126,7 +126,7 @@ const AdminSubHeader = ({
   return (
     <div>
       <Box style={{ ...style.adminSubHeader }}>
-        <Grid container gap={{ sm: 0, md: 0, lg: 2, xs: 2 }}>
+        <Grid container gap={{ sm: 0, md: 0, lg: 2, xs: 4 }}>
           <Grid item xs={12} sm={4} md={2} lg={3}>
             <Dropdown
               options={[{ id: "All", value: "All" }, ...dateOptions()]} // Add "All" option to the date dropdown

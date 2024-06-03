@@ -33,7 +33,7 @@ if (lastTwoDigitss < 50) {
     roundedDeviations = (Math.floor(deviations * 100) / 100).toFixed(2);
 } else {
     // Round up
-    roundedDeviations = (Math.ceil(deviations * 100) / 100).toFixed(2);
+    roundedDeviations = (Math.floor(deviations * 100) / 100).toFixed(2);
 }
 
 
@@ -47,7 +47,7 @@ if (lastTwoDigitss < 50) {
       roundedBudget = (Math.floor(budget * 100) / 100).toFixed(2);
   } else {
       // Round up
-      roundedBudget = (Math.ceil(budget * 100) / 100).toFixed(2);
+      roundedBudget = (Math.floor(budget * 100) / 100).toFixed(2);
   }
 
   const timeParts = dashboardProjectdetails.hoursLeft.split(" ");
@@ -334,7 +334,7 @@ if (lastTwoDigitss < 50) {
 
       <Grid
         item
-        xs={6}
+        xs={12}
         sm={6}
         md={2.5}
         lg={2.5}
@@ -357,7 +357,7 @@ if (lastTwoDigitss < 50) {
           spacing={5}
           xs={12} // Occupies full width on extra small screens
         >
-          <Grid item xs={3}>
+          <Grid item xs={2} sm={3} md={3} lg={3}>
             <img src={Loggedinhours} alt="Logged In Hours" />
           </Grid>
           <Grid item xs={9}>

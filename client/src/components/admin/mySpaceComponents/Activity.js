@@ -264,7 +264,7 @@ const CustomBorderComponent = ({ selectedMonth, selectedYear }) => {
                                     {event.status === "SUBMITTED" && (
                                       <>
                                         You <span style={{ color: "#000" }}>{event.status}</span>{" "}a timesheet for{" "}
-                                        {event.fromDate} ,{convertTimeTo12HourFormat(event.startTime)} to{" "}
+                                        {event.fromDate}: {convertTimeTo12HourFormat(event.startTime)} to{" "}
                                         {convertTimeTo12HourFormat(event.endTime)} engaged in{" "}
                                         {event.project}
                                       </>
@@ -273,7 +273,7 @@ const CustomBorderComponent = ({ selectedMonth, selectedYear }) => {
                                       <>
                                         {event.timesheetApproval} has{" "}
                                         <span style={{ color: "#0A865A" }}>{event.status}</span>{" "}Your timesheet for{" "}
-                                        {event.timeSheetDate}, {convertTimeTo12HourFormat(event.startTime)}{" "}
+                                        {event.timeSheetDate}: {convertTimeTo12HourFormat(event.startTime)}{" "}
                                         to {convertTimeTo12HourFormat(event.endTime)} engaged in{" "}
                                         {event.project} {event.activity}
                                       </>
@@ -282,7 +282,7 @@ const CustomBorderComponent = ({ selectedMonth, selectedYear }) => {
                                       <>
                                         {event.timesheetApproval} has{" "}
                                         <span style={{ color: "#FA7A7A" }}>{event.status}</span>{" "}Your timesheet for{" "}
-                                        {event.timeSheetDate} ,{convertTimeTo12HourFormat(event.startTime)}{" "}
+                                        {event.timeSheetDate}: {convertTimeTo12HourFormat(event.startTime)}{" "}
                                         to {convertTimeTo12HourFormat(event.endTime)} engaged in{" "}
                                         {event.project} {event.activity}
                                       </>

@@ -107,7 +107,6 @@ export const LoginStyle = (theme) => ({
   mainBoxRight: {
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
     color: { xs: "black", md: theme.palette.secondary.main },
     gap: { xs: "1rem", md: "3rem" },
     width: { xs: "100%", md: "49%" },
@@ -124,7 +123,7 @@ export const LoginStyle = (theme) => ({
       md: "none",
       borderTopRightRadius: "10px",
       borderTopLeftRadius: "10px",
-      width: "90%",
+
       textAlign: "center",
       marginTop: "20px",
       padding: "20px",
@@ -135,6 +134,7 @@ export const LoginStyle = (theme) => ({
       xs: "block",
       md: "none",
       textAlign: "center",
+      marginTop: "10px",
     },
   },
   IWillMobile: {
@@ -166,7 +166,7 @@ export const LoginStyle = (theme) => ({
     display: "flex",
     flexDirection: "column",
     gap: "0rem",
-    width: { xs: "90%", md: "60%" },
+    width: { xs: "100%", md: "60%" },
     textAlign: { xs: "left", md: "left" },
 
     "& input:-webkit-autofill": {

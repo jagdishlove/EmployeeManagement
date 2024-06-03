@@ -12,6 +12,7 @@ import {
   IconButton,
   Slider,
   CircularProgress,
+  useMediaQuery,
 } from "@mui/material";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
@@ -67,6 +68,7 @@ export default function UserDetailsPage() {
   const skills = useSelector(
     (state) => state.persistData?.loginDetails?.masterData?.skill
   );
+  const isMobile = useMediaQuery("(max-width: 1050px)");
 
   const InputOption = ({
     getStyles,
@@ -320,7 +322,7 @@ export default function UserDetailsPage() {
     display: "inline-flex",
     marginBottom: "8px",
     marginRight: "8px",
-    width: "400px",
+    width: isMobile? "250px":"400px",
   };
 
   const [isEditing, setIsEditing] = useState(false);
@@ -554,7 +556,10 @@ export default function UserDetailsPage() {
   return (
     <>
       {userByIDLoading ? (
-      <div style={{textAlign:"center"}}> <CircularProgress/></div> 
+        <div style={{ textAlign: "center" }}>
+          {" "}
+          <CircularProgress />
+        </div>
       ) : (
         <>
           <Grid container alignItems="center">
@@ -595,18 +600,18 @@ export default function UserDetailsPage() {
             <></>
           )}
 
-          <Grid container spacing={2} mt={1}>
-            <Grid item xs={3.5}>
+          <Grid container spacing={2} mt={1} >
+            <Grid item xs={12} sm={12} md={3.5} lg={3.5} justifyContent={"center"}  marginLeft={"0px"}>
               <Grid
                 sx={{
                   border: "2px solid #A4A4A4",
                   boxShadow: "#000000",
-                  height: "600px",
+                  height: isMobile? "none" : "600px",
                   padding: 2,
                   borderRadius: "25px",
                 }}
               >
-                <Grid container spacing={2}>
+                <Grid container spacing={2}  marginLeft={"-10px"}>
                   <Grid item xs={12}>
                     <Box
                       sx={{
@@ -644,7 +649,7 @@ export default function UserDetailsPage() {
                       </Avatar>
                     </Box>
                   </Grid>
-                  <Grid container spacing={2} sx={{ textAlign: "center" }}>
+                  <Grid container spacing={2} sx={{ textAlign: "center", marginLeft:"0px" }}>
                     <Grid item xs={12} mt={1}>
                       <Typography variant="h4">{userData.firstName}</Typography>
                     </Grid>
@@ -653,11 +658,22 @@ export default function UserDetailsPage() {
                         {designationIdToName[userData.designationId]}
                       </Typography>
                     </Grid>
-                    <Grid container spacing={2} mt={2}>
-                      <Grid md={3}></Grid>
+                    <Grid container spacing={2} mt={2}   marginLeft={"0px"}>
+                      <Grid xs={0} md={3}></Grid>
                       <Grid
+                        xs={12}
                         md={9}
-                        sx={{ alignItems: "start", textAlign: "start" }}
+                        sx={{
+                          marginLeft:"0px",
+                          alignItem: {
+                            xs: "center",
+                            md: "start",
+                          },
+                          textAlign: {
+                            xs: "center",
+                            md: "start",
+                          },
+                        }}
                       >
                         <Grid>
                           <Typography
@@ -739,15 +755,15 @@ export default function UserDetailsPage() {
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item xs={8.5}>
+            <Grid item xs={12} sm={12} md={8.5} lg={8.5}>
               <Box
                 sx={{
                   border: "2px solid #A4A4A4",
                   boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                  height: "600px",
-                  padding: 8.4,
+                  height: isMobile? "none" : "600px",
+                  padding: { xs: "35px", md: "70px" },
                   borderRadius: "25px",
-                  width: "97%",
+                  width: { xs: "100%", md: "97%" },
                 }}
               >
                 <Typography variant="h5" gutterBottom>
@@ -756,12 +772,12 @@ export default function UserDetailsPage() {
                 <Grid container spacing={2} mt={1.3}>
                   <Grid item xs={12}>
                     <Grid container spacing={2}>
-                      <Grid item xs={4}>
+                      <Grid item xs={7} sm={4} md={4} lg={4}>
                         <Typography variant="body1">
                           <strong>Employee ID:</strong>
                         </Typography>
                       </Grid>
-                      <Grid item xs={8}>
+                      <Grid item xs={5} sm={8} md={8} lg={8}>
                         <Typography variant="body1">
                           {userData.empId}
                         </Typography>
@@ -770,12 +786,12 @@ export default function UserDetailsPage() {
                   </Grid>
                   <Grid item xs={12}>
                     <Grid container spacing={2}>
-                      <Grid item xs={4}>
+                      <Grid item xs={7} sm={4} md={4} lg={4}>
                         <Typography variant="body1">
                           <strong>Date Of Joining:</strong>
                         </Typography>
                       </Grid>
-                      <Grid item xs={8}>
+                      <Grid item xs={5} sm={8} md={8} lg={8}>
                         <Typography variant="body1">
                           {userData.joiningDate}
                         </Typography>
@@ -784,12 +800,12 @@ export default function UserDetailsPage() {
                   </Grid>
                   <Grid item xs={12}>
                     <Grid container spacing={2}>
-                      <Grid item xs={4}>
+                      <Grid item xs={7} sm={4} md={4} lg={4}>
                         <Typography variant="body1">
                           <strong>Gender:</strong>
                         </Typography>
                       </Grid>
-                      <Grid item xs={8}>
+                      <Grid item xs={5} sm={8} md={8} lg={8}>
                         <Typography variant="body1">
                           {genderIdToName[userData.genderId]}
                         </Typography>
@@ -798,12 +814,12 @@ export default function UserDetailsPage() {
                   </Grid>
                   <Grid item xs={12}>
                     <Grid container spacing={2}>
-                      <Grid item xs={4}>
+                      <Grid item xs={7} sm={4} md={4} lg={4}>
                         <Typography variant="body1">
                           <strong>Employment Type:</strong>
                         </Typography>
                       </Grid>
-                      <Grid item xs={8}>
+                      <Grid item xs={5} sm={8} md={8} lg={8}>
                         <Typography variant="body1">
                           {empTypeIdToName[userData.empTypeId]}
                         </Typography>
@@ -814,12 +830,12 @@ export default function UserDetailsPage() {
                     <>
                       <Grid item xs={12}>
                         <Grid container spacing={2}>
-                          <Grid item xs={4}>
+                          <Grid item xs={7} sm={4} md={4} lg={4}>
                             <Typography variant="body1">
                               <strong>Client Location :</strong>
                             </Typography>
                           </Grid>
-                          <Grid item xs={8}>
+                          <Grid item xs={5} sm={8} md={8} lg={8}>
                             <Typography variant="body1">
                               {`${clientDetailsData?.clientName}, ${
                                 clientDetailsData?.address?.addressLine1
@@ -847,12 +863,12 @@ export default function UserDetailsPage() {
                   )}
                   <Grid item xs={12}>
                     <Grid container spacing={2}>
-                      <Grid item xs={4}>
+                      <Grid item xs={7} sm={4} md={4} lg={4}>
                         <Typography variant="body1">
                           <strong>Work Mode:</strong>
                         </Typography>
                       </Grid>
-                      <Grid item xs={8}>
+                      <Grid item xs={5} sm={8} md={8} lg={8}>
                         <Typography variant="body1">
                           {userData.workMode}
                         </Typography>
@@ -861,12 +877,12 @@ export default function UserDetailsPage() {
                   </Grid>
                   <Grid item xs={12}>
                     <Grid container spacing={2}>
-                      <Grid item xs={4}>
+                      <Grid item xs={7} sm={4} md={4} lg={4}>
                         <Typography variant="body1">
                           <strong>Reporting Manager:</strong>
                         </Typography>
                       </Grid>
-                      <Grid item xs={8}>
+                      <Grid item xs={5} sm={8} md={8} lg={8}>
                         <Typography variant="body1">
                           {userData.managerFirstName} {userData.managerLastName}
                         </Typography>
@@ -875,12 +891,12 @@ export default function UserDetailsPage() {
                   </Grid>
                   <Grid item xs={12}>
                     <Grid container spacing={2}>
-                      <Grid item xs={4}>
+                      <Grid item xs={7} sm={4} md={4} lg={4}>
                         <Typography variant="body1">
                           <strong>Currect Address:</strong>
                         </Typography>
                       </Grid>
-                      <Grid item xs={8}>
+                      <Grid item xs={5} sm={8} md={8} lg={8}>
                         <Typography variant="body1">
                           {userData?.presentAddress?.name}
                           {userData?.presentAddress?.addressLine1}
@@ -896,12 +912,12 @@ export default function UserDetailsPage() {
                   </Grid>
                   <Grid item xs={12}>
                     <Grid container spacing={2}>
-                      <Grid item xs={4}>
+                      <Grid item xs={7} sm={4} md={4} lg={4}>
                         <Typography variant="body1">
                           <strong>Permanent Address:</strong>
                         </Typography>
                       </Grid>
-                      <Grid item xs={8}>
+                      <Grid item xs={5} sm={8} md={8} lg={8}>
                         <Typography variant="body1">
                           {userData?.permanentAddress?.name}
                           {userData?.permanentAddress?.addressLine1}
@@ -975,7 +991,7 @@ export default function UserDetailsPage() {
                     <>
                       <AccordionDetails
                         sx={{
-                          padding: "20px 20px 20px 50px",
+                          padding: isMobile?"20px":"20px 20px 20px 50px",
                         }}
                       >
                         <Grid
@@ -1249,7 +1265,7 @@ export default function UserDetailsPage() {
             </Grid>
           </Grid>
 
-          <Grid container mt={2}>
+          <Grid container mt={2} mb={4}>
             <Grid item xs={12}>
               <Typography variant="h3" gutterBottom>
                 Current Project Details
@@ -1311,7 +1327,7 @@ export default function UserDetailsPage() {
                           </AccordionSummary>
                           <AccordionDetails
                             sx={{
-                              padding: "20px 20px 20px 50px",
+                              padding: isMobile?"20px":"20px 20px 20px 50px",
                             }}
                           >
                             <Grid
@@ -1473,7 +1489,7 @@ export default function UserDetailsPage() {
                       <>
                         <AccordionDetails
                           sx={{
-                            padding: "20px 20px 20px 50px",
+                            padding: isMobile?"20px":"20px 20px 20px 50px",
                           }}
                         >
                           <Grid
@@ -1574,7 +1590,7 @@ export default function UserDetailsPage() {
                       <>
                         <AccordionDetails
                           sx={{
-                            padding: "20px 20px 20px 50px",
+                            padding: isMobile?"20px":"20px 20px 20px 50px",
                           }}
                         >
                           <Grid

@@ -7,6 +7,7 @@ import {
   Tab,
   Tabs,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { format } from "date-fns";
@@ -32,7 +33,7 @@ const Timesheet = () => {
   const [selectedDate, setSelectedDate] = useState(
     format(new Date(), "EEEE, MMMM d, yyyy")
   );
-
+  const isMobile = useMediaQuery("(max-width: 600px)");
   const [disableSubmit, setDisableSubmit] = useState(false);
   const [totalHours, setTotalHours] = useState(null);
   const [disableTimeSheetEntryForm, setDisableTimeSheetEntryForm] =
@@ -122,7 +123,7 @@ const Timesheet = () => {
   };
 
   return (
-    <Box>
+    <Box style={{ paddingBottom: "50px" }}>
       <Typography
         style={{
           fontSize: "24px",
@@ -201,8 +202,14 @@ const Timesheet = () => {
         timesheetForm={true}
       />
 
-      <Grid container paddingTop="30px">
-        <Grid item xs={6} sm={6} md={6}>
+      <Grid
+        container
+        style={{
+          paddingBottom: isMobile ? "10px" : "0px",
+          paddingTop: isMobile ? "0px" : "30px",
+        }}
+      >
+        <Grid item xs={12} sm={6} md={6}>
           <Button
             sx={style.GreenButton}
             variant="contained"
@@ -210,12 +217,15 @@ const Timesheet = () => {
             onClick={handleApprovalClick}
             disabled={disableTimeSheetEntryForm || disableWhileEditing}
           >
-            <SaveOutlinedIcon sx={style.AddIconStyle} />
+            <SaveOutlinedIcon
+              sx={style.AddIconStyle}
+              style={{ margin: isMobile ? "0px" : "2px" }}
+            />
             <Typography
               variant="h6"
               sx={{
                 color: theme.palette.secondary.main,
-                marginLeft: "15px", // Add space to the left of the text
+                marginLeft: isMobile ? "0px" : "15px",
               }}
             >
               Submit for Approval
@@ -224,10 +234,14 @@ const Timesheet = () => {
         </Grid>
         <Grid
           item
-          xs={6}
+          xs={12}
           sm={6}
           md={6}
-          sx={{ display: "flex", justifyContent: "flex-end" }}
+          sx={{
+            display: "flex",
+            justifyContent: isMobile ? "flex-start" : "flex-end",
+            marginTop: isMobile ? "20px" : "0px",
+          }}
         >
           <Button>
             <Typography

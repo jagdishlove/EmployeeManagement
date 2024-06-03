@@ -1,4 +1,4 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Grid, Typography, useMediaQuery } from "@mui/material";
 import moment from "moment";
 import React, { useRef } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
@@ -31,7 +31,7 @@ const HistoryCalendar = ({
     "FRIDAY",
     "SATURDAY",
   ];
-
+  const isMobile = useMediaQuery("(max-width: 600px)");
   const historyData = useSelector(
     (state) => state?.persistData?.historyData.historyData
   );
@@ -214,7 +214,7 @@ if (DATETYPES.includes(event.type)) {
       <Box
         sx={{
           display: "flex",
-          justifyContent: "space-around",
+          justifyContent: isMobile ? 'space-between' : 'space-around' ,
           marginTop: "1%",
         }}
       >
@@ -301,7 +301,8 @@ if (DATETYPES.includes(event.type)) {
                   padding: " 10px",
                   border: "none",
                   borderRadius: "5px",
-                  backgroundColor: "transparent",
+                  backgroundColor: "#ffffff",
+                  color:"#000000",
                   fontSize: " 16px",
                   outline: " none",
                   fontWeight: "bolder",
@@ -321,7 +322,8 @@ if (DATETYPES.includes(event.type)) {
                   padding: " 10px",
                   border: "none",
                   borderRadius: "5px",
-                  backgroundColor: "transparent",
+                  backgroundColor: "#ffffff",
+                  color:"#000000",
                   fontSize: " 16px",
                   outline: " none",
                   fontWeight: "bolder",
@@ -351,7 +353,9 @@ if (DATETYPES.includes(event.type)) {
               dayLayoutAlgorithm="no-overlap"
               eventPropGetter={eventStyleGetter}
               eventStyleGetter={eventStyleGetter}
-              style={{ height: "80vh" }}
+              style={{
+              height: isMobile ? '40vh' : '80vh' }}
+              
               components={{
                 event: eventRenderer,
               }}

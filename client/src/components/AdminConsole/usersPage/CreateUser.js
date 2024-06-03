@@ -12,6 +12,7 @@ import {
   FormControlLabel,
   Radio,
   Avatar,
+  useMediaQuery
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AccountCircleTwoToneIcon from "@mui/icons-material/AccountCircleTwoTone";
@@ -44,11 +45,12 @@ import dayjs from "dayjs";
 
 export default function CreateUser() {
   const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const style = TimesheetStyle(theme);
   const dispatch = useDispatch();
   const [selectedImage, setSelectedImage] = useState("");
   const [errors, setErrors] = useState({});
- 
+
   const { id } = useParams();
 
   useEffect(() => {
@@ -164,23 +166,23 @@ export default function CreateUser() {
     // Copy data from Permanent Address to Current Address if checkbox is checked
     const updatedFormData = newIsChecked
       ? {
-          ...formData,
-          address1: formData.currentAddress1,
-          address2: formData.currentAddress2,
-          Zip: formData.currentZIP,
-          country: formData.currentcountry,
-          state: formData.currentstate,
-          city: formData.currentcity,
-        }
+        ...formData,
+        address1: formData.currentAddress1,
+        address2: formData.currentAddress2,
+        Zip: formData.currentZIP,
+        country: formData.currentcountry,
+        state: formData.currentstate,
+        city: formData.currentcity,
+      }
       : {
-          ...formData,
-          address1: "",
-          address2: "",
-          Zip: "",
-          country: "",
-          state: "",
-          city: "",
-        };
+        ...formData,
+        address1: "",
+        address2: "",
+        Zip: "",
+        country: "",
+        state: "",
+        city: "",
+      };
 
     // Update the form data
     setFormData(updatedFormData);
@@ -286,7 +288,7 @@ export default function CreateUser() {
   const employeeBy = useSelector(
     (state) => state.persistData?.loginDetails?.masterData?.employedBy
   );
- 
+
   const Client_location = useSelector(
     (state) => state.persistData?.loginDetails?.masterData?.clientLocation
   );
@@ -359,7 +361,7 @@ export default function CreateUser() {
           })
         );
       }
-  
+
       if (employeeDetails.permanentAddress?.stateId) {
         dispatch(
           getAllPermentCitysAction({
@@ -368,7 +370,7 @@ export default function CreateUser() {
           })
         );
       }
-  
+
       // Fetch state and city data for current address
       if (employeeDetails.presentAddress?.countryId) {
         dispatch(
@@ -378,27 +380,28 @@ export default function CreateUser() {
           })
         );
       }
-  
+
       if (employeeDetails.presentAddress?.stateId) {
         dispatch(
-          getAllCitysAction({ parentId: employeeDetails.presentAddress?.stateId || "",
-          dataType: "city",
-        })
-      );
-    }
+          getAllCitysAction({
+            parentId: employeeDetails.presentAddress?.stateId || "",
+            dataType: "city",
+          })
+        );
+      }
       if (
         employeeDetails.permanentAddress?.addressLine1 ===
-          employeeDetails.presentAddress?.addressLine1 &&
+        employeeDetails.presentAddress?.addressLine1 &&
         employeeDetails.permanentAddress?.addressLine2 ===
-          employeeDetails.presentAddress?.addressLine2 &&
+        employeeDetails.presentAddress?.addressLine2 &&
         employeeDetails.permanentAddress?.postalCode ===
-          employeeDetails.presentAddress?.postalCode &&
+        employeeDetails.presentAddress?.postalCode &&
         employeeDetails.permanentAddress?.countryId ===
-          employeeDetails.presentAddress?.countryId &&
+        employeeDetails.presentAddress?.countryId &&
         employeeDetails.permanentAddress?.stateId ===
-          employeeDetails.presentAddress?.stateId &&
+        employeeDetails.presentAddress?.stateId &&
         employeeDetails.permanentAddress?.cityId ===
-          employeeDetails.presentAddress?.cityId
+        employeeDetails.presentAddress?.cityId
       ) {
         setIsChecked(true);
       } else {
@@ -918,7 +921,7 @@ export default function CreateUser() {
       }
     }
 
-    if (formData.employedBy==0) {
+    if (formData.employedBy == 0) {
       errors.employedBy = "Employee By Location is mandatory";
     }
 
@@ -926,7 +929,7 @@ export default function CreateUser() {
       errors.designation = "Designation is mandatory";
     }
 
-    if (formData.skill==0) {
+    if (formData.skill == 0) {
       errors.skill = "Skills is mandatory";
     }
 
@@ -979,11 +982,11 @@ export default function CreateUser() {
     }
 
     if (!formData.lastName) {
-      errors.lastName = "Last name is mandatory";
-    } else if (!/^[a-zA-Z]+$/.test(formData.lastName)) {
-      errors.lastName = "Last name should contain only alphabets.";
+      errors.lastName = "Last name is mandatory.";
+    } else if (!/^[a-zA-Z\s]+$/.test(formData.lastName)) {
+      errors.lastName = "Last name should contain only alphabets and spaces.";
     }
-
+    
     if (!formData.AadhaarNo) {
       errors.AadhaarNo = "Aadhaar number is mandatory";
     } else if (!/^\d+$/.test(formData.AadhaarNo)) {
@@ -1032,7 +1035,7 @@ export default function CreateUser() {
   };
 
   return (
-    <Grid>
+    <Grid style={{paddingBottom:"50px"}}>
       {/* Heading */}
       <div
         className="Heading"
@@ -1126,7 +1129,7 @@ export default function CreateUser() {
       </div>
       {/* User Details */}
       <Grid>
-        <Typography variant="h6" sx={{ paddingLeft: "10px" }}>
+        <Typography variant="h6" >
           <b> Basics details</b>
         </Typography>
         <div
@@ -1137,7 +1140,7 @@ export default function CreateUser() {
             border: "1px solid silver",
           }}
         />
-        <Grid container spacing={2} sx={{ margin: "20px" }}>
+        <Grid container spacing={2} sx={{ margin: "8px" }}>
           <Grid container>
             <Grid item xs={6}>
               <TextField
@@ -1392,19 +1395,18 @@ export default function CreateUser() {
         </Grid>
       </Grid>{" "}
       <Grid>
-        <Typography variant="h6" sx={{ paddingLeft: "20px" }}>
+        <Typography variant="h6" sx={{ paddingLeft: "0px" }}>
           <b>Present Address</b>
         </Typography>
         <div
           style={{
-            // width: "100%",
+            width: "100%",
             margin: "auto",
-            marginLeft: "12px",
             marginBottom: "18px",
             border: "1px solid silver",
           }}
         />
-        <Grid container sx={{ margin: "20px" }}>
+        <Grid container sx={{ margin: "8px" }}>
           <Grid container>
             <Grid item xs={6} mt={0.3}>
               <TextField
@@ -1588,7 +1590,7 @@ export default function CreateUser() {
           </Grid>
         </Grid>
       </Grid>
-      <Grid sx={{ paddingLeft: "20px" }}>
+      <Grid sx={{ paddingLeft: "0px" }}>
         <Grid container>
           <Grid item xs={6}>
             <Typography
@@ -1661,11 +1663,11 @@ export default function CreateUser() {
                 value={
                   isChecked
                     ? countryData?.find(
-                        (country) => country?.id === formData.currentcountry
-                      ) || null
+                      (country) => country?.id === formData.currentcountry
+                    ) || null
                     : country?.find(
-                        (country) => country?.id === formData.country
-                      ) || null
+                      (country) => country?.id === formData.country
+                    ) || null
                 }
                 options={country || []}
                 getOptionLabel={(option) => option.dataValue}
@@ -1690,10 +1692,10 @@ export default function CreateUser() {
                 value={
                   isChecked
                     ? state?.find(
-                        (state) => state?.id === formData.currentstate
-                      ) || null
+                      (state) => state?.id === formData.currentstate
+                    ) || null
                     : stateData?.find((state) => state?.id === formData.state) ||
-                      null
+                    null
                 }
                 getOptionLabel={(option) => option.dataValue}
                 getOptionValue={(option) => option.id}
@@ -1719,7 +1721,7 @@ export default function CreateUser() {
                 value={
                   isChecked
                     ? city?.find((city) => city.id === formData.currentcity) ||
-                      null
+                    null
                     : cityData?.find((city) => city.id === formData.city) || null
                 }
                 getOptionLabel={(option) => option.dataValue}
@@ -1749,12 +1751,12 @@ export default function CreateUser() {
                 onChange={(e) => handlezipChange(e, "Zip")}
                 disabled={isChecked} // Disable the field if checkbox is checked
               />
-              
+
             </Grid>
           </Grid>
         </Grid>
       </Grid>
-      <Grid mt={2} sx={{ paddingLeft: "20px" }}>
+      <Grid mt={2} sx={{ paddingLeft: "0px" }}>
         <Typography variant="h6">
           <b>Employee Coordinates</b>
         </Typography>
@@ -1823,7 +1825,7 @@ export default function CreateUser() {
           </Grid>
         </Grid>
       </Grid>
-      <Grid mt={2} sx={{ paddingLeft: "20px" }}>
+      <Grid mt={2} sx={{ paddingLeft: "0px" }}>
         <Typography variant="h6">
           <b>
             Professional Data<span style={{ color: "red" }}>*</span>
@@ -1837,7 +1839,7 @@ export default function CreateUser() {
             border: "1px solid silver",
           }}
         />
-        <Grid container spacing={2} sx={{ margin: "5px" }}>
+        <Grid container spacing={2} sx={{ margin: "3px" }}>
           <Grid container>
             <Grid item xs={6}>
               <Autocomplete
@@ -1853,7 +1855,7 @@ export default function CreateUser() {
                   borderRadius: "10px",
                   width: "90%",
                 }}
-        
+
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -2118,7 +2120,7 @@ export default function CreateUser() {
           </Grid>
         </Grid>
       </Grid>
-      <Grid container mt={2} spacing={2} sx={{ paddingLeft: "30px" }}>
+      <Grid container mt={2} spacing={2} sx={{ paddingLeft: "14px" }}>
         <Typography variant="h6">
           <b>Pay Roll</b>
         </Typography>
@@ -2264,33 +2266,46 @@ export default function CreateUser() {
           </Grid>
         </Grid>
       </Grid>
-      <div
+      <Grid
+        container
+        spacing={2} // Adjust the spacing between buttons
+        justifyContent="flex-end"
+        mt={2}
         className="responsive-container"
-        style={{ textAlign: "right", marginTop: "30px" }}
+        style={{
+          paddingBottom: isSmallScreen ? "50px" : "0px"}}
       >
-        <Button
-          variant="contained"
-          color="primary"
-          className="responsive-button"
-          style={{
-            marginRight: "10px",
-            width: "160px",
-            textTransform: "capitalize",
-          }}
-          onClick={handleClearAll}
-        >
-          Clear All
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          className="responsive-button"
-          style={{ width: "160px", textTransform: "capitalize" }}
-          onClick={handleSave}
-        >
-          Save
-        </Button>
-      </div>
+        <Grid item>
+          <Button
+            variant="contained"
+            color="primary"
+            className="responsive-button"
+            style={{
+              width: "160px", // Maintain previous button width
+              textTransform: "capitalize",
+              marginBottom: isSmallScreen ? 1 : 0,
+            }}
+            onClick={handleClearAll}
+          >
+            Clear All
+          </Button>
+        </Grid>
+        <Grid item>
+          <Button
+            variant="contained"
+            color="primary"
+            className="responsive-button"
+            style={{
+              width: "160px", // Maintain previous button width
+              textTransform: "capitalize",
+              marginBottom: isSmallScreen ? 1 : 0,
+            }}
+            onClick={handleSave}
+          >
+            Save
+          </Button>
+        </Grid>
+      </Grid>
     </Grid>
   );
 }

@@ -1,7 +1,15 @@
 body {
   font-family: 'Nunito Sans Variable', sans-serif;
 }
+.centerContainer {
+  display: flex;
+  justify-content: flex-start;
+}
 
+.startContainer {
+  display: flex;
+  justify-content: center;
+}
 
 
 .MuiFormHelperText-root {
@@ -140,7 +148,7 @@ input::-webkit-inner-spin-button {
   }
 }
 .react-tabs__tab {
-  padding: 6px 39px;
+  padding: 6px 35px;
 }
 .react-tabs__tab-list {
   margin: 0 0 0px;
@@ -308,4 +316,26 @@ input::-webkit-inner-spin-button {
 }
 .recharts-cartesian-axis-tick-line{
   display: none !important;
+}
+
+@media (max-width: 900px) {
+  .mobile-label {
+    display: inline !important;
+    font-weight: bold;
+  }
+ 
+}
+
+
+@media only screen and (max-width: 768px) {
+  .Toastify__toast-container {
+    width: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    text-align: center !important;
+  }
+
+  .Toastify__toast--success {
+    margin: 0 auto !important;
+  }
 }
