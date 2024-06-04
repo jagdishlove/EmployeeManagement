@@ -1,57 +1,151 @@
-import React, { useEffect, useState} from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Grid,
-  Avatar,
   Typography,
   Autocomplete,
   TextField,
   Stack,
   IconButton,
-  Button,
   useMediaQuery,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import Dropdown from "../../components/forms/dropdown/dropdown";
 import KeyboardArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardArrowLeftOutlined";
 import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
 import { useDispatch, useSelector } from "react-redux";
-import { searchUserAction } from "../../redux/actions/AdminConsoleAction/timeSheet/adminTimesheetAction";
+import { SearchEmployeeAction } from "../../redux/actions/AdminConsoleAction/users/usersAction";
 import { projectListAction } from "../../redux/actions/approvals/projectListAction";
 import { masterDataAction } from "../../redux/actions/masterData/masterDataAction";
-import SimCardDownloadOutlinedIcon from '@mui/icons-material/SimCardDownloadOutlined';
-
+import moment from "moment";
+import { RatingDataAction } from "../../redux/actions/workSpace/workSpaceAction";
 import { useTheme } from "@mui/material/styles";
-// import ResponsiveDateRangePickers from "./ResponsiveDateRangePickers";
+import ReportsTable from "./UsersReportsTable";
 
-const Reports = ({
-  project,
-  setProject,
-  setSelectedOption,
-}) => {
+const Reports = () => {
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
- 
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const [selectedMonth, setSelectedMonth] = useState(moment().month());
+  const [selectedYear, setSelectedYear] = useState(moment().year());
+  const [years, setYears] = useState([]);
+  const [months, setMonths] = useState([]);
+  const monthRef = useRef(null);
   const totalPages = 5;
   const [currentPage, setCurrentPage] = useState(0);
-
   const dispatch = useDispatch();
-
+  const [formData, setFormData] = useState({
+    EmployeeName: { id: 0, name: "", type: "employee" },
+  });
+  const [project, setProject] = useState("All");
+  const [employmentType, setEmploymentType] = useState("All");
+  
   // const recordsPerPage = 1; // Number of records to display per page
   // const startIndex = currentPage * recordsPerPage;
+  const isMobile = useMediaQuery("(max-width: 1050px)");
 
+  const getHistoryData = (month, year) => {
+    const params = {
+      month: parseInt(month) + 1,
+      year: year,
+    };
+    dispatch(RatingDataAction(params));
+  };
 
+  const handleMonthChange = (e) => {
+    const { value } = e.target;
+    getHistoryData(value, selectedYear);
+    setSelectedMonth(parseInt(value));
+  };
 
+  const handleYearChange = (e) => {
+    const { value } = e.target;
+    setSelectedYear(value);
+    handleYearMonth(e);
+  };
 
+  const changeMonthAccordingly = () => {
+    const currentYear = moment().year();
+    const yearList = [];
 
+    if (selectedMonth < 12) {
+      yearList.push(currentYear - 1, currentYear);
+    } else {
+      yearList.push(currentYear);
+    }
 
+    setYears(yearList);
+
+    const monthList = [];
+    const currentMonth = moment().month();
+    let startMonth;
+    let endMonth;
+
+    if (currentMonth < 11) {
+      startMonth = 0;
+      endMonth = currentMonth;
+    } else {
+      startMonth = currentMonth;
+      endMonth = 11;
+    }
+
+    for (let month = startMonth; month <= endMonth; month++) {
+      const date = moment().year(selectedYear).month(month).startOf("month");
+      monthList.push({
+        value: month,
+        label: date.format("MMMM"),
+      });
+    }
+
+    setMonths(monthList);
+  };
+
+  useEffect(() => {
+    changeMonthAccordingly();
+  }, []);
+
+  const handleYearMonth = (e) => {
+    const { value } = e.target;
+    setSelectedYear(value);
+    if (e.target.value !== moment().year().toString()) {
+      const monthList = [];
+      const currentMonth = moment().month();
+      let startMonth;
+      let endMonth;
+
+      startMonth = currentMonth + 1;
+      endMonth = 12;
+
+      for (let month = startMonth; month < endMonth; month++) {
+        const date = moment().year(selectedYear).month(month).startOf("month");
+        monthList.push({
+          value: month,
+          label: date.format("MMMM"),
+        });
+      }
+      setMonths(monthList);
+      setSelectedMonth(monthList[0].value);
+      getHistoryData(startMonth, value);
+    } else {
+      const monthList = [];
+      const currentMonth = moment().month();
+      let startMonth;
+      let endMonth;
+
+      startMonth = 0;
+      endMonth = currentMonth;
+
+      getHistoryData(endMonth, value);
+
+      for (let month = startMonth; month <= endMonth; month++) {
+        const date = moment().year(selectedYear).month(month).startOf("month");
+        monthList.push({
+          value: month,
+          label: date.format("MMMM"),
+        });
+      }
+      setMonths(monthList);
+      setSelectedMonth(currentMonth);
+    }
+  };
 
   const handlePrevPage = () => {
     if (currentPage > 0) {
@@ -64,15 +158,22 @@ const Reports = ({
       setCurrentPage((prevPage) => prevPage + 1);
     }
   };
-
-  const handleChange = (e) => {
-    const { value } = e.target;
-    dispatch(searchUserAction(value));
+  const employeeName = useSelector(
+    (state) => state?.persistData?.userDetails?.employees.result
+  );
+  console.log("employeeName", employeeName)
+  const handleEmployeeNameChange = (value) => {
+    setFormData({ ...formData, EmployeeName: value });
+  };
+  const handleEmployeeNameChange2 = (event) => {
+    dispatch(SearchEmployeeAction(event.target.value));
   };
 
-  const userData = useSelector(
-    (state) => state?.persistData?.adminTimeSheet?.searchUserData?.result
-  );
+    
+  const handleEmploymentTypechage = (e) => {
+    const { value } = e.target;
+    setEmploymentType(value);
+  };
 
   useEffect(() => {
     dispatch(masterDataAction());
@@ -87,9 +188,9 @@ const Reports = ({
   }, []);
 
   const projectList = useSelector(
-    (state) => state?.persistData?.projectListData?.data || []
+    (state) => state.persistData?.loginDetails?.masterData?.projectBasics || []
   );
-
+  
   const handleProjectListChange = (e) => {
     const { value } = e.target;
     setProject(value);
@@ -102,10 +203,14 @@ const Reports = ({
     };
   }, []);
 
+
+
   return (
-    <Grid style={{
-      paddingBottom: isSmallScreen ? "50px" : "0px"
-    }}>
+    <Grid
+      style={{
+        paddingBottom: isSmallScreen ? "50px" : "0px",
+      }}
+    >
       <Grid item xs={12}>
         <Typography variant="h4" gutterBottom fontWeight="bold">
           Reports
@@ -115,14 +220,15 @@ const Reports = ({
         <Grid item xs={12} sm={4}>
           <Autocomplete
             multiple
-            options={userData || []}
+            options={employeeName || []}
             getOptionLabel={(option) => option.name}
+            getOptionValue={(option) => option.id}
+            onChange={(event, value) => handleEmployeeNameChange(value)}
             renderInput={(params) => (
               <TextField
                 {...params}
                 variant="outlined"
                 placeholder="Search by User Name"
-                onChange={handleChange}
                 InputProps={{
                   ...params.InputProps,
                   style: { borderRadius: "50px", backgroundColor: "white" },
@@ -133,19 +239,21 @@ const Reports = ({
                     </>
                   ),
                 }}
+                onChange={handleEmployeeNameChange2}
               />
             )}
-            onChange={(event, newValue) => setSelectedOption(newValue)}
+           
           />
         </Grid>
         <Grid item xs={12} sm={4} md={3} mt={-3}>
           <Typography>Employment Type / All:</Typography>
           <Dropdown
-            value={""}
-            onChange={""}
+            value={employmentType}
+            onChange={handleEmploymentTypechage}
             dropdownName="Employee Type"
             name="EMPType"
-            options={masterdata3 || []}
+            options={[{ id: "All", value: "All" }, ...masterdata3] || []}
+           
             style={{
               backgroundColor: "white",
               borderRadius: "5px",
@@ -178,32 +286,79 @@ const Reports = ({
           margin: "auto",
           marginBottom: "18px",
           border: "1px solid silver",
-          marginTop: "10px"
+          marginTop: "10px",
         }}
       />
       <Grid
         container
-       
         mt={3}
         sx={{
           boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.3)",
           borderRadius: "5px",
-          backgroundColor: "white"
+          backgroundColor: "white",
         }}
-
+        display={"flex"}
+        flexDirection={"row"}
       >
-        <Grid item xs={12} sm={12} md={8} lg={8}>
-        
-        {/* <ResponsiveDateRangePickers/> */}
-            </Grid>
-           
-        <Grid item xs={12} sm={12} md={4} lg={4}>
+        <Grid item xs={12} sm={4} md={2} lg={2}>
+          <select
+            value={selectedMonth}
+            onChange={handleMonthChange}
+            ref={monthRef}
+            style={{
+              flex: "1",
+              padding: "10px",
+              height: "45px",
+              border: "1px solid #ECECEC",
+              borderRadius: "5px",
+              backgroundColor: "white",
+              margin: "10px",
+              width: isMobile ? "80%" : "100%",
+              fontSize: "16px",
+              outline: "none",
+              fontWeight: "bolder",
+              marginLeft: isMobile ? "10px" : "20px",
+            }}
+          >
+            {months.map((month) => (
+              <option key={month.value} value={month.value}>
+                {month.label}
+              </option>
+            ))}
+          </select>
+        </Grid>
+        <Grid item xs={12} sm={4} md={2} lg={2}>
+          <select
+            value={selectedYear}
+            onChange={handleYearChange}
+            style={{
+              flex: "1",
+              padding: "10px",
+              height: "45px",
+              border: "1px solid #ECECEC",
+              borderRadius: "5px",
+              backgroundColor: "white",
+              margin: "10px",
+              width: isMobile ? "80%" : "100%",
+              fontSize: "16px",
+              outline: "none",
+              fontWeight: "bolder",
+              marginLeft: isMobile ? "10px" : "30px",
+            }}
+          >
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </Grid>
+        <Grid item xs={12} sm={4} md={8} lg={8}>
           <Stack
             direction="row"
-            spacing={2}
+            margin="10px"
             alignItems="center"
-            justifyContent="flex-end"
-            sx={{ padding: "10px" }}
+            sx={{ justifyContent: isMobile ? "flex-start" : "flex-end" }}
           >
             <Typography variant="body1" sx={{ color: "#5E5E5E" }}>
               {currentPage + 1} of {totalPages} Pages
@@ -218,165 +373,14 @@ const Reports = ({
               <ChevronRightOutlinedIcon />
             </IconButton>
           </Stack>
-
         </Grid>
-
-        <TableContainer
-          component={Paper}
-          sx={{
-            padding: "10px",
-            textAlign: "center",
-          }}
-        >
-          <Table
-            sx={{
-              borderTop: "1px solid #DADADA",
-            }}
-          >
-            <TableHead >
-              <TableRow >
-                <TableCell
-                  style={{ fontSize: "12px" }}
-                >
-                  <strong>S.No</strong>
-                </TableCell>
-                <TableCell style={{ fontSize: "12px" }} >
-                  <strong>Full Name</strong>
-                </TableCell>
-                <TableCell style={{ fontSize: "12px"}}>
-                  <strong>Employee Id</strong>
-                </TableCell>
-                <TableCell style={{ fontSize: "12px"}}>
-                  <strong>Employment Type</strong>
-                </TableCell>
-                <TableCell style={{ fontSize: "12px" }}>
-                  <strong>Projects </strong>
-                </TableCell>
-                <TableCell style={{ fontSize: "12px" }}>
-                  <strong>No.of Working Days</strong>
-                </TableCell>
-                <TableCell style={{ fontSize: "12px"}}>
-                  <strong>Total Working Days</strong>
-                </TableCell>
-                <TableCell style={{ fontSize: "12px"}}>
-                  <strong>Logged In Hours</strong>
-                </TableCell>
-                <TableCell style={{ fontSize: "12px" }}>
-                  <strong>Ratings</strong>
-                </TableCell>
-                <TableCell style={{ fontSize: "12px"}}>
-                  <strong>Variable Pay</strong>
-                </TableCell>
-                <TableCell style={{ fontSize: "12px" }}>
-                  <strong>LOP</strong>
-                </TableCell>
-                <TableCell style={{ fontSize: "12px" }}>
-                  <strong>Download</strong>
-                </TableCell>
-                <TableCell></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody
-              sx={{
-                textAlign: "center",
-              }}
-            >
-              <React.Fragment>
-                <TableRow>
-                  <TableCell style={{ fontSize: "13px" }}>
-                    {/* {startIndex + 1} */}
-                    1
-                    </TableCell>
-                  <TableCell>
-                    <Grid container alignItems="center" spacing={1}>
-
-                      {/* {row?.fileStorage ? ( */}
-                      {/* <Avatar
-                                  alt="Profile Picture"
-                                  src={`data:image/png;base64,${row?.fileStorage?.data}`}
-                                  sx={{
-                                    border: "2px solid #A4A4A4",
-                                  }}
-                                />
-                              ) : ( */}
-                      <Avatar
-                        sx={{
-                          color: "#fff",
-                          backgroundColor: " #4813B8",
-                        }}
-                      >
-                        s
-                        {/* {row?.firstName?.charAt(0)} */}
-                      </Avatar>
-                      {/* )} */}
-
-                      <Typography style={{ fontSize: "13px" }}>Swarna</Typography>
-                    </Grid>
-                  </TableCell>
-                  <TableCell style={{ fontSize: "13px" }}>63</TableCell>
-                  <TableCell style={{ fontSize: "13px" }}>Full-time</TableCell>
-                  <TableCell style={{ fontSize: "13px" }}>Kiros</TableCell>
-                  <TableCell style={{ fontSize: "13px" }}>45</TableCell>
-                  <TableCell style={{ fontSize: "13px" }}>70</TableCell>
-                  <TableCell style={{ fontSize: "13px" }}>256 </TableCell>
-                  <TableCell style={{ fontSize: "13px" }}>4.56</TableCell>
-                  <TableCell style={{ fontSize: "13px" }}>$50000</TableCell>
-                  <TableCell style={{ fontSize: "13px" }}>2</TableCell>
-                  <TableCell style={{ fontSize: "16px" }}><Button><SimCardDownloadOutlinedIcon /></Button></TableCell>
-
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{ fontSize: "13px" }}>
-                    {/* {startIndex + 1} */}
-                    2
-                    </TableCell>
-                  <TableCell>
-                    <Grid container alignItems="center" spacing={1}>
-
-                      {/* {row?.fileStorage ? ( */}
-                      {/* <Avatar
-                                  alt="Profile Picture"
-                                  src={`data:image/png;base64,${row?.fileStorage?.data}`}
-                                  sx={{
-                                    border: "2px solid #A4A4A4",
-                                  }}
-                                />
-                              ) : ( */}
-                      <Avatar
-                        sx={{
-                          color: "#fff",
-                          backgroundColor: " #4813B8",
-                        }}
-                      >
-                        k
-                        {/* {row?.firstName?.charAt(0)} */}
-                      </Avatar>
-                      {/* )} */}
-
-                      <Typography style={{ fontSize: "13px" }}>Koushik</Typography>
-                    </Grid>
-                  </TableCell>
-                  <TableCell style={{ fontSize: "13px" }}>52</TableCell>
-                  <TableCell style={{ fontSize: "13px" }}>Full-time</TableCell>
-                  <TableCell style={{ fontSize: "13px" }}>Kiros</TableCell>
-                  <TableCell style={{ fontSize: "13px" }}>45</TableCell>
-                  <TableCell style={{ fontSize: "13px" }}>70</TableCell>
-                  <TableCell style={{ fontSize: "13px" }}>256 </TableCell>
-                  <TableCell style={{ fontSize: "13px" }}>4.56</TableCell>
-                  <TableCell style={{ fontSize: "13px" }}>$50000</TableCell>
-                  <TableCell style={{ fontSize: "13px" }}>2</TableCell>
-                  <TableCell style={{ fontSize: "16px" }}><Button><SimCardDownloadOutlinedIcon /></Button></TableCell>
-
-                </TableRow>
-              </React.Fragment>
-            </TableBody>
-          </Table>
-          <Grid container justifyContent="flex-end" mt={3}>
-            <Button style={{ backgroundColor: "#008080", color: "white" }}>
-              <SimCardDownloadOutlinedIcon />Download All
-            </Button>
+        <Grid container>
+          <Grid item xs={12} sm={12} md={12} lg={12}>
+            <ReportsTable selectedMonth={selectedMonth}
+        selectedYear={selectedYear}
+        projectId={project}/>
           </Grid>
-        </TableContainer>
+        </Grid>
       </Grid>
     </Grid>
   );
