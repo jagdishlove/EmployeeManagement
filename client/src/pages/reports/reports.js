@@ -44,6 +44,8 @@ const Reports = () => {
     const params = {
       month: parseInt(month) + 1,
       year: year,
+      projectId: project !== "All" ? project : "",
+      employmentTypeId: employmentType !== "All" ? employmentType : "",
     };
     dispatch(getTimesheetReportsAction(params));
   };
@@ -157,14 +159,17 @@ const Reports = () => {
     }
   };
   const employeeName = useSelector(
-    (state) => state?.persistData?.userDetails?.employees.result
+    (state) => state?.persistData?.userDetails?.employees?.result
   );
+ 
+
 
   const getTimeFunctDispatch = (updatedFormData) => {
     const getPayload = {
       year: selectedYear,
       month: selectedMonth + 1,
       projectId: project !== "All" ? project : "",
+      employmentTypeId: employmentType !== "All" ? employmentType : "",
     };
     dispatch(getTimesheetReportsAction(getPayload, updatedFormData?.value));
   };
@@ -189,7 +194,6 @@ const Reports = () => {
   const masterdata3 = useSelector(
     (state) => state.persistData?.loginDetails?.masterData?.employmentType
   );
-
   useEffect(() => {
     dispatch(projectListAction());
   }, []);
@@ -197,7 +201,6 @@ const Reports = () => {
   const projectList = useSelector(
     (state) => state.persistData?.loginDetails?.masterData?.projectBasics || []
   );
-
   const handleProjectListChange = (e) => {
     const { value } = e.target;
     setProject(value);
@@ -383,6 +386,8 @@ const Reports = () => {
               selectedMonth={selectedMonth}
               selectedYear={selectedYear}
               projectId={project}
+              employmentTypeId={employmentType}
+              
             />
           </Grid>
         </Grid>

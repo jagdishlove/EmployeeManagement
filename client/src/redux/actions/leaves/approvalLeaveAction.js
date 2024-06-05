@@ -193,7 +193,7 @@ export const approveRejectLeavesAction = (data, getDataPayload) => {
   };
 };
 
-export const downloadFileAction = (file, fileName) => {
+export const downloadFileAction = (file, month, fileName) => {
   return async (dispatch) => {
     try {
       dispatch(downloadFileRequest());
