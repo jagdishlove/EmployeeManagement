@@ -108,7 +108,7 @@ export const getSingleDownloadReportAction = (link, month, year) => {
       // Create a temporary link element and trigger a download
       const tempLink = document.createElement("a");
       tempLink.href = url;
-      tempLink.setAttribute("download", "file"); // You can set the filename dynamically if needed
+      tempLink.setAttribute("download", `report_${month}_${year}.xlsx`); // You can set the filename dynamically if needed
       document.body.appendChild(tempLink);
       tempLink.click();
 
@@ -153,7 +153,7 @@ export const getDownloadReportsAction = (data) => {
       // Create a temporary link element and trigger a download
       const tempLink = document.createElement("a");
       tempLink.href = url;
-      tempLink.setAttribute("download", "file"); // You can set the filename dynamically if needed
+      tempLink.setAttribute("download", `report_${month}_${year}.xlsx`); // You can set the filename dynamically if needed
       document.body.appendChild(tempLink);
       tempLink.click();
 
