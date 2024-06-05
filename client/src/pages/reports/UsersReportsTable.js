@@ -17,7 +17,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { getTimesheetReportsAction } from "../../redux/actions/dashboard/reports/reportsAction";
 import { useDispatch, useSelector } from "react-redux";
 
-const ReportsTable = ({ selectedMonth, selectedYear, projectId  }) => {
+const ReportsTable = ({ selectedMonth, selectedYear, projectId }) => {
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
@@ -25,26 +25,20 @@ const ReportsTable = ({ selectedMonth, selectedYear, projectId  }) => {
   const timesheetReports = useSelector(
     (state) => state?.persistData?.timesheetreportsDetails
   );
-  console.log("timesheetReports", timesheetReports);
 
   const getPayload = {
     year: selectedYear,
     month: selectedMonth + 1,
-    projectId:projectId !== "All" ? projectId.id : "",
+    projectId: projectId !== "All" ? projectId.id : "",
   };
 
   useEffect(() => {
-    const payload = {
-      id: 5,
-      name: "Santosh M",
-      type: "employee",
-    };
-    dispatch(getTimesheetReportsAction(getPayload, payload,));
+    dispatch(getTimesheetReportsAction(getPayload));
   }, []);
 
   useEffect(() => {
-    if (timesheetReports?.content) {
-      setData(timesheetReports.content);
+    if (timesheetReports?.timesheetreportsDetails) {
+      setData(timesheetReports?.timesheetreportsDetails?.content);
     }
   }, [timesheetReports]);
 
@@ -76,7 +70,7 @@ const ReportsTable = ({ selectedMonth, selectedYear, projectId  }) => {
               </TableRow>
             </TableHead>
             <TableBody sx={{ textAlign: "center" }}>
-              {data.map((row, index) => (
+              {data?.map((row, index) => (
                 <TableRow key={index}>
                   <TableCell style={{ fontSize: "13px" }}>
                     {index + 1}
@@ -140,7 +134,7 @@ const ReportsTable = ({ selectedMonth, selectedYear, projectId  }) => {
         </TableContainer>
       ) : (
         <Grid container direction="column" padding={"10px"}>
-          {data.map((row, index) => (
+          {data?.map((row, index) => (
             <Paper key={index} sx={{ padding: "10px", marginBottom: "10px" }}>
               <Grid container spacing={1}>
                 <Grid item xs={12}>

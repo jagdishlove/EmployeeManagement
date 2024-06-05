@@ -25,24 +25,24 @@ const getTimesheetReportsFail = () => {
   };
 };
 
-export const getTimesheetReportsAction = (getPayload, payload) => {
-    return async (dispatch) => {
-      dispatch(getTimesheetReportsRequest());
-      try {
-        const response = await makeRequest(
-          "POST",
-          "api/reports/timesheetReport",
-          {
-            result: payload ? [payload] : [],
-          },
-          getPayload
-        );
-        dispatch(getTimesheetReportsSuccess(response));
-      } catch (err) {
-        dispatch(getTimesheetReportsFail());
-        toast.error(err.response.data.errorMessage, {
-          position: toast.POSITION.BOTTOM_CENTER,
-        });
-      }
-    };
+export const getTimesheetReportsAction = (getPayload, payload = []) => {
+  return async (dispatch) => {
+    dispatch(getTimesheetReportsRequest());
+    try {
+      const response = await makeRequest(
+        "POST",
+        "api/reports/timesheetReport",
+        {
+          result: payload,
+        },
+        getPayload
+      );
+      dispatch(getTimesheetReportsSuccess(response));
+    } catch (err) {
+      dispatch(getTimesheetReportsFail());
+      toast.error(err.response.data.errorMessage, {
+        position: toast.POSITION.BOTTOM_CENTER,
+      });
+    }
   };
+};
