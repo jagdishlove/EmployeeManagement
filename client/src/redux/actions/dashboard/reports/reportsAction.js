@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import makeRequest from "../../../../api/api";
+import makeRequest, { downloadApi } from "../../../../api/api";
 import {
   GET_DOWNLOAD_REPORTS_FAIL,
   GET_DOWNLOAD_REPORTS_REQUEST,
@@ -91,41 +91,81 @@ export const getTimesheetReportsAction = (getPayload, payload = []) => {
   };
 };
 
-export const getSingleDownloadReportAction = (params, employeeId) => {
+export const getSingleDownloadReportAction = (link, month, year) => {
   return async (dispatch) => {
-    dispatch(singleDownloadReportRequest());
     try {
-      const response = await makeRequest(
-        "GET",
-        `api/reports/download/timesheetReport/${employeeId}`,
-        null,
-        params
-      );
-      console.log('Response:', response);
+      dispatch(singleDownloadReportRequest());
+      const newUrl = `${link}?month=${month}&year=${year}`;
+
+      // Fetch the file data from the API
+      const response = await downloadApi("GET", newUrl, {
+        responseType: "blob",
+      });
+
+      // Create a blob URL for the file
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      // Create a temporary link element and trigger a download
+      const tempLink = document.createElement("a");
+      tempLink.href = url;
+      tempLink.setAttribute("download", "file"); // You can set the filename dynamically if needed
+      document.body.appendChild(tempLink);
+      tempLink.click();
+
+      // Clean up the URL object and the temporary link element
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(tempLink);
+
       dispatch(singleDownloadReportSuccess(response));
     } catch (err) {
       dispatch(singleDownloadReportFail());
-      toast.error(err.response.data.errorMessage, {
-        position: toast.POSITION.BOTTOM_CENTER,
-      });
+
+      // Show an error toast notification
+      toast.error(
+        err?.response?.data?.errorMessage || "Error downloading file",
+        {
+          position: toast.POSITION.BOTTOM_CENTER,
+        }
+      );
     }
   };
 };
 
-export const getDownloadReportsAction = ( params) => {
+export const getDownloadReportsAction = (data) => {
+  const { year, month, employmentTypeId, projectId } = data;
+  const newEmploymentTypeId =
+    employmentTypeId !== "All" ? employmentTypeId : "";
+  const newProjectId = projectId !== "All" ? projectId : "";
   return async (dispatch) => {
-    dispatch(downloadReportsRequest());
     try {
-      const response = await makeRequest(
-        "GET",
-        "api/reports/download/timesheet-reports",
-        null,
-        params
-      );
+      dispatch(downloadReportsRequest());
+      const link = "api/reports/download/timesheet-reports";
+      const newUrl = `${link}?year=${year}&page=${0}&size=${10}&month=${month}&employementTypeId=${newEmploymentTypeId}&projectId=${newProjectId}`;
+
+      // Fetch the file data from the API
+      const response = await downloadApi("GET", newUrl, {
+        responseType: "blob",
+      });
+
+      // Create a blob URL for the file
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      // Create a temporary link element and trigger a download
+      const tempLink = document.createElement("a");
+      tempLink.href = url;
+      tempLink.setAttribute("download", "file"); // You can set the filename dynamically if needed
+      document.body.appendChild(tempLink);
+      tempLink.click();
+
+      // Clean up the URL object and the temporary link element
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(tempLink);
+
+      dispatch(singleDownloadReportSuccess(response));
       dispatch(downloadReportsSuccess(response));
     } catch (err) {
       dispatch(downloadReportsFail());
-      toast.error(err.response.data.errorMessage, {
+      toast.error(err?.response?.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
     }
