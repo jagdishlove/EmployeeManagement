@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Grid,
   Avatar,
@@ -15,7 +15,10 @@ import {
 } from "@mui/material";
 import SimCardDownloadOutlinedIcon from "@mui/icons-material/SimCardDownloadOutlined";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import {  getSingleDownloadReportAction, getTimesheetReportsAction } from "../../redux/actions/dashboard/reports/reportsAction";
+import {
+  getDownloadReportsAction,
+  getSingleDownloadReportAction,
+} from "../../redux/actions/dashboard/reports/reportsAction";
 import { useDispatch, useSelector } from "react-redux";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -23,8 +26,8 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 const ReportsTable = ({
   selectedMonth,
   selectedYear,
-  projectId,
   employmentTypeId,
+  projectId,
 }) => {
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const dispatch = useDispatch();
@@ -34,30 +37,15 @@ const ReportsTable = ({
     (state) => state?.persistData?.timesheetreportsDetails
   );
 
-  const singleDownloadReport = useSelector((state) => state?.persistData);
-  console.log("singleDownloadReport", singleDownloadReport);
-  const employeeId = 5;
-  const params = {
-    year: selectedYear,
-    month: selectedMonth + 1,
-  };
-  // useEffect(() => {
-  //   dispatch(getSingleDownloadReportAction( params));
-  // }, []);
-
-  const getPayload = useMemo(
-    () => ({
+  const downloadAllHandler = () => {
+    const data = {
       year: selectedYear,
-      month: selectedMonth + 1,
-      projectId: projectId !== "All" ? projectId : "",
-      employmentTypeId: employmentTypeId !== "All" ? employmentTypeId : "",
-    }),
-    [selectedYear, selectedMonth, projectId, employmentTypeId]
-  );
-
-  useEffect(() => {
-    dispatch(getTimesheetReportsAction(getPayload));
-  }, [dispatch, selectedMonth, selectedYear, projectId, employmentTypeId]);
+      month: selectedMonth,
+      employmentTypeId,
+      projectId,
+    };
+    dispatch(getDownloadReportsAction(data));
+  };
 
   useEffect(() => {
     if (timesheetReports?.timesheetreportsDetails) {
@@ -75,35 +63,11 @@ const ReportsTable = ({
     }
   };
 
-
-  const handleDownload = () => {
+  const handleDownload = (link) => {
     // Dispatch the action to fetch the download link
-    dispatch(getSingleDownloadReportAction(params, employeeId))
-      .then((response) => {
-        // Extract the download link from the response
-        const downloadLink = response?.data?.downloadLink;
-        console.log("downloadLink", downloadLink)
-        // Check if the download link is available
-        if (downloadLink) {
-          // Create a temporary anchor element
-          const link = document.createElement("a");
-          link.href = downloadLink;
-          link.target = "_blank"; // Open in a new tab
-          link.download = "report.pdf"; // Set the filename
-          // Trigger the download by simulating a click
-          link.click();
-        } else {
-          // Handle case where download link is not available
-          console.error("Download link not found");
-        }
-      })
-      .catch((error) => {
-        // Handle any errors that occur during the download process
-        console.error("Error downloading report:", error);
-      });
+    dispatch(getSingleDownloadReportAction(link, selectedMonth, selectedYear));
   };
-  
-  
+
   return (
     <div>
       {!isMobile ? (
@@ -246,9 +210,7 @@ const ReportsTable = ({
                       {row.lossOfPay}
                     </TableCell>
                     <TableCell style={{ fontSize: "16px" }}>
-                      <Button
-                        onClick={() => handleDownload(row.downloadLink, selectedMonth)}
-                      >
+                      <Button onClick={() => handleDownload(row.downloadLink)}>
                         <SimCardDownloadOutlinedIcon />
                       </Button>
                     </TableCell>
@@ -312,7 +274,10 @@ const ReportsTable = ({
             </TableBody>
           </Table>
           <Grid container justifyContent="flex-end" padding="10px">
-            <Button style={{ backgroundColor: "#008080", color: "white" }}>
+            <Button
+              onClick={() => downloadAllHandler()}
+              style={{ backgroundColor: "#008080", color: "white" }}
+            >
               <SimCardDownloadOutlinedIcon />
               Download All
             </Button>

@@ -20,7 +20,6 @@ import {
   DOWNLOAD_FILE_FAIL,
 } from "./approvalLeaveActionType";
 
-
 const getApprovalLeaveDatesRequest = () => {
   return {
     type: APPROVAL_LEAVE_DATES_REQUEST,
@@ -198,8 +197,6 @@ export const downloadFileAction = (file, month, fileName) => {
     try {
       dispatch(downloadFileRequest());
       const response = await downloadApi("GET", `${file}`);
-    
-
       const url = window.URL.createObjectURL(new Blob([response]));
       const link = document.createElement("a");
       link.href = url;
