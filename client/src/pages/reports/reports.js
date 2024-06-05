@@ -17,9 +17,9 @@ import { SearchEmployeeAction } from "../../redux/actions/AdminConsoleAction/use
 import { projectListAction } from "../../redux/actions/approvals/projectListAction";
 import { masterDataAction } from "../../redux/actions/masterData/masterDataAction";
 import moment from "moment";
-import { RatingDataAction } from "../../redux/actions/workSpace/workSpaceAction";
 import { useTheme } from "@mui/material/styles";
 import ReportsTable from "./UsersReportsTable";
+import { getTimesheetReportsAction } from "../../redux/actions/dashboard/reports/reportsAction";
 
 const Reports = () => {
   const theme = useTheme();
@@ -32,12 +32,10 @@ const Reports = () => {
   const totalPages = 5;
   const [currentPage, setCurrentPage] = useState(0);
   const dispatch = useDispatch();
-  const [formData, setFormData] = useState({
-    EmployeeName: { id: 0, name: "", type: "employee" },
-  });
+  const [formData, setFormData] = useState([]);
   const [project, setProject] = useState("All");
   const [employmentType, setEmploymentType] = useState("All");
-  
+
   // const recordsPerPage = 1; // Number of records to display per page
   // const startIndex = currentPage * recordsPerPage;
   const isMobile = useMediaQuery("(max-width: 1050px)");
@@ -47,7 +45,7 @@ const Reports = () => {
       month: parseInt(month) + 1,
       year: year,
     };
-    dispatch(RatingDataAction(params));
+    dispatch(getTimesheetReportsAction(params));
   };
 
   const handleMonthChange = (e) => {
@@ -161,15 +159,24 @@ const Reports = () => {
   const employeeName = useSelector(
     (state) => state?.persistData?.userDetails?.employees.result
   );
-  console.log("employeeName", employeeName)
+
+  const getTimeFunctDispatch = (updatedFormData) => {
+    const getPayload = {
+      year: selectedYear,
+      month: selectedMonth + 1,
+      projectId: project !== "All" ? project : "",
+    };
+    dispatch(getTimesheetReportsAction(getPayload, updatedFormData?.value));
+  };
   const handleEmployeeNameChange = (value) => {
-    setFormData({ ...formData, EmployeeName: value });
+    const updatedFormData = { ...formData, value };
+    setFormData(updatedFormData);
+    getTimeFunctDispatch(updatedFormData);
   };
   const handleEmployeeNameChange2 = (event) => {
     dispatch(SearchEmployeeAction(event.target.value));
   };
 
-    
   const handleEmploymentTypechage = (e) => {
     const { value } = e.target;
     setEmploymentType(value);
@@ -190,7 +197,7 @@ const Reports = () => {
   const projectList = useSelector(
     (state) => state.persistData?.loginDetails?.masterData?.projectBasics || []
   );
-  
+
   const handleProjectListChange = (e) => {
     const { value } = e.target;
     setProject(value);
@@ -202,8 +209,6 @@ const Reports = () => {
       document.body.classList.remove("project-progress-body");
     };
   }, []);
-
-
 
   return (
     <Grid
@@ -242,7 +247,6 @@ const Reports = () => {
                 onChange={handleEmployeeNameChange2}
               />
             )}
-           
           />
         </Grid>
         <Grid item xs={12} sm={4} md={3} mt={-3}>
@@ -253,7 +257,6 @@ const Reports = () => {
             dropdownName="Employee Type"
             name="EMPType"
             options={[{ id: "All", value: "All" }, ...masterdata3] || []}
-           
             style={{
               backgroundColor: "white",
               borderRadius: "5px",
@@ -376,9 +379,11 @@ const Reports = () => {
         </Grid>
         <Grid container>
           <Grid item xs={12} sm={12} md={12} lg={12}>
-            <ReportsTable selectedMonth={selectedMonth}
-        selectedYear={selectedYear}
-        projectId={project}/>
+            <ReportsTable
+              selectedMonth={selectedMonth}
+              selectedYear={selectedYear}
+              projectId={project}
+            />
           </Grid>
         </Grid>
       </Grid>
