@@ -29,19 +29,24 @@ const Reports = () => {
   const [years, setYears] = useState([]);
   const [months, setMonths] = useState([]);
   const monthRef = useRef(null);
-  const totalPages = 5;
   const [currentPage, setCurrentPage] = useState(0);
   const dispatch = useDispatch();
   const [formData, setFormData] = useState([]);
   const [project, setProject] = useState("All");
   const [employmentType, setEmploymentType] = useState("All");
-
-  // const recordsPerPage = 1; // Number of records to display per page
-  // const startIndex = currentPage * recordsPerPage;
+ 
   const isMobile = useMediaQuery("(max-width: 1050px)");
+
+  const reporteesPages = useSelector(
+    (state) => state?.persistData?.timesheetreportsDetails?.timesheetreportsDetails || []
+  );
+  console.log("reporteesPages", reporteesPages)
+  const totalPages = reporteesPages?.totalPages;
 
   const getHistoryData = (month, year) => {
     const params = {
+      page: currentPage,
+      size: 10,
       month: parseInt(month) + 1,
       year: year,
       projectId: project !== "All" ? project : "",
@@ -122,7 +127,7 @@ const Reports = () => {
 
   useEffect(() => {
     changeMonthAccordingly();
-  }, []);
+  }, [currentPage,]);
 
   const handleYearMonth = (e) => {
     const { value } = e.target;
@@ -382,25 +387,29 @@ const Reports = () => {
           </select>
         </Grid>
         <Grid item xs={12} sm={4} md={8} lg={8}>
-          <Stack
-            direction="row"
-            margin="10px"
-            alignItems="center"
-            sx={{ justifyContent: isMobile ? "flex-start" : "flex-end" }}
-          >
-            <Typography variant="body1" sx={{ color: "#5E5E5E" }}>
-              {currentPage + 1} of {totalPages} Pages
-            </Typography>
-            <IconButton onClick={handlePrevPage} disabled={currentPage === 0}>
-              <KeyboardArrowLeftOutlinedIcon />
-            </IconButton>
-            <IconButton
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages - 1}
+        {totalPages > 0 && (
+          
+            <Stack
+              direction="row"
+              margin="10px"
+              alignItems="center"
+              sx={{ justifyContent: isMobile ? "flex-start" : "flex-end" }}
             >
-              <ChevronRightOutlinedIcon />
-            </IconButton>
-          </Stack>
+              <Typography variant="body1" sx={{ color: "#5E5E5E" }}>
+                {currentPage + 1} of {totalPages} Pages
+              </Typography>
+              <IconButton onClick={handlePrevPage} disabled={currentPage === 0}>
+                <KeyboardArrowLeftOutlinedIcon />
+              </IconButton>
+              <IconButton
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages - 1}
+              >
+                <ChevronRightOutlinedIcon />
+              </IconButton>
+            </Stack>
+         
+        )}
         </Grid>
         <Grid container>
           <Grid item xs={12} sm={12} md={12} lg={12}>
