@@ -55,9 +55,7 @@ const Reports = () => {
     dispatch(getTimesheetReportsAction(params));
   };
 
-  useEffect(() => {
-    getHistoryData(selectedMonth, selectedYear);
-  }, []);
+
   const getHistoryProjectData = (project) => {
     const params = {
       month: selectedMonth + 1,
@@ -126,6 +124,7 @@ const Reports = () => {
   };
 
   useEffect(() => {
+    getHistoryData(selectedMonth, selectedYear);
     changeMonthAccordingly();
   }, [currentPage,]);
 
