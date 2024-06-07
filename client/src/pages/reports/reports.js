@@ -31,16 +31,16 @@ const Reports = () => {
   const monthRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(0);
   const dispatch = useDispatch();
-  const [formData, setFormData] = useState([]);
   const [project, setProject] = useState("All");
   const [employmentType, setEmploymentType] = useState("All");
- 
+
   const isMobile = useMediaQuery("(max-width: 1050px)");
 
   const reporteesPages = useSelector(
-    (state) => state?.persistData?.timesheetreportsDetails?.timesheetreportsDetails || []
+    (state) =>
+      state?.persistData?.timesheetreportsDetails?.timesheetreportsDetails || []
   );
-  console.log("reporteesPages", reporteesPages)
+  console.log("reporteesPages", reporteesPages);
   const totalPages = reporteesPages?.totalPages;
 
   const getHistoryData = (month, year) => {
@@ -54,7 +54,6 @@ const Reports = () => {
     };
     dispatch(getTimesheetReportsAction(params));
   };
-
 
   const getHistoryProjectData = (project) => {
     const params = {
@@ -126,7 +125,7 @@ const Reports = () => {
   useEffect(() => {
     getHistoryData(selectedMonth, selectedYear);
     changeMonthAccordingly();
-  }, [currentPage,]);
+  }, [currentPage]);
 
   const handleYearMonth = (e) => {
     const { value } = e.target;
@@ -195,11 +194,10 @@ const Reports = () => {
       projectId: project !== "All" ? project : "",
       employmentTypeId: employmentType !== "All" ? employmentType : "",
     };
-    dispatch(getTimesheetReportsAction(getPayload, updatedFormData?.value));
+    dispatch(getTimesheetReportsAction(getPayload, updatedFormData));
   };
   const handleEmployeeNameChange = (value) => {
-    const updatedFormData = { ...formData, value };
-    setFormData(updatedFormData);
+    const updatedFormData = value === null ? [] : [value];
     getTimeFunctDispatch(updatedFormData);
   };
   const handleEmployeeNameChange2 = (event) => {
@@ -253,7 +251,6 @@ const Reports = () => {
       <Grid container spacing={2} mt={2}>
         <Grid item xs={12} sm={4}>
           <Autocomplete
-            multiple
             options={employeeName || []}
             getOptionLabel={(option) => option.name}
             getOptionValue={(option) => option.id}
@@ -386,8 +383,7 @@ const Reports = () => {
           </select>
         </Grid>
         <Grid item xs={12} sm={4} md={8} lg={8}>
-        {totalPages > 0 && (
-          
+          {totalPages > 0 && (
             <Stack
               direction="row"
               margin="10px"
@@ -407,8 +403,7 @@ const Reports = () => {
                 <ChevronRightOutlinedIcon />
               </IconButton>
             </Stack>
-         
-        )}
+          )}
         </Grid>
         <Grid container>
           <Grid item xs={12} sm={12} md={12} lg={12}>
