@@ -40,7 +40,7 @@ const Reports = () => {
     (state) =>
       state?.persistData?.timesheetreportsDetails?.timesheetreportsDetails || []
   );
-  console.log("reporteesPages", reporteesPages);
+ 
   const totalPages = reporteesPages?.totalPages;
 
   const getHistoryData = (month, year) => {
@@ -125,7 +125,7 @@ const Reports = () => {
   useEffect(() => {
     getHistoryData(selectedMonth, selectedYear);
     changeMonthAccordingly();
-  }, [currentPage]);
+  }, [currentPage, selectedYear]);
 
   const handleYearMonth = (e) => {
     const { value } = e.target;
