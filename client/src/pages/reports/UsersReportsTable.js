@@ -109,15 +109,25 @@ const ReportsTable = ({
                           {index + 1}
                         </TableCell>
                         <TableCell>
-                          <Grid container alignItems="center" spacing={1}>
-                            <Avatar
-                              sx={{ color: "#fff", backgroundColor: "#4813B8" }}
-                            >
-                              {row.fullName.charAt(0).toUpperCase()}
-                            </Avatar>
-                            <Typography style={{ fontSize: "13px" }}>
-                              {row.fullName}
-                            </Typography>
+                        <Grid container alignItems="center" spacing={1} direction="column">
+                            <Grid item>
+                              {row?.fileStorage ? (
+                                <Avatar
+                                  alt="Profile Picture"
+                                  src={`data:image/png;base64,${row?.fileStorage?.data}`}
+                                  sx={{
+                                    border: "2px solid #A4A4A4",
+                                  }}
+                                />
+                              ) : (
+                                <Avatar sx={{ color: "#fff", backgroundColor: "#4813B8" }}>
+                                  {row.fullName.charAt(0).toLowerCase()}
+                                </Avatar>
+                              )}
+                            </Grid>
+                            <Grid item>
+                              <Typography style={{ fontSize: "13px" }}>{row.fullName}</Typography>
+                            </Grid>
                           </Grid>
                         </TableCell>
                         <TableCell style={{ fontSize: "13px" }}>
