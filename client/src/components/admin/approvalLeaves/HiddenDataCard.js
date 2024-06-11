@@ -67,7 +67,6 @@ const HiddenDataCard = ({
   const handleDownload = (file) => {
     dispatch(downloadFileAction(file, cardData.fileName));
   };
-  console.log("cardData", cardData.fileName)
 
   return (
     <Grid container spacing={2} style={{ padding: "10px" }}>

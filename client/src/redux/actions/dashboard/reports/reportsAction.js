@@ -140,20 +140,12 @@ export const getDownloadReportsAction = (data) => {
         responseType: "blob",
       });
 
-      // Create a blob URL for the file
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-
-      // Create a temporary link element and trigger a download
-      const tempLink = document.createElement("a");
-      tempLink.href = url;
-      tempLink.setAttribute("download", `report_${month}_${year}.xlsx`); // You can set the filename dynamically if needed
-      document.body.appendChild(tempLink);
-      tempLink.click();
-
-      // Clean up the URL object and the temporary link element
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(tempLink);
-
+      saveAs(
+        new Blob([response], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        }),
+        `report_${month}_${year}.xlsx`
+      );
       dispatch(singleDownloadReportSuccess(response));
       dispatch(downloadReportsSuccess(response));
     } catch (err) {
