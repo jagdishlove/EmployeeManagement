@@ -1,5 +1,6 @@
 import { toast } from "react-toastify";
 import makeRequest, { downloadApi } from "../../../../api/api";
+import { saveAs } from "file-saver";
 import {
   GET_DOWNLOAD_REPORTS_FAIL,
   GET_DOWNLOAD_REPORTS_REQUEST,
@@ -101,20 +102,12 @@ export const getSingleDownloadReportAction = (link, month, year) => {
       const response = await downloadApi("GET", newUrl, {
         responseType: "blob",
       });
-
-      // Create a blob URL for the file
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-
-      // Create a temporary link element and trigger a download
-      const tempLink = document.createElement("a");
-      tempLink.href = url;
-      tempLink.setAttribute("download", `report_${month}_${year}.xlsx`); // You can set the filename dynamically if needed
-      document.body.appendChild(tempLink);
-      tempLink.click();
-
-      // Clean up the URL object and the temporary link element
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(tempLink);
+      saveAs(
+        new Blob([response], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        }),
+        `report_${month}_${year}.xlsx`
+      );
 
       dispatch(singleDownloadReportSuccess(response));
     } catch (err) {
