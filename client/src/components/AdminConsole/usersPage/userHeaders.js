@@ -304,23 +304,30 @@ export default function UserHerders({
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={12} md={5} lg={4}></Grid>
-          <Grid item margin={"auto"} alignItems="flex-end">
-            <Typography
-              variant="h7"
-              color={"secondary"}
-              textAlign={"right"}
-              sx={{ textWrap: "nowrap", marginLeft: "30px" }}
-              marginTop={4}
-            >
-              <b>
-                {" "}
-                Total Users{" "}
-                {userData?.numberOfElements ? userData.numberOfElements : "0"}/
-                {userData?.totalElements ? userData.totalElements : "0"}
-              </b>
-            </Typography>
-          </Grid>
+          
+          <Grid
+      item
+      xs={12}
+      lg
+      sx={{
+        display: "flex",
+        justifyContent: "flex-end",
+        alignItems: "center",
+        textAlign: { xs: "center", lg: "right" },
+        mt: { xs: 2, lg: 0 },
+      }}
+    >
+      <Typography
+        variant="h7"
+        color="secondary"
+        sx={{ whiteSpace: "nowrap" }}
+      >
+        <b>
+          Total Users {userData?.numberOfElements ? userData.numberOfElements : "0"}/
+          {userData?.totalElements ? userData.totalElements : "0"}
+        </b>
+      </Typography>
+    </Grid>
         </Grid>
       </Box>
     </div>

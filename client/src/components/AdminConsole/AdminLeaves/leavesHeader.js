@@ -1,5 +1,5 @@
 import React from "react";
-import { Autocomplete, Box, Grid, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, Grid, TextField, Typography, useMediaQuery } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useDispatch, useSelector } from "react-redux";
 import { searchUserAction } from "../../../redux/actions/AdminConsoleAction/timeSheet/adminTimesheetAction";
@@ -21,7 +21,7 @@ const LeavesHeader = ({
   const theme = useTheme();
   const style = adminHeaderStyle(theme);
   const dispatch = useDispatch();
-
+  const isMobile = useMediaQuery("(max-width: 600px)");
   const handleChange = (e) => {
     const inputValue = e.target.value;
 
@@ -80,7 +80,7 @@ const LeavesHeader = ({
           <Autocomplete
             sx={{
               borderRadius: "8px",
-              width: "40%",
+              width: isMobile? "70%" : "40%",
             }}
             options={userData || []}
             getOptionLabel={(option) => option.name}

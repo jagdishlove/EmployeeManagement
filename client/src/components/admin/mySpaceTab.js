@@ -241,16 +241,16 @@ const MySpaceTab = () => {
           >
             <Box
               sx={{
-                background: "linear-gradient(45deg, #2196F3, #FF9800)",
+                background: "linear-gradient(45deg, #4C83F0, #D46678)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 display: "inline-block",
-                marginLeft: "30px",
-                marginTop: "3px",
+                marginLeft: "15px",
+                marginTop: "5px",
                 fontSize: "26px",
               }}
             >
-              Hello, {userName}
+             <b> Hello, {userName}</b>
             </Box>
             <TodayActivity />
           </Card>
@@ -260,7 +260,7 @@ const MySpaceTab = () => {
             <Box
               sx={{
                 position: "absolute",
-                top: "10px",
+                top: "45px",
                 right: "-22px",
                 display: "flex",
                 alignItems: "center",
@@ -329,78 +329,83 @@ const MySpaceTab = () => {
                 </select>
               </div>
             </Box>
-            <Grid container spacing={0}>
+            <Grid container spacing={5}>
               <Grid item xs={12} md={6}>
                 <Card
                   sx={{
-                    borderRadius: "5px",
-                    width: "110%",
-                    height: "135px",
-                    marginTop: "65px",
-                    backgroundColor: "white",
+                    borderRadius: '5px',
+                    width: { xs: '100%', md: '110%' },
+                    height: '135px',
+                    marginTop: { xs: '20px', md: '65px' },
+                    backgroundColor: 'white',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '10px',
                   }}
                 >
-                  <Grid container spacing={0} mb={1}>
-                    <Grid item xs={2} ml={1} mt={1}>
-                      <img src={ratingIcon} />
+                  <Grid container spacing={2} alignItems="center" sx={{ width: '100%' }}>
+                    <Grid item xs={2}>
+                      <Box
+                        component="img"
+                        src={ratingIcon}
+                        alt="Rating Icon"
+                        sx={{ width: '40px', height: '40px' }} // Set fixed size
+                      />
                     </Grid>
-                    <Grid item xs={8} mt={2.5} ml={0.5}>
-                      <b >Over all Performance</b>
+                    <Grid item xs={8} ml={1}>
+                      <Box display="flex" alignItems="center" justifyContent="center" height="100%">
+                        <b>Overall Performance</b>
+                      </Box>
                     </Grid>
-                    <Grid item xs={1} mt={2.5} ml={-1} color="#A4504A">
-                      <b>
-                        {ratingData?.performanceRating !== undefined
-                          ? ratingData?.performanceRating.toFixed(2)
-                          : ""}
-                      </b>
+                    <Grid item xs={1} color="#A4504A">
+                      <Box display="flex" alignItems="center" justifyContent="center" height="100%">
+                        <b>
+                          {ratingData?.performanceRating !== undefined
+                            ? ratingData?.performanceRating.toFixed(2)
+                            : ''}
+                        </b>
+                      </Box>
                     </Grid>
                   </Grid>
-                  <Grid item ml={12}>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', marginBottom: "15px" }}>
                     <Star value={ratingData?.performanceRating} />
-                  </Grid>
+                  </Box>
                 </Card>
               </Grid>
               <Grid item xs={12} md={6}>
                 <Card
                   sx={{
-                    borderRadius: "5px",
-                    width: "86%",
-                    height: "8.5rem", // Use rem for responsive height
-                    marginLeft: "2.5rem", // Use rem for responsive margin
-                    marginTop: "4rem", // Use rem for responsive margin
-                    backgroundColor: "white",
-                    display: "flex", // Add flex display
-                    flexDirection: "column", // Add flex direction
-                    alignItems: "center", // Add align items
-                    justifyContent: "space-around", // Add justify content
-                    "@media (max-width: 600px)": { // Add media query for small screens
-                      width: "90%",
-                      height: "10rem",
-                      marginLeft: "1rem",
-                      marginTop: "2rem",
-                    },
+                    borderRadius: '5px',
+                    width: { xs: '100%', md: '100%' },
+                    height: { xs: '10rem', md: '8.5rem' },
+                    marginTop: { xs: '2rem', md: '4rem' },
+                    backgroundColor: 'white',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'space-around',
                   }}
                 >
-                  <Grid container spacing={0} mb={-2}> 
+                  <Grid container spacing={-1} mb={-2}>
                     <Grid item xs={1} mt={1} ml={1}>
-                      <img src={ConsistencyMeter} />
+                      <img src={ConsistencyMeter} alt="Consistency Meter" />
                     </Grid>
                     <Grid
                       item
                       xs={2}
-                      sx={{ marginTop: "1rem", whiteSpace: "nowrap" }} // Use rem for responsive margin
+                      sx={{ marginTop: '1rem', whiteSpace: 'nowrap' }}
                       ml={4.5}
                     >
                       <b> Consistency Meter </b>
                     </Grid>
                   </Grid>
-                  <Box sx={{ textAlign: "center", marginLeft: "10%",marginBottom:"5%" }}>
+                  <Box sx={{ textAlign: 'center', marginLeft: '10%', marginBottom: '5%' }}>
                     {ratingData?.consistencyMeter?.value !== undefined ? (
-                      <ConsistencyMeters
-                        value={Math.floor(ratingData?.consistencyMeter?.value)}
-                      />
+                      <ConsistencyMeters value={Math.floor(ratingData?.consistencyMeter?.value)} />
                     ) : (
-                      <CircularProgress /> // Or any other loading indicator
+                      <CircularProgress />
                     )}
                   </Box>
                 </Card>
@@ -470,7 +475,7 @@ const MySpaceTab = () => {
                   style={{
                     overflowY: "auto",
                     marginTop: "15px",
-                    marginLeft:"6px",
+                    marginLeft: "6px",
                     overflowX: "hidden",
                     maxHeight: "100%",
                     paddingRight: "10px",
@@ -725,10 +730,10 @@ const MySpaceTab = () => {
                 </Grid>
                 <Grid
                   style={{
-                    
+
                     maxHeight: "100%",
                     boxSizing: "content-box",
-                    marginRight:"30px"
+                    marginRight: "30px"
                   }}
                 >
                   <SimpleBarChart />

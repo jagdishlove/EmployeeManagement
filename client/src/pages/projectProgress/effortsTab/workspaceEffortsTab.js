@@ -320,6 +320,7 @@ export default function WorkspaceEffortsTab({ project, role }) {
                       flexDirection: "column",
                       backgroundColor: "#ffffff",
                       borderRadius: "5px",
+                      height:"100%"
                     }}
                   >
                     <WorkspaceLineChart
@@ -394,7 +395,7 @@ export default function WorkspaceEffortsTab({ project, role }) {
                       lg={5.9}
                       sx={{
                         borderRadius: "5px",
-                        height: "400px",
+                        height: "100%",
                       }}
                     >
                       <Grid

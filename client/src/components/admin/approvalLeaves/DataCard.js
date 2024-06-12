@@ -10,7 +10,8 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState} from "react";
+
 import HiddenDataCard from "./HiddenDataCard";
 import { useSelector } from "react-redux";
 import dayjs from "dayjs";
@@ -31,6 +32,7 @@ const DataCard = ({
   handleCheckboxChange,
 }) => {
   const [expanded, setExpanded] = useState(false);
+
   const [comments, setComments] = useState("");
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery("(max-width: 600px)");
@@ -93,7 +95,7 @@ const DataCard = ({
             <Grid
               container
               spacing={isMobile ? 5 : 3}
-              sx={{ padding: "10px", justifyContent:"center"}}
+              sx={{ padding: "25px 10px 10px 10px", justifyContent:"center"}}
             >
               <div
                 style={{
@@ -265,7 +267,8 @@ const DataCard = ({
                           width: "100%",
                           lineHeight: "20px",
                           left: "30px",
-                          bottom: "-2px",
+                          bottom: "-5.5px",
+                          
                         }}
                       >
                         {error?.[index]}

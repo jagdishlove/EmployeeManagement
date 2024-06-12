@@ -112,7 +112,7 @@ export default function MasterDataPage({
                         container
                         sx={{
                           border: "1px solid #AEAEAE",
-                          height: "156px",
+                          height: "auto",
                           overflow: "auto",
                           padding: "10px",
                         }}
@@ -130,7 +130,7 @@ export default function MasterDataPage({
                               borderRadius: "15px",
                               padding: "6px",
                               margin: "5px",
-                              height: "40px",
+                              height: "auto",
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "flex-end",
@@ -151,7 +151,9 @@ export default function MasterDataPage({
                               }
                               sx={{
                                 cursor: "pointer",
+                                lineBreak:"anywhere"
                               }}
+                              
                             >
                               {designation.designationName}
                             </Typography>
@@ -225,7 +227,7 @@ export default function MasterDataPage({
                         container
                         sx={{
                           border: "1px solid #AEAEAE",
-                          height: skillData ? "156px" : "auto",
+                          height:  "auto",
                           overflow: "auto",
                           padding: "10px",
                         }}
@@ -243,7 +245,7 @@ export default function MasterDataPage({
                               borderRadius: "15px",
                               padding: "6px",
                               margin: "5px",
-                              height: "40px",
+                              height: "auto",
                               color:
                                 skill.status === "ACTIVE" ? "black" : "#AEAEAE",
                             }}
@@ -259,6 +261,7 @@ export default function MasterDataPage({
                               }
                               sx={{
                                 cursor: "pointer",
+                                 lineBreak:"anywhere"
                               }}
                             >
                               {skill.skillName}
@@ -333,7 +336,7 @@ export default function MasterDataPage({
                         container
                         sx={{
                           border: "1px solid #AEAEAE",
-                          height: "156px",
+                          height: "auto",
                           overflow: "auto",
                           padding: "10px",
                         }}
@@ -349,9 +352,9 @@ export default function MasterDataPage({
                                   ? "1.5px solid #008080"
                                   : "1.5px solid #AEAEAE",
                               borderRadius: "15px",
-                              padding: "40px",
+                              padding: "10px",
                               margin: "5px",
-                              height: "40px",
+                              height: "auto",
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "flex-end",
@@ -375,6 +378,7 @@ export default function MasterDataPage({
                               }
                               sx={{
                                 textAlign: "center",
+                                 lineBreak:"anywhere"
                               }}
                             >
                               {`${officeLocation?.address?.name}`}
@@ -459,7 +463,7 @@ export default function MasterDataPage({
                         container
                         sx={{
                           border: "1px solid #AEAEAE",
-                          height: "156px",
+                          height: "auto",
                           overflow: "auto",
                           padding: "10px",
                         }}
@@ -475,9 +479,9 @@ export default function MasterDataPage({
                                   ? "1.5px solid #008080"
                                   : "1.5px solid #AEAEAE",
                               borderRadius: "15px",
-                              padding: "40px",
+                              padding: "10px",
                               margin: "5px",
-                              height: "40px",
+                              height: "auto",
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "flex-end",
@@ -499,6 +503,7 @@ export default function MasterDataPage({
                               }
                               sx={{
                                 textAlign: "center",
+                                 lineBreak:"anywhere"
                               }}
                             >
                               {`${onsiteLocation?.address?.name}`}
@@ -583,7 +588,7 @@ export default function MasterDataPage({
                       container
                       sx={{
                         border: "1px solid #AEAEAE",
-                        height: "156px",
+                        height: "auto",
                         overflow: "auto",
                         padding: "10px",
                       }}
@@ -601,7 +606,7 @@ export default function MasterDataPage({
                             borderRadius: "15px",
                             padding: "6px",
                             margin: "5px",
-                            height: "40px",
+                            height: "auto",
                             color:
                               job.status === "ACTIVE" ? "black" : "#AEAEAE",
                           }}
@@ -617,6 +622,7 @@ export default function MasterDataPage({
                             }
                             sx={{
                               cursor: "pointer",
+                               lineBreak:"anywhere"
                             }}
                           >
                             {job.jobType}
@@ -690,7 +696,7 @@ export default function MasterDataPage({
                         container
                         sx={{
                           border: "1px solid #AEAEAE",
-                          height: "156px",
+                          height: "auto",
                           overflow: "auto",
                           padding: "10px",
                         }}
@@ -706,9 +712,9 @@ export default function MasterDataPage({
                                   ? "1.5px solid #008080"
                                   : "1.5px solid #AEAEAE",
                               borderRadius: "15px",
-                              padding: "30px",
+                              padding: "10px",
                               margin: "5px",
-                              height: "40px",
+                              height: "auto",
                               display: "flex",
                               alignItems: "center",
                               cursor: "pointer",
@@ -730,6 +736,7 @@ export default function MasterDataPage({
                               sx={{
                                 cursor: "pointer",
                                 textAlign: "center",
+                                 lineBreak:"anywhere"
                               }}
                             >
                               {`${holiday.holidayType} - ${dayjs(
@@ -808,7 +815,7 @@ export default function MasterDataPage({
                         container
                         sx={{
                           border: "1px solid #AEAEAE",
-                          height: "156px",
+                          height: "auto",
                           overflow: "auto",
                           padding: "10px",
                         }}
@@ -824,9 +831,9 @@ export default function MasterDataPage({
                                   ? "1.5px solid #008080"
                                   : "1.5px solid #AEAEAE",
                               borderRadius: "15px",
-                              padding: "40px",
+                              padding: "10px",
                               margin: "5px",
-                              height: "40px",
+                              height: "auto",
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "flex-end",
@@ -848,6 +855,7 @@ export default function MasterDataPage({
                               }
                               sx={{
                                 textAlign: "center",
+                                 lineBreak:"anywhere"
                               }}
                             >
                               {`${clinet.clientName}`}
@@ -930,7 +938,7 @@ export default function MasterDataPage({
                         container
                         sx={{
                           border: "1px solid #AEAEAE",
-                          height: "156px",
+                          height: "auto",
                           overflow: "auto",
                           padding: "10px",
                         }}
@@ -948,7 +956,7 @@ export default function MasterDataPage({
                               borderRadius: "15px",
                               padding: "6px",
                               margin: "5px",
-                              height: "40px",
+                              height: "auto",
                               color:
                                 domine.status === "ACTIVE"
                                   ? "black"
@@ -966,6 +974,7 @@ export default function MasterDataPage({
                               }
                               sx={{
                                 cursor: "pointer",
+                                 lineBreak:"anywhere"
                               }}
                             >
                               {domine.domainName}

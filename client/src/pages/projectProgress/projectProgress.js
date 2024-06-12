@@ -111,7 +111,7 @@ const ProjectProgress = () => {
   const { projectList, projectListLoading } = useSelector(
     (state) => state?.persistData?.workSpace
   );
-
+console.log("projectList", projectList)
   const role = useSelector(
     (state) => state?.persistData?.loginDetails?.data.role
   );
@@ -319,7 +319,7 @@ const ProjectProgress = () => {
               >
                 <CircularProgress />
               </Grid>
-            ) : showNoDataMessage ? (
+            ) : showNoDataMessage || projectList?.length==0 ? (
               <Grid
                 container
                 spacing={0}
@@ -360,15 +360,7 @@ const ProjectProgress = () => {
                     No Data Present
                   </Typography>
 
-                  <Typography
-                    mt={5}
-                    sx={{
-                      color: "#B2B2B2",
-                      fontSize: "22px",
-                    }}
-                  >
-                    Project Data is mandatory to view the progress in dashboard
-                  </Typography>
+                 
                   <Grid
                     container
                     justifyContent="flex-end"
@@ -388,10 +380,7 @@ const ProjectProgress = () => {
                       </>
                     ) : (
                       <>
-                        <Typography mt={5} mr={4}>
-                          Contact Admin to Complete The Data For{" "}
-                          {project?.projectName}
-                        </Typography>
+                        
                       </>
                     )}
                   </Grid>

@@ -129,7 +129,7 @@ const SimpleBarChart = () => {
             <YAxis
               dataKey="name"
               type="category"
-              tick={{ width: 50, fontSize: 13, fontWeight: "bold", fill: "black"  }}
+              tick={{ width: 200, fontSize: 13, fontWeight: "bold", fill: "black"  }}
               tickFormatter={(value) => {
                 if (value.length > 10) {
                   return value.slice(0, 10) + "...";

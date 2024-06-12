@@ -28,6 +28,8 @@ const ReportsTable = ({
   selectedYear,
   employmentTypeId,
   projectId,
+  currentPage ,
+   pageSize,
 }) => {
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const dispatch = useDispatch();
@@ -36,6 +38,7 @@ const ReportsTable = ({
   const timesheetReports = useSelector(
     (state) => state?.persistData?.timesheetreportsDetails
   );
+  const startIndex = currentPage * pageSize;
 
   const downloadAllHandler = () => {
     const data = {
@@ -106,7 +109,7 @@ const ReportsTable = ({
                     <React.Fragment key={row.sNo}>
                       <TableRow key={index}>
                         <TableCell style={{ fontSize: "13px" }}>
-                          {index + 1}
+                        {startIndex + index + 1}
                         </TableCell>
                         <TableCell>
                         <Grid container alignItems="center" spacing={1} direction="column">
@@ -216,10 +219,10 @@ const ReportsTable = ({
                           {row.loggedInHours}
                         </TableCell>
                         <TableCell style={{ fontSize: "13px" }}>
-                          {row.ratings}
+                          {row.ratings.toFixed(2)}
                         </TableCell>
                         <TableCell style={{ fontSize: "13px" }}>
-                          {row.variablePay}
+                          {row.variablePay.toFixed(2)}
                         </TableCell>
                         <TableCell style={{ fontSize: "13px" }}>
                           {row.lossOfPay}
@@ -363,10 +366,10 @@ const ReportsTable = ({
                   <strong>Logged In Hours:</strong> {row.loggedInHours}
                 </Grid>
                 <Grid item xs={12}>
-                  <strong>Ratings:</strong> {row.ratings}
+                  <strong>Ratings:</strong> {row.ratings.toFixed(2)}
                 </Grid>
                 <Grid item xs={12}>
-                  <strong>Variable Pay:</strong> {row.variablePay}
+                  <strong>Variable Pay:</strong> {row.variablePay.toFixed(2)}
                 </Grid>
                 <Grid item xs={12}>
                   <strong>LOP:</strong> {row.lossOfPay}

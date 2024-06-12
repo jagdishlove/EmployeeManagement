@@ -7,14 +7,13 @@ import { adminHeaderStyle } from "./approvalTimesheets/adminHeaderStyle";
 import { Outlet, useNavigate } from "react-router-dom";
 
 const AdminHeader = () => {
-  
   const [selectedTabIndex, setSelectedTabIndex] = useState(0);
   const role = useSelector(
     (state) => state?.persistData?.loginDetails?.data?.role
   );
   const navigate = useNavigate();
   const style = adminHeaderStyle();
-  const isMobile = useMediaQuery("(max-width: 600px)");
+  const isMobile = useMediaQuery("(max-width: 900px)");
 
   useEffect(() => {
     const storedIndex = localStorage.getItem("selectedTabIndex");
@@ -38,10 +37,9 @@ const AdminHeader = () => {
         <Tabs
           selectedIndex={selectedTabIndex}
           onSelect={(index) => setSelectedTabIndex(index)}
-          style={{ textAlign: isMobile ? 'center' : 'left' }}
+          style={{ textAlign: isMobile ? "center" : "left" }}
         >
-          <TabList style={style.tablistStyle}
-          >
+          <TabList style={style.tablistStyle}>
             {isAdminOrLeaveApprover ? (
               <>
                 {!isMobile && (

@@ -78,7 +78,7 @@ function WorkspaceLineChart({ handleClickOpen, open }) {
           </Box>
         </Grid>
       </Grid>
-      <ResponsiveContainer width="100%" height={400}>
+      <ResponsiveContainer width="100%" height={370}>
         <LineChart
           data={workSpaceData}
           margin={{

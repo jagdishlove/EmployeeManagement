@@ -15,6 +15,7 @@ import adminTimeSheetReducer from "./AdminConsoleReducer/adminTimeSheetReducer";
 import adminLeavesReducer from "./AdminConsoleReducer/adminLeavesReducer";
 import workspaceReducer from "./workSpace/workSpaceReducer";
 import dashboardProjectReducer from "./dashboard/dashboardProjectReducer";
+import reportReducer from "./reports/reportReducer";
 import loginReducer from "./loginReducer";
 import timesheetReportsReducer from "./dashboard/reportsReducer";
 
@@ -35,6 +36,7 @@ const rootReducer = combineReducers({
   adminLeaves: adminLeavesReducer,
   workSpace: workspaceReducer,
   dashboardProjectdetails: dashboardProjectReducer,
+  reportData:reportReducer,
   timesheetreportsDetails:timesheetReportsReducer,
   loginDetails: loginReducer,
 });

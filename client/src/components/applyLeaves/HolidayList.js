@@ -43,7 +43,7 @@ const HolidayList = () => {
         {fixedHolidays?.map((holiday) => {
           return (
             <Box key={holiday.id}>
-              <p className="holidaylist">
+              <p className="holidaylist" >
                 {formatDateString(holiday.date)} - {holiday.name}
               </p>
             </Box>

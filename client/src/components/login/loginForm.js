@@ -129,19 +129,8 @@ const LoginForm = () => {
           bgcolor={theme.palette.primary.main}
           color={theme.palette.secondary.main}
           sx={style.boxIWill}
-        >
-          <Typography variant="h1" sx={style.IWillMobile}>
-            I WILL
-          </Typography>
-        </Box>
-        <Box sx={style.boxIWilltext}>
-          <Typography fontSize={"30px"} fontWeight={"bold"} lineHeight={"20px"}>
-            demonstrate utmost
-          </Typography>
-          <Typography fontSize={"50px"} fontWeight={"bold"}>
-            INTEGRITY
-          </Typography>
-        </Box>
+          height={"40px"}
+        ></Box>
 
         <Box sx={style.inputOutsideBox}>
           <Box sx={style.inputOutsideBoxText}>
@@ -157,6 +146,7 @@ const LoginForm = () => {
               }}
               style={{
                 marginTop: "10%",
+                marginBottom: "7%",
               }}
             >
               Welcome Back 👋{" "}
@@ -164,7 +154,7 @@ const LoginForm = () => {
             <Typography sx={style.formHeading1}>
               Today is a new day. It&apos;s your day. You shape it.
             </Typography>
-            <Typography sx={style.formHeading1}>
+            <Typography sx={style.formHeadingSignin}>
               Sign in to start managing your projects.
             </Typography>
           </Box>
@@ -230,6 +220,7 @@ const LoginForm = () => {
                 variant="contained"
                 type="submit"
                 onClick={handleSubmit}
+                style={{ marginTop: "40px" }}
               >
                 <Typography variant="h6" color="secondary">
                   Sign In

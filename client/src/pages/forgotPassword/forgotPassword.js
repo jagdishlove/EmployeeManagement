@@ -16,6 +16,7 @@ import { ForgotPasswordStyle } from "./forgotPasswordStyle";
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 400);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const errorData = useSelector(
@@ -35,7 +36,16 @@ const ForgotPassword = () => {
       // Clear any error message if the page has been reloaded
       dispatch(resetErrorMessage());
     }
+
+    // Handle window resize event
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 400);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [dispatch]);
+
   localStorage.setItem("email", email);
 
   const handleOnChange = (event) => {
@@ -97,45 +107,53 @@ const ForgotPassword = () => {
                 </i>{" "}
               </Typography>
               <Box component="form" onSubmit={handleSubmit} sx={style.formBox}>
-                <InputFields
-                  label="Please enter your email address"
-                  type="email"
-                  variant="outlined"
-                  value={email}
-                  name="email"
-                  inputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <MailOutlineIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                  onChange={handleOnChange}
-                  error={emailError}
-                  helperText={emailError}
-                />
-                {errorData && (
-                  <Typography style={{ color: "red" }}>{errorData}</Typography>
-                )}
-                <Box>
-                  <Button
-                    sx={{
-                      ...style.GreenButton, // Apply the default or custom styles
-                    }}
-                    variant="contained"
-                    type="submit"
-                  >
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        color: theme.palette.secondary.main,
-                        textTransform: "none",
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <InputFields
+                      label={isMobile ? "Please enter your em..." : "Please enter your email address"}
+                      type="email"
+                      variant="outlined"
+                      value={email}
+                      name="email"
+                      inputProps={{
+                        endAdornment: !isMobile && (
+                          <InputAdornment position="end">
+                            <MailOutlineIcon />
+                          </InputAdornment>
+                        ),
                       }}
+                      onChange={handleOnChange}
+                      error={emailError}
+                      helperText={emailError}
+                      fullWidth
+                    />
+                  </Grid>
+                  {errorData && (
+                    <Grid item xs={12}>
+                      <Typography style={{ color: "red" }}>{errorData}</Typography>
+                    </Grid>
+                  )}
+                  <Grid item xs={12}>
+                    <Button
+                      sx={{
+                        ...style.GreenButton, // Apply the default or custom styles
+                      }}
+                      variant="contained"
+                      type="submit"
+                      fullWidth
                     >
-                      Click to send OTP
-                    </Typography>
-                  </Button>
-                </Box>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          color: theme.palette.secondary.main,
+                          textTransform: "none",
+                        }}
+                      >
+                        Click to send OTP
+                      </Typography>
+                    </Button>
+                  </Grid>
+                </Grid>
               </Box>
             </Box>
           </Grid>

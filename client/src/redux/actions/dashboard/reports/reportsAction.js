@@ -1,6 +1,5 @@
 import { toast } from "react-toastify";
 import makeRequest, { downloadApi } from "../../../../api/api";
-import { saveAs } from "file-saver";
 import {
   GET_DOWNLOAD_REPORTS_FAIL,
   GET_DOWNLOAD_REPORTS_REQUEST,
@@ -12,6 +11,7 @@ import {
   GET_TIMESHEET_REPORTS_REQUEST,
   GET_TIMESHEET_REPORTS_SUCCESS,
 } from "./reportsActionType";
+import { saveAs } from "file-saver";
 
 const getTimesheetReportsRequest = () => {
   return {
@@ -102,12 +102,14 @@ export const getSingleDownloadReportAction = (link, month, year) => {
       const response = await downloadApi("GET", newUrl, {
         responseType: "blob",
       });
+
       saveAs(
         new Blob([response], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         }),
-        `report_${month}_${year}.xlsx`
+        `Timesheet_Report_${month}_${year}.xlsx`
       );
+
 
       dispatch(singleDownloadReportSuccess(response));
     } catch (err) {
@@ -124,6 +126,7 @@ export const getSingleDownloadReportAction = (link, month, year) => {
   };
 };
 
+
 export const getDownloadReportsAction = (data) => {
   const { year, month, employmentTypeId, projectId } = data;
   const newEmploymentTypeId =
@@ -133,19 +136,19 @@ export const getDownloadReportsAction = (data) => {
     try {
       dispatch(downloadReportsRequest());
       const link = "api/reports/download/timesheet-reports";
-      const newUrl = `${link}?year=${year}&page=${0}&size=${10}&month=${month}&employementTypeId=${newEmploymentTypeId}&projectId=${newProjectId}`;
+      const newUrl = `${link}?year=${year}&month=${month}&employementTypeId=${newEmploymentTypeId}&projectId=${newProjectId}`;
 
       // Fetch the file data from the API
       const response = await downloadApi("GET", newUrl, {
         responseType: "blob",
       });
-
       saveAs(
         new Blob([response], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         }),
-        `report_${month}_${year}.xlsx`
+        `Timesheet_Report_${month}_${year}.xlsx`
       );
+
       dispatch(singleDownloadReportSuccess(response));
       dispatch(downloadReportsSuccess(response));
     } catch (err) {
