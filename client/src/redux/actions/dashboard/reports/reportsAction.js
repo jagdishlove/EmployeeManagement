@@ -104,14 +104,13 @@ export const getSingleDownloadReportAction = (link, month, year) => {
       });
 
       saveAs(
-        new Blob([response], {
+        new Blob([response.data], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         }),
         `Timesheet_Report_${month}_${year}.xlsx`
       );
 
-
-      dispatch(singleDownloadReportSuccess(response));
+      dispatch(singleDownloadReportSuccess(response.data));
     } catch (err) {
       dispatch(singleDownloadReportFail());
 
@@ -125,7 +124,6 @@ export const getSingleDownloadReportAction = (link, month, year) => {
     }
   };
 };
-
 
 export const getDownloadReportsAction = (data) => {
   const { year, month, employmentTypeId, projectId } = data;

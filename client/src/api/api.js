@@ -107,7 +107,7 @@ export const downloadApi = async (method, url, data, queryParams) => {
       responseType: "blob",
     });
 
-    return response.data;
+    return response;
   } catch (error) {
     throw error;
   }
