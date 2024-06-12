@@ -126,13 +126,13 @@ export const getSingleDownloadReportAction = (link, month, year,) => {
       });
 
       saveAs(
-        new Blob([response], {
+        new Blob([response.data], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         }),
         `Timesheet_Report_${nextMonthName}_${year}.xlsx`
       );
 
-      dispatch(singleDownloadReportSuccess(response));
+      dispatch(singleDownloadReportSuccess(response.data));
     } catch (err) {
       dispatch(singleDownloadReportFail());
 
