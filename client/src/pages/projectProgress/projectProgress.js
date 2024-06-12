@@ -248,7 +248,7 @@ console.log("projectList", projectList)
               isClearable={false}
               getOptionValue={(option) => option.id}
               getOptionLabel={(option) => option.projectName}
-              isLoading={projectList?.length === 0}
+             
               disabled={dashboardProjectdetailsLoading}
               styles={{
                 menuPortal: (base) => ({ ...base, zIndex: 9999 }),
