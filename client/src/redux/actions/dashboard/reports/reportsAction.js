@@ -92,11 +92,33 @@ export const getTimesheetReportsAction = (getPayload, payload = []) => {
   };
 };
 
-export const getSingleDownloadReportAction = (link, month, year) => {
+export const getSingleDownloadReportAction = (link, month, year,) => {
   return async (dispatch) => {
     try {
       dispatch(singleDownloadReportRequest());
-      const newUrl = `${link}?month=${month}&year=${year}`;
+      // Increment the month by 1
+      const nextMonth = month + 1;
+      // Array of month names
+      const monthNames = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+
+      // Ensure the month number is within the range 0-11
+      const nextMonthIndex = (nextMonth - 1) % 12;
+      const nextMonthName = monthNames[nextMonthIndex];
+
+      const newUrl = `${link}?month=${nextMonth}&year=${year}`;
 
       // Fetch the file data from the API
       const response = await downloadApi("GET", newUrl, {
@@ -107,9 +129,8 @@ export const getSingleDownloadReportAction = (link, month, year) => {
         new Blob([response], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         }),
-        `Timesheet_Report_${month}_${year}.xlsx`
+        `Timesheet_Report_${nextMonthName}_${year}.xlsx`
       );
-
 
       dispatch(singleDownloadReportSuccess(response));
     } catch (err) {
@@ -126,7 +147,6 @@ export const getSingleDownloadReportAction = (link, month, year) => {
   };
 };
 
-
 export const getDownloadReportsAction = (data) => {
   const { year, month, employmentTypeId, projectId } = data;
   const newEmploymentTypeId =
@@ -135,8 +155,32 @@ export const getDownloadReportsAction = (data) => {
   return async (dispatch) => {
     try {
       dispatch(downloadReportsRequest());
+
+      // Increment the month by 1
+      const nextMonth = month + 1;
+
+      // Array of month names
+      const monthNames = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+
+      // Ensure the month number is within the range 0-11
+      const nextMonthIndex = (nextMonth - 1) % 12;
+      const nextMonthName = monthNames[nextMonthIndex];
+
       const link = "api/reports/download/timesheet-reports";
-      const newUrl = `${link}?year=${year}&month=${month}&employementTypeId=${newEmploymentTypeId}&projectId=${newProjectId}`;
+      const newUrl = `${link}?year=${year}&month=${nextMonth}&employementTypeId=${newEmploymentTypeId}&projectId=${newProjectId}`;
 
       // Fetch the file data from the API
       const response = await downloadApi("GET", newUrl, {
@@ -146,7 +190,7 @@ export const getDownloadReportsAction = (data) => {
         new Blob([response], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         }),
-        `Timesheet_Report_${month}_${year}.xlsx`
+        `Timesheet_Reports_${nextMonthName}_${year}.xlsx`
       );
 
       dispatch(singleDownloadReportSuccess(response));

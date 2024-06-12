@@ -24,7 +24,7 @@ import { getTimesheetReportsAction } from "../../redux/actions/dashboard/reports
 const Reports = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const [selectedMonth, setSelectedMonth] = useState(moment().month());
+  const [selectedMonth, setSelectedMonth] = useState(moment().subtract(1, 'months').month());
   const [selectedYear, setSelectedYear] = useState(moment().year());
   const [years, setYears] = useState([]);
   const [months, setMonths] = useState([]);
@@ -105,9 +105,9 @@ const Reports = () => {
 
     if (currentMonth < 11) {
       startMonth = 0;
-      endMonth = currentMonth;
+      endMonth = currentMonth - 1;
     } else {
-      startMonth = currentMonth;
+      startMonth = currentMonth ;
       endMonth = 11;
     }
 
@@ -124,8 +124,10 @@ const Reports = () => {
 
   useEffect(() => {
     getHistoryData(selectedMonth, selectedYear);
-    changeMonthAccordingly();
-  }, [currentPage, selectedYear]);
+    setSelectedMonth(moment().subtract(1, 'months').month());
+    setSelectedYear(moment().year());
+    changeMonthAccordingly(selectedYear);
+  }, [currentPage,  ]);
 
   const handleYearMonth = (e) => {
     const { value } = e.target;
@@ -136,7 +138,7 @@ const Reports = () => {
       let startMonth;
       let endMonth;
 
-      startMonth = currentMonth + 1;
+      startMonth = currentMonth;
       endMonth = 12;
 
       for (let month = startMonth; month < endMonth; month++) {
@@ -236,7 +238,6 @@ const Reports = () => {
       document.body.classList.remove("project-progress-body");
     };
   }, []);
-
   return (
     <Grid
       style={{
@@ -259,7 +260,7 @@ const Reports = () => {
               <TextField
                 {...params}
                 variant="outlined"
-                placeholder="Search by User Name"
+                placeholder="Search by name"
                 InputProps={{
                   ...params.InputProps,
                   style: { borderRadius: "50px", backgroundColor: "white" },
@@ -318,6 +319,7 @@ const Reports = () => {
           marginTop: "10px",
         }}
       />
+      
       <Grid
         container
         mt={3}
@@ -325,9 +327,11 @@ const Reports = () => {
           boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.3)",
           borderRadius: "5px",
           backgroundColor: "white",
+         
         }}
         display={"flex"}
         flexDirection={"row"}
+        spacing={2}
       >
         <Grid item xs={12} sm={4} md={2} lg={2}>
           <select
@@ -341,7 +345,7 @@ const Reports = () => {
               border: "1px solid #ECECEC",
               borderRadius: "5px",
               backgroundColor: "white",
-              margin: "10px",
+              margin: "10px 0px 0px 0px",
               width: isMobile ? "80%" : "100%",
               fontSize: "16px",
               outline: "none",
@@ -367,7 +371,7 @@ const Reports = () => {
               border: "1px solid #ECECEC",
               borderRadius: "5px",
               backgroundColor: "white",
-              margin: "10px",
+              margin: "10px 0px 0px 0px",
               width: isMobile ? "80%" : "100%",
               fontSize: "16px",
               outline: "none",
