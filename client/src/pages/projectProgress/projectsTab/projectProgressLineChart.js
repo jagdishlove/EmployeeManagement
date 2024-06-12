@@ -77,7 +77,7 @@ function ProjectProgressLineChart() {
           />
         </LineChart>
       </ResponsiveContainer>
-      <div style={{ textAlign: "center", fontWeight: "bold" }}>Time</div>
+      <div style={{ textAlign: "center", fontWeight: "bold", color:"#808080" }}>Time</div>
     </>
   );
 }

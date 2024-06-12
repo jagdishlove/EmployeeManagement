@@ -95,7 +95,7 @@ export const TimesheetStyle = (theme, approval, data) => ({
     maxWidth: "100%",
     display: "flex",
     flexDirection: "column",
-    // padding: "0px 10px",
+   
   },
 
   timesheetCol2: {

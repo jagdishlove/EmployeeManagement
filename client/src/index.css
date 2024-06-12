@@ -12,6 +12,11 @@ body {
 }
 
 
+
+.style-module_fillIcons__6---A {
+  pointer-events: none !important; /* Disable pointer events on SVG elements */
+}
+
 .MuiFormHelperText-root {
   color: #ff0000 !important;
   font-size: 15px !important;

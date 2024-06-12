@@ -30,12 +30,16 @@ const UserDataListPage = ({ userData }) => {
   const handleEditProfile = () => {
     Navigate(`/editUser/${userData?.id}`);
   };
-
+  const firstTwoNames = userData.projectName.slice(0, 2).join(" | ");
+  const displayNames = firstTwoNames.length > 15 
+    ? firstTwoNames.slice(0, 15) + "...etc"
+    : firstTwoNames;
   return (
     <Card
       style={{
         border: "1px solid darkgray",
         borderRadius: "10px",
+        height:"100%",
         backgroundColor: userData?.status === "ACTIVE" ? "white" : "#F0F0F0",
       }}
     >
@@ -98,10 +102,11 @@ const UserDataListPage = ({ userData }) => {
             <Typography variant="body2">
               <b style={{ color: "black" }}>Current Projects :</b>{" "}
               {userData.projectName.length > 0 && (
-                <>
-                  {userData.projectName.slice(0, 2).join(" | ")}
-                  {userData.projectName.length > 2 && " | etc ..."}
-                </>
+               <>
+               {displayNames}
+               {userData.projectName.length > 2 && firstTwoNames.length <= 20 && " | etc..."}
+             </>
+             
               )}
             </Typography>{" "}
           </Grid>

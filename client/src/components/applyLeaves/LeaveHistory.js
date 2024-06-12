@@ -53,9 +53,9 @@ const Pagination = ({
           style={{
             margin: "5px",
             padding: "5px 10px",
-            backgroundColor: i === currentPage + 1 ? "white" : "#008080",
-            color: i === currentPage + 1 ? "#008080" : "white",
-            border: `2px solid ${i === currentPage + 1 ? "#008080" : "white"}`,
+            backgroundColor: i === currentPage + 1 ? "#008080" : "white",
+            color: i === currentPage + 1 ? "white" : "#008080",
+            border: `2px solid ${i === currentPage + 1 ? "#008080" : "#008080"}`,
           }}
           disabled={i === currentPage + 1}
         >

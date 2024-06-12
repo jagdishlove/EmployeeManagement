@@ -162,6 +162,11 @@ export const LoginStyle = (theme) => ({
     fontWeight: "400",
     fontSize: "14px",
   },
+  formHeadingSignin:{
+    fontWeight: "400",
+    fontSize: "14px",
+    marginBottom:"20px",
+  },
   inputBox1: {
     display: "flex",
     flexDirection: "column",

@@ -33,7 +33,7 @@ const Reports = () => {
   const dispatch = useDispatch();
   const [project, setProject] = useState("All");
   const [employmentType, setEmploymentType] = useState("All");
-
+  const pageSize = 10;
   const isMobile = useMediaQuery("(max-width: 1050px)");
 
   const reporteesPages = useSelector(
@@ -46,7 +46,7 @@ const Reports = () => {
   const getHistoryData = (month, year) => {
     const params = {
       page: currentPage,
-      size: 10,
+      size: pageSize,
       month: parseInt(month) + 1,
       year: year,
       projectId: project !== "All" ? project : "",
@@ -412,6 +412,9 @@ const Reports = () => {
               selectedYear={selectedYear}
               projectId={project}
               employmentTypeId={employmentType}
+              pageSize={pageSize}
+              currentPage={currentPage}
+
             />
           </Grid>
         </Grid>

@@ -890,9 +890,9 @@ export default function CreateUser() {
 
     if (!formData.currentZIP) {
       errors.currentZIP = "Zip/Postal code is mandatory";
-    } else if (!/^\d+$/.test(formData.currentZIP)) {
+    } else if (!/^[A-Za-z0-9]+$/.test(formData.currentZIP)) {
       errors.currentZIP =
-        "Invalid postal code or contains non-numeric characters";
+        "Invalid postal code or contains spacial characters";
     } else {
       try {
         const isValid = postcodeValidator(
@@ -1017,7 +1017,7 @@ export default function CreateUser() {
     }
 
     if (formData.ACNo && !/^\d+$/.test(formData.ACNo)) {
-      errors.ACNo = "A/C No must be an digit";
+      errors.ACNo = "The account number must consist of digits.";
     }
 
     if (formData.IFSCCode && !/^[A-Za-z0-9]+$/.test(formData.IFSCCode)) {

@@ -13,6 +13,7 @@ import {
   Slider,
   CircularProgress,
   useMediaQuery,
+  useTheme
 } from "@mui/material";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
@@ -48,7 +49,8 @@ export default function UserDetailsPage() {
 
   const dispatch = useDispatch();
   const { id } = useParams();
-
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [expanded, setExpanded] = useState(false);
   const [payRollExpanded, setPayRollExpanded] = useState(false);
   const [bankExpand, setBankExpand] = useState(false);
@@ -166,6 +168,7 @@ export default function UserDetailsPage() {
             border: "1px solid lightgray",
             display: "flex",
             justifyContent: "flex-end",
+            flexDirection: window.innerWidth < 600 ? "column" : "row", // Stack buttons vertically on small screens
           }}
           {...innerProps}
         >
@@ -177,6 +180,8 @@ export default function UserDetailsPage() {
               border: "1px solid #008080",
               borderRadius: "20px",
               color: "#008080",
+              marginBottom: window.innerWidth < 600 ? "10px" : "0", // Add margin on small screens
+              width: window.innerWidth < 600 ? "100%" : "auto", // Full width on small screens
               "&:hover": {
                 backgroundColor: "#008080",
                 color: "white",
@@ -191,13 +196,15 @@ export default function UserDetailsPage() {
             onClick={applySkillFilterHandler}
             style={{
               borderRadius: "20px",
-              marginLeft: "10px",
+              marginLeft: window.innerWidth < 600 ? "0" : "10px", // Remove left margin on small screens
+              width: window.innerWidth < 600 ? "100%" : "auto", // Full width on small screens
             }}
           >
             Apply
           </Button>
         </Box>
       </components.Menu>
+
     );
   };
 
@@ -318,11 +325,11 @@ export default function UserDetailsPage() {
 
   const editedSkillItemStyle = {
     backgroundColor: "#ffff",
-    padding: "8px",
+    // padding: "5px",
     display: "inline-flex",
-    marginBottom: "8px",
+    marginBottom: "20px",
     marginRight: "8px",
-    width: isMobile? "250px":"400px",
+    width: isMobile ? "200px" : "400px",
   };
 
   const [isEditing, setIsEditing] = useState(false);
@@ -408,8 +415,14 @@ export default function UserDetailsPage() {
           </Typography>
         )}
         {isEditing && (
-          <>
-            <Typography variant="body1" sx={{ width: "100%" }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center", // Center the items vertically
+              width: "100%",
+            }}
+          >
+            <Typography variant="body1" sx={{ width: "30%" }}>
               {skill.skillName}
             </Typography>
             <LightTooltip
@@ -425,17 +438,18 @@ export default function UserDetailsPage() {
                 step={1}
                 sx={{
                   marginLeft: "10px",
-                  width: "500px",
+                  marginRight: "10px",
+                  width: isMobile ? "250px" : "500px",
                   color:
                     (skillValues[skill.skillId] ||
                       skill.rating ||
                       skill.rating === undefined) < 4
                       ? "#90DC90"
                       : ((skillValues[skill.skillId] > 4 &&
-                          skillValues[skill.skillId]) ||
-                          skill.rating) < 7
-                      ? "#E6E62C"
-                      : "#E38F75",
+                        skillValues[skill.skillId]) ||
+                        skill.rating) < 7
+                        ? "#E6E62C"
+                        : "#E38F75",
                 }}
                 components={{
                   ValueLabel: ValueLabelComponent,
@@ -443,14 +457,11 @@ export default function UserDetailsPage() {
               />
             </LightTooltip>
             <IconButton onClick={() => handleRemoveSkill(skillId)}>
-              <ClearIcon
-                sx={{
-                  marginTop: -0.3,
-                }}
-              />
+              <ClearIcon />
             </IconButton>
-          </>
+          </Box>
         )}
+
         {!isEditing && (
           <>
             <StarOutlinedIcon
@@ -459,8 +470,8 @@ export default function UserDetailsPage() {
                   skill.rating < 4 || skill.rating === undefined
                     ? "#90DC90"
                     : skill.rating >= 4 && skill.rating < 7
-                    ? "#E6E62C"
-                    : "#E38F75",
+                      ? "#E6E62C"
+                      : "#E38F75",
                 color: "#ffff",
                 borderRadius: "50%",
                 width: 15,
@@ -600,18 +611,27 @@ export default function UserDetailsPage() {
             <></>
           )}
 
-          <Grid container spacing={2} mt={1} >
-            <Grid item xs={12} sm={12} md={3.5} lg={3.5} justifyContent={"center"}  marginLeft={"0px"}>
+          <Grid container spacing={2} mt={1} sx={{ display: "flex" }}>
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              md={3.5}
+              lg={3.5}
+              justifyContent={"center"}
+              marginLeft={"0px"}
+              sx={{ display: "flex", flexDirection: "column" }}
+            >
               <Grid
                 sx={{
                   border: "2px solid #A4A4A4",
                   boxShadow: "#000000",
-                  height: isMobile? "none" : "600px",
+                  flexGrow: 1,
                   padding: 2,
                   borderRadius: "25px",
                 }}
               >
-                <Grid container spacing={2}  marginLeft={"-10px"}>
+                <Grid container spacing={2} marginLeft={"-10px"}>
                   <Grid item xs={12}>
                     <Box
                       sx={{
@@ -649,7 +669,11 @@ export default function UserDetailsPage() {
                       </Avatar>
                     </Box>
                   </Grid>
-                  <Grid container spacing={2} sx={{ textAlign: "center", marginLeft:"0px" }}>
+                  <Grid
+                    container
+                    spacing={2}
+                    sx={{ textAlign: "center", marginLeft: "0px" }}
+                  >
                     <Grid item xs={12} mt={1}>
                       <Typography variant="h4">{userData.firstName}</Typography>
                     </Grid>
@@ -658,13 +682,13 @@ export default function UserDetailsPage() {
                         {designationIdToName[userData.designationId]}
                       </Typography>
                     </Grid>
-                    <Grid container spacing={2} mt={2}   marginLeft={"0px"}>
+                    <Grid container spacing={2} mt={2} marginLeft={"0px"}>
                       <Grid xs={0} md={3}></Grid>
                       <Grid
                         xs={12}
                         md={9}
                         sx={{
-                          marginLeft:"0px",
+                          marginLeft: "0px",
                           alignItem: {
                             xs: "center",
                             md: "start",
@@ -693,7 +717,7 @@ export default function UserDetailsPage() {
                           >
                             {userData.status &&
                               userData.status.charAt(0).toUpperCase() +
-                                userData.status.slice(1).toLowerCase()}
+                              userData.status.slice(1).toLowerCase()}
                           </Typography>
                           <Typography sx={{ color: "#898989" }}>
                             Date Of Birth
@@ -734,9 +758,9 @@ export default function UserDetailsPage() {
                             }}
                           >
                             {`${officeLocation?.address?.addressLine1}, 
-                          ${officeLocation?.address?.addressLine2}, 
-                          ${DataValue[officeLocation?.address?.stateId]}, 
-                          ${officeLocation?.address?.postalCode}`
+                  ${officeLocation?.address?.addressLine2}, 
+                  ${DataValue[officeLocation?.address?.stateId]}, 
+                  ${officeLocation?.address?.postalCode}`
                               .split(",")
                               .map((item, index) => (
                                 <React.Fragment key={index}>
@@ -755,12 +779,19 @@ export default function UserDetailsPage() {
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item xs={12} sm={12} md={8.5} lg={8.5}>
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              md={8.5}
+              lg={8.5}
+              sx={{ display: "flex", flexDirection: "column" }}
+            >
               <Box
                 sx={{
                   border: "2px solid #A4A4A4",
                   boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                  height: isMobile? "none" : "600px",
+                  flexGrow: 1,
                   padding: { xs: "35px", md: "70px" },
                   borderRadius: "25px",
                   width: { xs: "100%", md: "97%" },
@@ -837,17 +868,12 @@ export default function UserDetailsPage() {
                           </Grid>
                           <Grid item xs={5} sm={8} md={8} lg={8}>
                             <Typography variant="body1">
-                              {`${clientDetailsData?.clientName}, ${
-                                clientDetailsData?.address?.addressLine1
-                              }, ${clientDetailsData?.address?.addressLine2}, 
-                            ${
-                              DataValue[clientDetailsData?.address?.cityId]
-                            } - ${clientDetailsData?.address?.postalCode}, 
-                            ${
-                              DataValue[clientDetailsData?.address?.stateId]
-                            }, ${
-                                DataValue[clientDetailsData?.address?.countryId]
-                              }.`}{" "}
+                              {`${clientDetailsData?.clientName}, ${clientDetailsData?.address?.addressLine1
+                                }, ${clientDetailsData?.address?.addressLine2}, 
+                    ${DataValue[clientDetailsData?.address?.cityId]} - ${clientDetailsData?.address?.postalCode
+                                }, 
+                    ${DataValue[clientDetailsData?.address?.stateId]}, ${DataValue[clientDetailsData?.address?.countryId]
+                                }.`}{" "}
                             </Typography>
                           </Grid>
                         </Grid>
@@ -935,6 +961,7 @@ export default function UserDetailsPage() {
               </Box>
             </Grid>
           </Grid>
+
           <Grid container mt={2}>
             <Grid item xs={12}>
               <Typography variant="h3" gutterBottom>
@@ -991,7 +1018,7 @@ export default function UserDetailsPage() {
                     <>
                       <AccordionDetails
                         sx={{
-                          padding: isMobile?"20px":"20px 20px 20px 50px",
+                          padding: isMobile ? "20px" : "20px 20px 20px 50px",
                         }}
                       >
                         <Grid
@@ -1195,7 +1222,7 @@ export default function UserDetailsPage() {
                                             ...baseStyles,
                                             overflow: "auto",
                                             height: "55px",
-                                            width: "300px",
+                                            width: isSmallScreen ? '100%' : '300px', // Responsive width
                                           }),
                                         }}
                                       />
@@ -1327,7 +1354,9 @@ export default function UserDetailsPage() {
                           </AccordionSummary>
                           <AccordionDetails
                             sx={{
-                              padding: isMobile?"20px":"20px 20px 20px 50px",
+                              padding: isMobile
+                                ? "20px"
+                                : "20px 20px 20px 50px",
                             }}
                           >
                             <Grid
@@ -1489,7 +1518,7 @@ export default function UserDetailsPage() {
                       <>
                         <AccordionDetails
                           sx={{
-                            padding: isMobile?"20px":"20px 20px 20px 50px",
+                            padding: isMobile ? "20px" : "20px 20px 20px 50px",
                           }}
                         >
                           <Grid
@@ -1527,7 +1556,13 @@ export default function UserDetailsPage() {
                                 </Typography>
                               </Grid>
                               <Grid item xs={8}>
-                                <Typography variant="body1">
+                                <Typography
+                                  variant="body1"
+                                  style={{
+                                    wordWrap: "break-word",
+                                    whiteSpace: "normal",
+                                  }}
+                                >
                                   {userData.acNo}
                                 </Typography>
                               </Grid>
@@ -1537,7 +1572,13 @@ export default function UserDetailsPage() {
                                 </Typography>
                               </Grid>
                               <Grid item xs={8}>
-                                <Typography variant="body1">
+                                <Typography
+                                  variant="body1"
+                                  style={{
+                                    wordWrap: "break-word",
+                                    whiteSpace: "normal",
+                                  }}
+                                >
                                   {userData.ifscCode}
                                 </Typography>
                               </Grid>
@@ -1590,7 +1631,7 @@ export default function UserDetailsPage() {
                       <>
                         <AccordionDetails
                           sx={{
-                            padding: isMobile?"20px":"20px 20px 20px 50px",
+                            padding: isMobile ? "20px" : "20px 20px 20px 50px",
                           }}
                         >
                           <Grid

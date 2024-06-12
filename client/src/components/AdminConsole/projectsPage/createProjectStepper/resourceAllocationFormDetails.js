@@ -792,7 +792,7 @@ const ResourceAllocationFormDetails = () => {
                         />
                       </TableCell>
                       <TableCell>
-                        <Grid container spacing={2}>
+                        <Grid container spacing={3}>
                           <Grid item xs={4}>
                           {option?.fileStorage ? (
                               <>

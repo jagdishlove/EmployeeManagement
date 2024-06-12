@@ -29,8 +29,11 @@ const BottomNavigationMobile = ({ children, handleMenuClose }) => {
   );
 
   const superAdmin = role?.includes("SUPERADMIN");
-  const admin = role?.includes("ADMIN");
 
+  const admin = role?.includes("ADMIN");
+  const approver = role?.includes("APPROVER");
+  const leaveApprover = role?.includes("LEAVEAPPROVER");
+  
   const handleProfileClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -39,10 +42,14 @@ const BottomNavigationMobile = ({ children, handleMenuClose }) => {
     setAnchorEl(null);
   };
 
+  const empId = useSelector(
+    (state) => state?.persistData?.loginDetails?.data?.empId
+  );
+
   const handleProfileOptionClick = (option) => {
     // Handle profile option click (e.g., navigate to profile or sign out)
     if (option === "profile") {
-      navigate('/userDetailPage/2');
+      navigate(`/userDetailPage/${empId}`);
     } else if (option === "signout") {
       // Handle signout click, for example, perform signout logic
       // ...
@@ -101,7 +108,7 @@ const BottomNavigationMobile = ({ children, handleMenuClose }) => {
         }}
       >
         <BottomNavigation showLabels value={value} onChange={handleChange}>
-          {(superAdmin || admin) && (
+          {(superAdmin || admin  || approver || leaveApprover) && (
             <BottomNavigationAction icon={<WorkspacePremiumIcon />} />
           )}
           <BottomNavigationAction icon={<AccessTimeIcon />} />

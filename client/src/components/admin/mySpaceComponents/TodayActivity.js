@@ -12,9 +12,9 @@ const TodayActivity = () => {
 
   // Define formatTime function
   const formatTime = (time) => {
-    const [hour, minute] = time.split(':');
+    const [hour, minute] = time.split(":");
     const hourInt = parseInt(hour, 10);
-    const ampm = hourInt >= 12 ? 'PM' : 'AM';
+    const ampm = hourInt >= 12 ? "PM" : "AM";
     const formattedHour = hourInt % 12 || 12; // Convert to 12-hour format
     return `${formattedHour}:${minute} ${ampm}`;
   };
@@ -43,13 +43,15 @@ const TodayActivity = () => {
             statusColor = "black"; // Default color for other statuses
           }
 
-          const sentence = status === "SUBMITTED" ?
-            `<span style="color: black;">You submitted a timesheet for ${date}: ${startTime} to ${endTime} Engaged in ${activityType} - ${project}</span>` :
-            `${timesheetApproval} has <span style="color: ${statusColor};">${status}</span> your timesheet for ${date}: ${startTime} to ${endTime} Engaged in ${activityType} - ${project}.`;
+          const sentence =
+            status === "SUBMITTED"
+              ? `<span style="color: black;">You submitted a timesheet for ${date}: ${startTime} to ${endTime} Engaged in ${activityType} - ${project}</span>`
+              : `${timesheetApproval} has <span style="color: ${statusColor};">${status}</span> your timesheet for ${date}: ${startTime} to ${endTime} Engaged in ${activityType} - ${project}.`;
 
           return (
             <div key={key}>
-              <p dangerouslySetInnerHTML={{ __html: sentence }} /> {/* Render the constructed sentence */}
+              <p dangerouslySetInnerHTML={{ __html: sentence }} />{" "}
+              {/* Render the constructed sentence */}
               {status !== "SUBMITTED" && (
                 <> </> // Add space
               )}
@@ -62,6 +64,7 @@ const TodayActivity = () => {
         const fromDate = leave.fromDate;
         const toDate = leave.toDate;
         const status = leave.status;
+        const leaveMaster = leave.leaveMaster;
         const leaveApprovers = leave.leaveApprover;
 
         const key = `leave_${index}_${leaveIndex}`;
@@ -70,10 +73,13 @@ const TodayActivity = () => {
         let statusColor;
 
         if (status === "SUBMITTED") {
-          sentence = `You submitted LOP from ${fromDate} to ${toDate} to ${leaveApprovers}`;
+          sentence = `You submitted ${leaveMaster} from ${fromDate} to ${toDate} to ${leaveApprovers}`;
           statusColor = "black";
         } else {
-          const timesheetApproval = status === "APPROVED" ? "Your submitted Privilege leave" : "Your Leave";
+          const timesheetApproval =
+            status === "APPROVED"
+              ? `Your submitted ${leaveMaster}`
+              : "Your Leave";
           const statusText = status === "APPROVED" ? " APPROVED" : "REJECTED";
 
           statusColor = status === "APPROVED" ? "#0A865A" : "#FA7A7A";
@@ -117,10 +123,10 @@ const TodayActivity = () => {
       <Card
         sx={{
           border: "1px solid silver",
-          marginTop: "10px",
+          marginTop: "5px",
           marginLeft: "15px",
           width: "95%",
-          height: "120px",
+          height: "130px",
           backgroundColor: "white",
         }}
       >
