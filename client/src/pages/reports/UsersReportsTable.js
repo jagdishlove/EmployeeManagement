@@ -30,6 +30,7 @@ const ReportsTable = ({
   projectId,
   currentPage,
   pageSize,
+  isNameSelected
 }) => {
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const dispatch = useDispatch();
@@ -371,7 +372,10 @@ const ReportsTable = ({
           <Grid container justifyContent="flex-end" padding="10px">
             <Button
               onClick={() => downloadAllHandler()}
-              style={{ backgroundColor: "#008080", color: "white" }}
+              style={{  backgroundColor: isNameSelected ? "grey" : "#008080",
+                color: "white",
+                cursor: isNameSelected ? "not-allowed" : "pointer",}}
+              disabled={isNameSelected}
             >
               <SimCardDownloadOutlinedIcon />
               Download All

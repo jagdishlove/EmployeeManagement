@@ -92,31 +92,13 @@ export const getTimesheetReportsAction = (getPayload, payload = []) => {
   };
 };
 
-export const getSingleDownloadReportAction = (link, month, year,) => {
+export const getSingleDownloadReportAction = (link, month, year) => {
   return async (dispatch) => {
     try {
       dispatch(singleDownloadReportRequest());
+
       // Increment the month by 1
       const nextMonth = month + 1;
-      // Array of month names
-      const monthNames = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ];
-
-      // Ensure the month number is within the range 0-11
-      const nextMonthIndex = (nextMonth - 1) % 12;
-      const nextMonthName = monthNames[nextMonthIndex];
 
       const newUrl = `${link}?month=${nextMonth}&year=${year}`;
 
@@ -125,14 +107,21 @@ export const getSingleDownloadReportAction = (link, month, year,) => {
         responseType: "blob",
       });
 
-      saveAs(
-        new Blob([response.data], {
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        }),
-        `Timesheet_Report_${nextMonthName}_${year}.xlsx`
-      );
+      // Get the content-disposition header from the response
+      const contentDisposition = response.headers.get('content-disposition');
 
-      dispatch(singleDownloadReportSuccess(response.data));
+      // Extract the filename from the content-disposition header using a regex
+      const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+      const matches = filenameRegex.exec(contentDisposition);
+      let filename = null;
+      if (matches != null && matches[1]) {
+        filename = matches[1].replace(/['"]/g, '');
+      }
+
+      // Use the saveAs function to save the blob with the extracted filename
+      saveAs(response.data, filename);
+
+      dispatch(singleDownloadReportSuccess(filename));
     } catch (err) {
       dispatch(singleDownloadReportFail());
 
@@ -147,11 +136,13 @@ export const getSingleDownloadReportAction = (link, month, year,) => {
   };
 };
 
+
 export const getDownloadReportsAction = (data) => {
   const { year, month, employmentTypeId, projectId } = data;
   const newEmploymentTypeId =
     employmentTypeId !== "All" ? employmentTypeId : "";
   const newProjectId = projectId !== "All" ? projectId : "";
+  
   return async (dispatch) => {
     try {
       dispatch(downloadReportsRequest());
@@ -161,18 +152,8 @@ export const getDownloadReportsAction = (data) => {
 
       // Array of month names
       const monthNames = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
       ];
 
       // Ensure the month number is within the range 0-11
@@ -180,26 +161,41 @@ export const getDownloadReportsAction = (data) => {
       const nextMonthName = monthNames[nextMonthIndex];
 
       const link = "api/reports/download/timesheet-reports";
-      const newUrl = `${link}?year=${year}&month=${nextMonth}&employementTypeId=${newEmploymentTypeId}&projectId=${newProjectId}`;
+      const newUrl = `${link}?year=${year}&month=${nextMonth}&employmentTypeId=${newEmploymentTypeId}&projectId=${newProjectId}`;
 
       // Fetch the file data from the API
       const response = await downloadApi("GET", newUrl, {
         responseType: "blob",
       });
-      saveAs(
-        new Blob([response], {
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        }),
-        `Timesheet_Reports_${nextMonthName}_${year}.xlsx`
-      );
 
-      dispatch(singleDownloadReportSuccess(response));
+      // Get the content-disposition header from the response
+      const contentDisposition = response.headers.get('content-disposition');
+
+      // Extract the filename from the content-disposition header using a regex
+      const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+      const matches = filenameRegex.exec(contentDisposition);
+      let filename = `Timesheet_Reports_${nextMonthName}_${year}.xlsx`; // Default filename
+
+      if (matches != null && matches[1]) {
+        filename = matches[1].replace(/['"]/g, '');
+      }
+
+      // Use the saveAs function to save the blob with the extracted filename
+      saveAs(response.data, filename);
+
+      // Dispatch success action
       dispatch(downloadReportsSuccess(response));
     } catch (err) {
       dispatch(downloadReportsFail());
-      toast.error(err?.response?.data.errorMessage, {
-        position: toast.POSITION.BOTTOM_CENTER,
-      });
+
+      // Show an error toast notification
+      toast.error(
+        err?.response?.data?.errorMessage || "Error downloading file",
+        {
+          position: toast.POSITION.BOTTOM_CENTER,
+        }
+      );
     }
   };
 };
+

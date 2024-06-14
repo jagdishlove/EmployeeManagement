@@ -532,9 +532,12 @@ export default function UserDetailsPage() {
   const Navigate = useNavigate();
 
   const handleBack = () => {
-    Navigate(-1);
+    if (role.includes("SUPERADMIN")) {
+      Navigate("/users");
+    } else {
+      Navigate(-1);
+    }
   };
-
   const handleEdit = (id) => {
     navigate(`/editUser/${id}`);
   };
