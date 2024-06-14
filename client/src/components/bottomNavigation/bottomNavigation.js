@@ -18,7 +18,7 @@ const pathToIndex = {
   "/history": 2,
 };
 
-const BottomNavigationMobile = ({ children, handleMenuClose }) => {
+const BottomNavigationMobile = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [value, setValue] = useState(pathToIndex[location.pathname] || 0);
@@ -29,7 +29,6 @@ const BottomNavigationMobile = ({ children, handleMenuClose }) => {
   );
 
   const superAdmin = role?.includes("SUPERADMIN");
-
   const admin = role?.includes("ADMIN");
   const approver = role?.includes("APPROVER");
   const leaveApprover = role?.includes("LEAVEAPPROVER");
@@ -47,15 +46,12 @@ const BottomNavigationMobile = ({ children, handleMenuClose }) => {
   );
 
   const handleProfileOptionClick = (option) => {
-    // Handle profile option click (e.g., navigate to profile or sign out)
     if (option === "profile") {
       navigate(`/userDetailPage/${empId}`);
     } else if (option === "signout") {
       // Handle signout click, for example, perform signout logic
-      // ...
     }
 
-    // Close the profile menu
     handleProfileClose();
   };
 
@@ -63,7 +59,6 @@ const BottomNavigationMobile = ({ children, handleMenuClose }) => {
     setValue(newValue);
 
     if (newValue === 3) {
-      // Profile icon is clicked, show profile options
       handleProfileClick(event);
     } else {
       const indexToPath = Object.keys(pathToIndex).find(
@@ -85,6 +80,24 @@ const BottomNavigationMobile = ({ children, handleMenuClose }) => {
       window.removeEventListener("resize", handleResize);
     };
   }, [location.pathname]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (anchorEl && !anchorEl.contains(event.target)) {
+        handleProfileClose();
+      }
+    };
+
+    if (anchorEl) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [anchorEl]);
 
   return (
     <Box
@@ -108,7 +121,7 @@ const BottomNavigationMobile = ({ children, handleMenuClose }) => {
         }}
       >
         <BottomNavigation showLabels value={value} onChange={handleChange}>
-          {(superAdmin || admin  || approver || leaveApprover) && (
+          {(superAdmin || admin || approver || leaveApprover) && (
             <BottomNavigationAction icon={<WorkspacePremiumIcon />} />
           )}
           <BottomNavigationAction icon={<AccessTimeIcon />} />
@@ -119,7 +132,7 @@ const BottomNavigationMobile = ({ children, handleMenuClose }) => {
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
+        onClose={handleProfileClose}
       >
         <MenuItem onClick={() => handleProfileOptionClick("profile")}>
           Profile
@@ -130,7 +143,7 @@ const BottomNavigationMobile = ({ children, handleMenuClose }) => {
             localStorage.removeItem("selectedProject");
             persistor.purge(["login"]);
             window.location.href = "/";
-            handleMenuClose;
+            handleProfileClose();
           }}
         >
           Sign Out

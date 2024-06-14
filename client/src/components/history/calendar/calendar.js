@@ -289,7 +289,7 @@ if (DATETYPES.includes(event.type)) {
               style={{
                 display: "block",
                 justifyContent: "space-between",
-                width: "300px",
+                width: "100%",
               }}
             >
               <select

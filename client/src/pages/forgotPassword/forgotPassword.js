@@ -110,7 +110,7 @@ const ForgotPassword = () => {
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <InputFields
-                      label={isMobile ? "Please enter your em..." : "Please enter your email address"}
+                      label={isMobile ? "Enter email.." : "Please enter your email address"}
                       type="email"
                       variant="outlined"
                       value={email}

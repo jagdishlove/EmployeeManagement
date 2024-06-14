@@ -35,6 +35,7 @@ const Reports = () => {
   const [employmentType, setEmploymentType] = useState("All");
   const pageSize = 10;
   const isMobile = useMediaQuery("(max-width: 1050px)");
+  const [isNameSelected, setIsNameSelected] = useState(false);
 
   const reporteesPages = useSelector(
     (state) =>
@@ -82,8 +83,8 @@ const Reports = () => {
 
   const handleYearChange = (e) => {
     const { value } = e.target;
-    setSelectedYear(value);
-    handleYearMonth(e);
+    setSelectedYear(parseInt(value));
+    handleYearMonth(parseInt(value));
   };
 
   const changeMonthAccordingly = () => {
@@ -126,23 +127,20 @@ const Reports = () => {
     getHistoryData(selectedMonth, selectedYear);
     setSelectedMonth(moment().subtract(1, 'months').month());
     setSelectedYear(moment().year());
-    changeMonthAccordingly(selectedYear);
-  }, [currentPage,  ]);
+    changeMonthAccordingly();
+  }, [currentPage]);
 
-  const handleYearMonth = (e) => {
-    const { value } = e.target;
-    setSelectedYear(value);
-    if (e.target.value !== moment().year().toString()) {
+  const handleYearMonth = (year) => {
+    const currentYear = moment().year();
+    const currentMonth = moment().month();
+    
+    if (year !== currentYear) {
       const monthList = [];
-      const currentMonth = moment().month();
-      let startMonth;
-      let endMonth;
-
-      startMonth = currentMonth;
-      endMonth = 12;
+      const startMonth = currentMonth;
+      const endMonth = 12;
 
       for (let month = startMonth; month < endMonth; month++) {
-        const date = moment().year(selectedYear).month(month).startOf("month");
+        const date = moment().year(year).month(month).startOf("month");
         monthList.push({
           value: month,
           label: date.format("MMMM"),
@@ -150,27 +148,22 @@ const Reports = () => {
       }
       setMonths(monthList);
       setSelectedMonth(monthList[0].value);
-      getHistoryData(startMonth, value);
+      getHistoryData(startMonth, year);
     } else {
       const monthList = [];
-      const currentMonth = moment().month();
-      let startMonth;
-      let endMonth;
-
-      startMonth = 0;
-      endMonth = currentMonth;
-
-      getHistoryData(endMonth, value);
+      const startMonth = 0;
+      const endMonth = currentMonth-1;
 
       for (let month = startMonth; month <= endMonth; month++) {
-        const date = moment().year(selectedYear).month(month).startOf("month");
+        const date = moment().year(year).month(month).startOf("month");
         monthList.push({
           value: month,
           label: date.format("MMMM"),
         });
       }
       setMonths(monthList);
-      setSelectedMonth(currentMonth);
+      setSelectedMonth(currentMonth - 1);
+      getHistoryData(currentMonth - 1, year);
     }
   };
 
@@ -201,9 +194,13 @@ const Reports = () => {
   const handleEmployeeNameChange = (value) => {
     const updatedFormData = value === null ? [] : [value];
     getTimeFunctDispatch(updatedFormData);
+    setIsNameSelected(value !== null);
   };
   const handleEmployeeNameChange2 = (event) => {
     dispatch(SearchEmployeeAction(event.target.value));
+    if (!event.target.value) {
+      setIsNameSelected(false);
+    }
   };
 
   const handleEmploymentTypechage = (e) => {
@@ -331,9 +328,8 @@ const Reports = () => {
         }}
         display={"flex"}
         flexDirection={"row"}
-        spacing={2}
       >
-        <Grid item xs={12} sm={4} md={2} lg={2}>
+        <Grid item xs={12} sm={4} md={2} lg={2} p={2}>
           <select
             value={selectedMonth}
             onChange={handleMonthChange}
@@ -345,12 +341,12 @@ const Reports = () => {
               border: "1px solid #ECECEC",
               borderRadius: "5px",
               backgroundColor: "white",
-              margin: "10px 0px 0px 0px",
+             
               width: isMobile ? "80%" : "100%",
               fontSize: "16px",
               outline: "none",
               fontWeight: "bolder",
-              marginLeft: isMobile ? "10px" : "20px",
+             
             }}
           >
             {months.map((month) => (
@@ -360,23 +356,23 @@ const Reports = () => {
             ))}
           </select>
         </Grid>
-        <Grid item xs={12} sm={4} md={2} lg={2}>
+        <Grid item xs={12} sm={4} md={2} lg={2} p={2}>
           <select
             value={selectedYear}
             onChange={handleYearChange}
             style={{
               flex: "1",
-              padding: "10px",
+              padding: " 2px",
               height: "45px",
-              border: "1px solid #ECECEC",
+              border: "1px  solid #ECECEC",
               borderRadius: "5px",
               backgroundColor: "white",
-              margin: "10px 0px 0px 0px",
+              
               width: isMobile ? "80%" : "100%",
               fontSize: "16px",
               outline: "none",
               fontWeight: "bolder",
-              marginLeft: isMobile ? "10px" : "30px",
+            
             }}
           >
             {years.map((year) => (
@@ -418,7 +414,7 @@ const Reports = () => {
               employmentTypeId={employmentType}
               pageSize={pageSize}
               currentPage={currentPage}
-
+              isNameSelected={isNameSelected}
             />
           </Grid>
         </Grid>

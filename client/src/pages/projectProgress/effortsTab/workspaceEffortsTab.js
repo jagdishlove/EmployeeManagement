@@ -114,7 +114,7 @@ export default function WorkspaceEffortsTab({ project, role }) {
 
   return (
     <>
-      {!dataLoaded || workSpaceDataLoading ? (
+      { workSpaceDataLoading ? (
         <Grid
           container
           spacing={0}

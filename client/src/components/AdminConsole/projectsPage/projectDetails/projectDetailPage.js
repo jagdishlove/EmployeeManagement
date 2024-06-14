@@ -43,7 +43,11 @@ const ProjectDetailPage = () => {
   const Navigate = useNavigate();
 
   const handleBackClick = () => {
-    Navigate(-1);
+    if (role.includes("SUPERADMIN")) {
+      Navigate("/projects");
+    } else {
+      Navigate(-1);
+    }
   };
 
   const handleEditProject = () => {
