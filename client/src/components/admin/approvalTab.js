@@ -31,7 +31,7 @@ export default function ApprovalTab() {
     }
   }, [location.pathname]);
 
-  localStorage.setItem("selectedTabIndex", 2);
+  localStorage.setItem("selectedTabIndex", 3);
 
   // Function to handle tab click and navigation
   const handleNavigate = (index, type) => {
@@ -60,7 +60,7 @@ export default function ApprovalTab() {
                 backgroundColor: "#008080",
                 color: "#ffffff",
               }),
-              marginLeft: isMobile ? "0px" : isLeaveApprover ? "282px" : "343px",
+              marginLeft: isMobile ? "0px" : isLeaveApprover ? "420px" : "343px",
               borderBottomRightRadius: "10px",
               borderBottomLeftRadius: "10px",
               height: "40px",

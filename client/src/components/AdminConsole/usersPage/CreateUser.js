@@ -1092,7 +1092,7 @@ export default function CreateUser() {
                 }}
                 onClick={handleDeleteClick}
               >
-                <HighlightOffIcon style={{ width: "20px", height: "20px" }} />
+                <HighlightOffIcon style={{ width: "20px", height: "20px" ,backgroundColor:"white" ,borderRadius:"20px"}} />
               </IconButton>
             </>
           ) : (
@@ -1112,7 +1112,7 @@ export default function CreateUser() {
                 }}
               >
                 <AddCircleOutlineIcon
-                  style={{ width: "25px", height: "25px" }}
+                  style={{ width: "25px", height: "25px"}}
                 />
               </IconButton>
             </>

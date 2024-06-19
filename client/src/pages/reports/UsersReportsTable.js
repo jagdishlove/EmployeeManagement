@@ -152,7 +152,7 @@ const ReportsTable = ({
                           <TableCell>
                             <Grid
                               container
-                              alignItems="center"
+                              alignItems="left"
                               spacing={1}
                               direction="column"
                             >

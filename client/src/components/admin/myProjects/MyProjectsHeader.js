@@ -1,19 +1,21 @@
 import { Autocomplete, Grid, TextField } from "@mui/material";
 import React, { useEffect } from "react";
 import SearchIcon from "@mui/icons-material/Search";
+import Dropdown from "../../forms/dropdown/dropdown";
+import { useTheme } from "styled-components";
+import { adminHeaderStyle } from "../approvalTimesheets/adminHeaderStyle";
 import { useDispatch, useSelector } from "react-redux";
 import { searchUserAction } from "../../../redux/actions/AdminConsoleAction/timeSheet/adminTimesheetAction";
 import { projectListAction } from "../../../redux/actions/approvals/projectListAction";
-// import Typography from '@mui/material/Typography';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import Link from '@mui/material/Link';
 
-export default function ReporteesHeader({
- 
+export default function MyProjectsHeader({
+  project,
+  setProject,
   setSelectedOption,
 }) {
+  const theme = useTheme();
+  const style = adminHeaderStyle(theme);
 
- 
   const dispatch = useDispatch();
 
   const handleChange = (e) => {
@@ -29,40 +31,18 @@ export default function ReporteesHeader({
     dispatch(projectListAction());
   }, []);
 
-
-  function handleClick(event) {
-    event.preventDefault();
-    console.info('You clicked a breadcrumb.');
-  }
-
-  const userName = useSelector(
-    (state) => state?.persistData?.loginDetails?.data.userName
+  const projectList = useSelector(
+    (state) => state?.persistData?.projectListData?.data || []
   );
 
-
+  const handleProjectListChnage = (e) => {
+    const { value } = e.target;
+    setProject(value);
+  };
   return (
     <Grid container spacing={2} mt={2}>
-      <Grid item xs={8}>
-      <div role="presentation" onClick={handleClick} style={{marginTop:"15px"}}>
-      <Breadcrumbs aria-label="breadcrumb">
-        <Link underline="hover" color="inherit" href="/">
-        {userName}
-        </Link>
-        {/* <Link
-          underline="hover"
-          color="inherit"
-          href="/material-ui/getting-started/installation/"
-        >
-          Amit
-        </Link>
-        <Typography color="text.primary">Swarna</Typography> */}
-      </Breadcrumbs>
-    </div>
-       
-      </Grid>
-    
       <Grid item xs={4}>
-      <Autocomplete
+        <Autocomplete
           isMulti={true}
           isSearchable={true}
           options={userData || []}
@@ -93,6 +73,19 @@ export default function ReporteesHeader({
           )}
         />
       </Grid>
+      <Grid item xs={4} mt={-3}>
+        <b>Projects :</b>
+        <Dropdown
+          dropdownName="Projects"
+          options={[{ id: "All", value: "All" }, ...projectList] || []}
+          value={project}
+          onChange={handleProjectListChnage}
+          style={style.DateTimesheetDateTextField}
+          valueKey="id"
+          labelKey="projectNames"
+        />
+      </Grid>
+      <Grid item xs={4}></Grid>
     </Grid>
   );
 }

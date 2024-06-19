@@ -295,7 +295,7 @@ console.log("projectList", projectList)
                 color: activeTab === 0 ? "#ffffff" : "#808080",
               }}
             >
-              Projects
+              Project
             </Tab>
             <Tab
               style={{
@@ -502,7 +502,7 @@ console.log("projectList", projectList)
                         fontSize: "18px",
                       }}
                     >
-                      Total No. of Hours
+                      Total No. of Allocated Hours
                     </TableCell>
                     <TableCell
                       style={{
