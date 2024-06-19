@@ -21,21 +21,21 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardArrowLeftOutlined";
 import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { getMyReportessAction } from "../../../redux/actions/approvals/Myreportees/MyreorteesAction";
 
-export default function ReporteesList({ currentPage, setCurrentPage }) {
+export default function MyProjectsList({ currentPage, setCurrentPage }) {
   const [expandedRows, setExpandedRows] = useState([]);
-  const dispatch = useDispatch();
+  const [expandedProjects, setExpandedProjects] = useState([]);
+
   const navigate = useNavigate();
 
   const reportees = useSelector(
-    (state) => state?.persistData?.Myreoprtees?.reports || []
+    (state) => state?.persistData?.workSpace?.reports || []
   );
 
   const reporteesPages = useSelector(
-    (state) => state?.persistData?.Myreoprtees?.reports || []
+    (state) => state?.persistData?.workSpace?.reports || []
   );
 
   const toggleRowExpansion = (index) => {
@@ -43,7 +43,25 @@ export default function ReporteesList({ currentPage, setCurrentPage }) {
       setExpandedRows(expandedRows.filter((rowIndex) => rowIndex !== index));
     } else {
       setExpandedRows([...expandedRows, index]);
+      setExpandedProjects([]);
     }
+  };
+
+  const toggleProjectExpansion = (index) => {
+    if (expandedProjects.includes(index)) {
+      setExpandedProjects(
+        expandedProjects.filter((projectIndex) => projectIndex !== index)
+      );
+    } else {
+      setExpandedProjects([...expandedProjects, index]);
+      setExpandedRows([]);
+    }
+  };
+
+  const toggleViewLess = (index) => {
+    setExpandedProjects(
+      expandedProjects.filter((projectIndex) => projectIndex !== index)
+    );
   };
 
   const totalPages = reporteesPages?.totalPages;
@@ -62,19 +80,6 @@ export default function ReporteesList({ currentPage, setCurrentPage }) {
 
   const handleNavigate = (id) => {
     navigate(`/userDetailPage/${id}`);
-  };
-
-  const handleFetchReportees = (empId) => {
-    dispatch(
-      getMyReportessAction(
-        {
-          empId: empId,
-          page: currentPage,
-          size: 7,
-        },
-        ""
-      )
-    );
   };
 
   const recordsPerPage = 7; // Number of records to display per page
@@ -126,12 +131,14 @@ export default function ReporteesList({ currentPage, setCurrentPage }) {
               borderTop: "1px solid #DADADA",
             }}
           >
-            <TableHead>
-              <TableRow>
-                <TableCell style={{ fontSize: "18px" }}>
+            <TableHead >
+              <TableRow >
+                <TableCell
+                  style={{ fontSize: "18px" }}
+                >
                   <strong>S.No</strong>
                 </TableCell>
-                <TableCell style={{ fontSize: "18px" }}>
+                <TableCell style={{ fontSize: "18px" }} >
                   <strong>Full Name</strong>
                 </TableCell>
                 <TableCell style={{ fontSize: "18px" }}>
@@ -146,6 +153,9 @@ export default function ReporteesList({ currentPage, setCurrentPage }) {
                 <TableCell style={{ fontSize: "18px" }}>
                   <strong>Reporting Manager</strong>
                 </TableCell>
+                <TableCell style={{ fontSize: "18px" }}>
+                  <strong>Project Name</strong>
+                </TableCell>
                 <TableCell></TableCell>
               </TableRow>
             </TableHead>
@@ -159,44 +169,35 @@ export default function ReporteesList({ currentPage, setCurrentPage }) {
                   {reportees?.content?.map((row, index) => (
                     <React.Fragment key={index}>
                       <TableRow>
-                        <TableCell style={{ fontSize: "16px" }}>
-                          {startIndex + index + 1}
-                        </TableCell>
+                        <TableCell style={{ fontSize: "16px" }}>{startIndex + index + 1}</TableCell>
                         <TableCell>
-                          <Button
-                            onClick={() => handleFetchReportees(row.id)}
-                            disabled={row.reporteesCount === 0}
-                          >
-                            <Grid container alignItems="center" spacing={1}>
-                              <Grid item>
-                                {row?.fileStorage ? (
-                                  <Avatar
-                                    alt="Profile Picture"
-                                    src={`data:image/png;base64,${row?.fileStorage?.data}`}
-                                    sx={{
-                                      border: "2px solid #A4A4A4",
-                                    }}
-                                  />
-                                ) : (
-                                  <Avatar
-                                    sx={{
-                                      color: "#fff",
-                                      backgroundColor: " #4813B8",
-                                    }}
-                                  >
-                                    {row?.firstName?.charAt(0)}
-                                  </Avatar>
-                                )}
-                              </Grid>
-                              <Grid item style={{ fontSize: "16px" }}>
-                                {row?.firstName} {row?.lastName}
-                              </Grid>
+                          <Grid container alignItems="center" spacing={1}>
+                            <Grid item sx={6}>
+                              {row?.fileStorage ? (
+                                <Avatar
+                                  alt="Profile Picture"
+                                  src={`data:image/png;base64,${row?.fileStorage?.data}`}
+                                  sx={{
+                                    border: "2px solid #A4A4A4",
+                                  }}
+                                />
+                              ) : (
+                                <Avatar
+                                  sx={{
+                                    color: "#fff",
+                                    backgroundColor: " #4813B8",
+                                  }}
+                                >
+                                  {row?.firstName?.charAt(0)}
+                                </Avatar>
+                              )}
                             </Grid>
-                          </Button>
+                            <Grid item sx={6} style={{ fontSize: "16px" }}>
+                              {row?.firstName} {row?.lastName}
+                            </Grid>
+                          </Grid>
                         </TableCell>
-                        <TableCell style={{ fontSize: "16px" }}>
-                          {row?.designation}
-                        </TableCell>
+                        <TableCell style={{ fontSize: "16px" }}>{row?.designation}</TableCell>
                         <TableCell>
                           {row.employeeSkillMapping?.length > 0 && (
                             <Grid
@@ -278,11 +279,71 @@ export default function ReporteesList({ currentPage, setCurrentPage }) {
                           )}
                         </TableCell>
 
-                        <TableCell style={{ fontSize: "16px" }}>
-                          {row?.phoneNumber}
-                        </TableCell>
+                        <TableCell style={{ fontSize: "16px" }}>{row?.phoneNumber}</TableCell>
                         <TableCell style={{ fontSize: "16px" }}>
                           {row?.managerFirstName} {row?.managerLastName}
+                        </TableCell>
+                        <TableCell sx={{ fontSize: "16px" }}>
+                          <Box
+                            sx={{
+                              border: "1px solid #F3F3F3",
+                              borderRadius: "5px",
+                              backgroundColor: "#F3F3F3",
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              width: {
+                                xs: "100%", // Full width on small screens
+                                sm: "200px", // Specific width on medium and larger screens
+                                md: "170px",
+                              },
+                              height: "40px",
+                              padding: "0 8px",
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                                display: "flex",
+                                alignItems: "center",
+                                flex: 1,
+                              }}
+                            >
+                              {row?.projectName?.map((project, projectIndex) => (
+                                <Typography
+                                  key={projectIndex}
+                                  sx={{
+                                    marginLeft: projectIndex === 0 ? 0 : "3px",
+                                    display: projectIndex < 1 ? "block" : "none", // Hide extra projects initially
+                                    fontSize: "inherit",
+                                  }}
+                                >
+                                  {project}
+                                </Typography>
+                              ))}
+                            </Box>
+                            {/* Conditionally render the button */}
+                            {row.projectName.length > 1 && (
+                              <Button
+                                variant="text"
+                                onClick={() => toggleProjectExpansion(index)}
+                                sx={{
+                                  fontSize: "20px",
+                                  color: "#1475E7",
+                                  paddingRight: "8px",
+                                  minWidth: "auto", // Adjust button width to fit content
+                                }}
+                              >
+                                {expandedProjects.includes(index) ? (
+                                  <KeyboardArrowUpIcon />
+                                ) : (
+                                  <KeyboardArrowDownIcon />
+                                )}
+                              </Button>
+                            )}
+                          </Box>
                         </TableCell>
                         <TableCell
                           sx={{
@@ -305,6 +366,34 @@ export default function ReporteesList({ currentPage, setCurrentPage }) {
                           </div>
                         </TableCell>
                       </TableRow>
+                      {expandedProjects.includes(index) && row.projectName.length > 1 ? (
+                        <TableRow sx={{ border: "5px solid #EBEBEB" }}>
+                          <TableCell colSpan={8}>
+                            <Grid
+                              container
+                              alignItems="center"
+                              justifyContent="space-between"
+                              sx={{
+                                // border: "1px solid #EBEBEB",
+                                backgroundColor: "#fff",
+                                padding: "5px",
+                              }}
+                            >
+                              <Typography variant="body1" sx={{ flexGrow: 1 }}>
+                                {row.projectName.slice(1).join(", ")}
+                              </Typography>
+                              <Button
+                                variant="text"
+                                onClick={() => toggleViewLess(index)}
+                                style={{ fontSize: "12px", color: "black" }}
+                              >
+                                <span style={{ marginRight: "5px" }}>View Less</span>
+                                <KeyboardArrowUpIcon style={{ color: "#008080", marginLeft: "5px" }} />
+                              </Button>
+                            </Grid>
+                          </TableCell>
+                        </TableRow>
+                      ) : null}
 
                       {expandedRows.includes(index) && (
                         <TableRow sx={{ border: "5px solid #EBEBEB" }}>
@@ -358,31 +447,12 @@ export default function ReporteesList({ currentPage, setCurrentPage }) {
                                   </Grid>
                                 ))}
                               {row.employeeSkillMapping?.length > 1 && (
-                                <Grid
-                                  container
-                                  xs={1.5}
-                                  justifyContent="flex-end"
-                                  style={{ marginLeft: "auto" }}
-                                >
-                                  <Button
-                                    onClick={() => toggleRowExpansion(index)}
-                                  >
+                                <Grid container xs={1.5} justifyContent="flex-end" style={{ marginLeft: "auto" }}>
+                                  <Button onClick={() => toggleRowExpansion(index)}>
                                     {expandedRows.includes(index) ? (
                                       <>
-                                        <span
-                                          style={{
-                                            fontSize: "12px",
-                                            color: "#000000",
-                                          }}
-                                        >
-                                          View Less
-                                        </span>
-                                        <KeyboardArrowUpIcon
-                                          style={{
-                                            color: "#008080",
-                                            marginLeft: "5px",
-                                          }}
-                                        />
+                                        <span style={{ fontSize: "12px", color: "#000000" }}>View Less</span>
+                                        <KeyboardArrowUpIcon style={{ color: "#008080", marginLeft: "5px" }} />
                                       </>
                                     ) : (
                                       <>
@@ -391,6 +461,7 @@ export default function ReporteesList({ currentPage, setCurrentPage }) {
                                     )}
                                   </Button>
                                 </Grid>
+
                               )}
                             </Grid>
                           </TableCell>

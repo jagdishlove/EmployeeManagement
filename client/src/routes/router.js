@@ -31,6 +31,7 @@ import ReporteesTab from "../components/admin/reportees/reporteesTab";
 import TimesheetTab from "../components/admin/approvalTimesheets/timesheetTab";
 import ApprovalLeavesPage from "../components/admin/approvalLeaves/approvalLeavesPage";
 import ApprovalTab from "../components/admin/approvalTab";
+import MyProjectsTab from "../components/admin/myProjects/MyProjectsTab";
 
 const Router = () => {
   const isAuthenticated = useSelector(
@@ -74,6 +75,19 @@ const Router = () => {
           element={
             isAuthenticated ? (
               <MySpaceTab />
+            ) : (
+              <>
+                <Navigate to="/" />
+                <Login />
+              </>
+            )
+          }
+        />
+            <Route
+          path="myProjects"
+          element={
+            isAuthenticated ? (
+              <MyProjectsTab />
             ) : (
               <>
                 <Navigate to="/" />

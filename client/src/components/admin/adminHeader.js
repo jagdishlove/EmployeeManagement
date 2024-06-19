@@ -47,12 +47,15 @@ const AdminHeader = () => {
                     <Tab onClick={() => handleTabClick(0, "/workspace")}>
                       My Space
                     </Tab>
-                    <Tab onClick={() => handleTabClick(1, "reportees")}>
+                    <Tab onClick={() => handleTabClick(1, "myProjects")}>
+                      My Projects
+                    </Tab>
+                    <Tab onClick={() => handleTabClick(2, "reportees")}>
                       My Reportees
                     </Tab>
                   </>
                 )}
-                <Tab onClick={() => handleTabClick(2, "Approval")}>
+                <Tab onClick={() => handleTabClick(3, "Approval")}>
                   Approvals
                 </Tab>
               </>
