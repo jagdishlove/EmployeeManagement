@@ -33,10 +33,14 @@ const ReporteesTab = () => {
   }, [empId, selectedOption, currentPage, dispatch]);
 
   const handleFetchReportees = (empId, firstName, lastName) => {
-    setBreadcrumbs((prevBreadcrumbs) => [
-      ...prevBreadcrumbs,
-      { id: empId, name: `${firstName} ${lastName}` }
-    ]);
+    setBreadcrumbs((prevBreadcrumbs) => {
+      
+      const breadcrumbExists = prevBreadcrumbs.some(breadcrumb => breadcrumb.id === empId);
+      if (!breadcrumbExists) {
+        return [...prevBreadcrumbs, { id: empId, name: `${firstName} ${lastName}` }];
+      }
+      return prevBreadcrumbs;
+    });
     dispatch(
       getMyReportessAction(
         {
@@ -49,6 +53,7 @@ const ReporteesTab = () => {
   };
 
   const handleBreadcrumbClick = (empId, index) => {
+
     if (index === -1) {
       setBreadcrumbs([]);
       dispatch(
@@ -78,7 +83,7 @@ const ReporteesTab = () => {
   return (
     <div>
       <ReporteesHeader
-        selectedOption={selectedOption}
+      
         setSelectedOption={setSelectedOption}
         breadcrumbs={breadcrumbs}
         handleBreadcrumbClick={handleBreadcrumbClick}

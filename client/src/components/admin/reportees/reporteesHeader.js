@@ -1,9 +1,9 @@
 import { Autocomplete, Grid, TextField } from "@mui/material";
-import React, { useEffect } from "react";
+import React from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import { useDispatch, useSelector } from "react-redux";
 import { searchUserAction } from "../../../redux/actions/AdminConsoleAction/timeSheet/adminTimesheetAction";
-import { projectListAction } from "../../../redux/actions/approvals/projectListAction";
+
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 
@@ -25,9 +25,7 @@ export default function ReporteesHeader({
     (state) => state?.persistData?.adminTimeSheet?.searchUserData?.result
   );
 
-  useEffect(() => {
-    dispatch(projectListAction());
-  }, [dispatch]);
+
 
   return (
     <Grid container spacing={2} mt={2}>
