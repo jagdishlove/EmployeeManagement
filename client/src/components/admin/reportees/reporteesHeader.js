@@ -4,16 +4,16 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useDispatch, useSelector } from "react-redux";
 import { searchUserAction } from "../../../redux/actions/AdminConsoleAction/timeSheet/adminTimesheetAction";
 import { projectListAction } from "../../../redux/actions/approvals/projectListAction";
-// import Typography from '@mui/material/Typography';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 
 export default function ReporteesHeader({
- 
   setSelectedOption,
+  breadcrumbs,
+  handleBreadcrumbClick,
+  userName,
+  userEmpId
 }) {
-
- 
   const dispatch = useDispatch();
 
   const handleChange = (e) => {
@@ -27,51 +27,40 @@ export default function ReporteesHeader({
 
   useEffect(() => {
     dispatch(projectListAction());
-  }, []);
-
-
-  function handleClick(event) {
-    event.preventDefault();
-    console.info('You clicked a breadcrumb.');
-  }
-
-  const userName = useSelector(
-    (state) => state?.persistData?.loginDetails?.data.userName
-  );
-
+  }, [dispatch]);
 
   return (
     <Grid container spacing={2} mt={2}>
       <Grid item xs={8}>
-      <div role="presentation" onClick={handleClick} style={{marginTop:"15px"}}>
-      <Breadcrumbs aria-label="breadcrumb">
-        <Link underline="hover" color="inherit" href="/">
-        {userName}
-        </Link>
-        {/* <Link
-          underline="hover"
-          color="inherit"
-          href="/material-ui/getting-started/installation/"
-        >
-          Amit
-        </Link>
-        <Typography color="text.primary">Swarna</Typography> */}
-      </Breadcrumbs>
-    </div>
-       
+        <div style={{ marginTop: "15px" }}>
+          <Breadcrumbs aria-label="breadcrumb">
+            <Link 
+              underline="hover" 
+              color="inherit" 
+              href="#" 
+              onClick={() => handleBreadcrumbClick(userEmpId, -1)}
+            >
+              {userName}
+            </Link>
+            {breadcrumbs.map((crumb, index) => (
+              <Link
+                key={index}
+                underline="hover"
+                color="inherit"
+                href="#"
+                onClick={() => handleBreadcrumbClick(crumb.id, index)}
+              >
+                {crumb.name}
+              </Link>
+            ))}
+          </Breadcrumbs>
+        </div>
       </Grid>
-    
       <Grid item xs={4}>
-      <Autocomplete
-          isMulti={true}
-          isSearchable={true}
+        <Autocomplete
           options={userData || []}
-          getOptionValue={(option) => option.id}
           getOptionLabel={(option) => option.name}
-          getOptionSelected={(option, value) => option.id === value.id}
           onChange={(e, data) => setSelectedOption(data)}
-          name="UserName"
-          isLoading={userData?.length === 0}
           renderInput={(params) => (
             <TextField
               {...params}

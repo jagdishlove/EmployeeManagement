@@ -21,13 +21,11 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardArrowLeftOutlined";
 import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { getMyReportessAction } from "../../../redux/actions/approvals/Myreportees/MyreorteesAction";
 
-export default function ReporteesList({ currentPage, setCurrentPage }) {
+export default function ReporteesList({ currentPage, setCurrentPage, handleFetchReportees }) {
   const [expandedRows, setExpandedRows] = useState([]);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const reportees = useSelector(
@@ -62,19 +60,6 @@ export default function ReporteesList({ currentPage, setCurrentPage }) {
 
   const handleNavigate = (id) => {
     navigate(`/userDetailPage/${id}`);
-  };
-
-  const handleFetchReportees = (empId) => {
-    dispatch(
-      getMyReportessAction(
-        {
-          empId: empId,
-          page: currentPage,
-          size: 7,
-        },
-        ""
-      )
-    );
   };
 
   const recordsPerPage = 7; // Number of records to display per page
@@ -164,7 +149,7 @@ export default function ReporteesList({ currentPage, setCurrentPage }) {
                         </TableCell>
                         <TableCell>
                           <Button
-                            onClick={() => handleFetchReportees(row.id)}
+                            onClick={() => handleFetchReportees(row.id, row.firstName, row.lastName)}
                             disabled={row.reporteesCount === 0}
                           >
                             <Grid container alignItems="center" spacing={1}>
@@ -204,8 +189,8 @@ export default function ReporteesList({ currentPage, setCurrentPage }) {
                                 border: "1px solid #F3F3F3",
                                 borderRadius: "5px",
                                 backgroundColor: "#F3F3F3",
-                                display: "flex", // Ensure items are laid out in a row
-                                flexWrap: "nowrap", // Prevent items from wrapping
+                                display: "flex",
+                                flexWrap: "nowrap",
                                 width: "210px",
                               }}
                             >
@@ -229,7 +214,7 @@ export default function ReporteesList({ currentPage, setCurrentPage }) {
                                   >
                                     <span style={{ color: "black" }}>
                                       {employeeSkill.skillName}
-                                    </span>{" "}
+                                    </span>
                                     <>
                                       <StarOutlinedIcon
                                         style={{
@@ -331,7 +316,7 @@ export default function ReporteesList({ currentPage, setCurrentPage }) {
                                   >
                                     <span style={{ color: "black" }}>
                                       {employeeSkill.skillName}
-                                    </span>{" "}
+                                    </span>
                                     {employeeSkill.rating && (
                                       <>
                                         <StarOutlinedIcon
