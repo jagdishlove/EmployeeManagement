@@ -48,7 +48,7 @@ const AdminHeader = () => {
                       My Space
                     </Tab>
                     <Tab onClick={() => handleTabClick(1, "myProjects")}>
-                      My Projects
+                      My Teams
                     </Tab>
                     <Tab onClick={() => handleTabClick(2, "reportees")}>
                       My Reportees

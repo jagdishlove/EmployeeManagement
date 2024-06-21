@@ -13,16 +13,17 @@ const ReporteesTab = () => {
   const dispatch = useDispatch();
   localStorage.setItem("selectedTabIndex", 2);
   localStorage.setItem("selectedSubTabIndex", 0);
-
   const empId = useSelector((state) => state?.persistData?.loginDetails?.data?.empId);
   const userName = useSelector((state) => state?.persistData?.loginDetails?.data.userName);
+  const lastBreadcrumbs = breadcrumbs [breadcrumbs.length - 1] ;
 
   useEffect(() => {
     if (empId) {
       dispatch(
         getMyReportessAction(
           {
-            empId: empId,
+            
+            empId: breadcrumbs.length==0 ? empId : lastBreadcrumbs.id ,
             page: currentPage,
             size: size,
           },

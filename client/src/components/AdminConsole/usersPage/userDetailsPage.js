@@ -335,9 +335,10 @@ export default function UserDetailsPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [showAddSkills, setShowAddSkills] = useState(false);
   const [addSkills, setAddSkills] = useState();
-
+  console.log("showAddSkills", showAddSkills)
+  console.log("addSkills", addSkills)
   const [skillValues, setSkillValues] = useState({});
-
+  console.log("skillValues", skillValues)
   const previousSelectedSkills = useRef();
 
   const handleEditButtonClick = () => {
@@ -352,7 +353,8 @@ export default function UserDetailsPage() {
       ...prevValues,
       [skillId]: newValue,
     }));
-
+    console.log("handleSliderChange", handleSliderChange)
+    console.log("newValue", newValue)
     // Update selected skills
     const updatedSkills = selectedSkills.map((skill) =>
       skill.skillId === skillId ? { ...skill, rating: newValue } : skill
@@ -426,7 +428,7 @@ export default function UserDetailsPage() {
               {skill.skillName}
             </Typography>
             <LightTooltip
-              title={`${skillValues[skill.skillId] || skill.rating || 0}`}
+              title={`${skillValues[skill.skillId] || skill.rating || 1}`}
             >
               <Slider
                 value={skillValues[skill.skillId] || skill.rating}
@@ -532,7 +534,11 @@ export default function UserDetailsPage() {
   const Navigate = useNavigate();
 
   const handleBack = () => {
-    if (role.includes("SUPERADMIN")) {
+    const formSaved = localStorage.getItem('formSaved');
+    
+    if (formSaved === 'true') {
+      // Clear the flag
+      localStorage.removeItem('formSaved');
       Navigate("/users");
     } else {
       Navigate(-1);

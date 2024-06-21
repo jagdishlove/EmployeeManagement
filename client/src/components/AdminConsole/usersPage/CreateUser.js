@@ -828,6 +828,8 @@ export default function CreateUser() {
 
       await dispatch(CreateUserForm(payload, navigate));
       setErrors({});
+      // Set a flag in localStorage indicating a successful save
+      localStorage.setItem('formSaved', 'true');
     } else {
       setErrors(validationErrors);
     }
