@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import StarOutlinedIcon from "@mui/icons-material/StarOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+// import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardArrowLeftOutlined";
 import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
@@ -171,6 +171,9 @@ export default function MyProjectsList({ currentPage, setCurrentPage }) {
                       <TableRow>
                         <TableCell style={{ fontSize: "16px" }}>{startIndex + index + 1}</TableCell>
                         <TableCell>
+                        <Button
+                            onClick={() => handleNavigate(row.id)}
+                          >
                           <Grid container alignItems="center" spacing={1}>
                             <Grid item sx={6}>
                               {row?.fileStorage ? (
@@ -192,10 +195,11 @@ export default function MyProjectsList({ currentPage, setCurrentPage }) {
                                 </Avatar>
                               )}
                             </Grid>
-                            <Grid item sx={6} style={{ fontSize: "16px" }}>
+                            <Grid item sx={6} style={{ fontSize: "16px", color:  "#1475E7", textDecoration:"underline" }}>
                               {row?.firstName} {row?.lastName}
                             </Grid>
                           </Grid>
+                          </Button>
                         </TableCell>
                         <TableCell style={{ fontSize: "16px" }}>{row?.designation}</TableCell>
                         <TableCell>
@@ -345,7 +349,7 @@ export default function MyProjectsList({ currentPage, setCurrentPage }) {
                             )}
                           </Box>
                         </TableCell>
-                        <TableCell
+                        {/* <TableCell
                           sx={{
                             color: "#1475E7",
                             cursor: "pointer",
@@ -364,7 +368,7 @@ export default function MyProjectsList({ currentPage, setCurrentPage }) {
                               }}
                             />
                           </div>
-                        </TableCell>
+                        </TableCell> */}
                       </TableRow>
                       {expandedProjects.includes(index) && row.projectName.length > 1 ? (
                         <TableRow sx={{ border: "5px solid #EBEBEB" }}>
