@@ -27,7 +27,7 @@ const ProjectDetailPage = () => {
   const { projectDetailsDataLoading } = useSelector(
     (state) => state.persistData?.projectDetails
   );
-  
+
   useEffect(() => {
     if (id) {
       dispatch(getProjectDetailsAction(id));
@@ -38,7 +38,7 @@ const ProjectDetailPage = () => {
     (state) => state.persistData.projectDetails?.projectId
   );
 
-  useEffect(() => {}, [projectId]);
+  useEffect(() => { }, [projectId]);
 
   const Navigate = useNavigate();
 
@@ -58,6 +58,8 @@ const ProjectDetailPage = () => {
   );
 
   const isSuperAdmin = role?.includes("SUPERADMIN");
+
+  const address = projectDetailsData?.client?.address;
 
   return (
     <>
@@ -167,19 +169,18 @@ const ProjectDetailPage = () => {
                 {projectDetailsData?.client?.clientName}
               </Typography>
               <Typography fontSize={"18px"}>
-                {projectDetailsData?.client?.address?.addressLine1}
-                {", "}
-                {projectDetailsData?.client?.address?.addressLine2}
-                {", "}
-                {projectDetailsData?.client?.address?.city?.dataValue}
-                {", "}
-                {projectDetailsData?.client?.address?.state?.dataValue}
-                {", "}
-                {projectDetailsData?.client?.address?.country?.dataValue} <br />
+                {address?.addressLine1 && `${address.addressLine1}`}
+                {address?.addressLine1 && address?.addressLine2 && `, `}
+                {address?.addressLine2 && `${address.addressLine2}`}
+                {(address?.addressLine1 || address?.addressLine2) && address?.city?.dataValue && `, `}
+                {address?.city?.dataValue && `${address.city.dataValue}`}
+                {(address?.addressLine1 || address?.addressLine2 || address?.city?.dataValue) && address?.state?.dataValue && `, `}
+                {address?.state?.dataValue && `${address.state.dataValue}`}
+                {(address?.addressLine1 || address?.addressLine2 || address?.city?.dataValue || address?.state?.dataValue) && address?.country?.dataValue && `, `}
+                {address?.country?.dataValue && `${address.country.dataValue}`} <br />
                 {projectDetailsData?.client?.phone}
               </Typography>
             </Grid>
-
             <Grid
               item
               xs={12}
@@ -218,12 +219,12 @@ const ProjectDetailPage = () => {
                     projectDetailsData?.status === "Ongoing"
                       ? Ongoing
                       : projectDetailsData?.status === "On Time"
-                      ? OnTime
-                      : projectDetailsData?.status === "With Delay"
-                      ? Withdelay
-                      : projectDetailsData?.status === "Yet To Start"
-                      ? Yettostart
-                      : ""
+                        ? OnTime
+                        : projectDetailsData?.status === "With Delay"
+                          ? Withdelay
+                          : projectDetailsData?.status === "Yet To Start"
+                            ? Yettostart
+                            : ""
                   }
                   alt="image"
                   height={45}

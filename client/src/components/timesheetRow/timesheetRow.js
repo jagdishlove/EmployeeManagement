@@ -33,10 +33,15 @@ import {
   formatDateForApi,
 } from "../../utils/dateOptions";
 import { timeValidation } from "../../utils/timeValidation";
-import TimePicker from "../forms/customInputs/timePicker";
+// import TimePicker from "../forms/customInputs/timePicker";
 import Dropdown from "../forms/dropdown/dropdown";
 import Star from "../stars/star";
 import Checkbox from "@mui/material/Checkbox";
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+
 
 const TimesheetRow = ({
   selectedDate,
@@ -172,6 +177,7 @@ const TimesheetRow = ({
   const [selectedValues, setSelectedValues] = useState(
     data ? editedSelectedValues : initialSelectedValues
   );
+  console.log("selectedValues", selectedValues)
   useEffect(() => {
     if (updatedActivityameList?.length > 1 && timesheetForm) {
       setSelectedValues({
@@ -473,13 +479,21 @@ const TimesheetRow = ({
   };
 
   const onChangeTimeHandler = (time, fieldName) => {
+    const date = new Date(time);
+       // Get hours and minutes
+  const hours =  date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+
+  
     setSelectedValues((prevSelectedValues) => ({
       ...prevSelectedValues,
-      [fieldName]: time,
+      [fieldName]: `${hours}:${minutes}`,
     }));
+   
+ 
     setNewEnteryTime((prevSelectedValues) => ({
       ...prevSelectedValues,
-      [fieldName]: time,
+      [fieldName]:  `${hours}:${minutes}`,
     }));
   };
 
@@ -628,8 +642,9 @@ const TimesheetRow = ({
             lg={3}
             direction="column"
           >
+             <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DemoItem>
-              <TimePicker
+              {/* <TimePicker
                 label="From Time"
                 defaultValue={null}
                 sx={style.TimesheetTextField}
@@ -640,10 +655,29 @@ const TimesheetRow = ({
                 }
                 onChangeHandler={(e) => onChangeTimeHandler(e, "fromTime")}
                 disabled={disabled || approval || isHistory || superAdmin}
-              />
+              /> */}
+               <TimePicker
+          label="From Time"
+          viewRenderers={{
+            hours: renderTimeViewClock,
+            minutes: renderTimeViewClock,
+            seconds: renderTimeViewClock,
+          }}
+          sx={style.TimesheetTextFieldToTime}
+          value={
+            selectedValues.fromTime === ""
+              ? null
+              : selectedValues.fromTime
+          }
+          onChange={(e) => onChangeTimeHandler(e, "fromTime")}
+          disabled={disabled || approval || isHistory || superAdmin}
+format="hh:mm:ss"
+        />
             </DemoItem>
+            </LocalizationProvider>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DemoItem>
-              <TimePicker
+              {/* <TimePicker
                 label="To Time"
                 sx={style.TimesheetTextFieldToTime}
                 value={
@@ -651,8 +685,24 @@ const TimesheetRow = ({
                 }
                 onChangeHandler={(e) => onChangeTimeHandler(e, "toTime")}
                 disabled={disabled || approval || superAdmin}
-              />
+              /> */}
+               <TimePicker
+          label="To Time"
+          viewRenderers={{
+            hours: renderTimeViewClock,
+            minutes: renderTimeViewClock,
+            seconds: renderTimeViewClock,
+          }}
+          sx={style.TimesheetTextFieldToTime}
+          value={
+            selectedValues.toTime === "" ? null : selectedValues.toTime
+          }
+          onChange={(e) => onChangeTimeHandler(e, "toTime")}
+          disabled={disabled || approval || superAdmin}
+          format="hh:mm:ss"
+        />
             </DemoItem>
+            </LocalizationProvider>
           </Grid>
           {/* Second Sub-Row */}
           <Grid

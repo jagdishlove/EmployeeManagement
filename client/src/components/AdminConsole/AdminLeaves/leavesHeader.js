@@ -65,7 +65,7 @@ const LeavesHeader = ({
     <div>
       {" "}
       <Typography variant="h4" gutterBottom fontWeight="bold">
-        LEAVE
+        Leaves
       </Typography>
       <div
         style={{

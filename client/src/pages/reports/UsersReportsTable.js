@@ -115,7 +115,7 @@ const ReportsTable = ({
                     <strong>Projects</strong>
                   </TableCell>
                   <TableCell>
-                    <strong>No. of Working Days</strong>
+                    <strong>No. Of Working Days</strong>
                   </TableCell>
                   <TableCell>
                     <strong>Total Working Days</strong>

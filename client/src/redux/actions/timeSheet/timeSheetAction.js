@@ -25,6 +25,9 @@ import {
   UPDATE_TIME_SHEET_ENTRY_REQUEST,
   CLEAR_SUCCESS_FLAG,
   RESET_UPDATE_TIME_SHEET_ENTRY_FAIL,
+  GET_LAST_THREE_DATES_TIMESHEET_ENTRY_FAIL,
+  GET_LAST_THREE_DATES_TIMESHEET_ENTRY_REQUEST,
+  GET_LAST_THREE_DATES_TIMESHEET_ENTRY_SUCCESS,
 } from "./timeSheetActionType";
 
 export const clearSuccessFlag = () => {
@@ -157,6 +160,23 @@ const rejectTimesheetFail = () => {
 export const resetUpdateTimesheet = () => {
   return {
     type: RESET_UPDATE_TIME_SHEET_ENTRY_FAIL,
+  };
+};
+
+const getLastThreeDaysTimesheetEntryRequest = () => {
+  return {
+    type: GET_LAST_THREE_DATES_TIMESHEET_ENTRY_REQUEST,
+  };
+};
+const getLastThreeDaysTimesheetEntrySuccess = (response) => {
+  return {
+    type: GET_LAST_THREE_DATES_TIMESHEET_ENTRY_SUCCESS,
+    payload: response,
+  };
+};
+const getLastThreeDaysTimesheetEntryFail = () => {
+  return {
+    type: GET_LAST_THREE_DATES_TIMESHEET_ENTRY_FAIL,
   };
 };
 
@@ -345,7 +365,31 @@ export const rejectTimesheet = (data, newPayload) => {
       toast.info(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
-      dispatch(rejectTimesheetFail(err.response.data.errorMessage));
+      dispatch(rejectTimesheetFail(err?.response?.data?.errorMessage));
+    }
+  };
+};
+
+export const getLastThreeTimesheetEntryAction = (data) => {
+  return async (dispatch) => {
+    try {
+      dispatch(getLastThreeDaysTimesheetEntryRequest());
+      const response = await makeRequest(
+        "GET",
+        `api/timesheetentry/lastThreeWorkingDays`,
+        null,
+        data
+      );
+     
+      // Console log the response here
+      console.log("response", response);
+      dispatch(getLastThreeDaysTimesheetEntrySuccess(response));
+    } catch (err) {
+      if (err.response.data.errorCode === 403) {
+        dispatch(getRefreshToken());
+      }
+      dispatch(getLastThreeDaysTimesheetEntryFail());
+      dispatch(errorMessage(err.response.data.errorMessage));
     }
   };
 };

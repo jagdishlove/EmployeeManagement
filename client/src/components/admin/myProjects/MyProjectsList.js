@@ -195,7 +195,7 @@ export default function MyProjectsList({ currentPage, setCurrentPage }) {
                                 </Avatar>
                               )}
                             </Grid>
-                            <Grid item sx={6} style={{ fontSize: "16px", color:  "#1475E7", textDecoration:"underline" }}>
+                            <Grid item sx={6} style={{ fontSize: "16px", color:  "#1475E7", textDecoration:"underline" , textTransform: "none"}}>
                               {row?.firstName} {row?.lastName}
                             </Grid>
                           </Grid>
@@ -298,8 +298,8 @@ export default function MyProjectsList({ currentPage, setCurrentPage }) {
                               alignItems: "center",
                               width: {
                                 xs: "100%", // Full width on small screens
-                                sm: "200px", // Specific width on medium and larger screens
-                                md: "170px",
+                                sm: "250px", // Specific width on medium and larger screens
+                                md: "200px",
                               },
                               height: "40px",
                               padding: "0 8px",
@@ -349,26 +349,7 @@ export default function MyProjectsList({ currentPage, setCurrentPage }) {
                             )}
                           </Box>
                         </TableCell>
-                        {/* <TableCell
-                          sx={{
-                            color: "#1475E7",
-                            cursor: "pointer",
-                            textDecoration: "underline",
-                            fontSize: "18px",
-                          }}
-                          onClick={() => handleNavigate(row.id)}
-                        >
-                          <div
-                            style={{ display: "flex", alignItems: "center" }}
-                          >
-                            view <KeyboardArrowRightIcon />
-                            <KeyboardArrowRightIcon
-                              sx={{
-                                marginLeft: "-18px",
-                              }}
-                            />
-                          </div>
-                        </TableCell> */}
+                  
                       </TableRow>
                       {expandedProjects.includes(index) && row.projectName.length > 1 ? (
                         <TableRow sx={{ border: "5px solid #EBEBEB" }}>
@@ -482,7 +463,7 @@ export default function MyProjectsList({ currentPage, setCurrentPage }) {
                       mt={5}
                       sx={{ display: "flex", justifyContent: "center" }}
                     >
-                      <Typography>Reportees Data Not Found</Typography>
+                      <Typography>Project Data Not Found</Typography>
                     </Box>
                   </TableCell>
                 </TableRow>

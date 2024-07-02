@@ -1,4 +1,4 @@
-import { format, parse, subDays } from "date-fns";
+import { format, parse, parseISO, subDays } from "date-fns";
 import moment from "moment";
 
 export const dateOptions = () => {
@@ -80,6 +80,17 @@ export const formatDateForApi = (selectedDate) => {
     const finalDate = format(parsedDate, "yyyy-MM-dd");
     return finalDate;
   }
+};
+
+// Transform dates from backend to desired format
+export const transformDates = (dates) => {
+  return dates?.map((dateStr) => {
+    const date = parseISO(dateStr);
+    return {
+      label: format(date, "MMM dd, yyyy"),
+      value: format(date, "EEEE, MMMM d, yyyy"),
+    };
+  });
 };
 
 export const adminTimeOptions = () => {

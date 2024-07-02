@@ -19,10 +19,11 @@ import SubHeader from "../../components/subHeader/subHeader";
 import TimesheetRow from "../../components/timesheetRow/timesheetRow";
 import { TimesheetStyle } from "../../pages/timesheet/timesheetStyle";
 import {
+  getLastThreeTimesheetEntryAction,
   getTimesheetEntryAction,
   submitTimeSheetApprovalAction,
 } from "../../redux/actions/timeSheet/timeSheetAction";
-import { dateOptions, formatDateForApi } from "../../utils/dateOptions";
+import {  formatDateForApi, transformDates } from "../../utils/dateOptions";
 import SavedTimesheetEntry from "./savedTimesheetEntry";
 import { useNavigate } from "react-router-dom";
 import "../records/Records.css";
@@ -51,6 +52,16 @@ const Timesheet = () => {
     (state) =>
       state?.persistData?.timesheetData?.timeSheetData?.timesheetEntryId
   );
+
+  const getLastThreeTimesheetData = useSelector((state) => state?.persistData?.timesheetData?.lastthreetimeSheetData);
+
+  useEffect(() => {
+    dispatch(getLastThreeTimesheetEntryAction());
+  }, [dispatch]);
+
+  // Transform backend dates for the dropdown
+  const transformedDates = transformDates(getLastThreeTimesheetData);
+
 
   const formattedDurations = getTimesheetData?.map((duration) => {
     let hours = 0;
@@ -185,11 +196,14 @@ const Timesheet = () => {
         <Grid container>
           <Grid item xs={7} sm={4} md={3}>
             <Dropdown
-              options={dateOptions()} // Pass any additional options if needed
-              value={selectedDate} // Pass the current selected value
-              onChange={handleDateChange} // Pass the onChange function
-              dropdownName="Date" // Pass the dropdown name
-              style={style.TimesheetDateTextField} // Pass any additional style
+              options={transformedDates}
+              value={selectedDate}
+              onChange={handleDateChange}
+              
+              dropdownName="date"
+              style={style.TimesheetDateTextField}
+              valueKey="value"
+              labelKey="label"
             />
           </Grid>
         </Grid>

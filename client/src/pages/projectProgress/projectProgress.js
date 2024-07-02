@@ -502,7 +502,7 @@ console.log("projectList", projectList)
                         fontSize: "18px",
                       }}
                     >
-                      Total No. of Allocated Hours
+                      Total No. Of Allocated Hours
                     </TableCell>
                     <TableCell
                       style={{

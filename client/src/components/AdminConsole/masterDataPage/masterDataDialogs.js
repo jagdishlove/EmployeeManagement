@@ -693,7 +693,7 @@ export default function MasterDataDialogs({
             value={holidayFormData.holidayType}
             onChange={(e) => handleHolidayChnage("holidayType", e.target.value)}
             title="HolidayType"
-            placeholder="HolidayType"
+            placeholder="Holiday Type"
             style={{
               ...style.TimesheetTextField,
               border: "1px solid #8897ad87",

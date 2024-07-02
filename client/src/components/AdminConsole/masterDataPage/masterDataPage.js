@@ -549,7 +549,7 @@ export default function MasterDataPage({
             <Grid container alignItems="center" sx={{ color: "#fff" }}>
               <Grid item xs={11.5}>
                 <Typography variant="h6" ml={3}>
-                  JobType
+                  Job Type
                 </Typography>
               </Grid>
               <Grid item xs={0.5}>
