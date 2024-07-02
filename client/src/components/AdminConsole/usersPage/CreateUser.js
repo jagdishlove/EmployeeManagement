@@ -2169,7 +2169,7 @@ export default function CreateUser() {
             <Grid item xs={6}>
               <TextField
                 label="Name as per Bank"
-                placeholder="Name as per Bank"
+                placeholder="Name As Per Bank"
                 value={formData.Bank}
                 id="Bank"
                 name="Bank"

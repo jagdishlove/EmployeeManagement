@@ -67,7 +67,7 @@ export default function User() {
   return (
     <Box>
       <Typography variant="h2" gutterBottom>
-        USERS
+        Users
       </Typography>
       <div
         style={{

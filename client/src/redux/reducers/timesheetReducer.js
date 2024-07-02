@@ -11,6 +11,9 @@ import {
   APPROVE_TIME_SHEET_SUCCESS,
   APPROVE_TIME_SHEET_REQUEST,
   APPROVE_TIME_SHEET_FAIL,
+  GET_LAST_THREE_DATES_TIMESHEET_ENTRY_FAIL,
+  GET_LAST_THREE_DATES_TIMESHEET_ENTRY_REQUEST,
+  GET_LAST_THREE_DATES_TIMESHEET_ENTRY_SUCCESS,
 } from "../actions/timeSheet/timeSheetActionType";
 
 // Initial state
@@ -20,7 +23,7 @@ const initialState = {
   approvalTimesheetData: null,
   isSuccess: false,
   errorTimesheetEdit: false,
-  
+  lastthreetimeSheetData:[],
 };
 
 // Reducer function
@@ -94,6 +97,23 @@ const timesheetReducer = (state = initialState, action) => {
       return {
         ...state,
         approveTimesheetLoading: false,
+      };
+    }
+    case  GET_LAST_THREE_DATES_TIMESHEET_ENTRY_REQUEST:
+      return {
+        ...state,
+      };
+      case GET_LAST_THREE_DATES_TIMESHEET_ENTRY_SUCCESS:
+        console.log('Action payload:', action.payload);
+        return {
+          ...state,
+          lastthreetimeSheetData: action.payload,
+        };
+      
+    case GET_LAST_THREE_DATES_TIMESHEET_ENTRY_FAIL: {
+      return {
+        ...state,
+        lastthreetimeSheetData: [],
       };
     }
     default:

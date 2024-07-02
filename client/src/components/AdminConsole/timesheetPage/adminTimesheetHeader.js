@@ -69,7 +69,7 @@ export default function AdminTimesheetHeader({
     <Grid>
       {" "}
       <Typography variant="h4" gutterBottom fontWeight="bold">
-        TIMESHEET
+        Timesheet
       </Typography>
       <div
         style={{

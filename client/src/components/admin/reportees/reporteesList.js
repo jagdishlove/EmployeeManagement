@@ -167,6 +167,7 @@
                                     sx={{
                                       color: "#fff",
                                       backgroundColor: " #4813B8",
+                                     
                                     }}
                                   >
                                     {row?.firstName?.charAt(0)}
@@ -179,6 +180,7 @@
                                   fontSize: "16px",
                                    color:  "#1475E7",
                                    textDecoration:  "underline",
+                                    textTransform: "none"
                                 }}
                               >
                                 {row?.firstName} {row?.lastName}

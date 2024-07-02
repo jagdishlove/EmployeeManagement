@@ -30,11 +30,11 @@ export default function ReporteesHeader({
   return (
     <Grid container spacing={2} mt={2}>
       <Grid item xs={8}>
-        <div style={{ marginTop: "15px" }}>
+        <div style={{ marginTop: "15px"}}>
           <Breadcrumbs aria-label="breadcrumb">
             <Link 
               underline="hover" 
-              color="inherit" 
+              color="#1475E7" 
               href="#" 
               onClick={() => handleBreadcrumbClick(userEmpId, -1)}
             >
@@ -44,7 +44,7 @@ export default function ReporteesHeader({
               <Link
                 key={index}
                 underline="hover"
-                color="inherit"
+                color="#1475E7" 
                 href="#"
                 onClick={() => handleBreadcrumbClick(crumb.id, index)}
               >

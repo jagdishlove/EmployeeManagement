@@ -32,6 +32,7 @@ import StarOutlinedIcon from "@mui/icons-material/StarOutlined";
 import {
   GetOfficeLocation,
   getLoocations,
+  masterDataAction
 } from "../../../redux/actions/masterData/masterDataAction";
 import { styled } from "@mui/material/styles";
 
@@ -54,6 +55,7 @@ export default function UserDetailsPage() {
   const [expanded, setExpanded] = useState(false);
   const [payRollExpanded, setPayRollExpanded] = useState(false);
   const [bankExpand, setBankExpand] = useState(false);
+  const [leaveExpanded, setLeaveExpanded] = useState(false);
   const [skillExpanded, setSkillExpanded] = useState(false);
   const role = useSelector(
     (state) => state?.persistData?.loginDetails?.data.role
@@ -70,6 +72,7 @@ export default function UserDetailsPage() {
   const skills = useSelector(
     (state) => state.persistData?.loginDetails?.masterData?.skill
   );
+ 
   const isMobile = useMediaQuery("(max-width: 1050px)");
 
   const InputOption = ({
@@ -220,6 +223,9 @@ export default function UserDetailsPage() {
   const handleExpand = () => {
     setPayRollExpanded(!payRollExpanded);
   };
+  const handleExpand2 = () => {
+    setLeaveExpanded(!leaveExpanded);
+  };
 
   const handleSkillExpand = () => {
     setSkillExpanded(!skillExpanded);
@@ -279,10 +285,36 @@ export default function UserDetailsPage() {
     }
   }, [userData]);
 
+  useEffect(() => {
+    dispatch(masterDataAction());
+  }, [dispatch]);
+  
+  const leaveTypeMasterData = useSelector(
+    (state) => state.persistData?.loginDetails?.masterData?.leaveTypesForView
+  );
+  console.log("leaveTypeMasterData", leaveTypeMasterData);
+  
+  const leaveBalance = useSelector(
+    (state) => state?.persistData?.userDetails?.userByIdData?.leaveBalance
+  );
+  console.log("leaveBalance", leaveBalance);
+  
+  const result = leaveBalance && leaveTypeMasterData ? leaveBalance.map((item) => {
+    const leaveMasterId = parseInt(Object.keys(item)[0]);
+    const matchingMasterData = leaveTypeMasterData.find(
+      (data) => data.leaveMasterId === leaveMasterId
+    );
+  
+    return {
+      leaveMasterId,
+      leaveType: matchingMasterData ? matchingMasterData.leaveType : undefined,
+      numberDays: item[leaveMasterId],
+    };
+  }) : [];
+  
   const managerData = useSelector(
     (state) => state.persistData?.loginDetails?.masterData
   );
-
   const skillIdToName = {};
   managerData.skill?.forEach((skill) => {
     skillIdToName[skill.skillId] = skill?.skillName;
@@ -335,10 +367,9 @@ export default function UserDetailsPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [showAddSkills, setShowAddSkills] = useState(false);
   const [addSkills, setAddSkills] = useState();
-  console.log("showAddSkills", showAddSkills)
-  console.log("addSkills", addSkills)
+ 
   const [skillValues, setSkillValues] = useState({});
-  console.log("skillValues", skillValues)
+  
   const previousSelectedSkills = useRef();
 
   const handleEditButtonClick = () => {
@@ -353,8 +384,7 @@ export default function UserDetailsPage() {
       ...prevValues,
       [skillId]: newValue,
     }));
-    console.log("handleSliderChange", handleSliderChange)
-    console.log("newValue", newValue)
+
     // Update selected skills
     const updatedSkills = selectedSkills.map((skill) =>
       skill.skillId === skillId ? { ...skill, rating: newValue } : skill
@@ -568,6 +598,12 @@ export default function UserDetailsPage() {
   };
 
   const selectedSkillFunc = (skill) => {
+ skill.forEach(obj => {
+    if (!('rating' in obj)) {
+        obj.rating = 1;
+    }
+});
+
     updateBottomSkills();
     setSelectedSkills(skill);
     setAddSkills(skill);
@@ -1377,72 +1413,72 @@ export default function UserDetailsPage() {
                               }}
                             >
                               <Grid container spacing={2}>
-                                <Grid item xs={4}>
+                                <Grid item xs={2}>
                                   <Typography variant="body1">
                                     <strong>Project Manager:</strong>
                                   </Typography>
                                 </Grid>
-                                <Grid item xs={8}>
+                                <Grid item xs={10}>
                                   <Typography variant="body1">
                                     {projectDetailsData?.projectManager?.name}
                                   </Typography>
                                 </Grid>
-                                <Grid item xs={4}>
+                                <Grid item xs={2}>
                                   <Typography variant="body1">
                                     <strong>Project Lead:</strong>
                                   </Typography>
                                 </Grid>
-                                <Grid item xs={8}>
+                                <Grid item xs={10}>
                                   <Typography variant="body1">
                                     {projectDetailsData?.projectTechLead?.name}
                                   </Typography>
                                 </Grid>
-                                <Grid item xs={4}>
+                                <Grid item xs={2}>
                                   <Typography variant="body1">
                                     <strong>Project Status:</strong>
                                   </Typography>
                                 </Grid>
-                                <Grid item xs={8}>
+                                <Grid item xs={10}>
                                   <Typography variant="body1">
                                     {projectDetailsData?.status}
                                   </Typography>
                                 </Grid>
-                                <Grid item xs={4}>
+                                <Grid item xs={2}>
                                   <Typography variant="body1">
                                     <strong>Starting Date:</strong>
                                   </Typography>
                                 </Grid>
-                                <Grid item xs={8}>
+                                <Grid item xs={10}>
                                   <Typography variant="body1">
                                     {projectDetailsData?.startDate}
                                   </Typography>
                                 </Grid>
-                                <Grid item xs={4}>
+                                <Grid item xs={2}>
                                   <Typography variant="body1">
                                     <strong>Ending Date:</strong>
                                   </Typography>
                                 </Grid>
-                                <Grid item xs={8}>
+                                <Grid item xs={10}>
                                   <Typography variant="body1">
                                     {projectDetailsData?.endDate}
                                   </Typography>
                                 </Grid>
-                                <Grid item xs={4}>
+                                <Grid item xs={2}>
                                   <Typography variant="body1">
                                     <strong>Actual End Date:</strong>
                                   </Typography>
                                 </Grid>
-                                <Grid item xs={8}>
+                                <Grid item xs={10}>
                                   <Typography variant="body1">
                                     {projectDetailsData?.actualEndDate}
                                   </Typography>
                                 </Grid>
-                                <Grid item xs={4}>
+                                <Grid item xs={2}>
                                   <Typography variant="body1">
                                     <strong>Team Members:</strong>
                                   </Typography>
                                 </Grid>
-                                <Grid item xs={8}>
+                                <Grid item xs={10}>
                                   <Typography variant="body1">
                                     {projectDetailsData?.projectResources?.map(
                                       (resource, index, array) => (
@@ -1470,6 +1506,99 @@ export default function UserDetailsPage() {
                 </Grid>
               </Grid>
             </Grid>
+
+
+            <Grid item xs={12}>
+              <Typography variant="h3" gutterBottom>
+                Leave Balance
+              </Typography>
+              <Grid
+                mt={-1}
+                sx={{
+                  boxShadow: "#000000",
+                  padding: 0,
+                  borderRadius: "25px",
+                  width: "100%",
+                }}
+              >
+                <Grid container spacing={1} sx={{ padding: "10px" }}>
+                  <Accordion
+                    sx={{
+                      border: "1px solid #898989",
+                      width: "100%",
+                    }}
+                    onChange={handleExpand2}
+                  >
+                    <AccordionSummary
+                      sx={{
+                        flexDirection: "row",
+                        "&.Mui-focusVisible": {
+                          background: "none",
+                        },
+                        width: "100%",
+                        color: "#fff",
+                        backgroundColor: "#008080",
+                      }}
+                    >
+                      <Typography variant="h6" ml={3}>
+                        Leave Details
+                      </Typography>
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          right: 10,
+                          display: "flex",
+                          alignItems: "center",
+                          color: "#fff",
+                        }}
+                      >
+                        {leaveExpanded ? <RemoveIcon /> : <AddIcon />}
+                      </Box>
+                    </AccordionSummary>
+
+                    {!leaveExpanded ? (
+                      <></>
+                    ) : (
+                      <AccordionDetails
+                        sx={{
+                          padding: isMobile ? "20px" : "20px 20px 20px 50px",
+                        }}
+                      >
+                        <Grid
+                          sx={{
+                            padding: "10px",
+                            border: "1px solid black",
+                            borderRadius: "10px",
+                            backgroundColor: "#F0F0F0",
+                          }}
+                        >
+                          {result.length > 0 ? (
+                            result.map((data, index) => (
+                              <Grid container spacing={2} key={index}>
+                                <Grid item xs={2}>
+                                  <Typography variant="body1">
+                                   <b> {data.leaveType} :</b>
+                                   
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={10}>
+                                  <Typography variant="body1">
+                                    {data.numberDays}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                            ))
+                          ) : (
+                            <Typography variant="h3">No Leave Data Found</Typography>
+                          )}
+                        </Grid>
+                      </AccordionDetails>
+                    )}
+                  </Accordion>
+                </Grid>
+              </Grid>
+            </Grid>
+
             <Grid container mt={2}>
               <Grid item xs={12} mb={2}>
                 <Typography variant="h3" gutterBottom>
@@ -1539,32 +1668,32 @@ export default function UserDetailsPage() {
                             }}
                           >
                             <Grid container spacing={2}>
-                              <Grid item xs={4}>
+                              <Grid item xs={2}>
                                 <Typography variant="body1">
                                   <b>Name as on the Bank</b>
                                 </Typography>
                               </Grid>
-                              <Grid item xs={8}>
+                              <Grid item xs={10}>
                                 <Typography variant="body1">
                                   {userData.nameAsOnBank}
                                 </Typography>
                               </Grid>
-                              <Grid item xs={4}>
+                              <Grid item xs={2}>
                                 <Typography variant="body1">
                                   <b>Bank Name:</b>
                                 </Typography>
                               </Grid>
-                              <Grid item xs={8}>
+                              <Grid item xs={10}>
                                 <Typography variant="body1">
                                   {userData.bankName}
                                 </Typography>
                               </Grid>
-                              <Grid item xs={4}>
+                              <Grid item xs={2}>
                                 <Typography variant="body1">
                                   <b>Account Number:</b>
                                 </Typography>
                               </Grid>
-                              <Grid item xs={8}>
+                              <Grid item xs={10}>
                                 <Typography
                                   variant="body1"
                                   style={{
@@ -1575,12 +1704,12 @@ export default function UserDetailsPage() {
                                   {userData.acNo}
                                 </Typography>
                               </Grid>
-                              <Grid item xs={4}>
+                              <Grid item xs={2}>
                                 <Typography variant="body1">
                                   <b>IFSC code:</b>
                                 </Typography>
                               </Grid>
-                              <Grid item xs={8}>
+                              <Grid item xs={10}>
                                 <Typography
                                   variant="body1"
                                   style={{
@@ -1652,12 +1781,12 @@ export default function UserDetailsPage() {
                               backgroundColor: "#F0F0F0",
                             }}
                           >
-                            <Grid item xs={4}>
+                            <Grid item xs={2}>
                               <Typography variant="body1">
                                 <b>Cost to Company :</b>
                               </Typography>
                             </Grid>
-                            <Grid item xs={8}>
+                            <Grid item xs={10}>
                               <Typography variant="body1">
                                 <CurrencyRupeeIcon sx={{ padding: "4px" }} />
                                 {userData.ctc}
