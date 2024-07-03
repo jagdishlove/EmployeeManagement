@@ -565,15 +565,17 @@ export default function UserDetailsPage() {
 
   const handleBack = () => {
     const formSaved = localStorage.getItem('formSaved');
-    
+  
     if (formSaved === 'true') {
       // Clear the flag
       localStorage.removeItem('formSaved');
+      localStorage.removeItem('currentPage'); // Clear the stored page number
       Navigate("/users");
     } else {
       Navigate(-1);
     }
   };
+  
   const handleEdit = (id) => {
     navigate(`/editUser/${id}`);
   };
