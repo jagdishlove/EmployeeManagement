@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Grid,
   Avatar,
@@ -37,6 +37,19 @@ export default function MyProjectsList({ currentPage, setCurrentPage }) {
   const reporteesPages = useSelector(
     (state) => state?.persistData?.workSpace?.reports || []
   );
+
+  useEffect(() => {
+    // Retrieve current page from local storage
+    const storedPage = localStorage.getItem("currentPage");
+    if (storedPage) {
+      setCurrentPage(Number(storedPage));
+    }
+  }, [setCurrentPage]);
+
+  useEffect(() => {
+    // Store current page in local storage whenever it changes
+    localStorage.setItem("currentPage", currentPage);
+  }, [currentPage]);
 
   const toggleRowExpansion = (index) => {
     if (expandedRows.includes(index)) {
