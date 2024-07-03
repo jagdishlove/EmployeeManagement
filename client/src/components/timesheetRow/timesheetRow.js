@@ -639,7 +639,7 @@ const TimesheetRow = ({
 
       <Grid container spacing={2}>
         {/* First Row */}
-        <Grid container item spacing={2} xs={12} sm={12} md={6} lg={6}>
+        <Grid container item spacing={2} xs={12} sm={12} md={7} lg={7}>
           {/* First Sub-Row */}
           <Grid
             container
@@ -647,8 +647,8 @@ const TimesheetRow = ({
             xs={12}
             gap={2}
             sm={12}
-            md={3}
-            lg={3}
+            md={3.5}
+            lg={3.5}
             direction="column"
           >
             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -723,8 +723,8 @@ const TimesheetRow = ({
             item
             xs={12}
             sm={12}
-            md={9}
-            lg={9}
+            md={8.5}
+            lg={8.5}
             spacing={2}
             direction="row"
           >
@@ -807,7 +807,7 @@ const TimesheetRow = ({
         </Grid>
 
         {/* Second Row (Blank) */}
-        <Grid container item xs={12} sm={12} md={6} lg={6} direction="row">
+        <Grid container item xs={12} sm={12} md={5} lg={5} direction="row">
           <Grid container item xs={12} sm={12} md={11} lg={11} direction="row">
             {data ? (
               <Grid item xs={12} sm={12} md={12} lg={12}>
