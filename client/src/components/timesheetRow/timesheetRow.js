@@ -41,6 +41,7 @@ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { renderTimeViewClock } from "@mui/x-date-pickers/timeViewRenderers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import dayjs from "dayjs";
 
 const TimesheetRow = ({
   selectedDate,
@@ -103,6 +104,7 @@ const TimesheetRow = ({
     toTime: "",
   });
 
+  console.log("withoutFormatTime", withoutFormatTime);
 
   const isSuccessSaveTimesheet = useSelector(
     (state) => state?.persistData?.timesheetData.isSuccess
@@ -547,7 +549,7 @@ const TimesheetRow = ({
     const [hours, minutes] = timeString.split(":").map(Number);
     const date = new Date();
     date.setHours(hours, minutes, 0);
-    return date;
+    return dayjs(date);
   };
 
   // // Define custom CSS for the tooltip content (background color)
