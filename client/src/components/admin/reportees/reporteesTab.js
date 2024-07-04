@@ -80,7 +80,7 @@ const ReporteesTab = () => {
     }
     setCurrentPage(0);
   };
-
+  localStorage.removeItem("currentPage");
   return (
     <div>
       <ReporteesHeader

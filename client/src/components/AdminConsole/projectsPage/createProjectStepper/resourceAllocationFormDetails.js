@@ -139,12 +139,11 @@ const ResourceAllocationFormDetails = () => {
   }, [debouncedValue, id]);
 
   const masterSkillData = useSelector(
-    (state) => state?.persistData?.masterData?.skill
+    (state) => state?.persistData?.loginDetails?.masterData?.skill
   );
   const masterDesigData = useSelector(
-    (state) => state?.persistData?.masterData?.designation
+    (state) => state?.persistData?.loginDetails?.masterData?.designation
   );
-
   const theme = useTheme();
   const style = TimesheetStyle(theme);
   const [showAllResourcesTable, setShowAllResourcesTable] = useState(false);
