@@ -17,7 +17,8 @@ const initialState = {
   searchUserData: [],
   approversData: [],
   allTimeSheetsForAdmin: [],
-  adminConsoleApproveTimesheetLoading:false,
+  adminConsoleApproveTimesheetLoading: false,
+  allTimeSheetsForAdminLoading: false,
 };
 
 const adminTimeSheetReducer = (state = initialState, action) => {
@@ -51,31 +52,40 @@ const adminTimeSheetReducer = (state = initialState, action) => {
     case GET_ALL_TIMESHEET_FOR_ADMIN_REQUEST:
       return {
         ...state,
+        allTimeSheetsForAdminLoading: true,
       };
     case GET_ALL_TIMESHEET_FOR_ADMIN_SUCCESS:
       return {
         ...state,
         allTimeSheetsForAdmin: action.payload,
+        allTimeSheetsForAdminLoading: false,
       };
     case GET_ALL_TIMESHEET_FOR_ADMIN_FAILURE:
       return {
         ...state,
+        allTimeSheetsForAdminLoading: false,
       };
-      case ADMIN_CONSOLE_APPROVE_TIMESHEET_REQUEST:
-        return {
-          ...state,
-          adminConsoleApproveTimesheetLoading:true,
-        };
-      case ADMIN_CONSOLE_APPROVE_TIMESHEET_SUCCESS:
-        return {
-          ...state,
-          adminConsoleApproveTimesheetLoading:false,
-        };
-      case ADMIN_CONSOLE_APPROVE_TIMESHEET_FAILURE:
-        return {
-          ...state,
-          adminConsoleApproveTimesheetLoading:false,
-        };
+    case "GET_ALL_TIMESHEET_FOR_ADMIN_RESET":
+      return {
+        ...state,
+        allTimeSheetsForAdmin: [],
+      };
+
+    case ADMIN_CONSOLE_APPROVE_TIMESHEET_REQUEST:
+      return {
+        ...state,
+        adminConsoleApproveTimesheetLoading: true,
+      };
+    case ADMIN_CONSOLE_APPROVE_TIMESHEET_SUCCESS:
+      return {
+        ...state,
+        adminConsoleApproveTimesheetLoading: false,
+      };
+    case ADMIN_CONSOLE_APPROVE_TIMESHEET_FAILURE:
+      return {
+        ...state,
+        adminConsoleApproveTimesheetLoading: false,
+      };
     default:
       return state;
   }
