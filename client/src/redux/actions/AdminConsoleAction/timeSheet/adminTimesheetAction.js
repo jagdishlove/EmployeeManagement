@@ -70,6 +70,11 @@ const getAllTimesheetForAdminFailure = () => {
     type: GET_ALL_TIMESHEET_FOR_ADMIN_FAILURE,
   };
 };
+export const resetAllTimesheetForAdminData = () => {
+  return {
+    type: "GET_ALL_TIMESHEET_FOR_ADMIN_RESET",
+  };
+};
 
 const adminConsoleTimesheetRequest = () => {
   return {
@@ -80,7 +85,6 @@ const adminConsoleTimesheetRequest = () => {
 const adminConsoleTimesheetSuccess = () => {
   return {
     type: ADMIN_CONSOLE_APPROVE_TIMESHEET_SUCCESS,
-   
   };
 };
 
@@ -99,7 +103,6 @@ const adminConsoleTimesheetRejectRequest = () => {
 const adminConsoleTimesheetRejectSuccess = () => {
   return {
     type: ADMIN_CONSOLE_APPROVE_TIMESHEET_SUCCESS,
-   
   };
 };
 
@@ -151,7 +154,7 @@ export const getAllTimeSheetApprovers = (data) => {
 };
 
 export const getAllTimeSheetForAdmin = (data, payload) => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     dispatch(getAllTimesheetForAdminRequest());
     try {
       const response = await makeRequest(
@@ -162,10 +165,20 @@ export const getAllTimeSheetForAdmin = (data, payload) => {
         },
         data
       );
-      dispatch(getAllTimesheetForAdminSuccess(response));
+      const previousContent =
+        getState().persistData?.adminTimeSheet?.allTimeSheetsForAdmin
+          ?.content || [];
+      const newContent = response.content || [];
+      const combinedContent = [...previousContent, ...newContent];
+      const updatedResponse = {
+        ...response,
+        content: combinedContent,
+      };
+
+      dispatch(getAllTimesheetForAdminSuccess(updatedResponse));
     } catch (err) {
       dispatch(getAllTimesheetForAdminFailure());
-      toast.error(err.response.data.errorMessage, {
+      toast.error(err?.response?.data?.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
     }
@@ -264,4 +277,3 @@ export const adminBulkApproveTimesheet = (data, newPayload, search, params) => {
     }
   };
 };
-
