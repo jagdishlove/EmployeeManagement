@@ -8,12 +8,15 @@ import { Grid } from "@mui/material";
 const MyProjectsTab = () => {
   const [project, setProject] = useState("All");
   const [selectedOption, setSelectedOption] = useState("");
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(
+    JSON.parse(localStorage.getItem("currentPage")) || 0
+  );
   const size = 7;
   const dispatch = useDispatch();
   localStorage.setItem("selectedTabIndex", 1);
   localStorage.setItem("selectedSubTabIndex", 0);
   useEffect(() => {
+    localStorage.setItem("currentPage", JSON.stringify(currentPage));
     dispatch(
       getAllReportessAction(
         {

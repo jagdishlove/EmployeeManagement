@@ -250,7 +250,7 @@ const MySpaceTab = () => {
                 fontSize: "26px",
               }}
             >
-             <b> Hello, {userName}</b>
+              <b> Hello, {userName}</b>
             </Box>
             <TodayActivity />
           </Card>
@@ -260,7 +260,7 @@ const MySpaceTab = () => {
             <Box
               sx={{
                 position: "absolute",
-                top: "45px",
+                top: "15px",
                 right: "-22px",
                 display: "flex",
                 alignItems: "center",
@@ -329,12 +329,12 @@ const MySpaceTab = () => {
                 </select>
               </div>
             </Box>
-            <Grid container spacing={5}>
+            <Grid container spacing={1}>
               <Grid item xs={12} md={6}>
                 <Card
                   sx={{
                     borderRadius: '5px',
-                    width: { xs: '100%', md: '110%' },
+                    width: '100%',
                     height: '135px',
                     marginTop: { xs: '20px', md: '65px' },
                     backgroundColor: 'white',
@@ -378,9 +378,9 @@ const MySpaceTab = () => {
                 <Card
                   sx={{
                     borderRadius: '5px',
-                    width: { xs: '100%', md: '100%' },
+                    width: '100%',
                     height: { xs: '10rem', md: '8.5rem' },
-                    marginTop: { xs: '2rem', md: '4rem' },
+                    marginTop: { xs: '20px', md: '65px' },
                     backgroundColor: 'white',
                     display: 'flex',
                     flexDirection: 'column',
@@ -411,6 +411,7 @@ const MySpaceTab = () => {
                 </Card>
               </Grid>
             </Grid>
+
           </Box>
         </Grid>
       </Grid>
@@ -443,26 +444,28 @@ const MySpaceTab = () => {
 
         <Grid item xs={12} md={6}>
           <Grid container spacing={1}>
-            <Grid item xs={12}>
+            <Grid item xs={12} style={{ alignItems: "center" }}>
               <Card
-                style={{
-                  borderRadius: "5px",
-                  width: "100%",
-                  height: "200px",
-                  marginTop: "20px",
-                  backgroundColor: "white",
-                  position: "relative",
-                  overflow: "hidden",
+                sx={{
+                  borderRadius: '5px',
+                  width: '100%',
+                  height: '200px',
+                  marginTop: '20px',
+                  backgroundColor: 'white',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
                 }}
               >
                 <Grid
                   item
                   xs={1}
-                  style={{
-                    position: "absolute",
-                    top: "5px",
-                    right: "20px",
-                    cursor: "pointer",
+                  sx={{
+                    position: 'absolute',
+                    top: '5px',
+                    right: '20px',
+                    cursor: 'pointer',
                   }}
                 >
                   <OpenInFullOutlinedIcon
@@ -472,92 +475,94 @@ const MySpaceTab = () => {
                   />
                 </Grid>
                 <Grid
-                  style={{
-                    overflowY: "auto",
-                    marginTop: "15px",
-                    marginLeft: "6px",
-                    overflowX: "hidden",
-                    maxHeight: "100%",
-                    paddingRight: "10px",
-                    width: "100%",
-                    boxSizing: "content-box",
-                    maxWidth: "97.5%",
+                  sx={{
+                    overflowY: 'auto',
+                    marginTop: '15px',
+                    marginLeft: '6px',
+                    overflowX: 'hidden',
+                    maxHeight: '100%',
+                    paddingRight: '10px',
+                    width: '100%',
+                    boxSizing: 'content-box',
+                    maxWidth: '97.5%',
+                    flex: '1 1 auto',
+                    display: 'flex',
+                    justifyContent: 'center', // Center horizontally
+                    alignItems: 'center', // Center vertically
                   }}
                 >
                   <Grid item width={420} ml={3}>
                     {ProjectPerfomanceData?.performanceRating &&
                       ProjectPerfomanceData?.performanceRating.length > 0 ? (
-                      <ul style={{ marginTop: "17px", padding: 0 }}>
+                      <ul style={{ marginTop: '17px', padding: 0 }}>
                         {ProjectPerfomanceData?.performanceRating
                           .sort(
                             (a, b) =>
-                              (b.performanceRating || 0) -
-                              (a.performanceRating || 0)
+                              (b.performanceRating || 0) - (a.performanceRating || 0)
                           )
                           .map((item, index) => (
                             <li
                               key={index}
                               style={{
-                                display: "flex",
-                                alignItems: "center",
-                                marginBottom: "10px",
-                                flexWrap: "wrap",
+                                display: 'flex',
+                                alignItems: 'center',
+                                marginBottom: '10px',
+                                flexWrap: 'wrap',
                               }}
                             >
                               <span
                                 style={{
-                                  marginLeft: "10px",
-                                  fontSize: "13px",
-                                  minWidth: "100px",
-                                  flex: "1 0 auto",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                  color: "black",
-                                  maxWidth: "80px",
+                                  marginLeft: '10px',
+                                  fontSize: '13px',
+                                  minWidth: '100px',
+                                  flex: '1 0 auto',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                  color: 'black',
+                                  maxWidth: '80px',
                                 }}
                                 title={item.project.projectName}
                               >
-                                <b> {item.project.projectName}</b>
+                                <b>{item.project.projectName}</b>
                               </span>
 
                               <div
                                 style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  marginRight: "10px",
-                                  width: "150px",
-                                  flex: "2 0 auto",
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  marginRight: '10px',
+                                  width: '150px',
+                                  flex: '2 0 auto',
                                 }}
                               >
                                 <div
                                   style={{
-                                    width: `${((item.performanceRating || 0) / 5) * 100
-                                      }%`,
-                                    height: "20px",
+                                    width: `${((item.performanceRating || 0) / 5) * 100}%`,
+                                    height: '20px',
                                     backgroundColor:
                                       colorPalette[index % colorPalette.length],
-                                    position: "relative",
+                                    position: 'relative',
                                   }}
                                 ></div>
                               </div>
                               <div
                                 style={{
-                                  alignItems: "center",
-                                  flex: "1 0 auto",
-                                  textAlign: "right",
+                                  alignItems: 'center',
+                                  flex: '1 0 auto',
+                                  textAlign: 'right',
                                 }}
                               >
                                 <Rating rating={item.performanceRating || 0} />
                                 <span
                                   style={{
-                                    color: "#A4504A",
-                                    marginLeft: "5px",
+                                    color: '#A4504A',
+                                    marginLeft: '5px',
                                   }}
                                 >
                                   {item.performanceRating
                                     ? item.performanceRating.toFixed(2)
-                                    : "0.0"}
+                                    : '0.0'}
                                 </span>
                               </div>
                             </li>
@@ -566,9 +571,8 @@ const MySpaceTab = () => {
                     ) : (
                       <p
                         style={{
-                          marginTop: "80px",
-                          marginBottom: "80px",
-                          marginLeft: "200px",
+                          textAlign: 'center',
+                          margin: 0,
                         }}
                       >
                         No data available
@@ -578,6 +582,9 @@ const MySpaceTab = () => {
                 </Grid>
               </Card>
             </Grid>
+
+
+
 
             <Dialog open={open} onClose={handleClose}>
               <DialogContent>
@@ -679,12 +686,12 @@ const MySpaceTab = () => {
                       ) : (
                         <p
                           style={{
-                            marginTop: "80px",
+                            marginTop: "95px",
                             marginBottom: "80px",
-                            marginLeft: "150px",
+                            marginLeft: "180px",
                           }}
                         >
-                          No data available
+                          No  data  available
                         </p>
                       )}
                     </Grid>
@@ -733,7 +740,8 @@ const MySpaceTab = () => {
 
                     maxHeight: "100%",
                     boxSizing: "content-box",
-                    marginRight: "30px"
+                    padding:"5px"
+                    // marginRight: "20px"
                   }}
                 >
                   <SimpleBarChart />

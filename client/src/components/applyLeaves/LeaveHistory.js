@@ -334,6 +334,7 @@ const LeaveHistory = ({
               </TableBody>
             </Table>
           </TableContainer>
+          {leaveHistory?.totalElements > 0? (
           <Box display={"flex"} gap={"10px"} mt={"10px"}>
             <Pagination
               totalItems={leaveHistory?.totalElements}
@@ -344,6 +345,7 @@ const LeaveHistory = ({
             />
             {loading ? <CircularProgress /> : null}
           </Box>
+          ):(" ")}
         </Grid>
       </Grid>
       <Dialog

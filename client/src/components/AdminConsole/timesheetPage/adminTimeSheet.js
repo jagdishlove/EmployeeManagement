@@ -31,7 +31,7 @@ function AdminTimeSheet() {
   const [approver, setApprover] = useState("All");
   const [selectedDate, setSelectedDate] = useState("All");
   const [states, setStatus] = useState("SUBMITTED");
-  const [pageCounter, setPageCounter] = useState(2);
+  const [pageCounter, setPageCounter] = useState(10);
   const [errorValidation, setErrorValidation] = useState({});
   const [openPopup, setOpenPopup] = useState(false);
 
@@ -60,7 +60,7 @@ function AdminTimeSheet() {
         ? dayjs(selectedDate, { format: "YYYY-MM-DD" }).format("YYYY-MM-DD")
         : "",
     approverId: approver === "All" ? "" : approver,
-    size: pageCounter * 5,
+    size: pageCounter * 1,
   };
 
   useEffect(() => {
@@ -87,7 +87,7 @@ function AdminTimeSheet() {
                 )
               : "",
           approverId: approver === "All" ? "" : approver,
-          size: pageCounter * 5,
+          size: pageCounter * 1,
         },
         selectedSearchOption
       )
@@ -261,7 +261,7 @@ function AdminTimeSheet() {
                     )
                   : "",
               approverId: approver === "All" ? "" : approver,
-              size: pageCounter * 5,
+              size: pageCounter,
             },
             selectedSearchOption,
             {
@@ -276,6 +276,7 @@ function AdminTimeSheet() {
           )
         );
         setErrorValidation({});
+        setPageCounter(1); 
       } finally {
         setOpenPopup(false);
       }
@@ -368,7 +369,7 @@ function AdminTimeSheet() {
                     )
                   : "",
               approverId: approver === "All" ? "" : approver,
-              size: pageCounter * 5,
+              size: 10 ,
             },
             selectedSearchOption,
             {

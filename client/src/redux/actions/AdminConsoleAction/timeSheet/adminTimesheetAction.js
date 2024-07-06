@@ -234,26 +234,34 @@ export const adminApproveTimesheet = (data, newPayload, search, params) => {
 export const adminBulkApproveTimesheet = (data, newPayload, search, params) => {
   return async (dispatch) => {
     try {
+      // Perform the API call to bulk approve timesheets
       await makeRequest(
         "POST",
         `/api/timesheetentry/setTimesheetEntryApprovalStatusByAdmin`,
         data
       );
+
+      // Dispatch getAllTimeSheetForAdmin with size set to 10
+      // const updatedPayload = {
+      //   ...newPayload,
+      //   size: 10,
+      // };
       dispatch(getAllTimeSheetForAdmin(newPayload, search));
       dispatch(getAllTimeSheetApprovers(params));
 
+      // Notify user about successful approval
       toast.success("Timesheets Approved Successfully.", {
         position: toast.POSITION.BOTTOM_CENTER,
       });
     } catch (err) {
+      // Handle errors, including unauthorized access (403)
       if (err?.response?.data?.errorCode === 403) {
         dispatch(getRefreshToken());
       }
-      // Handle 403 error here
-      // For example, you can dispatch an action to update the state
       toast.info(err.response.data.errorMessage, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
     }
   };
 };
+
