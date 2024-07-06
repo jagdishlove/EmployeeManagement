@@ -1,8 +1,9 @@
-import { Grid, InputLabel, Typography } from "@mui/material";
+import { Grid, InputLabel, Typography, Tooltip } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import React from "react";
+
 const Dropdown = ({
   options,
   value,
@@ -88,30 +89,34 @@ const Dropdown = ({
               option.complexityName ||
               option.projectType ||
               (option.approverName && option.count ? (
-                <Grid container alignItems="center" >
-      <Grid item xs={10} zeroMinWidth>
-        <Typography variant="body1" noWrap>
-          {option.approverName}
-        </Typography>
-      </Grid>
-      <Grid item xs={2}>
-        <div
-          style={{
-            color: "#fff",
-            textAlign: "center",
-            backgroundColor: "red",
-            borderRadius: "50%",
-            width: "24px",
-            height: "24px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {option.count}
-        </div>
-      </Grid>
-    </Grid>
+                <Grid container alignItems="center">
+                  <Grid item xs={10} zeroMinWidth>
+                    <Tooltip title={option.approverName} arrow>
+                      <Typography variant="body1" noWrap>
+                        {option.approverName}
+                      </Typography>
+                    </Tooltip>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <div
+                      style={{
+                        
+                        color: "#fff",
+                        textAlign: "center",
+                        backgroundColor: "red",
+                        borderRadius: "50%",
+                        width: "24px",
+                        height: "24px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize:"12px"
+                      }}
+                    >
+                      {option.count}
+                    </div>
+                  </Grid>
+                </Grid>
               ) : (
                 ""
               )) ||

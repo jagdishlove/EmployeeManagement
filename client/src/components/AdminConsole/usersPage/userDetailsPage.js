@@ -725,7 +725,10 @@ export default function UserDetailsPage() {
                       <Typography variant="h4">{userData.firstName}</Typography>
                     </Grid>
                     <Grid item xs={12} mt={-2}>
-                      <Typography variant="h3">
+                      <Typography variant="h3" sx={{
+                  overflowWrap: 'break-word',
+                  wordBreak: 'break-all',
+                }}>
                         {designationIdToName[userData.designationId]}
                       </Typography>
                     </Grid>
@@ -802,7 +805,12 @@ export default function UserDetailsPage() {
                               color: "#53939C",
                               marginBottom: "7px",
                               fontSize: "14px",
+                              
+                                overflowWrap: 'break-word',
+                                wordBreak: 'break-all',
+                              
                             }}
+
                           >
                             {`${officeLocation?.address?.addressLine1}, 
                   ${officeLocation?.address?.addressLine2}, 
@@ -835,177 +843,189 @@ export default function UserDetailsPage() {
               sx={{ display: "flex", flexDirection: "column" }}
             >
               <Box
+      sx={{
+        border: '2px solid #A4A4A4',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+        flexGrow: 1,
+        padding: { xs: '35px', md: '70px' },
+        borderRadius: '25px',
+        width: { xs: '100%', md: '97%' },
+      }}
+    >
+      <Typography variant="h5" gutterBottom>
+        <b>Basic Details :</b>
+      </Typography>
+      <Grid container spacing={2} mt={1.3}>
+        <Grid item xs={12}>
+          <Grid container spacing={2}>
+            <Grid item xs={7} sm={4} md={4} lg={4}>
+              <Typography variant="body1"
+                >
+                <strong>Employee ID:</strong>
+              </Typography>
+            </Grid>
+            <Grid item xs={5} sm={8} md={8} lg={8}>
+              <Typography variant="body1" sx={{
+                  overflowWrap: 'break-word',
+                  wordBreak: 'break-all',
+                }}>{userData.empId}</Typography>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <Grid container spacing={2}>
+            <Grid item xs={7} sm={4} md={4} lg={4}>
+              <Typography variant="body1">
+                <strong>Date Of Joining:</strong>
+              </Typography>
+            </Grid>
+            <Grid item xs={5} sm={8} md={8} lg={8}>
+              <Typography variant="body1">{userData.joiningDate}</Typography>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <Grid container spacing={2}>
+            <Grid item xs={7} sm={4} md={4} lg={4}>
+              <Typography variant="body1">
+                <strong>Gender:</strong>
+              </Typography>
+            </Grid>
+            <Grid item xs={5} sm={8} md={8} lg={8}>
+              <Typography variant="body1">{genderIdToName[userData.genderId]}</Typography>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <Grid container spacing={2}>
+            <Grid item xs={7} sm={4} md={4} lg={4}>
+              <Typography variant="body1">
+                <strong>Employment Type:</strong>
+              </Typography>
+            </Grid>
+            <Grid item xs={5} sm={8} md={8} lg={8}>
+              <Typography variant="body1">{empTypeIdToName[userData.empTypeId]}</Typography>
+            </Grid>
+          </Grid>
+        </Grid>
+        {userData.clientLocationId? (
+          <>
+            <Grid item xs={12}>
+              <Grid container spacing={2}>
+                <Grid item xs={7} sm={4} md={4} lg={4}>
+                  <Typography variant="body1">
+                    <strong>Client Location :</strong>
+                  </Typography>
+                </Grid>
+                <Grid item xs={5} sm={8} md={8} lg={8}>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      overflowWrap: 'break-word',
+                      wordBreak: 'break-all',
+                    }}
+                  >
+                    {`${clientDetailsData?.clientName}, ${clientDetailsData?.address?.addressLine1
+                      }, ${clientDetailsData?.address?.addressLine2}, 
+                    ${DataValue[clientDetailsData?.address?.cityId]} - ${clientDetailsData?.address?.postalCode
+                      }, 
+                    ${DataValue[clientDetailsData?.address?.stateId]}, ${DataValue[clientDetailsData?.address?.countryId]
+                      }.`}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+          </>
+        ) : (
+          <>
+            <Grid>
+              {""}
+              {""} {""}
+            </Grid>
+          </>
+        )}
+        <Grid item xs={12}>
+          <Grid container spacing={2}>
+            <Grid item xs={7} sm={4} md={4} lg={4}>
+              <Typography variant="body1">
+                <strong>Work Mode:</strong>
+              </Typography>
+            </Grid>
+            <Grid item xs={5} sm={8} md={8} lg={8}>
+              <Typography variant="body1">{userData.workMode}</Typography>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <Grid container spacing={2}>
+            <Grid item xs={7} sm={4} md={4} lg={4}>
+              <Typography variant="body1">
+                <strong>Reporting Manager:</strong>
+              </Typography>
+            </Grid>
+            <Grid item xs={5} sm={8} md={8} lg={8}>
+              <Typography variant="body1">
+                {userData.managerFirstName} {userData.managerLastName}
+              </Typography>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <Grid container spacing={2}>
+            <Grid item xs={7} sm={4} md={4} lg={4}>
+              <Typography variant="body1">
+                <strong>Currect Address:</strong>
+              </Typography>
+            </Grid>
+            <Grid item xs={5} sm={8} md={8} lg={8}>
+              <Typography
+                variant="body1"
                 sx={{
-                  border: "2px solid #A4A4A4",
-                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                  flexGrow: 1,
-                  padding: { xs: "35px", md: "70px" },
-                  borderRadius: "25px",
-                  width: { xs: "100%", md: "97%" },
+                  overflowWrap: 'break-word',
+                  wordBreak: 'break-all',
                 }}
               >
-                <Typography variant="h5" gutterBottom>
-                  <b> Basic Details :</b>
-                </Typography>
-                <Grid container spacing={2} mt={1.3}>
-                  <Grid item xs={12}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={7} sm={4} md={4} lg={4}>
-                        <Typography variant="body1">
-                          <strong>Employee ID:</strong>
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={5} sm={8} md={8} lg={8}>
-                        <Typography variant="body1">
-                          {userData.empId}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={7} sm={4} md={4} lg={4}>
-                        <Typography variant="body1">
-                          <strong>Date Of Joining:</strong>
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={5} sm={8} md={8} lg={8}>
-                        <Typography variant="body1">
-                          {userData.joiningDate}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={7} sm={4} md={4} lg={4}>
-                        <Typography variant="body1">
-                          <strong>Gender:</strong>
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={5} sm={8} md={8} lg={8}>
-                        <Typography variant="body1">
-                          {genderIdToName[userData.genderId]}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={7} sm={4} md={4} lg={4}>
-                        <Typography variant="body1">
-                          <strong>Employment Type:</strong>
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={5} sm={8} md={8} lg={8}>
-                        <Typography variant="body1">
-                          {empTypeIdToName[userData.empTypeId]}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                  {userData.clientLocationId ? (
-                    <>
-                      <Grid item xs={12}>
-                        <Grid container spacing={2}>
-                          <Grid item xs={7} sm={4} md={4} lg={4}>
-                            <Typography variant="body1">
-                              <strong>Client Location :</strong>
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={5} sm={8} md={8} lg={8}>
-                            <Typography variant="body1">
-                              {`${clientDetailsData?.clientName}, ${clientDetailsData?.address?.addressLine1
-                                }, ${clientDetailsData?.address?.addressLine2}, 
-                    ${DataValue[clientDetailsData?.address?.cityId]} - ${clientDetailsData?.address?.postalCode
-                                }, 
-                    ${DataValue[clientDetailsData?.address?.stateId]}, ${DataValue[clientDetailsData?.address?.countryId]
-                                }.`}{" "}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      </Grid>
-                    </>
-                  ) : (
-                    <>
-                      <Grid>
-                        {""}
-                        {""} {""}
-                      </Grid>
-                    </>
-                  )}
-                  <Grid item xs={12}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={7} sm={4} md={4} lg={4}>
-                        <Typography variant="body1">
-                          <strong>Work Mode:</strong>
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={5} sm={8} md={8} lg={8}>
-                        <Typography variant="body1">
-                          {userData.workMode}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={7} sm={4} md={4} lg={4}>
-                        <Typography variant="body1">
-                          <strong>Reporting Manager:</strong>
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={5} sm={8} md={8} lg={8}>
-                        <Typography variant="body1">
-                          {userData.managerFirstName} {userData.managerLastName}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={7} sm={4} md={4} lg={4}>
-                        <Typography variant="body1">
-                          <strong>Currect Address:</strong>
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={5} sm={8} md={8} lg={8}>
-                        <Typography variant="body1">
-                          {userData?.presentAddress?.name}
-                          {userData?.presentAddress?.addressLine1}
-                          {", "}
-                          {userData?.presentAddress?.addressLine2}
-                          {", "}
-                          {DataValue[userData?.presentAddress?.stateId]}
-                          {", "}
-                          {userData?.presentAddress?.postalCode}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={7} sm={4} md={4} lg={4}>
-                        <Typography variant="body1">
-                          <strong>Permanent Address:</strong>
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={5} sm={8} md={8} lg={8}>
-                        <Typography variant="body1">
-                          {userData?.permanentAddress?.name}
-                          {userData?.permanentAddress?.addressLine1}
-                          {", "}
-                          {userData?.permanentAddress?.addressLine2}
-                          {", "}
-                          {DataValue[userData?.permanentAddress?.stateId]}
-                          {", "}
-                          {userData?.permanentAddress?.postalCode}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Box>
+                {userData?.presentAddress?.name}
+                {userData?.presentAddress?.addressLine1}
+                {", "}
+                {userData?.presentAddress?.addressLine2}
+                {", "}
+                {DataValue[userData?.presentAddress?.stateId]}
+                {", "}
+                {userData?.presentAddress?.postalCode}
+              </Typography>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <Grid container spacing={2}>
+            <Grid item xs={7} sm={4} md={4} lg={4}>
+              <Typography variant="body1">
+                <strong>Permanent Address:</strong>
+              </Typography>
+            </Grid>
+            <Grid item xs={5} sm={8} md={8} lg={8}>
+              <Typography
+                variant="body1"
+                sx={{
+                  overflowWrap: 'break-word',
+                  wordBreak: 'break-all',
+                }}
+              >
+                {userData?.permanentAddress?.name}
+                {userData?.permanentAddress?.addressLine1}
+                {", "}
+                {userData?.permanentAddress?.addressLine2}
+                {", "}
+                {DataValue[userData?.permanentAddress?.stateId]}
+                {", "}
+                {userData?.permanentAddress?.postalCode}
+              </Typography>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
+    </Box>
             </Grid>
           </Grid>
 
@@ -1672,7 +1692,7 @@ export default function UserDetailsPage() {
                             <Grid container spacing={2}>
                               <Grid item xs={2}>
                                 <Typography variant="body1">
-                                  <b>Name as on the Bank</b>
+                                  <b>Name as on the Bank :</b>
                                 </Typography>
                               </Grid>
                               <Grid item xs={10}>

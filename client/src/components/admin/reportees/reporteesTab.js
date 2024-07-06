@@ -7,23 +7,27 @@ import { Grid } from "@mui/material";
 
 const ReporteesTab = () => {
   const [selectedOption, setSelectedOption] = useState("");
-  const [currentPage, setCurrentPage] = useState(0);
-  const [breadcrumbs, setBreadcrumbs] = useState([]);
+  const [currentPage, setCurrentPage] = useState(
+    JSON.parse(localStorage.getItem("currentPage")) || 0
+  );
+  const [breadcrumbs, setBreadcrumbs] = useState(
+    JSON.parse(localStorage.getItem("breadcrumbs")) || []
+  ); // retrieve breadcrumbs from localStorage
   const size = 7;
   const dispatch = useDispatch();
   localStorage.setItem("selectedTabIndex", 2);
   localStorage.setItem("selectedSubTabIndex", 0);
   const empId = useSelector((state) => state?.persistData?.loginDetails?.data?.empId);
   const userName = useSelector((state) => state?.persistData?.loginDetails?.data.userName);
-  const lastBreadcrumbs = breadcrumbs [breadcrumbs.length - 1] ;
+  const lastBreadcrumbs = breadcrumbs[breadcrumbs.length - 1];
 
   useEffect(() => {
+    localStorage.setItem("currentPage", JSON.stringify(currentPage));
     if (empId) {
       dispatch(
         getMyReportessAction(
           {
-            
-            empId: breadcrumbs.length==0 ? empId : lastBreadcrumbs.id ,
+            empId: breadcrumbs.length === 0 ? empId : lastBreadcrumbs.id,
             page: currentPage,
             size: size,
           },
@@ -35,8 +39,7 @@ const ReporteesTab = () => {
 
   const handleFetchReportees = (empId, firstName, lastName) => {
     setBreadcrumbs((prevBreadcrumbs) => {
-      
-      const breadcrumbExists = prevBreadcrumbs.some(breadcrumb => breadcrumb.id === empId);
+      const breadcrumbExists = prevBreadcrumbs.some((breadcrumb) => breadcrumb.id === empId);
       if (!breadcrumbExists) {
         return [...prevBreadcrumbs, { id: empId, name: `${firstName} ${lastName}` }];
       }
@@ -54,7 +57,6 @@ const ReporteesTab = () => {
   };
 
   const handleBreadcrumbClick = (empId, index) => {
-
     if (index === -1) {
       setBreadcrumbs([]);
       dispatch(
@@ -80,11 +82,14 @@ const ReporteesTab = () => {
     }
     setCurrentPage(0);
   };
+
+  useEffect(() => {
+    localStorage.setItem("breadcrumbs", JSON.stringify(breadcrumbs)); // store breadcrumbs in localStorage
+  }, [breadcrumbs]);
   localStorage.removeItem("currentPage");
   return (
     <div>
       <ReporteesHeader
-      
         setSelectedOption={setSelectedOption}
         breadcrumbs={breadcrumbs}
         handleBreadcrumbClick={handleBreadcrumbClick}

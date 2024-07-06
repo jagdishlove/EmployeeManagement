@@ -31,7 +31,6 @@ export default function ProjectHeader({
   const projectStatus = useSelector(
     (state) => state.persistData?.loginDetails?.masterData?.projectStatus
   );
-
   // Handle change for  dropdown
   const handleDropdownChange = (event) => {
     const { value } = event.target;

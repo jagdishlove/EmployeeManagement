@@ -92,7 +92,10 @@ const UserDataListPage = ({ userData }) => {
         subheader={
           <Typography
             variant="body2"
-            sx={{ color: "#1D1B20", fontSize: "12px" }}
+            sx={{ color: "#1D1B20", fontSize: "12px" ,
+              overflowWrap: 'break-word',
+              wordBreak: 'break-all',
+            }}
           >{`${userData?.designation}`}</Typography>
         }
       />
@@ -111,7 +114,10 @@ const UserDataListPage = ({ userData }) => {
             </Typography>{" "}
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="body2" color="textSecondary">
+            <Typography variant="body2" color="textSecondary" sx={{
+                      overflowWrap: 'break-word',
+                      wordBreak: 'break-all',
+                    }}>
               <b style={{ color: "black" }}>Skill Set : </b>
               {userData.skills && userData.skills.length > 0 && (
                 <>

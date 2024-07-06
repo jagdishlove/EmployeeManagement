@@ -643,6 +643,7 @@ const CreateProjectFormDetails = () => {
           <Dropdown
             value={formData?.projectCategory}
             onChange={handleDropdownChange}
+            title="Select Category"
             dropdownName="projectCategory"
             options={masterdataProjectJobTypesList.filter(
               (job) => job.status === "ACTIVE"
@@ -826,6 +827,7 @@ const CreateProjectFormDetails = () => {
           <Dropdown
             value={formData?.domain}
             onChange={handleDropdownChange}
+              title="Select Domain"
             dropdownName="domain"
             options={domains}
             style={{
@@ -846,6 +848,7 @@ const CreateProjectFormDetails = () => {
           <Dropdown
             value={formData?.complexity}
             onChange={handleDropdownChange}
+              title="Select Complexity"
             dropdownName="complexity"
             style={{
               ...style.TimesheetTextField,

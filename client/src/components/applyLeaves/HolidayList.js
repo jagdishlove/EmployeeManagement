@@ -42,7 +42,10 @@ const HolidayList = () => {
         <h6 className="holidayListTitle">Fixed</h6>
         {fixedHolidays?.map((holiday) => {
           return (
-            <Box key={holiday.id}>
+            <Box key={holiday.id} sx={{
+              overflowWrap: 'break-word',
+              wordBreak: 'break-all',
+            }}>
               <p className="holidaylist" >
                 {formatDateString(holiday.date)} - {holiday.name}
               </p>
@@ -53,7 +56,10 @@ const HolidayList = () => {
         <h6 className="holidayListTitle01">Optional</h6>
         {optionalHolidays?.map((holiday) => {
           return (
-            <Box key={holiday.id}>
+            <Box key={holiday.id} sx={{
+              overflowWrap: 'break-word',
+              wordBreak: 'break-all',
+            }}>
               <p className="holidaylist">
                 {formatDateString(holiday.date)} - {holiday.name}
               </p>

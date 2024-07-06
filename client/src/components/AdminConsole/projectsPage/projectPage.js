@@ -8,8 +8,8 @@ import { Box } from "@mui/system";
 import ProjectHeader from "./projectHeader";
 
 const Projects = () => {
-  const ONGOING_PROJECTS = "ONGOING_PROJECTS";
-  const [projects, setProjects] = useState(ONGOING_PROJECTS);
+  const ALL = "ALL";
+  const [projects, setProjects] = useState(ALL);
   const [pageCounter, setPageCounter] = useState(2);
   const [searchData, setSearchData] = useState("");
   const dispatch = useDispatch();

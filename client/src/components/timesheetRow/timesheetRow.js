@@ -104,7 +104,6 @@ const TimesheetRow = ({
     toTime: "",
   });
 
-  console.log("withoutFormatTime", withoutFormatTime);
 
   const isSuccessSaveTimesheet = useSelector(
     (state) => state?.persistData?.timesheetData.isSuccess
@@ -445,8 +444,8 @@ const TimesheetRow = ({
       return approvedEmployee
         ? {
             status: "approved",
-            firstName: approvedEmployee.approverEmployee.firstName,
-            lastName: approvedEmployee.approverEmployee.lastName,
+            firstName: approvedEmployee?.approverEmployee?.firstName,
+            lastName: approvedEmployee?.approverEmployee?.lastName,
           }
         : null;
     } else if (data?.status === "SUBMITTED") {
@@ -466,8 +465,8 @@ const TimesheetRow = ({
       return approvedEmployee
         ? {
             status: "rejected",
-            firstName: approvedEmployee.approverEmployee.firstName,
-            lastName: approvedEmployee.approverEmployee.lastName,
+            firstName: approvedEmployee?.approverEmployee?.firstName,
+            lastName: approvedEmployee?.approverEmployee?.lastName,
           }
         : null;
     } else if (data?.status === "SAVED") {
