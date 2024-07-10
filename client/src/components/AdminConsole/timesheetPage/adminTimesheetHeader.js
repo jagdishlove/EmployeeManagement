@@ -65,6 +65,10 @@ export default function AdminTimesheetHeader({
     (state) => state?.persistData?.adminTimeSheet?.allTimeSheetsForAdmin
   );
 
+  const adminTimeSheetDataStored = useSelector(
+    (state) => state?.persistData?.adminTimeSheet?.timesheetDataStored
+  );
+
   return (
     <Grid>
       {" "}
@@ -167,8 +171,8 @@ export default function AdminTimesheetHeader({
               <b>
                 {" "}
                 Total Entries{" "}
-                {adminTimeSheetData?.numberOfElements
-                  ? adminTimeSheetData.numberOfElements
+                {adminTimeSheetDataStored.length > 0
+                  ? adminTimeSheetDataStored.length
                   : "0"}
                 /
                 {adminTimeSheetData?.totalElements

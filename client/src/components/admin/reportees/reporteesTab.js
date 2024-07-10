@@ -86,7 +86,7 @@ const ReporteesTab = () => {
   useEffect(() => {
     localStorage.setItem("breadcrumbs", JSON.stringify(breadcrumbs)); // store breadcrumbs in localStorage
   }, [breadcrumbs]);
-  localStorage.removeItem("currentPage");
+  localStorage.removeItem("pcurrentPage");
   return (
     <div>
       <ReporteesHeader

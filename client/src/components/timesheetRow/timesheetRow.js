@@ -3,7 +3,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
-
+import { format } from 'date-fns';
 import {
   Box,
   Button,
@@ -23,6 +23,7 @@ import { TimesheetStyle } from "../../pages/timesheet/timesheetStyle";
 import {
   clearSuccessFlag,
   deleteTimeSheetEntryAction,
+  getMostCommonTimesAction,
   resetUpdateTimesheet,
   saveTimeSheetEntryAction,
   updateTimeSheetEntryAction,
@@ -103,6 +104,7 @@ const TimesheetRow = ({
     fromTime: "",
     toTime: "",
   });
+
 
 
   const isSuccessSaveTimesheet = useSelector(
@@ -382,6 +384,8 @@ const TimesheetRow = ({
     }
   }, [errorTimesheetEdit]);
 
+  
+
   const handleEditData = async (id) => {
     const editFormTime = {
       fromTime: selectedValues.fromTime.substring(0, 5),
@@ -558,8 +562,63 @@ const TimesheetRow = ({
     padding: "8px", // Adjust padding as needed
   };
 
-  localStorage.removeItem("selectedProject");
+  localStorage.removeItem("selectedProject", "currentPage");
+  
+  const formatTimeForDisplay = (timeString) => {
+    const [hours, minutes] = timeString.split(':').map(Number);
+    const date = new Date();
+    date.setHours(hours, minutes, 0, 0);
+    return format(date, 'hh:mm a'); // Format to 12-hour format with AM/PM
+  };
+  
+
+  const mostCommonTimesData = useSelector(
+    (state) => state?.persistData?.timesheetData?.mostCommonTimesData
+  );
+  useEffect(() => {
+   
+    dispatch(getMostCommonTimesAction());
+  
+}, []);
+console.log("mostCommonTimesData", mostCommonTimesData)
+
+const handleCommonTimeClick = (fromTime, toTime) => {
+  console.log(`Selected time: ${fromTime} - ${toTime}`);
+  setSelectedValues((prevState) => ({
+    ...prevState,
+    fromTime: fromTime, // Store in 24-hour format for server communication
+    toTime: toTime,     // Store in 24-hour format for server communication
+  }));
+
+  setWithoutFormatTime({
+    fromTime: dayjs(fromTime, "HH:mm"),
+    toTime: dayjs(toTime, "HH:mm"),
+  });
+};
+
+
   return (
+
+<div className="timesheet-container">
+
+       
+{!data && mostCommonTimesData && (
+    <Grid container spacing={2} sx={{ marginBottom: 2 }}>
+      {mostCommonTimesData.map((timeEntry, index) => (
+        <Grid item key={index}>
+          <Button
+            variant="outlined"
+            onClick={() =>
+              handleCommonTimeClick(timeEntry.startTime, timeEntry.endTime)
+            }
+          >
+            {formatTimeForDisplay(timeEntry.startTime)} - {formatTimeForDisplay(timeEntry.endTime)}
+          </Button>
+        </Grid>
+      ))}
+    </Grid>
+  )}
+    
     <Box
       sx={{
         ...style.timesheetEntryUI,
@@ -638,6 +697,7 @@ const TimesheetRow = ({
         <></>
       )}
 
+
       <Grid container spacing={2}>
         {/* First Row */}
         <Grid container item spacing={2} xs={12} sm={12} md={7} lg={7}>
@@ -654,18 +714,7 @@ const TimesheetRow = ({
           >
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DemoItem>
-                {/* <TimePicker
-                label="From Time"
-                defaultValue={null}
-                sx={style.TimesheetTextField}
-                value={
-                  selectedValues.fromTime === ""
-                    ? null
-                    : selectedValues.fromTime
-                }
-                onChangeHandler={(e) => onChangeTimeHandler(e, "fromTime")}
-                disabled={disabled || approval || isHistory || superAdmin}
-              /> */}
+                
                 <TimePicker
                   label="From Time"
                   viewRenderers={{
@@ -688,15 +737,7 @@ const TimesheetRow = ({
             </LocalizationProvider>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DemoItem>
-                {/* <TimePicker
-                label="To Time"
-                sx={style.TimesheetTextFieldToTime}
-                value={
-                  selectedValues.toTime === "" ? null : selectedValues.toTime
-                }
-                onChangeHandler={(e) => onChangeTimeHandler(e, "toTime")}
-                disabled={disabled || approval || superAdmin}
-              /> */}
+              
                 <TimePicker
                   label="To Time"
                   viewRenderers={{
@@ -1187,6 +1228,7 @@ const TimesheetRow = ({
         </Box>
       )}
     </Box>
+    </div>
   );
 };
 

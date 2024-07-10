@@ -643,7 +643,7 @@ const CreateProjectFormDetails = () => {
           <Dropdown
             value={formData?.projectCategory}
             onChange={handleDropdownChange}
-            title="Select Category"
+            title={<span style={{color:"silver"}}>Select Category </span>}
             dropdownName="projectCategory"
             options={masterdataProjectJobTypesList.filter(
               (job) => job.status === "ACTIVE"
@@ -657,6 +657,7 @@ const CreateProjectFormDetails = () => {
 
               marginTop: "10px",
             }}
+            
           />
           {validationErrors.projectCategory && (
             <Typography variant="caption" color="error" fontSize={"1rem"}>
@@ -692,6 +693,7 @@ const CreateProjectFormDetails = () => {
                 {...params}
                 variant="outlined"
                 placeholder="Applicable Activities"
+                InputLabelProps={{ style: { color: "silver" } }}
               />
             )}
             name="applicableActivity"
@@ -827,7 +829,7 @@ const CreateProjectFormDetails = () => {
           <Dropdown
             value={formData?.domain}
             onChange={handleDropdownChange}
-              title="Select Domain"
+            title={<span style={{color:"silver"}}>Select Domain</span>}
             dropdownName="domain"
             options={domains}
             style={{
@@ -848,7 +850,7 @@ const CreateProjectFormDetails = () => {
           <Dropdown
             value={formData?.complexity}
             onChange={handleDropdownChange}
-              title="Select Complexity"
+              title={<span style={{color:"silver"}}>Select Complexity</span>}
             dropdownName="complexity"
             style={{
               ...style.TimesheetTextField,

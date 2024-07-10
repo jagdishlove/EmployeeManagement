@@ -28,6 +28,9 @@ import {
   GET_LAST_THREE_DATES_TIMESHEET_ENTRY_FAIL,
   GET_LAST_THREE_DATES_TIMESHEET_ENTRY_REQUEST,
   GET_LAST_THREE_DATES_TIMESHEET_ENTRY_SUCCESS,
+  GET_MOST_COMMON_TIMES_REQUEST,
+  GET_MOST_COMMON_TIMES_SUCCESS,
+  GET_MOST_COMMON_TIMES_FAIL,
 } from "./timeSheetActionType";
 
 export const clearSuccessFlag = () => {
@@ -177,6 +180,24 @@ const getLastThreeDaysTimesheetEntrySuccess = (response) => {
 const getLastThreeDaysTimesheetEntryFail = () => {
   return {
     type: GET_LAST_THREE_DATES_TIMESHEET_ENTRY_FAIL,
+  };
+};
+
+const getMostCommonTimesRequest = () => {
+  return {
+    type: GET_MOST_COMMON_TIMES_REQUEST,
+  };
+};
+const getMostCommonTimesSuccess = (response) => {
+  
+  return {
+    type: GET_MOST_COMMON_TIMES_SUCCESS,
+    payload: response,
+  };
+};
+const getMostCommonTimesFail = () => {
+  return {
+    type: GET_MOST_COMMON_TIMES_FAIL,
   };
 };
 
@@ -381,14 +402,32 @@ export const getLastThreeTimesheetEntryAction = (data) => {
         data
       );
      
-      // Console log the response here
-      console.log("response", response);
+     
       dispatch(getLastThreeDaysTimesheetEntrySuccess(response));
     } catch (err) {
       if (err.response.data.errorCode === 403) {
         dispatch(getRefreshToken());
       }
       dispatch(getLastThreeDaysTimesheetEntryFail());
+      dispatch(errorMessage(err.response.data.errorMessage));
+    }
+  };
+};
+
+
+export const getMostCommonTimesAction = () => {
+  return async (dispatch) => {
+    try {
+      dispatch(getMostCommonTimesRequest());
+      const response = await makeRequest("GET", `/api/timesheetentry/mostCommonTimes`);
+   
+      dispatch(getMostCommonTimesSuccess(response));
+      console.log("response", response);
+    } catch (err) {
+      if (err.response.data.errorCode === 403) {
+        dispatch(getRefreshToken());
+      }
+      dispatch(getMostCommonTimesFail());
       dispatch(errorMessage(err.response.data.errorMessage));
     }
   };
