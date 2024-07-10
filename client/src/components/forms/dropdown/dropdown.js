@@ -101,9 +101,9 @@ const Dropdown = ({
                     <div
                       style={{
                         
-                        color: "#fff",
+                        color: "red",
                         textAlign: "center",
-                        backgroundColor: "red",
+                       fontWeight:"bold",
                         borderRadius: "50%",
                         width: "24px",
                         height: "24px",

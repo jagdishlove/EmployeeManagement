@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -20,15 +21,14 @@ import {
   adminRejectTimesheet,
   getAllTimeSheetApprovers,
   getAllTimeSheetForAdmin,
-  resetAllTimesheetForAdminData,
 } from "../../../redux/actions/AdminConsoleAction/timeSheet/adminTimesheetAction";
 import dayjs from "dayjs";
 import InfiniteScroll from "react-infinite-scroll-component";
 import icon from "../../../assets/Featured icon.svg";
 import CloseIcon from "@mui/icons-material/Close";
-import LoadingOverlay from "../LoadingOverlay/LoadingOverlay";
+import { STORE_TIMESHEET_DATA } from "../../../redux/actions/AdminConsoleAction/timeSheet/adminTimesheetActionType";
 
-const AdminTimeSheet = () => {
+function AdminTimeSheet() {
   const [approver, setApprover] = useState("All");
   const [selectedDate, setSelectedDate] = useState("All");
   const [states, setStatus] = useState("SUBMITTED");
@@ -47,6 +47,16 @@ const AdminTimeSheet = () => {
   // const [isChecked, setIsChecked] = useState(false);
   const [selectall, setSelectall] = useState(false);
 
+  useEffect(() => {
+    dispatch({
+      type: STORE_TIMESHEET_DATA,
+      payload: {
+        data: [], // Initialize as an empty array
+        message: "null", // Pass your string here
+      },
+    });
+  }, []);
+
   const params = {
     status: states,
     date:
@@ -61,6 +71,7 @@ const AdminTimeSheet = () => {
         ? dayjs(selectedDate, { format: "YYYY-MM-DD" }).format("YYYY-MM-DD")
         : "",
     approverId: approver === "All" ? "" : approver,
+    page: pageCounter * 1,
   };
 
   useEffect(() => {
@@ -76,16 +87,45 @@ const AdminTimeSheet = () => {
   }, [states, selectedDate, dispatch]);
 
   useEffect(() => {
-    fetchMore();
+    dispatch(
+      getAllTimeSheetForAdmin(
+        {
+          status: states,
+          date:
+            selectedDate !== "All"
+              ? dayjs(selectedDate, { format: "YYYY-MM-DD" }).format(
+                  "YYYY-MM-DD"
+                )
+              : "",
+          approverId: approver === "All" ? "" : approver,
+          page: pageCounter * 1,
+        },
+        selectedSearchOption
+      )
+    );
+  }, [
+    selectedDate,
+    selectedSearchOption,
+    approver,
+    states,
+    pageCounter,
+    dispatch,
+  ]);
 
-    return () => dispatch(resetAllTimesheetForAdminData());
+  const adminTimeSheetData = useSelector(
+    (state) => state?.persistData?.adminTimeSheet?.allTimeSheetsForAdmin
+  );
+
+  const adminTimeSheetDataStored = useSelector(
+    (state) => state?.persistData?.adminTimeSheet?.timesheetDataStored
+  );
+
+  useEffect(() => {
+    dispatch({
+      type: STORE_TIMESHEET_DATA,
+      payload: adminTimeSheetData?.content || [], // Ensure it's an array or defaults to an empty array
+    });
   }, []);
-
-  const {
-    allTimeSheetsForAdmin: adminTimeSheetData,
-    allTimeSheetsForAdminLoading,
-  } = useSelector((state) => state?.persistData?.adminTimeSheet);
-
 
   const { adminConsoleApproveTimesheetLoading } = useSelector(
     (state) => state?.persistData?.adminTimeSheet
@@ -128,7 +168,7 @@ const AdminTimeSheet = () => {
   };
 
   const handleSelectAll = () => {
-    const entriesToApprove = adminTimeSheetData?.content || [];
+    const entriesToApprove = adminTimeSheetDataStored || [];
     const updatedSelectedCards = {};
     const allSelected = !selectall;
 
@@ -202,7 +242,7 @@ const AdminTimeSheet = () => {
   };
 
   const bulkApproveHandler = async () => {
-    const entriesToApprove = adminTimeSheetData?.content || [];
+    const entriesToApprove = adminTimeSheetDataStored || [];
 
     const errors = {};
     const approvedEntries = [];
@@ -240,7 +280,7 @@ const AdminTimeSheet = () => {
                     )
                   : "",
               approverId: approver === "All" ? "" : approver,
-              size: pageCounter,
+              page: pageCounter,
             },
             selectedSearchOption,
             {
@@ -254,6 +294,14 @@ const AdminTimeSheet = () => {
             }
           )
         );
+        await dispatch({
+          type: STORE_TIMESHEET_DATA,
+          payload: {
+            timesheetEntryIds: approvedEntries.map(
+              (entry) => entry.timesheetEntryId
+            ), // Pass the array of timesheetEntryIds
+          },
+        });
         setErrorValidation({});
         setPageCounter(1);
       } finally {
@@ -283,6 +331,7 @@ const AdminTimeSheet = () => {
   };
 
   const fetchMore = () => {
+    const nextPage = pageCounter + 1;
     dispatch(
       getAllTimeSheetForAdmin(
         {
@@ -294,17 +343,21 @@ const AdminTimeSheet = () => {
                 )
               : "",
           approverId: approver === "All" ? "" : approver,
-          size: 10,
-          page: pageCounter,
+          page: nextPage,
         },
         selectedSearchOption
       )
     );
-    setPageCounter((counter) => counter + 1);
+    setPageCounter(nextPage); // Update pageCounter after dispatch
+
+    dispatch({
+      type: STORE_TIMESHEET_DATA,
+      payload: adminTimeSheetData?.content || [], // Ensure it's an array or defaults to an empty array
+    });
   };
 
   const approveSelectedLeavesHandler = async () => {
-    const entriesToApprove = adminTimeSheetData?.content || [];
+    const entriesToApprove = adminTimeSheetDataStored || [];
 
     const errors = {};
     const approvedEntries = [];
@@ -336,7 +389,7 @@ const AdminTimeSheet = () => {
     if (Object.keys(errors).length === 0) {
       try {
         // Dispatch the approval action for selected leaves
-        dispatch(
+        await dispatch(
           adminApproveTimesheet(
             approvedEntries,
             {
@@ -348,7 +401,7 @@ const AdminTimeSheet = () => {
                     )
                   : "",
               approverId: approver === "All" ? "" : approver,
-              size: 10,
+              page: 10,
             },
             selectedSearchOption,
             {
@@ -404,12 +457,25 @@ const AdminTimeSheet = () => {
     setSelectall(false);
   };
   localStorage.removeItem("selectedProject");
-  const loading =
-    adminConsoleApproveTimesheetLoading || allTimeSheetsForAdminLoading;
 
   return (
     <Grid>
-      <LoadingOverlay isLoading={loading} />
+      {adminConsoleApproveTimesheetLoading && (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          position="fixed"
+          top="0"
+          left="0"
+          width="100%"
+          height="100%"
+          bgcolor="rgba(255, 255, 255, 0.7)"
+          zIndex="1000"
+        >
+          <CircularProgress />
+        </Box>
+      )}
       <AdminTimesheetHeader
         setApprover={setApproverHandler}
         approver={approver}
@@ -489,37 +555,49 @@ const AdminTimeSheet = () => {
         </Box>
       ) : (
         <InfiniteScroll
-          dataLength={adminTimeSheetData?.content?.length || 0}
-          hasMore={adminTimeSheetData?.content?.length !== 0}
-          next={pageCounter === 0 ? "" : fetchMore}
+          dataLength={adminTimeSheetDataStored?.length || 0}
+          next={fetchMore}
+          hasMore={adminTimeSheetData?.content?.length > 0}
+          loader={<CircularProgress />}
+          endMessage={
+            <p style={{ textAlign: "center" }}>
+              <b>Yay! You have seen it all</b>
+            </p>
+          }
         >
-          {adminTimeSheetData?.content?.map((entry) => (
-            <TimesheetRow
-              key={entry.timesheetEntryId}
-              data={entry}
-              superAdmin={true}
-              approval={true}
-              selected={selectedTimesheets.includes(entry.timesheetEntryId)}
-              onSelect={handleSelectTimesheet}
-              approveSubmitHandler={approveSubmitHandler}
-              rejectButtonHandler={rejectButtonHandler}
-              bulkApproveHandler={bulkApproveHandler}
-              errorValidation={errorValidation[entry.timesheetEntryId]}
-              activityType={entry.activityType}
-              comments={comments[entry.timesheetEntryId] || ""}
-              ratings={ratings[entry.timesheetEntryId] || 5}
-              onCommentChange={(comment) =>
-                handleCommentChange(entry.timesheetEntryId, comment)
-              }
-              onRatingChange={(rating) =>
-                handleRatingChange(entry.timesheetEntryId, rating)
-              }
-              onCardSelect={onCardSelect}
-              selectedCards={selectedCards}
-              setSelectedCards={setSelectedCards}
-              handleCheckboxChange={handleCheckboxChange}
-            />
-          ))}
+          {adminTimeSheetDataStored ? (
+            adminTimeSheetDataStored?.map((entry) => (
+              <TimesheetRow
+                key={entry.timesheetEntryId}
+                data={entry}
+                superAdmin={true}
+                approval={true}
+                selected={selectedTimesheets.includes(entry.timesheetEntryId)}
+                onSelect={handleSelectTimesheet}
+                approveSubmitHandler={approveSubmitHandler}
+                rejectButtonHandler={rejectButtonHandler}
+                bulkApproveHandler={bulkApproveHandler}
+                errorValidation={errorValidation[entry.timesheetEntryId]}
+                activityType={entry.activityType}
+                comments={comments[entry.timesheetEntryId] || ""}
+                ratings={ratings[entry.timesheetEntryId] || 5}
+                onCommentChange={(comment) =>
+                  handleCommentChange(entry.timesheetEntryId, comment)
+                }
+                onRatingChange={(rating) =>
+                  handleRatingChange(entry.timesheetEntryId, rating)
+                }
+                onCardSelect={onCardSelect}
+                selectedCards={selectedCards}
+                setSelectedCards={setSelectedCards}
+                handleCheckboxChange={handleCheckboxChange}
+              />
+            ))
+          ) : (
+            <h1 style={{ textAlign: "center", marginTop: "10px" }}>
+              Loading..
+            </h1>
+          )}
         </InfiniteScroll>
       )}
       <Dialog open={openPopup} onClose={handleClosePopup}>
@@ -584,6 +662,6 @@ const AdminTimeSheet = () => {
       </Dialog>
     </Grid>
   );
-};
+}
 
 export default AdminTimeSheet;

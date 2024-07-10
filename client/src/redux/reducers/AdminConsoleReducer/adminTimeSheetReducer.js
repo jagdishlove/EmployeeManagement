@@ -11,6 +11,7 @@ import {
   ADMIN_CONSOLE_APPROVE_TIMESHEET_REQUEST,
   ADMIN_CONSOLE_APPROVE_TIMESHEET_SUCCESS,
   ADMIN_CONSOLE_APPROVE_TIMESHEET_FAILURE,
+  STORE_TIMESHEET_DATA,
 } from "../../actions/AdminConsoleAction/timeSheet/adminTimesheetActionType";
 
 const initialState = {
@@ -18,9 +19,8 @@ const initialState = {
   approversData: [],
   allTimeSheetsForAdmin: [],
   adminConsoleApproveTimesheetLoading: false,
-  allTimeSheetsForAdminLoading: false,
+  timesheetDataStored: [],
 };
-
 const adminTimeSheetReducer = (state = initialState, action) => {
   switch (action.type) {
     case SEARCH_USERNAME_REQUEST:
@@ -52,25 +52,16 @@ const adminTimeSheetReducer = (state = initialState, action) => {
     case GET_ALL_TIMESHEET_FOR_ADMIN_REQUEST:
       return {
         ...state,
-        allTimeSheetsForAdminLoading: true,
       };
     case GET_ALL_TIMESHEET_FOR_ADMIN_SUCCESS:
       return {
         ...state,
         allTimeSheetsForAdmin: action.payload,
-        allTimeSheetsForAdminLoading: false,
       };
     case GET_ALL_TIMESHEET_FOR_ADMIN_FAILURE:
       return {
         ...state,
-        allTimeSheetsForAdminLoading: false,
       };
-    case "GET_ALL_TIMESHEET_FOR_ADMIN_RESET":
-      return {
-        ...state,
-        allTimeSheetsForAdmin: [],
-      };
-
     case ADMIN_CONSOLE_APPROVE_TIMESHEET_REQUEST:
       return {
         ...state,
@@ -86,6 +77,41 @@ const adminTimeSheetReducer = (state = initialState, action) => {
         ...state,
         adminConsoleApproveTimesheetLoading: false,
       };
+    case STORE_TIMESHEET_DATA:
+      console.log("STORE_TIMESHEET_DATA", action.payload);
+      console.log("Current timesheetDataStored", state.timesheetDataStored);
+
+      // Check if timesheetEntryIds exist in the payload and it's an array
+      if (
+        Array.isArray(action.payload.timesheetEntryId) &&
+        action.payload.timesheetEntryId.length > 0
+      ) {
+        // Filter out records with timesheetEntryIds that exist in action.payload.timesheetEntryIds
+        const updatedTimesheetDataStored = state.timesheetDataStored.filter(
+          (entry) =>
+            !action.payload.timesheetEntryId.includes(entry.timesheetEntryId)
+        );
+
+        return {
+          ...state,
+          timesheetDataStored: updatedTimesheetDataStored,
+        };
+      }
+
+      if (action.payload.message === "null") {
+        return {
+          ...state,
+          timesheetDataStored: [],
+        };
+      } else {
+        return {
+          ...state,
+          timesheetDataStored: state.timesheetDataStored
+            .flat()
+            .concat(action.payload),
+        };
+      }
+
     default:
       return state;
   }

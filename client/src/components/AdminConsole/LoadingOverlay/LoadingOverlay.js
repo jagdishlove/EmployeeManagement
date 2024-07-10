@@ -4,7 +4,7 @@ import { Box, CircularProgress } from "@mui/material";
 const LoadingOverlay = ({ isLoading }) => {
   useEffect(() => {
     if (isLoading) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = "auto";
     } else {
       document.body.style.overflow = "auto";
     }

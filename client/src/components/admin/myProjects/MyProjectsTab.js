@@ -8,26 +8,26 @@ import { Grid } from "@mui/material";
 const MyProjectsTab = () => {
   const [project, setProject] = useState("All");
   const [selectedOption, setSelectedOption] = useState("");
-  const [currentPage, setCurrentPage] = useState(
-    JSON.parse(localStorage.getItem("currentPage")) || 0
+  const [pcurrentPage, setpCurrentPage] = useState(
+    JSON.parse(localStorage.getItem("pcurrentPage")) || 0
   );
   const size = 7;
   const dispatch = useDispatch();
   localStorage.setItem("selectedTabIndex", 1);
   localStorage.setItem("selectedSubTabIndex", 0);
   useEffect(() => {
-    localStorage.setItem("currentPage", JSON.stringify(currentPage));
+    localStorage.setItem("pcurrentPage", JSON.stringify(pcurrentPage));
     dispatch(
       getAllReportessAction(
         {
           projectId: project === "All" ? "" : project,
-          page: currentPage,
+          page: pcurrentPage,
           size: size,
         },
         selectedOption
       )
     );
-  }, [project, selectedOption, currentPage]);
+  }, [project, selectedOption, pcurrentPage]);
   return (
     <div>
       <MyProjectsHeader
@@ -38,8 +38,8 @@ const MyProjectsTab = () => {
       />
       <Grid sx={{ paddingLeft: "20px" }}>
         <MyProjectsList
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
+          pcurrentPage={pcurrentPage}
+          setpCurrentPage={setpCurrentPage}
         />
       </Grid>
     </div>

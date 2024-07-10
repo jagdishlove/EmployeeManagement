@@ -569,7 +569,7 @@ export default function UserDetailsPage() {
     if (formSaved === 'true') {
       // Clear the flag
       localStorage.removeItem('formSaved');
-      localStorage.removeItem('currentPage'); // Clear the stored page number
+      localStorage.removeItem('currentPage', 'pcurrentPage'); // Clear the stored page number
       Navigate("/users");
     } else {
       Navigate(-1);

@@ -24,7 +24,7 @@ import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-export default function MyProjectsList({ currentPage, setCurrentPage }) {
+export default function MyProjectsList({ pcurrentPage, setpCurrentPage }) {
   const [expandedRows, setExpandedRows] = useState([]);
   const [expandedProjects, setExpandedProjects] = useState([]);
 
@@ -40,16 +40,16 @@ export default function MyProjectsList({ currentPage, setCurrentPage }) {
 
   useEffect(() => {
     // Retrieve current page from local storage
-    const storedPage = localStorage.getItem("currentPage");
+    const storedPage = localStorage.getItem("pcurrentPage");
     if (storedPage) {
-      setCurrentPage(Number(storedPage));
+      setpCurrentPage(Number(storedPage));
     }
-  }, [setCurrentPage]);
+  }, [setpCurrentPage]);
 
   useEffect(() => {
     // Store current page in local storage whenever it changes
-    localStorage.setItem("currentPage", currentPage);
-  }, [currentPage]);
+    localStorage.setItem("pcurrentPage", pcurrentPage);
+  }, [pcurrentPage]);
 
   const toggleRowExpansion = (index) => {
     if (expandedRows.includes(index)) {
@@ -80,14 +80,14 @@ export default function MyProjectsList({ currentPage, setCurrentPage }) {
   const totalPages = reporteesPages?.totalPages;
 
   const handlePrevPage = () => {
-    if (currentPage > 0) {
-      setCurrentPage((prevPage) => prevPage - 1);
+    if (pcurrentPage > 0) {
+      setpCurrentPage((prevPage) => prevPage - 1);
     }
   };
 
   const handleNextPage = () => {
-    if (currentPage < totalPages - 1) {
-      setCurrentPage((prevPage) => prevPage + 1);
+    if (pcurrentPage < totalPages - 1) {
+      setpCurrentPage((prevPage) => prevPage + 1);
     }
   };
 
@@ -96,8 +96,8 @@ export default function MyProjectsList({ currentPage, setCurrentPage }) {
   };
 
   const recordsPerPage = 7; // Number of records to display per page
-  const startIndex = currentPage * recordsPerPage;
-
+  const startIndex = pcurrentPage * recordsPerPage;
+  localStorage.removeItem("currentPage");
   return (
     <Grid
       container
@@ -117,14 +117,14 @@ export default function MyProjectsList({ currentPage, setCurrentPage }) {
             justifyContent="flex-end"
           >
             <Typography variant="body1" sx={{ color: "#5E5E5E" }}>
-              {currentPage + 1} of {totalPages} Pages
+              {pcurrentPage + 1} of {totalPages} Pages
             </Typography>
-            <IconButton onClick={handlePrevPage} disabled={currentPage === 0}>
+            <IconButton onClick={handlePrevPage} disabled={pcurrentPage === 0}>
               <KeyboardArrowLeftOutlinedIcon />
             </IconButton>
             <IconButton
               onClick={handleNextPage}
-              disabled={currentPage === totalPages - 1}
+              disabled={pcurrentPage === totalPages - 1}
             >
               <ChevronRightOutlinedIcon />
             </IconButton>

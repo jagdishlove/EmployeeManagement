@@ -40,6 +40,9 @@ export default function ApprovalTab() {
     navigate(type); // Navigate to the specified route
   };
 
+  
+  localStorage.removeItem("currentPage", "pcurrentPage");
+  localStorage.removeItem( "pcurrentPage");
   return (
     <div>
       <Tabs selectedIndex={selectedTab} onSelect={(index) => handleNavigate(index, index === 0 ? "/workspace/Approval" : "/workspace/Approval/leaves")}>

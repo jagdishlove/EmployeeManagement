@@ -14,6 +14,9 @@ import {
   GET_LAST_THREE_DATES_TIMESHEET_ENTRY_FAIL,
   GET_LAST_THREE_DATES_TIMESHEET_ENTRY_REQUEST,
   GET_LAST_THREE_DATES_TIMESHEET_ENTRY_SUCCESS,
+  GET_MOST_COMMON_TIMES_REQUEST,
+  GET_MOST_COMMON_TIMES_SUCCESS,
+  GET_MOST_COMMON_TIMES_FAIL,
 } from "../actions/timeSheet/timeSheetActionType";
 
 // Initial state
@@ -24,6 +27,8 @@ const initialState = {
   isSuccess: false,
   errorTimesheetEdit: false,
   lastthreetimeSheetData:[],
+  mostCommonTimesData: [],
+  mostCommonTimesloading: false,
 };
 
 // Reducer function
@@ -104,7 +109,7 @@ const timesheetReducer = (state = initialState, action) => {
         ...state,
       };
       case GET_LAST_THREE_DATES_TIMESHEET_ENTRY_SUCCESS:
-        console.log('Action payload:', action.payload);
+       
         return {
           ...state,
           lastthreetimeSheetData: action.payload,
@@ -114,6 +119,25 @@ const timesheetReducer = (state = initialState, action) => {
       return {
         ...state,
         lastthreetimeSheetData: [],
+      };
+    }
+    case GET_MOST_COMMON_TIMES_REQUEST:
+      return {
+        ...state,
+        mostCommonTimesloading: true,
+      };
+    case GET_MOST_COMMON_TIMES_SUCCESS:
+      console.log('Action payload:', action.payload);
+      return {
+        ...state,
+        mostCommonTimesData: action.payload,
+        mostCommonTimesloading: false,
+      };
+    case GET_MOST_COMMON_TIMES_FAIL: {
+      return {
+        ...state,
+        mostCommonTimesData: [],
+        mostCommonTimesloading: false,
       };
     }
     default:
