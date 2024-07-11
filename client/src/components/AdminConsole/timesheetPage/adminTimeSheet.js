@@ -125,7 +125,7 @@ function AdminTimeSheet() {
       type: STORE_TIMESHEET_DATA,
       payload: adminTimeSheetData?.content || [], // Ensure it's an array or defaults to an empty array
     });
-  }, []);
+  }, [adminTimeSheetData]);
 
   const { adminConsoleApproveTimesheetLoading } = useSelector(
     (state) => state?.persistData?.adminTimeSheet
@@ -294,14 +294,7 @@ function AdminTimeSheet() {
             }
           )
         );
-        await dispatch({
-          type: STORE_TIMESHEET_DATA,
-          payload: {
-            timesheetEntryIds: approvedEntries.map(
-              (entry) => entry.timesheetEntryId
-            ), // Pass the array of timesheetEntryIds
-          },
-        });
+       
         setErrorValidation({});
         setPageCounter(1);
       } finally {
