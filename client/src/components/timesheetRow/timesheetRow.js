@@ -167,8 +167,10 @@ const TimesheetRow = ({
     activity: "",
     comments: "",
     adminComment: "",
-    fromTime: mostCommonTimesData?.[0].startTime,
-    toTime: mostCommonTimesData?.[0].endTime,
+    fromTime:
+      mostCommonTimesData.length > 0 ? mostCommonTimesData?.[0]?.startTime : "",
+    toTime:
+      mostCommonTimesData.length > 0 ? mostCommonTimesData?.[0]?.endTime : "",
     rating: "",
   };
 
@@ -185,6 +187,20 @@ const TimesheetRow = ({
   const [selectedValues, setSelectedValues] = useState(
     data ? editedSelectedValues : initialSelectedValues
   );
+  useEffect(() => {
+    if (mostCommonTimesData.length > 0 && !data) {
+      setSelectedValues((prev) => ({
+        ...prev,
+        fromTime: mostCommonTimesData?.[0]?.startTime,
+        toTime: mostCommonTimesData?.[0]?.endTime,
+      }));
+    } else {
+      setSelectedValues(editedSelectedValues);
+    }
+  }, [mostCommonTimesData]);
+
+  console.log("selectedValues", selectedValues);
+
   useEffect(() => {
     if (updatedActivityameList?.length > 1 && timesheetForm) {
       setSelectedValues({
@@ -573,7 +589,6 @@ const TimesheetRow = ({
   useEffect(() => {
     dispatch(getMostCommonTimesAction());
   }, []);
-  console.log("mostCommonTimesData", mostCommonTimesData);
 
   const handleCommonTimeClick = (fromTime, toTime) => {
     setSelectedValues((prevState) => ({
@@ -715,7 +730,7 @@ const TimesheetRow = ({
                         ? null
                         : withoutFormatTime.fromTime
                         ? withoutFormatTime.fromTime
-                        : parseTimeStringToDate(selectedValues.fromTime)
+                        : parseTimeStringToDate(selectedValues.fromTime) || ""
                     }
                     onChange={(e) => onChangeTimeHandler(e, "fromTime")}
                     disabled={disabled || approval || isHistory || superAdmin}
