@@ -555,6 +555,10 @@ const TimesheetRow = ({
   };
 
   const parseTimeStringToDate = (timeString) => {
+    if (!timeString) {
+      console.error("Invalid timeString:", timeString);
+      return null; // Or you can return a default date value if needed
+    }
     const [hours, minutes] = timeString.split(":").map(Number);
     const date = new Date();
     date.setHours(hours, minutes, 0);
@@ -637,8 +641,9 @@ const TimesheetRow = ({
       .sort((a, b) =>
         moment(a.startTime, "HH:mm:ss").diff(moment(b.startTime, "HH:mm:ss"))
       );
-    const fromTime = newSortedTimeSheetData[0]?.startTime;
-    const toTime = newSortedTimeSheetData[0]?.endTime;
+    const lastIndex = newSortedTimeSheetData[newSortedTimeSheetData.length - 1];
+    const fromTime = lastIndex?.startTime;
+    const toTime = lastIndex?.endTime;
     const matchingDataTime = matchingDataWithTime(toTime);
     const findMatchingStartTimes = (toTime, array) => {
       const toTimeDate = new Date(`1970-01-01T${toTime}Z`);
