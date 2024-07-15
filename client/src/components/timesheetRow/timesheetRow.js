@@ -3,7 +3,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
-import { format } from 'date-fns';
+import { format } from "date-fns";
 import {
   Box,
   Button,
@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { DemoItem } from "@mui/x-date-pickers/internals/demo";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { TimesheetStyle } from "../../pages/timesheet/timesheetStyle";
 import {
@@ -43,6 +43,7 @@ import { renderTimeViewClock } from "@mui/x-date-pickers/timeViewRenderers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
+import moment from "moment";
 
 const TimesheetRow = ({
   selectedDate,
@@ -104,8 +105,10 @@ const TimesheetRow = ({
     fromTime: "",
     toTime: "",
   });
-
-
+  const [preFillTimeSheetRow, setPreFillTimeSheetRow] = useState({
+    fromTime: "",
+    toTime: "",
+  });
 
   const isSuccessSaveTimesheet = useSelector(
     (state) => state?.persistData?.timesheetData.isSuccess
@@ -170,10 +173,8 @@ const TimesheetRow = ({
     activity: "",
     comments: "",
     adminComment: "",
-   fromTime:
-      "",
-    toTime:
-      "",
+    fromTime: "",
+    toTime: "",
     rating: "",
   };
 
@@ -190,8 +191,6 @@ const TimesheetRow = ({
   const [selectedValues, setSelectedValues] = useState(
     data ? editedSelectedValues : initialSelectedValues
   );
-
- 
 
   useEffect(() => {
     if (updatedActivityameList?.length > 1 && timesheetForm) {
@@ -393,8 +392,6 @@ const TimesheetRow = ({
     }
   }, [errorTimesheetEdit]);
 
-  
-
   const handleEditData = async (id) => {
     const editFormTime = {
       fromTime: selectedValues.fromTime.substring(0, 5),
@@ -572,679 +569,779 @@ const TimesheetRow = ({
   };
 
   localStorage.removeItem("selectedProject", "currentPage");
-  
+
   const formatTimeForDisplay = (timeString) => {
-    const [hours, minutes] = timeString.split(':').map(Number);
+    const [hours, minutes] = timeString.split(":").map(Number);
     const date = new Date();
     date.setHours(hours, minutes, 0, 0);
-    return format(date, 'hh:mm a'); // Format to 12-hour format with AM/PM
+    return format(date, "hh:mm a"); // Format to 12-hour format with AM/PM
   };
-  
 
- 
   useEffect(() => {
-   
     dispatch(getMostCommonTimesAction());
-  
-}, []);
-console.log("mostCommonTimesData", mostCommonTimesData)
+  }, []);
 
-const handleCommonTimeClick = (fromTime, toTime) => {
-  console.log(`Selected time: ${fromTime} - ${toTime}`);
-  setSelectedValues((prevState) => ({
-    ...prevState,
-    fromTime: fromTime, // Store in 24-hour format for server communication
-    toTime: toTime,     // Store in 24-hour format for server communication
-  }));
+  const handleCommonTimeClick = (fromTime, toTime) => {
+    setSelectedValues((prevState) => ({
+      ...prevState,
+      fromTime: fromTime, // Store in 24-hour format for server communication
+      toTime: toTime, // Store in 24-hour format for server communication
+    }));
 
-  setWithoutFormatTime({
-    fromTime: dayjs(fromTime, "HH:mm"),
-    toTime: dayjs(toTime, "HH:mm"),
-  });
-};
-// Function to sort times
-const sortTimes = (times) => {
-  return times.slice().sort((a, b) => {
-    const timeA = dayjs(a.startTime, "HH:mm");
-    const timeB = dayjs(b.startTime, "HH:mm");
-    return timeA.isBefore(timeB) ? -1 : timeA.isAfter(timeB) ? 1 : 0;
-  });
-};
+    setWithoutFormatTime({
+      fromTime: dayjs(fromTime, "HH:mm"),
+      toTime: dayjs(toTime, "HH:mm"),
+    });
+  };
+  // Function to sort times
+  const sortTimes = (times) => {
+    return times.slice().sort((a, b) => {
+      const timeA = dayjs(a.startTime, "HH:mm");
+      const timeB = dayjs(b.startTime, "HH:mm");
+      return timeA.isBefore(timeB) ? -1 : timeA.isAfter(timeB) ? 1 : 0;
+    });
+  };
 
-// Sorted mostCommonTimesData
-const sortedMostCommonTimesData = sortTimes(mostCommonTimesData || []);
+  // Sorted mostCommonTimesData
+  const sortedMostCommonTimesData = useMemo(
+    () => sortTimes(mostCommonTimesData || []),
+    [mostCommonTimesData]
+  );
+  const matchingDataWithTime = (toTime) => {
+    const isGivenTimeInList = sortedMostCommonTimesData.some(
+      (item) => item.startTime.slice(0, 2) === toTime.slice(0, 2)
+    );
+    if (isGivenTimeInList) {
+      return isGivenTimeInList;
+    }
+
+    const toTimeDate = new Date(`1970-01-01T${toTime}Z`);
+    // If no exact match, find the first item where startTime is greater than or equal to toTime
+    const filteredData = sortedMostCommonTimesData
+      ?.filter((item) => {
+        const startTimeDate = new Date(`1970-01-01T${item.startTime}Z`);
+        return startTimeDate > toTimeDate;
+      })
+      .sort((a, b) => {
+        const startTimeDateA = new Date(`1970-01-01T${a.startTime}Z`);
+        const startTimeDateB = new Date(`1970-01-01T${b.startTime}Z`);
+        return startTimeDateA - startTimeDateB;
+      });
+    // Return the nearest match or an empty array if none found
+    return !!filteredData;
+  };
+
+  const timeSheetDataFunction = () => {
+    const newSortedTimeSheetData = getTimesheetData
+      ?.slice()
+      .sort((a, b) =>
+        moment(a.startTime, "HH:mm:ss").diff(moment(b.startTime, "HH:mm:ss"))
+      );
+    const fromTime = newSortedTimeSheetData[0]?.startTime;
+    const toTime = newSortedTimeSheetData[0]?.endTime;
+    const matchingDataTime = matchingDataWithTime(toTime);
+    const findMatchingStartTimes = (toTime, array) => {
+      const toTimeDate = new Date(`1970-01-01T${toTime}Z`);
+
+      // Check for exact match
+      const matchingItems = array.filter((item) => item.startTime === toTime);
+      if (matchingItems.length > 0) {
+        return matchingItems;
+      }
+
+      // If no exact match, find startTimes greater than toTime and sort them
+      const sorted = array
+        .filter((item) => {
+          const startTimeDate = new Date(`1970-01-01T${item.startTime}Z`);
+          return startTimeDate > toTimeDate;
+        })
+        .sort((a, b) => {
+          const startTimeDateA = new Date(`1970-01-01T${a.startTime}Z`);
+          const startTimeDateB = new Date(`1970-01-01T${b.startTime}Z`);
+          return startTimeDateA - startTimeDateB;
+        });
+      return sorted;
+    };
+    if (matchingDataTime) {
+      const filtered = findMatchingStartTimes(
+        toTime,
+        sortedMostCommonTimesData
+      );
+      console.log("filtered", filtered);
+      setPreFillTimeSheetRow({
+        fromTime: filtered[0]?.startTime,
+        toTime: filtered[0]?.endTime,
+      });
+    } else {
+      setPreFillTimeSheetRow({
+        fromTime: "",
+        toTime: "",
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (sortedMostCommonTimesData) {
+      if (getTimesheetData?.length > 0) {
+        timeSheetDataFunction();
+      } else {
+        setPreFillTimeSheetRow({
+          fromTime: sortedMostCommonTimesData[0]?.startTime,
+          toTime: sortedMostCommonTimesData[0]?.endTime,
+        });
+      }
+    }
+  }, [sortedMostCommonTimesData, getTimesheetData]);
 
   return (
-
-<div className="timesheet-container">
-
-       
-{!data && sortedMostCommonTimesData && (
-    <Grid container spacing={2} sx={{ marginBottom: 2 }}>
-      {sortedMostCommonTimesData.map((timeEntry, index) => (
-        <Grid item key={index}>
-          <Button
-            variant="outlined"
-            onClick={() =>
-              handleCommonTimeClick(timeEntry.startTime, timeEntry.endTime)
-            }
-          >
-            {formatTimeForDisplay(timeEntry.startTime)} - {formatTimeForDisplay(timeEntry.endTime)}
-          </Button>
+    <div className="timesheet-container">
+      {!data && sortedMostCommonTimesData && (
+        <Grid container spacing={2} sx={{ marginBottom: 2 }}>
+          {sortedMostCommonTimesData.map((timeEntry, index) => (
+            <Grid item key={index}>
+              <Button
+                variant="outlined"
+                onClick={() =>
+                  handleCommonTimeClick(timeEntry.startTime, timeEntry.endTime)
+                }
+              >
+                {formatTimeForDisplay(timeEntry.startTime)} -{" "}
+                {formatTimeForDisplay(timeEntry.endTime)}
+              </Button>
+            </Grid>
+          ))}
         </Grid>
-      ))}
-    </Grid>
-  )}
-    
-    <Box
-      sx={{
-        ...style.timesheetEntryUI,
-        marginTop: isMobile ? "2rem" : "2rem",
-        border:
-          data?.dayType === "HOLIDAY" || data?.dayType === "WEEKEND"
-            ? "2px solid #800000"
-            : "2px solid #008080",
-      }}
-    >
-      {(approval && data) || superAdmin ? (
-        <div
-          style={{
-            position: "absolute",
-            top: "-1rem",
-            left: "1rem",
-            backgroundColor: "white",
-            padding: "0.25rem 0.5rem",
-          }}
-        >
-          <Typography
-            style={{
-              fontWeight: "bold",
-              color: "#000000",
-            }}
-          >
-            {`${data?.timesheet?.timesheetId?.employeeFirstName || null} ${
-              data?.timesheet?.timesheetId?.employeeLastName || null
-            }`}
-          </Typography>
-        </div>
-      ) : null}
-
-      {(approval && data) || superAdmin ? (
-        <div
-          style={{
-            position: "absolute",
-            top: "-1rem",
-            right: "1rem",
-            backgroundColor: "white",
-            padding: "0.25rem 0.5rem",
-            textAlign: "right",
-          }}
-        >
-          <Typography
-            style={{
-              fontWeight: "bold",
-              color: "#000000",
-            }}
-          >
-            {`${data?.timesheet?.timesheetId.date || null} 
-                ${data?.dayType || ""}`}
-          </Typography>
-        </div>
-      ) : null}
-      {superAdmin ? (
-        <>
-          {data.status !== "APPROVED" && data.status !== "REJECTED" && (
-            <div
-              style={{
-                position: "absolute",
-                top: "-0.5rem",
-                right: "0rem",
-                padding: "0.50rem 0.50rem",
-              }}
-            >
-              <Checkbox
-                checked={selectedCards[data.timesheetEntryId] || false}
-                onChange={() => handleCheckboxChange(data.timesheetEntryId)}
-                inputProps={{ "aria-label": "controlled" }}
-              />
-            </div>
-          )}
-        </>
-      ) : (
-        <></>
       )}
 
-
-      <Grid container spacing={2}>
-        {/* First Row */}
-        <Grid container item spacing={2} xs={12} sm={12} md={7} lg={7}>
-          {/* First Sub-Row */}
-          <Grid
-            container
-            item
-            xs={12}
-            gap={2}
-            sm={12}
-            md={3.5}
-            lg={3.5}
-            direction="column"
+      <Box
+        sx={{
+          ...style.timesheetEntryUI,
+          marginTop: isMobile ? "2rem" : "2rem",
+          border:
+            data?.dayType === "HOLIDAY" || data?.dayType === "WEEKEND"
+              ? "2px solid #800000"
+              : "2px solid #008080",
+        }}
+      >
+        {(approval && data) || superAdmin ? (
+          <div
+            style={{
+              position: "absolute",
+              top: "-1rem",
+              left: "1rem",
+              backgroundColor: "white",
+              padding: "0.25rem 0.5rem",
+            }}
           >
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DemoItem>
-                
-                <TimePicker
-                  label="From Time"
-                  viewRenderers={{
-                    hours: renderTimeViewClock,
-                    minutes: renderTimeViewClock,
-                    seconds: renderTimeViewClock,
-                  }}
-                  sx={(style.TimesheetTextFieldToTime, { width: "auto" })}
-                  value={
-                    selectedValues.fromTime === ""
-                      ? null
-                      : withoutFormatTime.fromTime
-                      ? withoutFormatTime.fromTime
-                      : parseTimeStringToDate(selectedValues.fromTime)
-                  }
-                  onChange={(e) => onChangeTimeHandler(e, "fromTime")}
-                  disabled={disabled || approval || isHistory || superAdmin}
-                />
-              </DemoItem>
-            </LocalizationProvider>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DemoItem>
-              
-                <TimePicker
-                  label="To Time"
-                  viewRenderers={{
-                    hours: renderTimeViewClock,
-                    minutes: renderTimeViewClock,
-                    seconds: renderTimeViewClock,
-                  }}
-                  sx={(style.TimesheetTextFieldToTime, { width: "auto" })}
-                  value={
-                    selectedValues.toTime === ""
-                      ? null
-                      : withoutFormatTime.toTime
-                      ? withoutFormatTime.toTime
-                      : parseTimeStringToDate(selectedValues.toTime)
-                  }
-                  onChange={(e) => onChangeTimeHandler(e, "toTime")}
-                  disabled={disabled || approval || superAdmin}
-                />
-              </DemoItem>
-            </LocalizationProvider>
-          </Grid>
-          {/* Second Sub-Row */}
-          <Grid
-            container
-            item
-            xs={12}
-            sm={12}
-            md={8.5}
-            lg={8.5}
-            spacing={2}
-            direction="row"
-          >
-            <Grid item xs={12} sm={6} md={6} lg={6}>
-              <Dropdown
-                options={filterJobType}
-                value={selectedValues.jobType}
-                onChange={onChangeHandler}
-                title={!data ? "Job Type" : null}
-                dropdownName="jobType"
-                style={{
-                  ...style.TimesheetTextField,
-                  border: "1px solid #8897ad87",
-                  borderRadius: "10px",
-                }}
-                disabled={disabled || approval || superAdmin}
-                labelKey="jobType"
-                valueKey="jobId"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={6} lg={6}>
-              <Dropdown
-                options={updatedProjectNameList}
-                value={selectedValues.projectName}
-                title={!data ? "Project Name" : null}
-                onChange={onChangeHandler}
-                dropdownName="projectName"
-                style={{
-                  ...style.TimesheetTextField,
-                  border: "1px solid #8897ad87",
-                  borderRadius: "10px",
-                }}
-                disabled={disabled || approval}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12} md={12} lg={12}>
-              <Dropdown
-                options={updatedActivityameList || allActivities}
-                value={selectedValues?.activity}
-                onChange={onChangeHandler}
-                title={!data ? "Activity" : null}
-                dropdownName="activity"
-                style={{
-                  ...style.TimesheetTextField,
-                  border: "1px solid #8897ad87",
-                  borderRadius: "10px",
-                }}
-                disabled={disabled || approval || superAdmin}
-                labelKey="activityType"
-                valueKey="activityId"
-              />
-            </Grid>
-          </Grid>
-          {/* Third Sub-Row */}
+            <Typography
+              style={{
+                fontWeight: "bold",
+                color: "#000000",
+              }}
+            >
+              {`${data?.timesheet?.timesheetId?.employeeFirstName || null} ${
+                data?.timesheet?.timesheetId?.employeeLastName || null
+              }`}
+            </Typography>
+          </div>
+        ) : null}
 
-          {data ? (
+        {(approval && data) || superAdmin ? (
+          <div
+            style={{
+              position: "absolute",
+              top: "-1rem",
+              right: "1rem",
+              backgroundColor: "white",
+              padding: "0.25rem 0.5rem",
+              textAlign: "right",
+            }}
+          >
+            <Typography
+              style={{
+                fontWeight: "bold",
+                color: "#000000",
+              }}
+            >
+              {`${data?.timesheet?.timesheetId.date || null} 
+                ${data?.dayType || ""}`}
+            </Typography>
+          </div>
+        ) : null}
+        {superAdmin ? (
+          <>
+            {data.status !== "APPROVED" && data.status !== "REJECTED" && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "-0.5rem",
+                  right: "0rem",
+                  padding: "0.50rem 0.50rem",
+                }}
+              >
+                <Checkbox
+                  checked={selectedCards[data.timesheetEntryId] || false}
+                  onChange={() => handleCheckboxChange(data.timesheetEntryId)}
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              </div>
+            )}
+          </>
+        ) : (
+          <></>
+        )}
+
+        <Grid container spacing={2}>
+          {/* First Row */}
+          <Grid container item spacing={2} xs={12} sm={12} md={7} lg={7}>
+            {/* First Sub-Row */}
+            <Grid
+              container
+              item
+              xs={12}
+              gap={2}
+              sm={12}
+              md={3.5}
+              lg={3.5}
+              direction="column"
+            >
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoItem>
+                  <TimePicker
+                    label="From Time"
+                    viewRenderers={{
+                      hours: renderTimeViewClock,
+                      minutes: renderTimeViewClock,
+                      seconds: renderTimeViewClock,
+                    }}
+                    sx={(style.TimesheetTextFieldToTime, { width: "auto" })}
+                    value={
+                      selectedValues.fromTime === ""
+                        ? parseTimeStringToDate(preFillTimeSheetRow.fromTime)
+                        : parseTimeStringToDate(selectedValues.fromTime)
+                    }
+                    onChange={(e) => onChangeTimeHandler(e, "fromTime")}
+                    disabled={disabled || approval || isHistory || superAdmin}
+                  />
+                </DemoItem>
+              </LocalizationProvider>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoItem>
+                  <TimePicker
+                    label="To Time"
+                    viewRenderers={{
+                      hours: renderTimeViewClock,
+                      minutes: renderTimeViewClock,
+                      seconds: renderTimeViewClock,
+                    }}
+                    sx={(style.TimesheetTextFieldToTime, { width: "auto" })}
+                    value={
+                      selectedValues.toTime === ""
+                        ? parseTimeStringToDate(preFillTimeSheetRow.toTime)
+                        : parseTimeStringToDate(selectedValues.toTime)
+                    }
+                    onChange={(e) => onChangeTimeHandler(e, "toTime")}
+                    disabled={disabled || approval || superAdmin}
+                  />
+                </DemoItem>
+              </LocalizationProvider>
+            </Grid>
+            {/* Second Sub-Row */}
             <Grid
               container
               item
               xs={12}
               sm={12}
-              md={12}
-              lg={12}
+              md={8.5}
+              lg={8.5}
+              spacing={2}
               direction="row"
-              style={{ paddingTop: "20px" }}
             >
-              <TextField
-                multiline
-                rows={3}
-                variant="outlined"
-                fullWidth
-                value={selectedValues.comments}
-                sx={style.TimesheetTextField1}
-                inputProps={{ maxLength: 250 }}
-                onChange={(e) => onChangeHandler(e, "comments")}
-                disabled={disabled || approval || disableSubmit || superAdmin}
-              />
-            </Grid>
-          ) : null}
-        </Grid>
-
-        {/* Second Row (Blank) */}
-        <Grid container item xs={12} sm={12} md={5} lg={5} direction="row">
-          <Grid container item xs={12} sm={12} md={11} lg={11} direction="row">
-            {data ? (
+              <Grid item xs={12} sm={6} md={6} lg={6}>
+                <Dropdown
+                  options={filterJobType}
+                  value={selectedValues.jobType}
+                  onChange={onChangeHandler}
+                  title={!data ? "Job Type" : null}
+                  dropdownName="jobType"
+                  style={{
+                    ...style.TimesheetTextField,
+                    border: "1px solid #8897ad87",
+                    borderRadius: "10px",
+                  }}
+                  disabled={disabled || approval || superAdmin}
+                  labelKey="jobType"
+                  valueKey="jobId"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={6} lg={6}>
+                <Dropdown
+                  options={updatedProjectNameList}
+                  value={selectedValues.projectName}
+                  title={!data ? "Project Name" : null}
+                  onChange={onChangeHandler}
+                  dropdownName="projectName"
+                  style={{
+                    ...style.TimesheetTextField,
+                    border: "1px solid #8897ad87",
+                    borderRadius: "10px",
+                  }}
+                  disabled={disabled || approval}
+                />
+              </Grid>
               <Grid item xs={12} sm={12} md={12} lg={12}>
+                <Dropdown
+                  options={updatedActivityameList || allActivities}
+                  value={selectedValues?.activity}
+                  onChange={onChangeHandler}
+                  title={!data ? "Activity" : null}
+                  dropdownName="activity"
+                  style={{
+                    ...style.TimesheetTextField,
+                    border: "1px solid #8897ad87",
+                    borderRadius: "10px",
+                  }}
+                  disabled={disabled || approval || superAdmin}
+                  labelKey="activityType"
+                  valueKey="activityId"
+                />
+              </Grid>
+            </Grid>
+            {/* Third Sub-Row */}
+
+            {data ? (
+              <Grid
+                container
+                item
+                xs={12}
+                sm={12}
+                md={12}
+                lg={12}
+                direction="row"
+                style={{ paddingTop: "20px" }}
+              >
                 <TextField
-                  label={managerCommentProvided ? "" : "Manager's Comments"}
-                  placeholder={approval ? "APPROVED" : ""}
+                  multiline
+                  rows={3}
+                  variant="outlined"
+                  fullWidth
+                  value={selectedValues.comments}
+                  sx={style.TimesheetTextField1}
+                  inputProps={{ maxLength: 250 }}
+                  onChange={(e) => onChangeHandler(e, "comments")}
+                  disabled={disabled || approval || disableSubmit || superAdmin}
+                />
+              </Grid>
+            ) : null}
+          </Grid>
+
+          {/* Second Row (Blank) */}
+          <Grid container item xs={12} sm={12} md={5} lg={5} direction="row">
+            <Grid
+              container
+              item
+              xs={12}
+              sm={12}
+              md={11}
+              lg={11}
+              direction="row"
+            >
+              {data ? (
+                <Grid item xs={12} sm={12} md={12} lg={12}>
+                  <TextField
+                    label={managerCommentProvided ? "" : "Manager's Comments"}
+                    placeholder={approval ? "APPROVED" : ""}
+                    multiline
+                    rows={4}
+                    variant="outlined"
+                    fullWidth
+                    value={managerStatusData?.comment || comments}
+                    sx={style.TimesheetManagerTextField}
+                    inputProps={{ maxLength: 250 }}
+                    onChange={(e) => onChangeHandler(e, "adminComment")}
+                    disabled={
+                      !approval ||
+                      (superAdmin && !(data.status === "SUBMITTED"))
+                    }
+                    InputLabelProps={
+                      approval
+                        ? {
+                            shrink: true,
+                            htmlFor: "manager-comments",
+                            style: {
+                              backgroundColor:
+                                data?.dayType === "HOLIDAY" ||
+                                data?.dayType === "WEEKEND"
+                                  ? "#800000"
+                                  : "#008080",
+                            },
+                          }
+                        : {}
+                    }
+                  />
+                </Grid>
+              ) : (
+                <TextField
+                  label="What are you working on? (250 Characters max)"
                   multiline
                   rows={4}
                   variant="outlined"
                   fullWidth
-                  value={managerStatusData?.comment || comments}
-                  sx={style.TimesheetManagerTextField}
+                  value={selectedValues.comments}
+                  sx={style.TimesheetTextField1}
                   inputProps={{ maxLength: 250 }}
-                  onChange={(e) => onChangeHandler(e, "adminComment")}
-                  disabled={
-                    !approval || (superAdmin && !(data.status === "SUBMITTED"))
-                  }
-                  InputLabelProps={
-                    approval
-                      ? {
-                          shrink: true,
-                          htmlFor: "manager-comments",
-                          style: {
-                            backgroundColor:
-                              data?.dayType === "HOLIDAY" ||
-                              data?.dayType === "WEEKEND"
-                                ? "#800000"
-                                : "#008080",
-                          },
-                        }
-                      : {}
-                  }
+                  onChange={(e) => onChangeHandler(e, "comments")}
+                  disabled={disabled}
                 />
+              )}
+
+              {/* Condition for Buttons according to roles */}
+              <Grid
+                container
+                item
+                xs={12}
+                sm={12}
+                md={12}
+                lg={12}
+                direction="row"
+                alignItems="center"
+              >
+                {data ||
+                role === "user" ||
+                role === "manager" ||
+                role === "employee" ||
+                role === "supervisor" ||
+                role === "admin" ||
+                role === "superAdmin" ? (
+                  <Grid
+                    container
+                    item
+                    xs={12}
+                    sm={6}
+                    md={6}
+                    lg={5}
+                    direction="row"
+                    sx={style.timesheetManagerCol}
+                  >
+                    <Star
+                      onClick={starHandler}
+                      approval={approval}
+                      data={data}
+                      value={managerStatusData?.rating || ratings}
+                    />
+                  </Grid>
+                ) : (
+                  <Grid item xs={12} sm={6} md={6} lg={7} sx={style.starSec}>
+                    {/* Empty content */}
+                  </Grid>
+                )}
+                {data ? (
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    md={7}
+                    lg={7}
+                    display={"flex"}
+                    sx={style.starSec}
+                  >
+                    {!approval ||
+                    (superAdmin && !(data.status === "SUBMITTED")) ? (
+                      <>
+                        <Button
+                          sx={style.GreenButton}
+                          variant="contained"
+                          type="submit"
+                          disabled={true}
+                        >
+                          <Typography
+                            variant="h6"
+                            sx={{ color: theme.palette.secondary.main }}
+                          >
+                            {data?.status || "null"}
+                          </Typography>
+                        </Button>
+                        <Tooltip
+                          title={
+                            <div style={tooltipContentStyle}>
+                              {tooltipHandler()}
+                            </div>
+                          }
+                          arrow
+                          TransitionProps={{ timeout: 600 }}
+                        >
+                          <IconButton>
+                            <InfoIcon sx={style.InfoIconStyle} />
+                          </IconButton>
+                        </Tooltip>
+                      </>
+                    ) : (
+                      <>
+                        <Button
+                          sx={{
+                            ...style.GreenButton,
+                            marginRight: theme.spacing(1),
+                            "@media (min-width: 768px) and (min-height: 1024px)":
+                              {
+                                width: "25%",
+                              },
+                            "@media (min-width: 1024px) and (min-height: 768px)":
+                              {
+                                width: "25%",
+                              },
+                          }}
+                          variant="contained"
+                          type="submit"
+                          disabled={false}
+                          onClick={() =>
+                            approveSubmitHandler(
+                              data,
+                              starRating,
+                              selectedValues.adminComment,
+                              rowIndex
+                            )
+                          }
+                        >
+                          <Typography
+                            variant="h6"
+                            sx={{
+                              color: theme.palette.secondary.main,
+                              "@media (min-width: 768px) and (min-height: 1024px)":
+                                {
+                                  fontSize: "12px",
+                                },
+                              "@media (min-width: 1024px) and (min-height: 768px)":
+                                {
+                                  fontSize: "12px",
+                                },
+                            }}
+                          >
+                            Approve
+                          </Typography>
+                        </Button>
+                        <Button
+                          sx={{
+                            "&:hover": {
+                              bgcolor: "Red",
+                              // Set the same color as the background color to remove the hover effect
+                            },
+                            backgroundColor: "Transparent",
+                            border: "1px solid red",
+
+                            "@media (min-width: 768px) and (min-height: 1024px)":
+                              {
+                                width: "25%",
+                              },
+                            "@media (min-width: 1024px) and (min-height: 768px)":
+                              {
+                                width: "25%",
+                              },
+                          }}
+                          variant="contained"
+                          type="submit"
+                          onClick={() =>
+                            rejectButtonHandler(
+                              data,
+                              starRating,
+                              selectedValues.adminComment,
+                              rowIndex
+                            )
+                          }
+                          disabled={false}
+                        >
+                          <Typography
+                            variant="h6"
+                            color="#000000"
+                            sx={{
+                              "@media (min-width: 768px) and (min-height: 1024px)":
+                                {
+                                  fontSize: "12px",
+                                },
+                              "@media (min-width: 1024px) and (min-height: 768px)":
+                                {
+                                  fontSize: "12px",
+                                },
+                            }}
+                          >
+                            Reject
+                          </Typography>
+                        </Button>
+                      </>
+                    )}
+                  </Grid>
+                ) : (
+                  <Grid item xs={12} sm={6} md={7} lg={7} sx={style.starSec}>
+                    {/* Empty content */}
+                  </Grid>
+                )}
               </Grid>
-            ) : (
-              <TextField
-                label="What are you working on? (250 Characters max)"
-                multiline
-                rows={4}
-                variant="outlined"
-                fullWidth
-                value={selectedValues.comments}
-                sx={style.TimesheetTextField1}
-                inputProps={{ maxLength: 250 }}
-                onChange={(e) => onChangeHandler(e, "comments")}
-                disabled={disabled}
-              />
-            )}
-
-            {/* Condition for Buttons according to roles */}
-            <Grid
-              container
-              item
-              xs={12}
-              sm={12}
-              md={12}
-              lg={12}
-              direction="row"
-              alignItems="center"
-            >
-              {data ||
-              role === "user" ||
-              role === "manager" ||
-              role === "employee" ||
-              role === "supervisor" ||
-              role === "admin" ||
-              role === "superAdmin" ? (
-                <Grid
-                  container
-                  item
-                  xs={12}
-                  sm={6}
-                  md={6}
-                  lg={5}
-                  direction="row"
-                  sx={style.timesheetManagerCol}
-                >
-                  <Star
-                    onClick={starHandler}
-                    approval={approval}
-                    data={data}
-                    value={managerStatusData?.rating || ratings}
-                  />
-                </Grid>
-              ) : (
-                <Grid item xs={12} sm={6} md={6} lg={7} sx={style.starSec}>
-                  {/* Empty content */}
-                </Grid>
-              )}
-              {data ? (
-                <Grid
-                  item
-                  xs={12}
-                  sm={6}
-                  md={7}
-                  lg={7}
-                  display={"flex"}
-                  sx={style.starSec}
-                >
-                  {!approval ||
-                  (superAdmin && !(data.status === "SUBMITTED")) ? (
-                    <>
-                      <Button
-                        sx={style.GreenButton}
-                        variant="contained"
-                        type="submit"
-                        disabled={true}
-                      >
-                        <Typography
-                          variant="h6"
-                          sx={{ color: theme.palette.secondary.main }}
-                        >
-                          {data?.status || "null"}
-                        </Typography>
-                      </Button>
-                      <Tooltip
-                        title={
-                          <div style={tooltipContentStyle}>
-                            {tooltipHandler()}
-                          </div>
-                        }
-                        arrow
-                        TransitionProps={{ timeout: 600 }}
-                      >
-                        <IconButton>
-                          <InfoIcon sx={style.InfoIconStyle} />
-                        </IconButton>
-                      </Tooltip>
-                    </>
-                  ) : (
-                    <>
-                      <Button
-                        sx={{
-                          ...style.GreenButton,
-                          marginRight: theme.spacing(1),
-                          "@media (min-width: 768px) and (min-height: 1024px)":
-                            {
-                              width: "25%",
-                            },
-                          "@media (min-width: 1024px) and (min-height: 768px)":
-                            {
-                              width: "25%",
-                            },
-                        }}
-                        variant="contained"
-                        type="submit"
-                        disabled={false}
-                        onClick={() =>
-                          approveSubmitHandler(
-                            data,
-                            starRating,
-                            selectedValues.adminComment,
-                            rowIndex
-                          )
-                        }
-                      >
-                        <Typography
-                          variant="h6"
-                          sx={{
-                            color: theme.palette.secondary.main,
-                            "@media (min-width: 768px) and (min-height: 1024px)":
-                              {
-                                fontSize: "12px",
-                              },
-                            "@media (min-width: 1024px) and (min-height: 768px)":
-                              {
-                                fontSize: "12px",
-                              },
-                          }}
-                        >
-                          Approve
-                        </Typography>
-                      </Button>
-                      <Button
-                        sx={{
-                          "&:hover": {
-                            bgcolor: "Red",
-                            // Set the same color as the background color to remove the hover effect
-                          },
-                          backgroundColor: "Transparent",
-                          border: "1px solid red",
-
-                          "@media (min-width: 768px) and (min-height: 1024px)":
-                            {
-                              width: "25%",
-                            },
-                          "@media (min-width: 1024px) and (min-height: 768px)":
-                            {
-                              width: "25%",
-                            },
-                        }}
-                        variant="contained"
-                        type="submit"
-                        onClick={() =>
-                          rejectButtonHandler(
-                            data,
-                            starRating,
-                            selectedValues.adminComment,
-                            rowIndex
-                          )
-                        }
-                        disabled={false}
-                      >
-                        <Typography
-                          variant="h6"
-                          color="#000000"
-                          sx={{
-                            "@media (min-width: 768px) and (min-height: 1024px)":
-                              {
-                                fontSize: "12px",
-                              },
-                            "@media (min-width: 1024px) and (min-height: 768px)":
-                              {
-                                fontSize: "12px",
-                              },
-                          }}
-                        >
-                          Reject
-                        </Typography>
-                      </Button>
-                    </>
-                  )}
-                </Grid>
-              ) : (
-                <Grid item xs={12} sm={6} md={7} lg={7} sx={style.starSec}>
-                  {/* Empty content */}
-                </Grid>
-              )}
             </Grid>
-          </Grid>
-          {approval || superAdmin ? null : (
-            <Grid item xs={12} sm={12} md={1} lg={1} sx={style.iconDesign}>
-              {data ? (
-                <IconButton
-                  disabled={
-                    ["SUBMITTED", "APPROVED"].includes(data.status) ||
-                    isHistory ||
-                    !disabled
-                  }
-                  onClick={() => handleEditClick()}
-                >
-                  <ModeEditOutlineOutlinedIcon
-                    sx={
+            {approval || superAdmin ? null : (
+              <Grid item xs={12} sm={12} md={1} lg={1} sx={style.iconDesign}>
+                {data ? (
+                  <IconButton
+                    disabled={
                       ["SUBMITTED", "APPROVED"].includes(data.status) ||
                       isHistory ||
                       !disabled
-                        ? style.IconStyleDisable
-                        : style.IconStyle
                     }
-                  />
-                </IconButton>
-              ) : (
-                <IconButton onClick={() => handleRefreshClick()}>
-                  <RefreshIcon sx={style.IconStyle} />
-                </IconButton>
-              )}
-              {data ? (
-                <IconButton
-                  disabled={
-                    ["SUBMITTED", "APPROVED", "REJECTED"].includes(
-                      data.status
-                    ) || isHistory
-                  }
-                  onClick={() =>
-                    dispatch(
-                      deleteTimeSheetEntryAction(
-                        id,
-                        formatDateForApi(selectedDate)
-                      )
-                    )
-                  }
-                >
-                  <DeleteOutlinedIcon
-                    sx={
+                    onClick={() => handleEditClick()}
+                  >
+                    <ModeEditOutlineOutlinedIcon
+                      sx={
+                        ["SUBMITTED", "APPROVED"].includes(data.status) ||
+                        isHistory ||
+                        !disabled
+                          ? style.IconStyleDisable
+                          : style.IconStyle
+                      }
+                    />
+                  </IconButton>
+                ) : (
+                  <IconButton onClick={() => handleRefreshClick()}>
+                    <RefreshIcon sx={style.IconStyle} />
+                  </IconButton>
+                )}
+                {data ? (
+                  <IconButton
+                    disabled={
                       ["SUBMITTED", "APPROVED", "REJECTED"].includes(
                         data.status
                       ) || isHistory
-                        ? style.IconStyleDisable
-                        : style.IconStyle
                     }
-                  />
-                </IconButton>
-              ) : (
-                ""
-              )}
+                    onClick={() =>
+                      dispatch(
+                        deleteTimeSheetEntryAction(
+                          id,
+                          formatDateForApi(selectedDate)
+                        )
+                      )
+                    }
+                  >
+                    <DeleteOutlinedIcon
+                      sx={
+                        ["SUBMITTED", "APPROVED", "REJECTED"].includes(
+                          data.status
+                        ) || isHistory
+                          ? style.IconStyleDisable
+                          : style.IconStyle
+                      }
+                    />
+                  </IconButton>
+                ) : (
+                  ""
+                )}
 
-              {data ? (
-                <IconButton
-                  disabled={disabled}
-                  onClick={() => handleEditData(id)}
+                {data ? (
+                  <IconButton
+                    disabled={disabled}
+                    onClick={() => handleEditData(id)}
+                  >
+                    <SaveOutlinedIcon
+                      sx={disabled ? style.IconStyleDisable : style.IconStyle}
+                    />
+                  </IconButton>
+                ) : (
+                  <IconButton onClick={() => handleSaveData()}>
+                    <SaveOutlinedIcon sx={style.IconStyle} />
+                  </IconButton>
+                )}
+              </Grid>
+            )}
+          </Grid>
+        </Grid>
+        <Grid container>
+          <Grid item xs={12} sm={12} md={12} lg={12} sx={style.timesheetCol4}>
+            <span style={{ color: "red" }}>{errors.jobTypeError}</span>
+          </Grid>
+          <Grid item xs={12} sm={12} md={12} lg={12} sx={style.timesheetCol4}>
+            <span style={{ color: "red" }}>{errors.projectNameError}</span>
+          </Grid>
+          <Grid item xs={12} sm={12} md={12} lg={12} sx={style.timesheetCol4}>
+            <span style={{ color: "red" }}>{errors.activityError}</span>
+          </Grid>
+          <Grid item xs={12} sm={12} md={12} lg={12} sx={style.timesheetCol4}>
+            <span style={{ color: "red" }}>{errors.commentsError}</span>
+          </Grid>
+          <Grid item xs={12} sm={12} md={12} lg={12} sx={style.timesheetCol4}>
+            <span style={{ color: "red" }}>{errors.fromTimeError}</span>
+          </Grid>
+          <Grid item xs={12} sm={12} md={12} lg={12} sx={style.timesheetCol4}>
+            <span style={{ color: "red" }}>{errors.toTimeError}</span>
+          </Grid>
+          <Grid item xs={12} sm={12} md={12} lg={12} sx={style.timesheetCol4}>
+            <span style={{ color: "red" }}>{timeError}</span>
+
+            {data && timeError && (
+              <span style={{ color: "red" }}>
+                Please edit again data is not saved or{" "}
+                <span
+                  style={{
+                    color: "blue",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                  }}
+                  onClick={() => {
+                    setSelectedValues(editedSelectedValues);
+                    setTimeError();
+                    setDisabledWhileEditing(false);
+                  }}
                 >
-                  <SaveOutlinedIcon
-                    sx={disabled ? style.IconStyleDisable : style.IconStyle}
-                  />
-                </IconButton>
-              ) : (
-                <IconButton onClick={() => handleSaveData()}>
-                  <SaveOutlinedIcon sx={style.IconStyle} />
-                </IconButton>
-              )}
-            </Grid>
-          )}
-        </Grid>
-      </Grid>
-      <Grid container>
-        <Grid item xs={12} sm={12} md={12} lg={12} sx={style.timesheetCol4}>
-          <span style={{ color: "red" }}>{errors.jobTypeError}</span>
-        </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={12} sx={style.timesheetCol4}>
-          <span style={{ color: "red" }}>{errors.projectNameError}</span>
-        </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={12} sx={style.timesheetCol4}>
-          <span style={{ color: "red" }}>{errors.activityError}</span>
-        </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={12} sx={style.timesheetCol4}>
-          <span style={{ color: "red" }}>{errors.commentsError}</span>
-        </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={12} sx={style.timesheetCol4}>
-          <span style={{ color: "red" }}>{errors.fromTimeError}</span>
-        </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={12} sx={style.timesheetCol4}>
-          <span style={{ color: "red" }}>{errors.toTimeError}</span>
-        </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={12} sx={style.timesheetCol4}>
-          <span style={{ color: "red" }}>{timeError}</span>
-
-          {data && timeError && (
-            <span style={{ color: "red" }}>
-              Please edit again data is not saved or{" "}
-              <span
-                style={{ color: "blue", cursor: "pointer", fontWeight: "bold" }}
-                onClick={() => {
-                  setSelectedValues(editedSelectedValues);
-                  setTimeError();
-                  setDisabledWhileEditing(false);
-                }}
+                  reset
+                </span>
+              </span>
+            )}
+          </Grid>
+          {(approval || superAdmin) && (
+            <>
+              <Grid
+                item
+                xs={12}
+                sm={12}
+                md={12}
+                lg={12}
+                sx={style.timesheetCol4}
               >
-                reset
-              </span>
-            </span>
+                <span style={{ color: "red" }}>
+                  {errorValidation?.adminCommentError}
+                </span>
+              </Grid>
+              <Grid
+                item
+                xs={12}
+                sm={12}
+                md={12}
+                lg={12}
+                sx={style.timesheetCol4}
+              >
+                <span style={{ color: "red" }}>
+                  {errorValidation?.ratingError}
+                </span>
+              </Grid>
+            </>
           )}
         </Grid>
-        {(approval || superAdmin) && (
-          <>
-            <Grid item xs={12} sm={12} md={12} lg={12} sx={style.timesheetCol4}>
-              <span style={{ color: "red" }}>
-                {errorValidation?.adminCommentError}
-              </span>
-            </Grid>
-            <Grid item xs={12} sm={12} md={12} lg={12} sx={style.timesheetCol4}>
-              <span style={{ color: "red" }}>
-                {errorValidation?.ratingError}
-              </span>
-            </Grid>
-          </>
+        {errorValidation && errorValidation[data.timesheetEntryId] && (
+          <p className="error-message">
+            {errorValidation[data.timesheetEntryId]}
+          </p>
         )}
-      </Grid>
-      {errorValidation && errorValidation[data.timesheetEntryId] && (
-        <p className="error-message">
-          {errorValidation[data.timesheetEntryId]}
-        </p>
-      )}
-      {loading && (
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          position="fixed"
-          top="0"
-          left="0"
-          width="100%"
-          height="100%"
-          bgcolor="rgba(255, 255, 255, 0.7)"
-        >
-          <CircularProgress />
-        </Box>
-      )}
-    </Box>
+        {loading && (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            position="fixed"
+            top="0"
+            left="0"
+            width="100%"
+            height="100%"
+            bgcolor="rgba(255, 255, 255, 0.7)"
+          >
+            <CircularProgress />
+          </Box>
+        )}
+      </Box>
     </div>
   );
 };

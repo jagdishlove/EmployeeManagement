@@ -127,7 +127,6 @@ const timesheetReducer = (state = initialState, action) => {
         mostCommonTimesloading: true,
       };
     case GET_MOST_COMMON_TIMES_SUCCESS:
-      console.log('Action payload:', action.payload);
       return {
         ...state,
         mostCommonTimesData: action.payload,

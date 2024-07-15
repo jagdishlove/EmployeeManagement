@@ -189,7 +189,6 @@ const getMostCommonTimesRequest = () => {
   };
 };
 const getMostCommonTimesSuccess = (response) => {
-  
   return {
     type: GET_MOST_COMMON_TIMES_SUCCESS,
     payload: response,
@@ -254,7 +253,7 @@ export const saveTimeSheetEntryAction = (timeSheetData, date) => {
     } catch (err) {
       if (err.response.data.errorCode === 403) {
         dispatch(getRefreshToken());
-      } else if (err.response.data.errorCode === 500){
+      } else if (err.response.data.errorCode === 500) {
         dispatch(saveTimeSheetEntryFail(err.response.data.errorMessage));
         toast.error(err.response.data.errorMessage, {
           position: toast.POSITION.BOTTOM_CENTER,
@@ -401,8 +400,7 @@ export const getLastThreeTimesheetEntryAction = (data) => {
         null,
         data
       );
-     
-     
+
       dispatch(getLastThreeDaysTimesheetEntrySuccess(response));
     } catch (err) {
       if (err.response.data.errorCode === 403) {
@@ -414,15 +412,16 @@ export const getLastThreeTimesheetEntryAction = (data) => {
   };
 };
 
-
 export const getMostCommonTimesAction = () => {
   return async (dispatch) => {
     try {
       dispatch(getMostCommonTimesRequest());
-      const response = await makeRequest("GET", `/api/timesheetentry/mostCommonTimes`);
-   
+      const response = await makeRequest(
+        "GET",
+        `/api/timesheetentry/mostCommonTimes`
+      );
+
       dispatch(getMostCommonTimesSuccess(response));
-      console.log("response", response);
     } catch (err) {
       if (err.response.data.errorCode === 403) {
         dispatch(getRefreshToken());
