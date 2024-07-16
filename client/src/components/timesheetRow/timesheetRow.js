@@ -141,6 +141,7 @@ const TimesheetRow = ({
     toTime: "",
   });
 
+
   useEffect(() => {
     if (updatedProjectNameList?.length >= 1 && timesheetForm) {
       setSelectedValues({
@@ -591,12 +592,10 @@ const TimesheetRow = ({
   };
 
   useEffect(() => {
-   
-    if(!superAdmin){
+    if (!superAdmin) {
       dispatch(getMostCommonTimesAction());
-     }
-  
-}, []);
+    }
+  }, []);
 
   const handleCommonTimeClick = (fromTime, toTime) => {
     setSelectedValues((prevState) => ({
@@ -609,6 +608,10 @@ const TimesheetRow = ({
       toTime: dayjs(toTime, "HH:mm"),
     });
     setInitialDataState(initialSelectedValues);
+    setNewEnteryTime({
+      fromTime: fromTime,
+      toTime: toTime,
+    });
   };
   // Function to sort times
   const sortTimes = (times) => {
