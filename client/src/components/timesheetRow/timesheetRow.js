@@ -105,6 +105,7 @@ const TimesheetRow = ({
     fromTime: "",
     toTime: "",
   });
+  console.log("withoutFormatTime", withoutFormatTime);
   const [preFillTimeSheetRow, setPreFillTimeSheetRow] = useState({
     fromTime: "",
     toTime: "",
@@ -190,6 +191,10 @@ const TimesheetRow = ({
 
   const [selectedValues, setSelectedValues] = useState(
     data ? editedSelectedValues : initialSelectedValues
+  );
+
+  const [initialDataState, setInitialDataState] = useState(
+    initialSelectedValues
   );
 
   useEffect(() => {
@@ -330,10 +335,10 @@ const TimesheetRow = ({
     if (!selectedValues.comments) {
       newErrors.commentsError = "Please Enter Comment";
     }
-    if (!selectedValues.fromTime) {
+    if (!selectedValues.fromTime && !initialDataState.fromTime) {
       newErrors.fromTimeError = "Please Select From Time";
     }
-    if (!selectedValues.toTime) {
+    if (!selectedValues.toTime && !initialDataState.toTime) {
       newErrors.toTimeError = "Please Select To Time";
     }
     if (!selectedValues.adminComment && approval) {
@@ -362,7 +367,6 @@ const TimesheetRow = ({
     try {
       const newErrors = validationForm();
       const timeError = timeValidation(getTimesheetData, newEnteryTime);
-
       setErrors(newErrors);
       setTimeError(timeError);
 
@@ -426,6 +430,9 @@ const TimesheetRow = ({
 
     // Ensure that hoursDifference is a string in the "hh.mm" format with leading zeros
     const formattedHoursDifference = String(hoursDifference).padStart(5, "0");
+
+    const startTime = initialDataState?.fromTime || selectedValues.fromTime;
+    const endTime = initialDataState?.toTime || selectedValues.toTime;
     const payload = {
       entryDate: formatDateForApi(dateOptions(1)?.[0].value),
       timeSheetDate: formatDateForApi(selectedDate),
@@ -434,8 +441,8 @@ const TimesheetRow = ({
       comments: selectedValues.comments,
       noOfHours: formattedHoursDifference,
       activityId: selectedValues.activity,
-      startTime: selectedValues.fromTime,
-      endTime: selectedValues.toTime,
+      startTime: startTime,
+      endTime: endTime,
     };
 
     //for update timesheetentry , created seperate id
@@ -556,7 +563,6 @@ const TimesheetRow = ({
 
   const parseTimeStringToDate = (timeString) => {
     if (!timeString) {
-      console.error("Invalid timeString:", timeString);
       return null; // Or you can return a default date value if needed
     }
     const [hours, minutes] = timeString.split(":").map(Number);
@@ -672,11 +678,15 @@ const TimesheetRow = ({
         toTime,
         sortedMostCommonTimesData
       );
-      console.log("filtered", filtered);
       setPreFillTimeSheetRow({
-        fromTime: filtered[0]?.startTime,
-        toTime: filtered[0]?.endTime,
+        fromTime: filtered[0]?.startTime || "",
+        toTime: filtered[0]?.endTime || "",
       });
+      setInitialDataState((prev) => ({
+        ...prev,
+        fromTime: filtered[0]?.startTime || "",
+        toTime: filtered[0]?.endTime || "",
+      }));
     } else {
       setPreFillTimeSheetRow({
         fromTime: "",
@@ -694,6 +704,11 @@ const TimesheetRow = ({
           fromTime: sortedMostCommonTimesData[0]?.startTime,
           toTime: sortedMostCommonTimesData[0]?.endTime,
         });
+        setInitialDataState((prev) => ({
+          ...prev,
+          fromTime: sortedMostCommonTimesData[0]?.startTime,
+          toTime: sortedMostCommonTimesData[0]?.endTime,
+        }));
       }
     }
   }, [sortedMostCommonTimesData, getTimesheetData]);
@@ -823,6 +838,8 @@ const TimesheetRow = ({
                     value={
                       selectedValues.fromTime === ""
                         ? parseTimeStringToDate(preFillTimeSheetRow.fromTime)
+                        : editedSelectedValues
+                        ? parseTimeStringToDate(editedSelectedValues.fromTime)
                         : parseTimeStringToDate(selectedValues.fromTime)
                     }
                     onChange={(e) => onChangeTimeHandler(e, "fromTime")}
@@ -843,6 +860,8 @@ const TimesheetRow = ({
                     value={
                       selectedValues.toTime === ""
                         ? parseTimeStringToDate(preFillTimeSheetRow.toTime)
+                        : editedSelectedValues
+                        ? parseTimeStringToDate(editedSelectedValues.toTime)
                         : parseTimeStringToDate(selectedValues.toTime)
                     }
                     onChange={(e) => onChangeTimeHandler(e, "toTime")}
