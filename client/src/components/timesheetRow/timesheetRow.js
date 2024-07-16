@@ -517,6 +517,7 @@ const TimesheetRow = ({
       ...prevSelectedValues,
       [fieldName]: `${hours}:${minutes}`,
     }));
+    setInitialDataState(initialSelectedValues);
   };
 
   const handleRefreshClick = () => {
