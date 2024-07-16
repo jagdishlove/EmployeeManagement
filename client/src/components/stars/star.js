@@ -17,7 +17,7 @@ const Star = ({ onClick, approval, value, data }) => {
     <Tooltip text={approval ? "Approved" : `Rating: ${value?.toFixed(2)}`}>
       <div>
         <Rating
-          size="33"
+          size="31"
           transition
           initialValue={approval ? 5 : value ? value : 0}
           readonly={approval && data?.status === "SUBMITTED" ? false : true}
