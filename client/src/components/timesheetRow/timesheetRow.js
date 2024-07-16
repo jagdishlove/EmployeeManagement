@@ -141,7 +141,6 @@ const TimesheetRow = ({
     toTime: "",
   });
 
-
   useEffect(() => {
     if (updatedProjectNameList?.length >= 1 && timesheetForm) {
       setSelectedValues({
@@ -370,6 +369,7 @@ const TimesheetRow = ({
     try {
       const newErrors = validationForm();
       const timeError = timeValidation(getTimesheetData, newEnteryTime);
+      console.log("timeError", newEnteryTime);
       setErrors(newErrors);
       setTimeError(timeError);
 
@@ -609,8 +609,8 @@ const TimesheetRow = ({
     });
     setInitialDataState(initialSelectedValues);
     setNewEnteryTime({
-      fromTime: fromTime,
-      toTime: toTime,
+      fromTime: fromTime.slice(0, -3),
+      toTime: toTime.slice(0, -3),
     });
   };
   // Function to sort times
