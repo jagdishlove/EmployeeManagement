@@ -193,6 +193,8 @@ const TimesheetRow = ({
     data ? editedSelectedValues : initialSelectedValues
   );
 
+  console.log("selectedValues", selectedValues);
+
   const [initialDataState, setInitialDataState] = useState(
     initialSelectedValues
   );
@@ -838,8 +840,8 @@ const TimesheetRow = ({
                     value={
                       selectedValues.fromTime === ""
                         ? parseTimeStringToDate(preFillTimeSheetRow.fromTime)
-                        : editedSelectedValues
-                        ? parseTimeStringToDate(editedSelectedValues.fromTime)
+                        : selectedValues
+                        ? parseTimeStringToDate(selectedValues.fromTime)
                         : parseTimeStringToDate(selectedValues.fromTime)
                     }
                     onChange={(e) => onChangeTimeHandler(e, "fromTime")}
@@ -860,8 +862,8 @@ const TimesheetRow = ({
                     value={
                       selectedValues.toTime === ""
                         ? parseTimeStringToDate(preFillTimeSheetRow.toTime)
-                        : editedSelectedValues
-                        ? parseTimeStringToDate(editedSelectedValues.toTime)
+                        : selectedValues
+                        ? parseTimeStringToDate(selectedValues.toTime)
                         : parseTimeStringToDate(selectedValues.toTime)
                     }
                     onChange={(e) => onChangeTimeHandler(e, "toTime")}
