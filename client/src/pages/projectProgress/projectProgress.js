@@ -156,6 +156,7 @@ console.log("projectList", projectList)
     }
     setProject(selectedOption);
     localStorage.setItem("selectedProject", JSON.stringify(selectedOption));
+    setCurrentPage(0);
   };
 
   useEffect(() => {

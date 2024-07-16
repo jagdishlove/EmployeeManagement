@@ -8,6 +8,7 @@ import {
   DialogActions,
   Button,
   CircularProgress,
+  Typography
 } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import TimesheetBreakdown from "../../assets/Time sheet Breakdown.svg";
@@ -210,6 +211,9 @@ const MySpaceTab = () => {
     return <>{stars}</>;
   };
 
+  const ProjectPerfomanceData1 = useSelector(
+    (state) => state?.persistData?.workSpace?.projectperformance?.legendList
+  );
   const colorPalette = [
     "#00C49F",
     "#0088FE",
@@ -745,7 +749,17 @@ const MySpaceTab = () => {
                     // marginRight: "20px"
                   }}
                 >
-                  <SimpleBarChart />
+                  {ProjectPerfomanceData1 && ProjectPerfomanceData1.length > 0 ? (
+                      <SimpleBarChart />
+                    ) : (
+                      <Typography
+                        variant="body1"
+                        align="center"
+                        style={{ textAlign: "center", marginRight: "-24px" }}
+                      >
+                        No data available
+                      </Typography>
+                    )}
                 </Grid>
               </Card>
             </Grid>
@@ -754,7 +768,19 @@ const MySpaceTab = () => {
               <DialogContent>
                 {/* Popup content */}
                 <Box>
-                  <SimpleBarChart />
+                <Grid >
+                    {ProjectPerfomanceData1 && ProjectPerfomanceData1.length > 0 ? (
+                      <SimpleBarChart />
+                    ) : (
+                      <Typography
+                        variant="body1"
+                        align="center"
+                        style={{padding:"80px 200px 80px 200px"}}
+                      >
+                        No data available
+                      </Typography>
+                    )}
+                  </Grid>
                 </Box>
               </DialogContent>
               <DialogActions>
