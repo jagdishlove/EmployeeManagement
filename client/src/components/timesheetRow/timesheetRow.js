@@ -434,7 +434,6 @@ const TimesheetRow = ({
     // Ensure that hoursDifference is a string in the "hh.mm" format with leading zeros
     const formattedHoursDifference = String(hoursDifference).padStart(5, "0");
 
-    
     const startTime = id
       ? selectedValues.fromTime
       : initialDataState?.fromTime || selectedValues.fromTime;
