@@ -591,8 +591,12 @@ const TimesheetRow = ({
   };
 
   useEffect(() => {
-    dispatch(getMostCommonTimesAction());
-  }, []);
+   
+    if(!superAdmin){
+      dispatch(getMostCommonTimesAction());
+     }
+  
+}, []);
 
   const handleCommonTimeClick = (fromTime, toTime) => {
     setSelectedValues((prevState) => ({
@@ -651,7 +655,7 @@ const TimesheetRow = ({
         moment(a.startTime, "HH:mm:ss").diff(moment(b.startTime, "HH:mm:ss"))
       );
     const lastIndex = newSortedTimeSheetData[newSortedTimeSheetData.length - 1];
-    const fromTime = lastIndex?.startTime;
+    // const fromTime = lastIndex?.startTime;
     const toTime = lastIndex?.endTime;
     const matchingDataTime = matchingDataWithTime(toTime);
     const findMatchingStartTimes = (toTime, array) => {

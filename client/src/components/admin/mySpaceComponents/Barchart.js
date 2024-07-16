@@ -94,13 +94,7 @@ const SimpleBarChart = () => {
     );
   };
 
-  if (!ProjectPerfomanceData || ProjectPerfomanceData.length === 0) {
-    return (
-      <Typography variant="body1" align="center"     marginRight="-24px">
-        No data available
-      </Typography>
-    );
-  }
+  
 
   return (
     <Grid container spacing={2}>
