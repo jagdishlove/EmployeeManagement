@@ -600,11 +600,11 @@ const TimesheetRow = ({
       fromTime: fromTime, // Store in 24-hour format for server communication
       toTime: toTime, // Store in 24-hour format for server communication
     }));
-
     setWithoutFormatTime({
       fromTime: dayjs(fromTime, "HH:mm"),
       toTime: dayjs(toTime, "HH:mm"),
     });
+    setInitialDataState(initialSelectedValues);
   };
   // Function to sort times
   const sortTimes = (times) => {
