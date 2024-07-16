@@ -434,8 +434,12 @@ const TimesheetRow = ({
     // Ensure that hoursDifference is a string in the "hh.mm" format with leading zeros
     const formattedHoursDifference = String(hoursDifference).padStart(5, "0");
 
-    const startTime = initialDataState?.fromTime || selectedValues.fromTime;
-    const endTime = initialDataState?.toTime || selectedValues.toTime;
+    const startTime = id
+      ? selectedValues.fromTime
+      : initialDataState?.fromTime || selectedValues.fromTime;
+    const endTime = id
+      ? selectedValues.toTime
+      : initialDataState?.toTime || selectedValues.toTime;
     const payload = {
       entryDate: formatDateForApi(dateOptions(1)?.[0].value),
       timeSheetDate: formatDateForApi(selectedDate),
