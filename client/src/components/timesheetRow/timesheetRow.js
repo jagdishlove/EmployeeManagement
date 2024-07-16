@@ -1075,6 +1075,7 @@ const TimesheetRow = ({
                     lg={7}
                     display={"flex"}
                     sx={style.starSec}
+                    justifyContent={"end"}
                   >
                     {!approval ||
                     (superAdmin && !(data.status === "SUBMITTED")) ? (
