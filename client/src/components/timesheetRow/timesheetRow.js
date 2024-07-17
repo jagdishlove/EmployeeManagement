@@ -365,7 +365,6 @@ const TimesheetRow = ({
 
   const handleSaveData = async () => {
     setLoading(true);
-
     try {
       const newErrors = validationForm();
       const timeError = timeValidation(getTimesheetData, newEnteryTime);
@@ -513,10 +512,19 @@ const TimesheetRow = ({
     const hours = date.getHours().toString().padStart(2, "0");
     const minutes = date.getMinutes().toString().padStart(2, "0");
 
-    setSelectedValues((prevSelectedValues) => ({
-      ...prevSelectedValues,
-      [fieldName]: `${hours}:${minutes}`,
-    }));
+    if (fieldName === "fromTime") {
+      setSelectedValues((prevSelectedValues) => ({
+        ...prevSelectedValues,
+        fromTime: `${hours}:${minutes}`,
+        toTime: preFillTimeSheetRow.toTime.slice(0, -3),
+      }));
+    } else if (fieldName === "toTime") {
+      setSelectedValues((prevSelectedValues) => ({
+        ...prevSelectedValues,
+        toTime: `${hours}:${minutes}`,
+        fromTime: preFillTimeSheetRow.fromTime.slice(0, -3),
+      }));
+    }
 
     setNewEnteryTime((prevSelectedValues) => ({
       ...prevSelectedValues,
