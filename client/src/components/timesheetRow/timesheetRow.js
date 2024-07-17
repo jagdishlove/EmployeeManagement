@@ -367,7 +367,10 @@ const TimesheetRow = ({
     setLoading(true);
     try {
       const newErrors = validationForm();
-      const timeError = timeValidation(getTimesheetData, newEnteryTime);
+      const timeError = timeValidation(getTimesheetData, {
+        fromTime: selectedValues.fromTime,
+        toTime: selectedValues.toTime,
+      });
       console.log("timeError", newEnteryTime);
       setErrors(newErrors);
       setTimeError(timeError);
@@ -408,6 +411,7 @@ const TimesheetRow = ({
     );
     const newErrors = validationForm();
     const timeError = timeValidation(filteredData, editFormTime);
+
     editButtonHandler();
     setErrors(newErrors);
     setTimeError(timeError);
