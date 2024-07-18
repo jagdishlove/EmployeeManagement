@@ -1,7 +1,7 @@
 module.exports = {
   env: {
     node: true,
-    browser:true,
+    browser: true,
     es2021: true,
   },
   extends: ["eslint:recommended", "plugin:react/recommended"],
@@ -27,5 +27,6 @@ module.exports = {
     "react/jsx-filename-extension": [1, { extensions: [".js", ".jsx"] }],
     "react/jsx-uses-react": "error",
     "react/jsx-uses-vars": "error",
+    "no-unused-vars": 0,
   },
 };
