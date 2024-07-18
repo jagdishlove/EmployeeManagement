@@ -109,12 +109,7 @@ const TimesheetRow = ({
     fromTime: "",
     toTime: "",
   });
-  const [initialFromTime, setInitialFromTime] = useState(
-    preFillTimeSheetRow.fromTime.slice(0, -3)
-  );
-  const [initialToTime, setInitialToTime] = useState(
-    preFillTimeSheetRow.toTime.slice(0, -3)
-  );
+  const [lastModifiedField, setLastModifiedField] = useState(null);
 
   const isSuccessSaveTimesheet = useSelector(
     (state) => state?.persistData?.timesheetData.isSuccess
@@ -523,13 +518,19 @@ const TimesheetRow = ({
       setSelectedValues((prevSelectedValues) => ({
         ...prevSelectedValues,
         fromTime: `${hours}:${minutes}`,
-        toTime: prevSelectedValues.toTime || initialToTime,
+        toTime:
+          lastModifiedField === "toTime"
+            ? prevSelectedValues.toTime
+            : preFillTimeSheetRow.toTime.slice(0, -3),
       }));
     } else if (fieldName === "toTime") {
       setSelectedValues((prevSelectedValues) => ({
         ...prevSelectedValues,
         toTime: `${hours}:${minutes}`,
-        fromTime: prevSelectedValues.fromTime || initialFromTime,
+        fromTime:
+          lastModifiedField === "fromTime"
+            ? prevSelectedValues.fromTime
+            : preFillTimeSheetRow.fromTime.slice(0, -3),
       }));
     }
 
@@ -537,7 +538,7 @@ const TimesheetRow = ({
       ...prevSelectedValues,
       [fieldName]: `${hours}:${minutes}`,
     }));
-
+    setLastModifiedField(fieldName);
     setInitialDataState(initialSelectedValues);
   };
 
