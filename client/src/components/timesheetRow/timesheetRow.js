@@ -193,6 +193,8 @@ const TimesheetRow = ({
     data ? editedSelectedValues : initialSelectedValues
   );
 
+  console.log("selectedValues", selectedValues);
+
   const [initialDataState, setInitialDataState] = useState(
     initialSelectedValues
   );
@@ -517,6 +519,9 @@ const TimesheetRow = ({
     setSelectedValues((prevSelectedValues) => ({
       ...prevSelectedValues,
       fromTime: `${hours}:${minutes}`,
+      toTime: prevSelectedValues.toTime
+        ? prevSelectedValues.toTime
+        : preFillTimeSheetRow.toTime.slice(0, -3),
     }));
 
     setNewEnteryTime((prevSelectedValues) => ({
@@ -537,6 +542,9 @@ const TimesheetRow = ({
     setSelectedValues((prevSelectedValues) => ({
       ...prevSelectedValues,
       toTime: `${hours}:${minutes}`,
+      fromTime: prevSelectedValues.fromTime
+        ? prevSelectedValues.fromTime
+        : preFillTimeSheetRow.fromTime.slice(0, -3),
     }));
     setNewEnteryTime((prevSelectedValues) => ({
       ...prevSelectedValues,
