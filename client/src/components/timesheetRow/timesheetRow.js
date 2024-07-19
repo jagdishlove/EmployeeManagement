@@ -506,7 +506,7 @@ const TimesheetRow = ({
     }
   };
 
-  const onChangeTimeHandler = (time, fieldName) => {
+  const onChangeFromTimeHandler = (time, fieldName) => {
     const date = new Date(time);
     setWithoutFormatTime((prev) => ({ ...prev, [fieldName]: time }));
 
@@ -514,26 +514,30 @@ const TimesheetRow = ({
     const hours = date.getHours().toString().padStart(2, "0");
     const minutes = date.getMinutes().toString().padStart(2, "0");
 
-    if (fieldName === "fromTime") {
-      setSelectedValues((prevSelectedValues) => ({
-        ...prevSelectedValues,
-        fromTime: `${hours}:${minutes}`,
-        toTime:
-          lastModifiedField === "toTime"
-            ? prevSelectedValues.toTime
-            : preFillTimeSheetRow.toTime.slice(0, -3),
-      }));
-    } else if (fieldName === "toTime") {
-      setSelectedValues((prevSelectedValues) => ({
-        ...prevSelectedValues,
-        toTime: `${hours}:${minutes}`,
-        fromTime:
-          lastModifiedField === "fromTime"
-            ? prevSelectedValues.fromTime
-            : preFillTimeSheetRow.fromTime.slice(0, -3),
-      }));
-    }
+    setSelectedValues((prevSelectedValues) => ({
+      ...prevSelectedValues,
+      fromTime: `${hours}:${minutes}`,
+    }));
 
+    setNewEnteryTime((prevSelectedValues) => ({
+      ...prevSelectedValues,
+      [fieldName]: `${hours}:${minutes}`,
+    }));
+    setLastModifiedField(fieldName);
+    setInitialDataState(initialSelectedValues);
+  };
+  const onChangeToTimeHandler = (time, fieldName) => {
+    const date = new Date(time);
+    setWithoutFormatTime((prev) => ({ ...prev, [fieldName]: time }));
+
+    // Get hours and minutes
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+
+    setSelectedValues((prevSelectedValues) => ({
+      ...prevSelectedValues,
+      toTime: `${hours}:${minutes}`,
+    }));
     setNewEnteryTime((prevSelectedValues) => ({
       ...prevSelectedValues,
       [fieldName]: `${hours}:${minutes}`,
@@ -873,7 +877,7 @@ const TimesheetRow = ({
                         ? parseTimeStringToDate(selectedValues.fromTime)
                         : parseTimeStringToDate(selectedValues.fromTime)
                     }
-                    onChange={(e) => onChangeTimeHandler(e, "fromTime")}
+                    onChange={(e) => onChangeFromTimeHandler(e, "fromTime")}
                     disabled={disabled || approval || isHistory || superAdmin}
                   />
                 </DemoItem>
@@ -895,7 +899,7 @@ const TimesheetRow = ({
                         ? parseTimeStringToDate(selectedValues.toTime)
                         : parseTimeStringToDate(selectedValues.toTime)
                     }
-                    onChange={(e) => onChangeTimeHandler(e, "toTime")}
+                    onChange={(e) => onChangeToTimeHandler(e, "toTime")}
                     disabled={disabled || approval || superAdmin}
                   />
                 </DemoItem>
