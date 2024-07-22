@@ -364,6 +364,7 @@ const TimesheetRow = ({
   });
 
   const handleSaveData = async () => {
+    console.log("selectedValues", selectedValues)
     setLoading(true);
     try {
       const newErrors = validationForm();
