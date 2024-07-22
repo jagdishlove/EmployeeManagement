@@ -193,7 +193,7 @@ const TimesheetRow = ({
     data ? editedSelectedValues : initialSelectedValues
   );
 
-  console.log("selectedValues", selectedValues);
+ 
 
   const [initialDataState, setInitialDataState] = useState(
     initialSelectedValues
@@ -521,7 +521,7 @@ const TimesheetRow = ({
       fromTime: `${hours}:${minutes}`,
       toTime: prevSelectedValues.toTime
         ? prevSelectedValues.toTime
-        : preFillTimeSheetRow.toTime.slice(0, -3),
+        : preFillTimeSheetRow?.toTime?.slice(0, -3),
     }));
 
     setNewEnteryTime((prevSelectedValues) => ({
@@ -544,7 +544,7 @@ const TimesheetRow = ({
       toTime: `${hours}:${minutes}`,
       fromTime: prevSelectedValues.fromTime
         ? prevSelectedValues.fromTime
-        : preFillTimeSheetRow.fromTime.slice(0, -3),
+        : preFillTimeSheetRow?.fromTime?.slice(0, -3),
     }));
     setNewEnteryTime((prevSelectedValues) => ({
       ...prevSelectedValues,
@@ -625,7 +625,7 @@ const TimesheetRow = ({
   };
 
   useEffect(() => {
-    if (!superAdmin) {
+    if (!superAdmin && !approval) {
       dispatch(getMostCommonTimesAction());
     }
   }, []);
@@ -1171,17 +1171,10 @@ const TimesheetRow = ({
                           }
                         >
                           <Typography
-                            variant="h6"
+                            variant="p"
                             sx={{
                               color: theme.palette.secondary.main,
-                              "@media (min-width: 768px) and (min-height: 1024px)":
-                                {
-                                  fontSize: "12px",
-                                },
-                              "@media (min-width: 1024px) and (min-height: 768px)":
-                                {
-                                  fontSize: "12px",
-                                },
+                              fontSize: "13px",
                             }}
                           >
                             Approve
@@ -1189,21 +1182,14 @@ const TimesheetRow = ({
                         </Button>
                         <Button
                           sx={{
-                            "&:hover": {
+                            "&:hover": { 
                               bgcolor: "Red",
                               // Set the same color as the background color to remove the hover effect
                             },
                             backgroundColor: "Transparent",
                             border: "1px solid red",
 
-                            "@media (min-width: 768px) and (min-height: 1024px)":
-                              {
-                                width: "25%",
-                              },
-                            "@media (min-width: 1024px) and (min-height: 768px)":
-                              {
-                                width: "25%",
-                              },
+                            fontSize: "13px",
                           }}
                           variant="contained"
                           type="submit"
@@ -1218,17 +1204,10 @@ const TimesheetRow = ({
                           disabled={false}
                         >
                           <Typography
-                            variant="h6"
+                            variant="p"
                             color="#000000"
                             sx={{
-                              "@media (min-width: 768px) and (min-height: 1024px)":
-                                {
-                                  fontSize: "12px",
-                                },
-                              "@media (min-width: 1024px) and (min-height: 768px)":
-                                {
-                                  fontSize: "12px",
-                                },
+                              fontSize: "13px",
                             }}
                           >
                             Reject

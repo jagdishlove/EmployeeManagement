@@ -111,7 +111,6 @@ const ProjectProgress = () => {
   const { projectList, projectListLoading } = useSelector(
     (state) => state?.persistData?.workSpace
   );
-console.log("projectList", projectList)
   const role = useSelector(
     (state) => state?.persistData?.loginDetails?.data.role
   );

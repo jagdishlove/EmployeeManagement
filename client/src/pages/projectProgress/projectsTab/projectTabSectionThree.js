@@ -91,35 +91,30 @@ const ProjectTebSectionThree = ({ project }) => {
   const data = [
     {
       name: "Actual Implementation Cost",
-      value: Math.min(dashboardProjectdetails.actualImplementationCost, 100),
+      value: dashboardProjectdetails.actualImplementationCostInPercentage,
       originalValue:
         dashboardProjectdetails?.actualImplementationCost?.toFixed(2), // Store original value
       fill: "#81C84B",
     },
     {
       name: "Projected Implementation Cost",
-      value:
-        dashboardProjectdetails.projectedImplementationCost > 0
-          ? 100 || Math.min(dashboardProjectdetails.projectedImplementationCost)
-          : 0,
-      originalValue: (
-        dashboardProjectdetails.projectedImplementationCost || 0
-      ).toFixed(2), // Store original value
-      fill: "#20D7FE",
+      value:dashboardProjectdetails?.projectedImplementationCostInPercentage,
+      originalValue:
+        (dashboardProjectdetails?.projectedImplementationCost || 0).toFixed(2), // Store original value
+       fill: "#20D7FE",
     },
     {
       name: "Budget",
-      value:
-        dashboardProjectdetails.projectBudget > 0
-          ? 100 || Math.min(dashboardProjectdetails.projectBudget)
-          : 0,
-      originalValue: dashboardProjectdetails.projectBudget, // Store original value
+      value: dashboardProjectdetails?.projectBudgetInPercentage,
+
+      originalValue: dashboardProjectdetails?.projectBudget || 0, // Store original value
       fill: "#33A1EC",
     },
     {
       name: "Time",
-      value: parseInt(dashboardProjectdetails.time || 0) !== 0 ? 100 : 0,
-      originalValue: dashboardProjectdetails.time || 0, // Store original value
+      value: dashboardProjectdetails?.timeInPercentage,
+
+      originalValue: dashboardProjectdetails?.time || 0, // Store original value
       fill: "#FFA07A",
     },
   ];

@@ -113,6 +113,7 @@ const TimesheetTab = () => {
       setLoading(false);
     }
   };
+  localStorage.removeItem("ccurrentPage");
   return (
     <Box>
       <AdminSubHeader

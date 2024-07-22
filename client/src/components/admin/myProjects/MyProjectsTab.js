@@ -6,28 +6,38 @@ import { getAllReportessAction } from "../../../redux/actions/workSpace/workSpac
 import { Grid } from "@mui/material";
 
 const MyProjectsTab = () => {
-  const [project, setProject] = useState("All");
-  const [selectedOption, setSelectedOption] = useState("");
-  const [pcurrentPage, setpCurrentPage] = useState(
-    JSON.parse(localStorage.getItem("pcurrentPage")) || 0
+  const [project, setProject] = useState(
+    localStorage.getItem("project") || "All"
   );
+  const [selectedOption, setSelectedOption] = useState(
+    JSON.parse(localStorage.getItem("selectedOption")) || ""
+  );
+  const [ccurrentPage, setcCurrentPage] = useState(
+    JSON.parse(localStorage.getItem("ccurrentPage")) || 0
+  ); // Use currentPage state
   const size = 7;
   const dispatch = useDispatch();
+
   localStorage.setItem("selectedTabIndex", 1);
   localStorage.setItem("selectedSubTabIndex", 0);
+
   useEffect(() => {
-    localStorage.setItem("pcurrentPage", JSON.stringify(pcurrentPage));
+    localStorage.setItem("ccurrentPage", JSON.stringify(ccurrentPage)); // Store currentPage in local storage
+    localStorage.setItem("project", project);
+    localStorage.setItem("selectedOption", JSON.stringify(selectedOption));
     dispatch(
       getAllReportessAction(
         {
           projectId: project === "All" ? "" : project,
-          page: pcurrentPage,
+          page: ccurrentPage,
           size: size,
         },
         selectedOption
       )
     );
-  }, [project, selectedOption, pcurrentPage]);
+  }, [project, selectedOption, ccurrentPage, dispatch]);
+
+  localStorage.removeItem("currentPage");
   return (
     <div>
       <MyProjectsHeader
@@ -35,11 +45,12 @@ const MyProjectsTab = () => {
         setProject={setProject}
         selectedOption={selectedOption}
         setSelectedOption={setSelectedOption}
+        setcCurrentPage={setcCurrentPage} // Pass setCurrentPage down to MyProjectsHeader
       />
       <Grid sx={{ paddingLeft: "20px" }}>
         <MyProjectsList
-          pcurrentPage={pcurrentPage}
-          setpCurrentPage={setpCurrentPage}
+          ccurrentPage={ccurrentPage} // Pass currentPage down to MyProjectsList
+          setcCurrentPage={setcCurrentPage} // Pass setCurrentPage down to MyProjectsList
         />
       </Grid>
     </div>

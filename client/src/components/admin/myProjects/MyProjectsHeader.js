@@ -12,6 +12,7 @@ export default function MyProjectsHeader({
   project,
   setProject,
   setSelectedOption,
+  setcCurrentPage, 
 }) {
   const theme = useTheme();
   const style = adminHeaderStyle(theme);
@@ -21,6 +22,7 @@ export default function MyProjectsHeader({
   const handleChange = (e) => {
     const { value } = e.target;
     dispatch(searchUserAction(value));
+    
   };
 
   const userData = useSelector(
@@ -29,7 +31,9 @@ export default function MyProjectsHeader({
 
   useEffect(() => {
     dispatch(projectListAction());
-  }, []);
+    setcCurrentPage(0);
+    setProject("All");
+  }, [dispatch, setcCurrentPage, setProject]);
 
   const projectList = useSelector(
     (state) => state?.persistData?.projectListData?.data || []
@@ -38,7 +42,9 @@ export default function MyProjectsHeader({
   const handleProjectListChnage = (e) => {
     const { value } = e.target;
     setProject(value);
+   
   };
+
   return (
     <Grid container spacing={2} mt={2}>
       <Grid item xs={4}>
@@ -49,7 +55,10 @@ export default function MyProjectsHeader({
           getOptionValue={(option) => option.id}
           getOptionLabel={(option) => option.name}
           getOptionSelected={(option, value) => option.id === value.id}
-          onChange={(e, data) => setSelectedOption(data)}
+          onChange={(e, data) => {
+            setSelectedOption(data);
+            setcCurrentPage(0); // Reset page to 0 when option changes
+          }}
           name="UserName"
           isLoading={userData?.length === 0}
           renderInput={(params) => (
@@ -79,7 +88,10 @@ export default function MyProjectsHeader({
           dropdownName="Projects"
           options={[{ id: "All", value: "All" }, ...projectList] || []}
           value={project}
-          onChange={handleProjectListChnage}
+          onChange={(e) => {
+            handleProjectListChnage(e);
+            setcCurrentPage(0); // Reset page to 0 when project changes
+          }}
           style={style.DateTimesheetDateTextField}
           valueKey="id"
           labelKey="projectNames"

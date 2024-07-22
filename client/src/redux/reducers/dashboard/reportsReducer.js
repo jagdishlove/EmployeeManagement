@@ -45,7 +45,7 @@ import {
            singleDownloadLoading: true,
           };
         case  GET_SINGLE_DOWNLOAD_REPORT_SUCCESS:
-          console.log('GET_SINGLE_DOWNLOAD_REPORT_SUCCESS action payload:', action.payload);
+        
           return {
             ...state,
             singleDownloadDetails: action.payload,

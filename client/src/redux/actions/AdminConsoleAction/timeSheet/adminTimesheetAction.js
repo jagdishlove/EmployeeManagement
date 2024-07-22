@@ -183,7 +183,7 @@ export const adminRejectTimesheet = (data, newPayload, search, params) => {
       dispatch(adminConsoleTimesheetRejectSuccess());
       dispatch(getAllTimeSheetForAdmin(newPayload, search));
       dispatch(getAllTimeSheetApprovers(params));
-      console.log("data", data);
+    
       const timesheetEntryIds = data.map((entry) => entry.timesheetEntryId);
 
       dispatch({

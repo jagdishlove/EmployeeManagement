@@ -227,6 +227,7 @@ const MySpaceTab = () => {
   localStorage.removeItem("selectedProject");
   localStorage.removeItem("pcurrentPage");
   localStorage.removeItem("currentPage");
+  localStorage.removeItem("ccurrentPage");
   return (
     <Grid
       mt={4}

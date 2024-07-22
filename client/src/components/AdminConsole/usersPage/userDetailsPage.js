@@ -292,12 +292,12 @@ export default function UserDetailsPage() {
   const leaveTypeMasterData = useSelector(
     (state) => state.persistData?.loginDetails?.masterData?.leaveTypesForView
   );
-  console.log("leaveTypeMasterData", leaveTypeMasterData);
+ 
   
   const leaveBalance = useSelector(
     (state) => state?.persistData?.userDetails?.userByIdData?.leaveBalance
   );
-  console.log("leaveBalance", leaveBalance);
+ 
   
   const result = leaveBalance && leaveTypeMasterData ? leaveBalance.map((item) => {
     const leaveMasterId = parseInt(Object.keys(item)[0]);

@@ -73,6 +73,7 @@ export default function ReporteesList({ currentPage, setCurrentPage, handleFetch
     setCurrentPage(0); // Reset to the first page
     handleFetchReportees(id, firstName, lastName); // Fetch the reportees
   };
+  
 return (
   <Grid
     container

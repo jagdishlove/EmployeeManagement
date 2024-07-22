@@ -35,7 +35,6 @@ const HistoryCalendar = ({
   const historyData = useSelector(
     (state) => state?.persistData?.historyData.historyData
   );
-  console.log("historyData", historyData)
   const transformedData = historyData?.timesheetUtilizationEntryList?.map(
     (item) => {
       const date = new Date(item.date);
@@ -127,19 +126,14 @@ const HistoryCalendar = ({
 
  // Check if the event type is in DATETYPES
 if (DATETYPES.includes(event.type)) {
-  console.log("Event type is in DATETYPES");
-  console.log("getDataType(event.type):", getDataType(event.type));
-  console.log("event.type:", event.type);
-  console.log("event.legendList:", event.legendList);
-  console.log("event.legendList.length:", event.legendList ? event.legendList.length : "null");
-
+ 
   // Check if getDataType(event.type) is equal to event.type and legendList is not null and not empty
   if (
     getDataType(event.type) === event.type &&
     event?.legendList &&
     event?.legendList?.length > 0
   ) {
-    console.log("Condition met: graph should be displayed");
+   
     // Render the graph
     return (
       <Box

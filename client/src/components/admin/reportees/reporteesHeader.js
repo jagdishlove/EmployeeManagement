@@ -12,7 +12,8 @@ export default function ReporteesHeader({
   breadcrumbs,
   handleBreadcrumbClick,
   userName,
-  userEmpId
+  userEmpId,
+  resetPageToFirst
 }) {
   const dispatch = useDispatch();
 
@@ -58,7 +59,10 @@ export default function ReporteesHeader({
         <Autocomplete
           options={userData || []}
           getOptionLabel={(option) => option.name}
-          onChange={(e, data) => setSelectedOption(data)}
+          onChange={(e, data) => {
+            setSelectedOption(data);
+            resetPageToFirst(); // Reset the page to the first page
+          }}
           renderInput={(params) => (
             <TextField
               {...params}

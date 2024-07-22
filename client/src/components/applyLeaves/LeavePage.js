@@ -153,7 +153,7 @@ const LeavePage = () => {
   };
 
   const onChangeFormDataHandler = (e, values, type) => {
-    if (e.target?.value === 12 && hasNumberDaysGreaterThanZero) {
+    if (e.target?.value === 11 && hasNumberDaysGreaterThanZero) {
       setShowModal(true);
     }
     if (type === "fromDate" || type === "toDate") {

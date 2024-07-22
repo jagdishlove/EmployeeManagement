@@ -55,7 +55,7 @@ const ReporteesTab = () => {
       )
     );
   };
-
+  localStorage.removeItem("ccurrentPage");
   const handleBreadcrumbClick = (empId, index) => {
     if (index === -1) {
       setBreadcrumbs([]);
@@ -87,6 +87,12 @@ const ReporteesTab = () => {
     localStorage.setItem("breadcrumbs", JSON.stringify(breadcrumbs)); // store breadcrumbs in localStorage
   }, [breadcrumbs]);
   localStorage.removeItem("pcurrentPage");
+
+ 
+  const resetPageToFirst = () => {
+    setCurrentPage(0);
+  };
+
   return (
     <div>
       <ReporteesHeader
@@ -95,6 +101,8 @@ const ReporteesTab = () => {
         handleBreadcrumbClick={handleBreadcrumbClick}
         userName={userName}
         userEmpId={empId}
+        resetPageToFirst={resetPageToFirst}
+        
       />
       <Grid sx={{ paddingLeft: "20px" }}>
         <ReporteesList
