@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Grid,
   Box,
@@ -141,7 +141,7 @@ export default function UserDetailsPage() {
     );
   };
 
-  const CustomMenu = (props) => {
+  const CustomMenu = useCallback((props) => {
     const { innerProps, children, selectProps } = props;
 
     const applySkillFilterHandler = () => {
@@ -209,7 +209,7 @@ export default function UserDetailsPage() {
       </components.Menu>
 
     );
-  };
+  },[]);
 
   const handleAccordionToggle = (projectId) => {
     setExpanded(expanded === projectId ? null : projectId);
