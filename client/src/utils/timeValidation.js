@@ -1,6 +1,5 @@
 export const timeValidation = (data, selectedValue) => {
   let timeError = "";
-
   if (
     selectedValue.fromTime !== "" &&
     selectedValue.toTime !== "" &&

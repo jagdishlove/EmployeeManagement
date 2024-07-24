@@ -364,13 +364,12 @@ const TimesheetRow = ({
   });
 
   const handleSaveData = async () => {
-    console.log("selectedValues", selectedValues)
     setLoading(true);
     try {
       const newErrors = validationForm();
       const timeError = timeValidation(getTimesheetData, {
-        fromTime: selectedValues.fromTime,
-        toTime: selectedValues.toTime,
+        fromTime: selectedValues.fromTime.length === 5 ? selectedValues?.fromTime : selectedValues?.fromTime?.slice(0, -3),
+        toTime:  selectedValues.toTime.length === 5 ? selectedValues?.toTime : selectedValues?.toTime?.slice(0, -3),
       });
       setErrors(newErrors);
       setTimeError(timeError);

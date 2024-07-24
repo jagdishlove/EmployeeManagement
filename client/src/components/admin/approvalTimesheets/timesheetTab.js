@@ -20,6 +20,8 @@ const TimesheetTab = () => {
   const approvalData = useSelector(
     (state) => state?.persistData?.timesheetData?.approvalTimesheetData
   );
+
+  
   const [errorValidation, setErrorValidation] = useState({});
   const [projects, setProjects] = useState("All"); // Set default value to "All"
   const [teamMember, setTeamMember] = useState("All");
@@ -34,12 +36,21 @@ const TimesheetTab = () => {
   const newPayload = {
     projectId: projects === "All" ? "" : projects || "",
     empId: teamMember === "All" ? "" : teamMember || "",
+    size: 10,
+    date: newDateDashboard === "All" ? "" : formatDateForApi(newDateDashboard),
+  };
+  const newPayload1 = {
+    projectId: projects === "All" ? "" : projects || "",
+    empId: teamMember === "All" ? "" : teamMember || "",
     size: newSize,
     date: newDateDashboard === "All" ? "" : formatDateForApi(newDateDashboard),
   };
 
+ 
+
   const fetchMore = () => {
-    dispatch(getTimesheetEntryApprovalAction(newPayload));
+   
+    dispatch(getTimesheetEntryApprovalAction(newPayload1));
     setCounter(counter + 1);
   };
   const validationForm = (rating, data) => {

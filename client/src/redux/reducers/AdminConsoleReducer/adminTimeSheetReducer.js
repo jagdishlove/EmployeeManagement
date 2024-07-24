@@ -21,7 +21,6 @@ const initialState = {
   adminConsoleApproveTimesheetLoading: false,
   timesheetDataStored: [],
 };
-
 const adminTimeSheetReducer = (state = initialState, action) => {
   switch (action.type) {
     case SEARCH_USERNAME_REQUEST:
@@ -79,45 +78,46 @@ const adminTimeSheetReducer = (state = initialState, action) => {
         adminConsoleApproveTimesheetLoading: false,
       };
     case STORE_TIMESHEET_DATA:
+  
       // Check if timesheetEntryIds exist in the payload and it's an array
       if (
         Array.isArray(action.payload.timesheetEntryId) &&
         action.payload.timesheetEntryId.length > 0
       ) {
         // Filter out records with timesheetEntryIds that exist in action.payload.timesheetEntryIds
-        const filteredTimesheets = action.payload.filter((newEntry) => {
-          return !state.timesheetDataStored.some(
-            (existingEntry) =>
-              existingEntry.timesheetEntryId === newEntry.timesheetEntryId
-          );
-        });
+        const updatedTimesheetDataStored = state.timesheetDataStored.filter(
+          (entry) =>
+            !action.payload.timesheetEntryId.includes(entry.timesheetEntryId)
+        );
 
         return {
           ...state,
-          timesheetDataStored: state.timesheetDataStored.concat(filteredTimesheets),
+          timesheetDataStored: updatedTimesheetDataStored,
         };
       }
 
-      // If action.payload.timesheetEntryId is not an array or is empty
       if (action.payload.message === "null") {
         return {
           ...state,
           timesheetDataStored: [],
         };
       } else {
-        // Concatenate new data to timesheetDataStored, ensuring no duplicates based on timesheetEntryId
-        const newEntries = Array.isArray(action.payload)
-          ? action.payload.filter((newEntry) => {
-              return !state.timesheetDataStored.some(
-                (existingEntry) =>
-                  existingEntry.timesheetEntryId === newEntry.timesheetEntryId
-              );
-            })
-          : [action.payload];
+        // Use a Map to ensure unique entries based on timesheetEntryId
+        const timesheetMap = new Map(
+          state.timesheetDataStored.map((entry) => [
+            entry.timesheetEntryId,
+            entry,
+          ])
+        );
 
+        action.payload.forEach((newEntry) => {
+          timesheetMap.set(newEntry.timesheetEntryId, newEntry);
+        });
+
+       
         return {
           ...state,
-          timesheetDataStored: state.timesheetDataStored.concat(newEntries),
+          timesheetDataStored: Array.from(timesheetMap.values()),
         };
       }
 

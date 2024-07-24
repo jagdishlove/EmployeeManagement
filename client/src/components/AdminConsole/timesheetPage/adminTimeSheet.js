@@ -86,55 +86,42 @@ function AdminTimeSheet() {
     );
   }, [states, selectedDate, dispatch]);
 
-  
-
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        // Clear previous data
-       await dispatch({
-          type: STORE_TIMESHEET_DATA,
-          payload: {
-            data: [],
-            message: "null",
+      // Clear previous data
+      await dispatch({
+        type: STORE_TIMESHEET_DATA,
+        payload: {
+          data: [],
+          message: "null",
+        },
+      });
+
+      // Fetch new data
+      await dispatch(
+        getAllTimeSheetForAdmin(
+          {
+            status: states,
+            date:
+              selectedDate !== "All"
+                ? dayjs(selectedDate, { format: "YYYY-MM-DD" }).format(
+                  "YYYY-MM-DD"
+                )
+                : "",
+            approverId: approver === "All" ? "" : approver,
+            page: 0,
           },
-        });
-  
-        // Fetch new data
-        await dispatch(
-          getAllTimeSheetForAdmin(
-            {
-              status: states,
-              date:
-                selectedDate !== "All"
-                  ? dayjs(selectedDate, { format: "YYYY-MM-DD" }).format(
-                      "YYYY-MM-DD"
-                    )
-                  : "",
-              approverId: approver === "All" ? "" : approver,
-              page: pageCounter,
-            },
-            selectedSearchOption
-          )
-        );
-  
-        // Additional logic after fetching data, if needed
-      } catch (error) {
-        console.error("Error fetching time sheet data:", error);
-        // Handle errors as needed
-      } finally{
-        dispatch({
-          type: STORE_TIMESHEET_DATA,
-          payload: adminTimeSheetData?.content || [], // Ensure it's an array or defaults to an empty array
-        });
-      }
+          selectedSearchOption
+        )
+      );
+
+      // Additional logic after fetching data, if needed
     };
     setPageCounter(0);
     // Call the async function immediately
     fetchData();
-  
   }, [selectedDate, selectedSearchOption, approver, states]);
-  
+
   const adminTimeSheetData = useSelector(
     (state) => state?.persistData?.adminTimeSheet?.allTimeSheetsForAdmin
   );
@@ -143,17 +130,15 @@ function AdminTimeSheet() {
     (state) => state?.persistData?.adminTimeSheet?.timesheetDataStored
   );
 
-  console.log('adminTimeSheetDataStored',adminTimeSheetDataStored)
+ 
+
   useEffect(() => {
-    // Example: Updating state after API call
-    if (adminTimeSheetData) {
-      // Update your state here with the fetched data
-      dispatch({
-        type: STORE_TIMESHEET_DATA,
-        payload: adminTimeSheetData.content || [],
-      });
-    }
-  }, [adminTimeSheetData, dispatch]);
+    dispatch({
+      type: STORE_TIMESHEET_DATA,
+      payload: adminTimeSheetData?.content || [], // Ensure it's an array or defaults to an empty array
+    });
+  }, [adminTimeSheetData]);
+
   const { adminConsoleApproveTimesheetLoading } = useSelector(
     (state) => state?.persistData?.adminTimeSheet
   );
@@ -307,7 +292,7 @@ function AdminTimeSheet() {
                   )
                   : "",
               approverId: approver === "All" ? "" : approver,
-              page: pageCounter,
+              page: 0,
             },
             selectedSearchOption,
             {
@@ -321,13 +306,19 @@ function AdminTimeSheet() {
             }
           )
         );
-
+        await dispatch({
+          type: STORE_TIMESHEET_DATA,
+          payload: {
+            timesheetEntryIds: approvedEntries.map(
+              (entry) => entry.timesheetEntryId
+            ), // Pass the array of timesheetEntryIds
+          },
+        });
         setErrorValidation({});
         setPageCounter(0);
       } finally {
         setOpenPopup(false);
       }
-      setPageCounter(0);
     } else {
       setErrorValidation(errors);
     }
@@ -353,30 +344,26 @@ function AdminTimeSheet() {
 
   const fetchMore = () => {
     const nextPage = pageCounter + 1;
-    dispatch(
-      getAllTimeSheetForAdmin(
-        {
-          status: states,
-          date:
-            selectedDate !== "All"
-              ? dayjs(selectedDate, { format: "YYYY-MM-DD" }).format(
+    if (pageCounter < adminTimeSheetData.totalPages - 1) {
+      dispatch(
+        getAllTimeSheetForAdmin(
+          {
+            status: states,
+            date:
+              selectedDate !== "All"
+                ? dayjs(selectedDate, { format: "YYYY-MM-DD" }).format(
                   "YYYY-MM-DD"
                 )
-              : "",
-          approverId: approver === "All" ? "" : approver,
-          page: nextPage,
-        },
-        selectedSearchOption
-      )
-    );
-
-    dispatch({
-      type: STORE_TIMESHEET_DATA,
-      payload: adminTimeSheetData?.content || [], // Ensure it's an array or defaults to an empty array
-    });
-    setPageCounter(nextPage); // Update pageCounter after dispatch
+                : "",
+            approverId: approver === "All" ? "" : approver,
+            page: nextPage,
+          },
+          selectedSearchOption
+        )
+      );
+      setPageCounter(nextPage); // Update pageCounter after dispatch
+    }
   };
-
 
   const approveSelectedLeavesHandler = async () => {
     const entriesToApprove = adminTimeSheetDataStored || [];
@@ -423,7 +410,7 @@ function AdminTimeSheet() {
                   )
                   : "",
               approverId: approver === "All" ? "" : approver,
-              page: 10,
+              page: 0,
             },
             selectedSearchOption,
             {
@@ -498,37 +485,36 @@ function AdminTimeSheet() {
           <CircularProgress />
         </Box>
       )}
-     
-        <AdminTimesheetHeader
-          setApprover={setApproverHandler}
-          approver={approver}
-          selectedDate={selectedDate}
-          setSelectedDate={setSelectedDate}
-          states={states}
-          setStatus={setStatus}
-          setSelectedSearchOption={setSelectedSearchOption}
-          setSelectedCards={setSelectedCards}
-          setSelectall={setSelectall}
-        />
-        {Object.values(selectedCards).some((isSelected) => isSelected) && (
-          <Box display="flex" justifyContent="flex-end" mt={2} mr={2}>
-            <Button
-              sx={{
-                background: "#008080",
-                color: "white",
-                marginLeft: 2,
-                padding: "10px 15px",
-                "&:hover": {
-                  background: "#006666",
-                },
-              }}
-              onClick={handleOpenApproveDialog}
-            >
-              Approve TimeSheet
-            </Button>
-          </Box>
-        )}
-      
+      <AdminTimesheetHeader
+        setApprover={setApproverHandler}
+        approver={approver}
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+        states={states}
+        setStatus={setStatus}
+        setSelectedSearchOption={setSelectedSearchOption}
+        setSelectedCards={setSelectedCards}
+        setSelectall={setSelectall}
+      />
+      {Object.values(selectedCards).some((isSelected) => isSelected) && (
+        <Box display="flex" justifyContent="flex-end" mt={2} mr={2}>
+          <Button
+            sx={{
+              background: "#008080",
+              color: "white",
+              marginLeft: 2,
+              padding: "10px 15px",
+              "&:hover": {
+                background: "#006666",
+              },
+            }}
+            onClick={handleOpenApproveDialog}
+          >
+            Approve TimeSheet
+          </Button>
+        </Box>
+      )}
+
       <Dialog
         open={openApproveDialog}
         onClose={() => setOpenApproveDialog(false)}
@@ -580,12 +566,14 @@ function AdminTimeSheet() {
         <InfiniteScroll
           dataLength={adminTimeSheetDataStored?.length || 0}
           next={fetchMore}
-          hasMore={adminTimeSheetData?.totalElements > adminTimeSheetDataStored?.length}
+          hasMore={pageCounter + 1 < adminTimeSheetData.totalPages}
           loader={<CircularProgress />}
           endMessage={
-            <p style={{ textAlign: "center" }}>
-              <b>Yay! You have seen it all</b>
-            </p>
+            pageCounter + 1 >= adminTimeSheetData.totalPages && (
+              <p style={{ textAlign: "center" }}>
+                <b>Yay! You have seen it all</b>
+              </p>
+            )
           }
         >
           {adminTimeSheetDataStored ? (

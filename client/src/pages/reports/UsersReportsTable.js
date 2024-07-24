@@ -12,6 +12,7 @@ import {
   TableRow,
   Paper,
   Box,
+  CircularProgress,
 } from "@mui/material";
 import SimCardDownloadOutlinedIcon from "@mui/icons-material/SimCardDownloadOutlined";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -36,12 +37,22 @@ const ReportsTable = ({
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
   const [expandedProjects, setExpandedProjects] = useState([]);
+  const [loadingRows, setLoadingRows] = useState({});
   const timesheetReports = useSelector(
     (state) => state?.persistData?.timesheetreportsDetails
   );
+  const downloadReportsLoading = useSelector(
+    (state) => state?.persistData?.timesheetreportsDetails?.downloadReportsLoading
+  );
+
+  const singleDownloadLoading = useSelector(
+    (state) => state?.persistData?.timesheetreportsDetails?.singleDownloadLoading
+  );
+
   const startIndex = currentPage * pageSize;
 
   const downloadAllHandler = () => {
+   
     const data = {
       year: selectedYear,
       month: selectedMonth,
@@ -49,6 +60,7 @@ const ReportsTable = ({
       projectId,
     };
     dispatch(getDownloadReportsAction(data));
+    
   };
 
   useEffect(() => {
@@ -67,9 +79,20 @@ const ReportsTable = ({
     }
   };
 
-  const handleDownload = (link) => {
+  const handleDownload = (link, index) => {
+    // Set loading status for the specific row
+    setLoadingRows((prev) => ({ ...prev, [index]: true }));
+
     // Dispatch the action to fetch the download link
-    dispatch(getSingleDownloadReportAction(link, selectedMonth, selectedYear));
+    dispatch(getSingleDownloadReportAction(link, selectedMonth, selectedYear))
+      .then(() => {
+        // Reset loading status for the specific row after the download completes
+        setLoadingRows((prev) => ({ ...prev, [index]: false }));
+      })
+      .catch(() => {
+        // Reset loading status for the specific row if an error occurs
+        setLoadingRows((prev) => ({ ...prev, [index]: false }));
+      });
   };
 
   return (
@@ -277,10 +300,20 @@ const ReportsTable = ({
                             {row.lossOfPay}
                           </TableCell>
                           <TableCell style={{ fontSize: "16px" }}>
-                            <Button
-                              onClick={() => handleDownload(row.downloadLink)}
+                          <Button
+                              onClick={() => handleDownload(row.downloadLink, index)}
+                              disabled={loadingRows[index]} // Disable button only for the specific row being downloaded
                             >
-                              <SimCardDownloadOutlinedIcon />
+                              {loadingRows[index] ? (
+                                <CircularProgress size={24} />
+                              ) : (
+                                <SimCardDownloadOutlinedIcon
+                                  sx={{
+                                    fontSize: "24px",
+                                    color: "#008080",
+                                  }}
+                                />
+                              )}
                             </Button>
                           </TableCell>
                         </TableRow>
@@ -375,10 +408,22 @@ const ReportsTable = ({
               style={{  backgroundColor: isNameSelected ? "grey" : "#008080",
                 color: "white",
                 cursor: isNameSelected ? "not-allowed" : "pointer",}}
-              disabled={isNameSelected}
-            >
-              <SimCardDownloadOutlinedIcon />
-              Download All
+                startIcon={<SimCardDownloadOutlinedIcon />}
+                >
+                  { downloadReportsLoading ? "Downloading..." : "Download All"}
+                  { downloadReportsLoading ? (
+                    <CircularProgress
+                      size={24}
+                      sx={{
+                        color: "#fff",
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        marginTop: "-12px",
+                        marginLeft: "-12px",
+                      }}
+                    />
+                  ) : null}
             </Button>
           </Grid>
         </TableContainer>
