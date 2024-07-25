@@ -13,7 +13,7 @@ import {
   Slider,
   CircularProgress,
   useMediaQuery,
-  useTheme
+  useTheme,
 } from "@mui/material";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
@@ -32,7 +32,7 @@ import StarOutlinedIcon from "@mui/icons-material/StarOutlined";
 import {
   GetOfficeLocation,
   getLoocations,
-  masterDataAction
+  masterDataAction,
 } from "../../../redux/actions/masterData/masterDataAction";
 import { styled } from "@mui/material/styles";
 
@@ -51,7 +51,7 @@ export default function UserDetailsPage() {
   const dispatch = useDispatch();
   const { id } = useParams();
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [expanded, setExpanded] = useState(false);
   const [payRollExpanded, setPayRollExpanded] = useState(false);
   const [bankExpand, setBankExpand] = useState(false);
@@ -72,7 +72,7 @@ export default function UserDetailsPage() {
   const skills = useSelector(
     (state) => state.persistData?.loginDetails?.masterData?.skill
   );
- 
+
   const isMobile = useMediaQuery("(max-width: 1050px)");
 
   const InputOption = ({
@@ -207,9 +207,8 @@ export default function UserDetailsPage() {
           </Button>
         </Box>
       </components.Menu>
-
     );
-  },[]);
+  }, []);
 
   const handleAccordionToggle = (projectId) => {
     setExpanded(expanded === projectId ? null : projectId);
@@ -288,30 +287,33 @@ export default function UserDetailsPage() {
   useEffect(() => {
     dispatch(masterDataAction());
   }, [dispatch]);
-  
+
   const leaveTypeMasterData = useSelector(
     (state) => state.persistData?.loginDetails?.masterData?.leaveTypesForView
   );
- 
-  
+
   const leaveBalance = useSelector(
     (state) => state?.persistData?.userDetails?.userByIdData?.leaveBalance
   );
- 
-  
-  const result = leaveBalance && leaveTypeMasterData ? leaveBalance.map((item) => {
-    const leaveMasterId = parseInt(Object.keys(item)[0]);
-    const matchingMasterData = leaveTypeMasterData.find(
-      (data) => data.leaveMasterId === leaveMasterId
-    );
-  
-    return {
-      leaveMasterId,
-      leaveType: matchingMasterData ? matchingMasterData.leaveType : undefined,
-      numberDays: item[leaveMasterId],
-    };
-  }) : [];
-  
+
+  const result =
+    leaveBalance && leaveTypeMasterData
+      ? leaveBalance.map((item) => {
+          const leaveMasterId = parseInt(Object.keys(item)[0]);
+          const matchingMasterData = leaveTypeMasterData.find(
+            (data) => data.leaveMasterId === leaveMasterId
+          );
+
+          return {
+            leaveMasterId,
+            leaveType: matchingMasterData
+              ? matchingMasterData.leaveType
+              : undefined,
+            numberDays: item[leaveMasterId],
+          };
+        })
+      : [];
+
   const managerData = useSelector(
     (state) => state.persistData?.loginDetails?.masterData
   );
@@ -367,9 +369,9 @@ export default function UserDetailsPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [showAddSkills, setShowAddSkills] = useState(false);
   const [addSkills, setAddSkills] = useState();
- 
+
   const [skillValues, setSkillValues] = useState({});
-  
+
   const previousSelectedSkills = useRef();
 
   const handleEditButtonClick = () => {
@@ -478,10 +480,10 @@ export default function UserDetailsPage() {
                       skill.rating === undefined) < 4
                       ? "#90DC90"
                       : ((skillValues[skill.skillId] > 4 &&
-                        skillValues[skill.skillId]) ||
-                        skill.rating) < 7
-                        ? "#E6E62C"
-                        : "#E38F75",
+                          skillValues[skill.skillId]) ||
+                          skill.rating) < 7
+                      ? "#E6E62C"
+                      : "#E38F75",
                 }}
                 components={{
                   ValueLabel: ValueLabelComponent,
@@ -502,8 +504,8 @@ export default function UserDetailsPage() {
                   skill.rating < 4 || skill.rating === undefined
                     ? "#90DC90"
                     : skill.rating >= 4 && skill.rating < 7
-                      ? "#E6E62C"
-                      : "#E38F75",
+                    ? "#E6E62C"
+                    : "#E38F75",
                 color: "#ffff",
                 borderRadius: "50%",
                 width: 15,
@@ -564,18 +566,18 @@ export default function UserDetailsPage() {
   const Navigate = useNavigate();
 
   const handleBack = () => {
-    const formSaved = localStorage.getItem('formSaved');
-  
-    if (formSaved === 'true') {
+    const formSaved = localStorage.getItem("formSaved");
+
+    if (formSaved === "true") {
       // Clear the flag
-      localStorage.removeItem('formSaved');
-      localStorage.removeItem('currentPage', 'pcurrentPage'); // Clear the stored page number
+      localStorage.removeItem("formSaved");
+      localStorage.removeItem("currentPage", "pcurrentPage"); // Clear the stored page number
       Navigate("/users");
     } else {
       Navigate(-1);
     }
   };
-  
+
   const handleEdit = (id) => {
     navigate(`/editUser/${id}`);
   };
@@ -600,11 +602,13 @@ export default function UserDetailsPage() {
   };
 
   const selectedSkillFunc = (skill) => {
- skill.forEach(obj => {
-    if (!('rating' in obj)) {
-        obj.rating = 1;
+    if (Array.isArray(skill)) {
+      skill.forEach((obj) => {
+        if (!("rating" in obj)) {
+          obj.rating = 1;
+        }
+      });
     }
-});
 
     updateBottomSkills();
     setSelectedSkills(skill);
@@ -725,10 +729,13 @@ export default function UserDetailsPage() {
                       <Typography variant="h4">{userData.firstName}</Typography>
                     </Grid>
                     <Grid item xs={12} mt={-2}>
-                      <Typography variant="h3" sx={{
-                  overflowWrap: 'break-word',
-                  wordBreak: 'break-all',
-                }}>
+                      <Typography
+                        variant="h3"
+                        sx={{
+                          overflowWrap: "break-word",
+                          wordBreak: "break-all",
+                        }}
+                      >
                         {designationIdToName[userData.designationId]}
                       </Typography>
                     </Grid>
@@ -767,7 +774,7 @@ export default function UserDetailsPage() {
                           >
                             {userData.status &&
                               userData.status.charAt(0).toUpperCase() +
-                              userData.status.slice(1).toLowerCase()}
+                                userData.status.slice(1).toLowerCase()}
                           </Typography>
                           <Typography sx={{ color: "#898989" }}>
                             Date Of Birth
@@ -805,12 +812,10 @@ export default function UserDetailsPage() {
                               color: "#53939C",
                               marginBottom: "7px",
                               fontSize: "14px",
-                              
-                                overflowWrap: 'break-word',
-                                wordBreak: 'break-all',
-                              
-                            }}
 
+                              overflowWrap: "break-word",
+                              wordBreak: "break-all",
+                            }}
                           >
                             {`${officeLocation?.address?.addressLine1}, 
                   ${officeLocation?.address?.addressLine2}, 
@@ -843,189 +848,204 @@ export default function UserDetailsPage() {
               sx={{ display: "flex", flexDirection: "column" }}
             >
               <Box
-      sx={{
-        border: '2px solid #A4A4A4',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-        flexGrow: 1,
-        padding: { xs: '35px', md: '70px' },
-        borderRadius: '25px',
-        width: { xs: '100%', md: '97%' },
-      }}
-    >
-      <Typography variant="h5" gutterBottom>
-        <b>Basic Details :</b>
-      </Typography>
-      <Grid container spacing={2} mt={1.3}>
-        <Grid item xs={12}>
-          <Grid container spacing={2}>
-            <Grid item xs={7} sm={4} md={4} lg={4}>
-              <Typography variant="body1"
-                >
-                <strong>Employee ID:</strong>
-              </Typography>
-            </Grid>
-            <Grid item xs={5} sm={8} md={8} lg={8}>
-              <Typography variant="body1" sx={{
-                  overflowWrap: 'break-word',
-                  wordBreak: 'break-all',
-                }}>{userData.empId}</Typography>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={12}>
-          <Grid container spacing={2}>
-            <Grid item xs={7} sm={4} md={4} lg={4}>
-              <Typography variant="body1">
-                <strong>Date Of Joining:</strong>
-              </Typography>
-            </Grid>
-            <Grid item xs={5} sm={8} md={8} lg={8}>
-              <Typography variant="body1">{userData.joiningDate}</Typography>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={12}>
-          <Grid container spacing={2}>
-            <Grid item xs={7} sm={4} md={4} lg={4}>
-              <Typography variant="body1">
-                <strong>Gender:</strong>
-              </Typography>
-            </Grid>
-            <Grid item xs={5} sm={8} md={8} lg={8}>
-              <Typography variant="body1">{genderIdToName[userData.genderId]}</Typography>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={12}>
-          <Grid container spacing={2}>
-            <Grid item xs={7} sm={4} md={4} lg={4}>
-              <Typography variant="body1">
-                <strong>Employment Type:</strong>
-              </Typography>
-            </Grid>
-            <Grid item xs={5} sm={8} md={8} lg={8}>
-              <Typography variant="body1">{empTypeIdToName[userData.empTypeId]}</Typography>
-            </Grid>
-          </Grid>
-        </Grid>
-        {userData.clientLocationId? (
-          <>
-            <Grid item xs={12}>
-              <Grid container spacing={2}>
-                <Grid item xs={7} sm={4} md={4} lg={4}>
-                  <Typography variant="body1">
-                    <strong>Client Location :</strong>
-                  </Typography>
-                </Grid>
-                <Grid item xs={5} sm={8} md={8} lg={8}>
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      overflowWrap: 'break-word',
-                      wordBreak: 'break-all',
-                    }}
-                  >
-                    {`${clientDetailsData?.clientName}, ${clientDetailsData?.address?.addressLine1
-                      }, ${clientDetailsData?.address?.addressLine2}, 
-                    ${DataValue[clientDetailsData?.address?.cityId]} - ${clientDetailsData?.address?.postalCode
-                      }, 
-                    ${DataValue[clientDetailsData?.address?.stateId]}, ${DataValue[clientDetailsData?.address?.countryId]
-                      }.`}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Grid>
-          </>
-        ) : (
-          <>
-            <Grid>
-              {""}
-              {""} {""}
-            </Grid>
-          </>
-        )}
-        <Grid item xs={12}>
-          <Grid container spacing={2}>
-            <Grid item xs={7} sm={4} md={4} lg={4}>
-              <Typography variant="body1">
-                <strong>Work Mode:</strong>
-              </Typography>
-            </Grid>
-            <Grid item xs={5} sm={8} md={8} lg={8}>
-              <Typography variant="body1">{userData.workMode}</Typography>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={12}>
-          <Grid container spacing={2}>
-            <Grid item xs={7} sm={4} md={4} lg={4}>
-              <Typography variant="body1">
-                <strong>Reporting Manager:</strong>
-              </Typography>
-            </Grid>
-            <Grid item xs={5} sm={8} md={8} lg={8}>
-              <Typography variant="body1">
-                {userData.managerFirstName} {userData.managerLastName}
-              </Typography>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={12}>
-          <Grid container spacing={2}>
-            <Grid item xs={7} sm={4} md={4} lg={4}>
-              <Typography variant="body1">
-                <strong>Currect Address:</strong>
-              </Typography>
-            </Grid>
-            <Grid item xs={5} sm={8} md={8} lg={8}>
-              <Typography
-                variant="body1"
                 sx={{
-                  overflowWrap: 'break-word',
-                  wordBreak: 'break-all',
+                  border: "2px solid #A4A4A4",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  flexGrow: 1,
+                  padding: { xs: "35px", md: "70px" },
+                  borderRadius: "25px",
+                  width: { xs: "100%", md: "97%" },
                 }}
               >
-                {userData?.presentAddress?.name}
-                {userData?.presentAddress?.addressLine1}
-                {", "}
-                {userData?.presentAddress?.addressLine2}
-                {", "}
-                {DataValue[userData?.presentAddress?.stateId]}
-                {", "}
-                {userData?.presentAddress?.postalCode}
-              </Typography>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={12}>
-          <Grid container spacing={2}>
-            <Grid item xs={7} sm={4} md={4} lg={4}>
-              <Typography variant="body1">
-                <strong>Permanent Address:</strong>
-              </Typography>
-            </Grid>
-            <Grid item xs={5} sm={8} md={8} lg={8}>
-              <Typography
-                variant="body1"
-                sx={{
-                  overflowWrap: 'break-word',
-                  wordBreak: 'break-all',
-                }}
-              >
-                {userData?.permanentAddress?.name}
-                {userData?.permanentAddress?.addressLine1}
-                {", "}
-                {userData?.permanentAddress?.addressLine2}
-                {", "}
-                {DataValue[userData?.permanentAddress?.stateId]}
-                {", "}
-                {userData?.permanentAddress?.postalCode}
-              </Typography>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
-    </Box>
+                <Typography variant="h5" gutterBottom>
+                  <b>Basic Details :</b>
+                </Typography>
+                <Grid container spacing={2} mt={1.3}>
+                  <Grid item xs={12}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={7} sm={4} md={4} lg={4}>
+                        <Typography variant="body1">
+                          <strong>Employee ID:</strong>
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={5} sm={8} md={8} lg={8}>
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            overflowWrap: "break-word",
+                            wordBreak: "break-all",
+                          }}
+                        >
+                          {userData.empId}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={7} sm={4} md={4} lg={4}>
+                        <Typography variant="body1">
+                          <strong>Date Of Joining:</strong>
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={5} sm={8} md={8} lg={8}>
+                        <Typography variant="body1">
+                          {userData.joiningDate}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={7} sm={4} md={4} lg={4}>
+                        <Typography variant="body1">
+                          <strong>Gender:</strong>
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={5} sm={8} md={8} lg={8}>
+                        <Typography variant="body1">
+                          {genderIdToName[userData.genderId]}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={7} sm={4} md={4} lg={4}>
+                        <Typography variant="body1">
+                          <strong>Employment Type:</strong>
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={5} sm={8} md={8} lg={8}>
+                        <Typography variant="body1">
+                          {empTypeIdToName[userData.empTypeId]}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  {userData.clientLocationId ? (
+                    <>
+                      <Grid item xs={12}>
+                        <Grid container spacing={2}>
+                          <Grid item xs={7} sm={4} md={4} lg={4}>
+                            <Typography variant="body1">
+                              <strong>Client Location :</strong>
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={5} sm={8} md={8} lg={8}>
+                            <Typography
+                              variant="body1"
+                              sx={{
+                                overflowWrap: "break-word",
+                                wordBreak: "break-all",
+                              }}
+                            >
+                              {`${clientDetailsData?.clientName}, ${
+                                clientDetailsData?.address?.addressLine1
+                              }, ${clientDetailsData?.address?.addressLine2}, 
+                    ${DataValue[clientDetailsData?.address?.cityId]} - ${
+                                clientDetailsData?.address?.postalCode
+                              }, 
+                    ${DataValue[clientDetailsData?.address?.stateId]}, ${
+                                DataValue[clientDetailsData?.address?.countryId]
+                              }.`}
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    </>
+                  ) : (
+                    <>
+                      <Grid>
+                        {""}
+                        {""} {""}
+                      </Grid>
+                    </>
+                  )}
+                  <Grid item xs={12}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={7} sm={4} md={4} lg={4}>
+                        <Typography variant="body1">
+                          <strong>Work Mode:</strong>
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={5} sm={8} md={8} lg={8}>
+                        <Typography variant="body1">
+                          {userData.workMode}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={7} sm={4} md={4} lg={4}>
+                        <Typography variant="body1">
+                          <strong>Reporting Manager:</strong>
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={5} sm={8} md={8} lg={8}>
+                        <Typography variant="body1">
+                          {userData.managerFirstName} {userData.managerLastName}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={7} sm={4} md={4} lg={4}>
+                        <Typography variant="body1">
+                          <strong>Currect Address:</strong>
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={5} sm={8} md={8} lg={8}>
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            overflowWrap: "break-word",
+                            wordBreak: "break-all",
+                          }}
+                        >
+                          {userData?.presentAddress?.name}
+                          {userData?.presentAddress?.addressLine1}
+                          {", "}
+                          {userData?.presentAddress?.addressLine2}
+                          {", "}
+                          {DataValue[userData?.presentAddress?.stateId]}
+                          {", "}
+                          {userData?.presentAddress?.postalCode}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={7} sm={4} md={4} lg={4}>
+                        <Typography variant="body1">
+                          <strong>Permanent Address:</strong>
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={5} sm={8} md={8} lg={8}>
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            overflowWrap: "break-word",
+                            wordBreak: "break-all",
+                          }}
+                        >
+                          {userData?.permanentAddress?.name}
+                          {userData?.permanentAddress?.addressLine1}
+                          {", "}
+                          {userData?.permanentAddress?.addressLine2}
+                          {", "}
+                          {DataValue[userData?.permanentAddress?.stateId]}
+                          {", "}
+                          {userData?.permanentAddress?.postalCode}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Box>
             </Grid>
           </Grid>
 
@@ -1289,7 +1309,9 @@ export default function UserDetailsPage() {
                                             ...baseStyles,
                                             overflow: "auto",
                                             height: "55px",
-                                            width: isSmallScreen ? '100%' : '300px', // Responsive width
+                                            width: isSmallScreen
+                                              ? "100%"
+                                              : "300px", // Responsive width
                                           }),
                                         }}
                                       />
@@ -1529,7 +1551,6 @@ export default function UserDetailsPage() {
               </Grid>
             </Grid>
 
-
             <Grid item xs={12}>
               <Typography variant="h3" gutterBottom>
                 Leave Balance
@@ -1599,8 +1620,7 @@ export default function UserDetailsPage() {
                               <Grid container spacing={2} key={index}>
                                 <Grid item xs={2}>
                                   <Typography variant="body1">
-                                   <b> {data.leaveType} :</b>
-                                   
+                                    <b> {data.leaveType} :</b>
                                   </Typography>
                                 </Grid>
                                 <Grid item xs={10}>
@@ -1611,7 +1631,9 @@ export default function UserDetailsPage() {
                               </Grid>
                             ))
                           ) : (
-                            <Typography variant="h3">No Leave Data Found</Typography>
+                            <Typography variant="h3">
+                              No Leave Data Found
+                            </Typography>
                           )}
                         </Grid>
                       </AccordionDetails>
