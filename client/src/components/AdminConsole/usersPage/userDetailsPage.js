@@ -145,7 +145,7 @@ export default function UserDetailsPage() {
     const { innerProps, children, selectProps } = props;
 
     const applySkillFilterHandler = () => {
-      setSelectedSkills(selectedSkills);
+      // setSelectedSkills(selectedSkills);
       setShowAddSkills(false);
       // Close the dropdown when the "Apply" button is clicked
       selectProps.onMenuClose();
