@@ -12,7 +12,7 @@ import {
   FormControlLabel,
   Radio,
   Avatar,
-  useMediaQuery
+  useMediaQuery,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AccountCircleTwoToneIcon from "@mui/icons-material/AccountCircleTwoTone";
@@ -45,7 +45,7 @@ import dayjs from "dayjs";
 
 export default function CreateUser() {
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const style = TimesheetStyle(theme);
   const dispatch = useDispatch();
   const [selectedImage, setSelectedImage] = useState("");
@@ -105,6 +105,7 @@ export default function CreateUser() {
     productType: "",
     Bank_Name: "",
   });
+  console.log("formData", formData);
   const handleClearAll = () => {
     setFormData({
       firstName: "",
@@ -166,23 +167,23 @@ export default function CreateUser() {
     // Copy data from Permanent Address to Current Address if checkbox is checked
     const updatedFormData = newIsChecked
       ? {
-        ...formData,
-        address1: formData.currentAddress1,
-        address2: formData.currentAddress2,
-        Zip: formData.currentZIP,
-        country: formData.currentcountry,
-        state: formData.currentstate,
-        city: formData.currentcity,
-      }
+          ...formData,
+          address1: formData.currentAddress1,
+          address2: formData.currentAddress2,
+          Zip: formData.currentZIP,
+          country: formData.currentcountry,
+          state: formData.currentstate,
+          city: formData.currentcity,
+        }
       : {
-        ...formData,
-        address1: "",
-        address2: "",
-        Zip: "",
-        country: "",
-        state: "",
-        city: "",
-      };
+          ...formData,
+          address1: "",
+          address2: "",
+          Zip: "",
+          country: "",
+          state: "",
+          city: "",
+        };
 
     // Update the form data
     setFormData(updatedFormData);
@@ -306,6 +307,7 @@ export default function CreateUser() {
   );
 
   useEffect(() => {
+    console.log("employeeDetails", employeeDetails);
     if (id) {
       setFormData((prevData) => ({
         ...prevData,
@@ -318,7 +320,7 @@ export default function CreateUser() {
         lastName: employeeDetails.lastName || "",
         DOB: employeeDetails?.dob || "",
         DOJ: employeeDetails?.joiningDate || "",
-        CTC: employeeDetails.ctc || "",
+        CTC: employeeDetails.ctc ?? "",
         Status: employeeDetails.status || "",
         skill: employeeDetails?.employeeSkill?.map((s) => s.skillId) || [],
         UANNo: employeeDetails?.uanNo || "",
@@ -391,17 +393,17 @@ export default function CreateUser() {
       }
       if (
         employeeDetails.permanentAddress?.addressLine1 ===
-        employeeDetails.presentAddress?.addressLine1 &&
+          employeeDetails.presentAddress?.addressLine1 &&
         employeeDetails.permanentAddress?.addressLine2 ===
-        employeeDetails.presentAddress?.addressLine2 &&
+          employeeDetails.presentAddress?.addressLine2 &&
         employeeDetails.permanentAddress?.postalCode ===
-        employeeDetails.presentAddress?.postalCode &&
+          employeeDetails.presentAddress?.postalCode &&
         employeeDetails.permanentAddress?.countryId ===
-        employeeDetails.presentAddress?.countryId &&
+          employeeDetails.presentAddress?.countryId &&
         employeeDetails.permanentAddress?.stateId ===
-        employeeDetails.presentAddress?.stateId &&
+          employeeDetails.presentAddress?.stateId &&
         employeeDetails.permanentAddress?.cityId ===
-        employeeDetails.presentAddress?.cityId
+          employeeDetails.presentAddress?.cityId
       ) {
         setIsChecked(true);
       } else {
@@ -829,7 +831,7 @@ export default function CreateUser() {
       await dispatch(CreateUserForm(payload, navigate));
       setErrors({});
       // Set a flag in localStorage indicating a successful save
-      localStorage.setItem('formSaved', 'true');
+      localStorage.setItem("formSaved", "true");
     } else {
       setErrors(validationErrors);
     }
@@ -893,8 +895,7 @@ export default function CreateUser() {
     if (!formData.currentZIP) {
       errors.currentZIP = "Zip/Postal code is mandatory";
     } else if (!/^[A-Za-z0-9]+$/.test(formData.currentZIP)) {
-      errors.currentZIP =
-        "Invalid postal code or contains spacial characters";
+      errors.currentZIP = "Invalid postal code or contains spacial characters";
     } else {
       try {
         const isValid = postcodeValidator(
@@ -988,7 +989,7 @@ export default function CreateUser() {
     } else if (!/^[a-zA-Z\s]+$/.test(formData.lastName)) {
       errors.lastName = "Last name should contain only alphabets and spaces.";
     }
-    
+
     if (!formData.AadhaarNo) {
       errors.AadhaarNo = "Aadhaar number is mandatory";
     } else if (!/^\d+$/.test(formData.AadhaarNo)) {
@@ -1037,7 +1038,7 @@ export default function CreateUser() {
   };
 
   return (
-    <Grid style={{paddingBottom:"50px"}}>
+    <Grid style={{ paddingBottom: "50px" }}>
       {/* Heading */}
       <div
         className="Heading"
@@ -1094,7 +1095,14 @@ export default function CreateUser() {
                 }}
                 onClick={handleDeleteClick}
               >
-                <HighlightOffIcon style={{ width: "20px", height: "20px" ,backgroundColor:"white" ,borderRadius:"20px"}} />
+                <HighlightOffIcon
+                  style={{
+                    width: "20px",
+                    height: "20px",
+                    backgroundColor: "white",
+                    borderRadius: "20px",
+                  }}
+                />
               </IconButton>
             </>
           ) : (
@@ -1114,7 +1122,7 @@ export default function CreateUser() {
                 }}
               >
                 <AddCircleOutlineIcon
-                  style={{ width: "25px", height: "25px"}}
+                  style={{ width: "25px", height: "25px" }}
                 />
               </IconButton>
             </>
@@ -1131,7 +1139,7 @@ export default function CreateUser() {
       </div>
       {/* User Details */}
       <Grid>
-        <Typography variant="h6" >
+        <Typography variant="h6">
           <b> Basics details</b>
         </Typography>
         <div
@@ -1665,11 +1673,11 @@ export default function CreateUser() {
                 value={
                   isChecked
                     ? countryData?.find(
-                      (country) => country?.id === formData.currentcountry
-                    ) || null
+                        (country) => country?.id === formData.currentcountry
+                      ) || null
                     : country?.find(
-                      (country) => country?.id === formData.country
-                    ) || null
+                        (country) => country?.id === formData.country
+                      ) || null
                 }
                 options={country || []}
                 getOptionLabel={(option) => option.dataValue}
@@ -1694,10 +1702,11 @@ export default function CreateUser() {
                 value={
                   isChecked
                     ? state?.find(
-                      (state) => state?.id === formData.currentstate
-                    ) || null
-                    : stateData?.find((state) => state?.id === formData.state) ||
-                    null
+                        (state) => state?.id === formData.currentstate
+                      ) || null
+                    : stateData?.find(
+                        (state) => state?.id === formData.state
+                      ) || null
                 }
                 getOptionLabel={(option) => option.dataValue}
                 getOptionValue={(option) => option.id}
@@ -1723,8 +1732,9 @@ export default function CreateUser() {
                 value={
                   isChecked
                     ? city?.find((city) => city.id === formData.currentcity) ||
-                    null
-                    : cityData?.find((city) => city.id === formData.city) || null
+                      null
+                    : cityData?.find((city) => city.id === formData.city) ||
+                      null
                 }
                 getOptionLabel={(option) => option.dataValue}
                 onChange={(e, value) =>
@@ -1743,17 +1753,12 @@ export default function CreateUser() {
               <TextField
                 id="Zip"
                 name="Zip"
-                label={
-                  <>
-                    Zip/Postal Code
-                  </>
-                }
+                label={<>Zip/Postal Code</>}
                 value={isChecked ? formData.currentZIP : formData.Zip}
                 style={{ width: "90%" }}
                 onChange={(e) => handlezipChange(e, "Zip")}
                 disabled={isChecked} // Disable the field if checkbox is checked
               />
-
             </Grid>
           </Grid>
         </Grid>
@@ -1857,7 +1862,6 @@ export default function CreateUser() {
                   borderRadius: "10px",
                   width: "90%",
                 }}
-
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -2275,7 +2279,8 @@ export default function CreateUser() {
         mt={2}
         className="responsive-container"
         style={{
-          paddingBottom: isSmallScreen ? "50px" : "0px"}}
+          paddingBottom: isSmallScreen ? "50px" : "0px",
+        }}
       >
         <Grid item>
           <Button
