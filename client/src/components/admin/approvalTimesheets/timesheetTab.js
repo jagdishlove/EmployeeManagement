@@ -21,7 +21,6 @@ const TimesheetTab = () => {
     (state) => state?.persistData?.timesheetData?.approvalTimesheetData
   );
 
-  
   const [errorValidation, setErrorValidation] = useState({});
   const [projects, setProjects] = useState("All"); // Set default value to "All"
   const [teamMember, setTeamMember] = useState("All");
@@ -46,10 +45,7 @@ const TimesheetTab = () => {
     date: newDateDashboard === "All" ? "" : formatDateForApi(newDateDashboard),
   };
 
- 
-
   const fetchMore = () => {
-   
     dispatch(getTimesheetEntryApprovalAction(newPayload1));
     setCounter(counter + 1);
   };
@@ -82,8 +78,8 @@ const TimesheetTab = () => {
           rating: rating,
           approvalStatus: "APPROVED",
         };
-
-        await dispatch(approveTimesheet(payload, newPayload));
+        const clonePayload = { ...newPayload1, size: newSize - 10 };
+        await dispatch(approveTimesheet(payload, clonePayload));
         setErrorValidation({});
       } finally {
         setLoading(false);
@@ -117,8 +113,8 @@ const TimesheetTab = () => {
         rating: rating,
         approvalStatus: "REJECTED",
       };
-
-      await dispatch(rejectTimesheet(payload, newPayload));
+      const clonePayload = { ...newPayload1, size: newSize - 10 };
+      await dispatch(rejectTimesheet(payload, clonePayload));
       setErrorValidation({});
     } finally {
       setLoading(false);
