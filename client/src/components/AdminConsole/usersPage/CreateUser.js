@@ -509,6 +509,7 @@ export default function CreateUser() {
       }));
     }
   };
+
   const handleWorkModeChange = (event) => {
     const newWorkMode = event.target.value;
 
@@ -998,7 +999,7 @@ export default function CreateUser() {
       errors.AadhaarNo = "Aadhaar number should contains only 12 Number";
     }
 
-    if (!formData.CTC) {
+    if (formData.CTC==="") {
       errors.CTC = "Employee CTC is mandatory";
     } else if (!/^\d+(\.\d{1,2})?$/.test(formData.CTC)) {
       errors.CTC =
