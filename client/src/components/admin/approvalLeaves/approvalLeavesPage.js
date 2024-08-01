@@ -31,12 +31,13 @@ const ApprovalLeavesPage = () => {
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [error, setError] = useState({});
   const [pageCounter, setPageCounter] = useState(2);
+  const [counter, setCounter] = useState(2);
 
   const [loading, setLoading] = useState(false);
 
   const [leaveRequestId, setLeaveRequestId] = useState();
 
-  const newSize = 5 * 2;
+  const newSize = 5 * counter;
 
   useEffect(() => {
     setTeamMemberData("All");
@@ -125,7 +126,7 @@ const ApprovalLeavesPage = () => {
         dateData === "CALENDER" ? selectedDate.format("YYYY-MM-DD") : "",
       toDate: dateData === "CALENDER" ? dayjs().format("YYYY-MM-DD") : "",
       dateBand: dateData,
-      size: 5 * 2,
+      size: newSize,
     };
 
     if (Object.keys(newErrors).length === 0) {
@@ -157,6 +158,7 @@ const ApprovalLeavesPage = () => {
     // Fetch more data only if there is more data available
     // dispatch(getLeaveRequestData(payload));
     const nextPage = 10 * pageCounter;
+    setCounter(counter + 1);
     const nextPagePayload = {
       empId: TeamMemberData === "All" ? "" : TeamMemberData || "",
       fromDate:
