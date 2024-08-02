@@ -31,13 +31,13 @@ const ApprovalLeavesPage = () => {
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [error, setError] = useState({});
   const [pageCounter, setPageCounter] = useState(2);
-  const [counter, setCounter] = useState(2);
+  const [counter, setCounter] = useState(1);
 
   const [loading, setLoading] = useState(false);
 
   const [leaveRequestId, setLeaveRequestId] = useState();
 
-  const newSize = 5 * counter;
+  const newSize = 10 * counter;
 
   useEffect(() => {
     setTeamMemberData("All");
