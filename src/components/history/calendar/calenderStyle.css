@@ -1,0 +1,23 @@
+.rbc-header{
+    border: 3px dotted rgba(0, 128, 128, 0.4);
+    border-bottom: none;
+    font-size:90%;
+    font-weight: bolder;
+  }
+ .rbc-month-row {
+    border:3px dotted rgba(0, 128, 128, 0.4);
+    border-right:none;
+    font-size:80%;
+    font-weight: bold;
+    font-family:Impact, Haettenschweiler, 'Arial ', sans-serif;
+} 
+.rbc-day-bg{
+
+    border-right: 3px dotted  rgba(0, 128, 128, 0.4);
+
+}
+
+.rbc-line {
+    color: rgba(0, 128, 128, 0.4) ; 
+    border-top: 1px solid rgba(0, 128, 128, 0.4);
+  }

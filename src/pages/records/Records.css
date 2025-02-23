@@ -1,0 +1,30 @@
+
+.tablist {
+  display: flex;
+  justify-content: center;
+  margin-top: -20px;
+  margin-left: -10px;
+}
+
+.currentTab,
+.HistoryTab {
+  border: 2px solid transparent; 
+  border-radius: 5px;
+  margin: 0 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s, border 0.3s;
+}
+
+.currentTab:hover,
+.HistoryTab:hover {
+  background-color: #006666;
+  color: #ffffff;
+}
+
+.currentTab-selected,
+.HistoryTab-selected {
+  background-color: #008080;
+  color: #ffffff;
+  border-color: #008080;
+}
