@@ -1,5 +1,5 @@
-import makeRequest from "../../../api/api";
-import { decodeToken } from "../../../utils/tokenDecoder";
+import authService from "../../../lib/auth";
+import { supabase } from "../../../lib/supabase";
 import { errorMessage } from "../errors/errorsAction";
 import {
   LOGIN_FAIL,
@@ -31,24 +31,33 @@ export const updateAccessToken = (newAccessToken) => ({
   payload: newAccessToken,
 });
 
-export const login = (data, navigate) => {
+export const login = (credentials, navigate) => {
+  console.log("Login action called with credentials:", credentials);
   return async (dispatch) => {
     try {
       dispatch(loginRequest());
-      const response = await makeRequest("POST", "/auth/authenticate", data);
-      const decoder = decodeToken(response.jwtAccessToken);
+
+      const result = await authService.signIn(
+        credentials.userName,
+        credentials.password,
+      );
+      console.log("Login successful:", result);
+
       const auth = {
-        jwtAccessToken: response.jwtAccessToken,
-        role: decoder.role,
-        userName: response.userName,
-        empId: decoder?.empId,
+        jwtAccessToken: result.session.access_token,
+        role: result.role,
+        userName:
+          result.userName ||
+          `${result.profile?.first_name} ${result.profile?.last_name}`,
+        empId: result.empId,
       };
 
       dispatch(loginSuccess(auth));
       navigate("/");
     } catch (err) {
-      dispatch(loginFail(err?.response?.data.errorMessage));
-      dispatch(errorMessage(err?.response?.data.errorMessage));
+      const errorMsg = err.message || "Login failed";
+      dispatch(loginFail(errorMsg));
+      dispatch(errorMessage(errorMsg));
     }
   };
 };
@@ -56,10 +65,25 @@ export const login = (data, navigate) => {
 export const getRefreshToken = () => {
   return async (dispatch) => {
     try {
-      //  code was commented out
+      const session = await authService.getSession();
+      if (session) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", session.user.id)
+          .single();
+
+        const auth = {
+          jwtAccessToken: session.access_token,
+          role: profile?.role || "USER",
+          userName: profile?.first_name,
+          empId: profile?.employee_id,
+        };
+        dispatch(loginSuccess(auth));
+      }
     } catch (err) {
-      dispatch(loginFail(err?.response?.data?.errorMessage));
-      dispatch(errorMessage("Unknown Error"));
+      dispatch(loginFail(err?.message));
+      dispatch(errorMessage("Session expired"));
     }
   };
 };
