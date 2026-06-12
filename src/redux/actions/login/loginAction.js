@@ -1,5 +1,4 @@
 import authService from "../../../lib/auth";
-import { supabase } from "../../../lib/supabase";
 import { errorMessage } from "../errors/errorsAction";
 import {
   LOGIN_FAIL,
@@ -32,7 +31,6 @@ export const updateAccessToken = (newAccessToken) => ({
 });
 
 export const login = (credentials, navigate) => {
-  console.log("Login action called with credentials:", credentials);
   return async (dispatch) => {
     try {
       dispatch(loginRequest());
@@ -41,7 +39,6 @@ export const login = (credentials, navigate) => {
         credentials.userName,
         credentials.password,
       );
-      console.log("Login successful:", result);
 
       const auth = {
         jwtAccessToken: result.session.access_token,
@@ -67,12 +64,7 @@ export const getRefreshToken = () => {
     try {
       const session = await authService.getSession();
       if (session) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", session.user.id)
-          .single();
-
+        const profile = session.profile;
         const auth = {
           jwtAccessToken: session.access_token,
           role: profile?.role || "USER",

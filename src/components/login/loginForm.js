@@ -21,7 +21,7 @@ const LoginForm = () => {
   const theme = useTheme();
   const style = LoginStyle(theme);
   const errorData = useSelector(
-    (state) => state.persistData.errorMessages.error
+    (state) => state.persistData.errorMessages.error,
   );
 
   useEffect(() => {
@@ -66,16 +66,6 @@ const LoginForm = () => {
     }
     if (!password) {
       setPasswordError("Password is Mandatory.");
-      hasError = true;
-      dispatch(resetErrorMessage());
-    } else if (
-      password.length < 8 || // Check for minimum length
-      !/[A-Z]/.test(password) || // Check for at least one uppercase letter
-      !/[a-z]/.test(password) || // Check for at least one lowercase letter
-      !/\d/.test(password) || // Check for at least one digit
-      !/[@#$%^&*!]/.test(password) // Check for at least one special character
-    ) {
-      setPasswordError("Invalid Password ");
       hasError = true;
       dispatch(resetErrorMessage());
     }

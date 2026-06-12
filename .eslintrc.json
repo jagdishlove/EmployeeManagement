@@ -1,0 +1,60 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+
+    
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": [
+    "react",
+    "react-hooks"
+  ],
+  "rules": {
+    // --- React Hooks Safety (Keep these at Error) ---
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+
+    // --- Modern React Defaults ---
+    "react/prop-types": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-no-target-blank": "error", // Prevents security vulnerabilities in target="_blank" links
+
+    // --- Clean Code & Dead Code Elimination ---
+    "no-unused-vars": ["warn", { 
+      "argsIgnorePattern": "^_", 
+      "varsIgnorePattern": "^_" 
+    }], // Warns about unused variables, but lets you ignore them if prefixed with an underscore (e.g., _req)
+    
+    "no-unused-expressions": ["error", { 
+      "allowShortCircuit": true, 
+      "allowTernary": true 
+    }], // Errors on useless expressions, but allows logical shorts (a && b()) and ternaries
+
+    // --- Code Quality & Bug Prevention ---
+    "no-console": ["warn", { "allow": ["warn", "error"] }], // Warns on console.log, but allows console.warn and error
+    "no-debugger": "warn", // Warns about accidental debuggers instead of crashing the build
+    "eqeqeq": ["error", "always"], // Enforces strict equality (=== and !==) to prevent type coercion bugs
+    "no-duplicate-imports": "error", // Prevents importing from the same file across multiple lines
+    "no-var": "error", // Enforces let and const over old var syntax
+    "prefer-const": "warn", // Warns if a variable is declared with let but never reassigned
+    "curly": ["error", "multi-line"], // Enforces curly braces for multi-line control structures (if, loops)
+    "import/no-unresolved": "error",
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
+}

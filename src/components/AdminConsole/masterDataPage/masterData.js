@@ -29,7 +29,7 @@ import {
   getAllState,
   CreateClinetDetails,
   UpdateClinetDetails,
-  GatAllClinetDetails,
+  // GatAllClinetDetails,
   getClientDetails,
   getLoocations,
   GetAllOnsiteOfficeLocation,
@@ -154,74 +154,74 @@ export default function MasterData() {
     addressId: "",
   });
   const skillData = useSelector(
-    (state) => state?.persistData?.masterDataDetails?.skillData
+    (state) => state?.persistData?.masterDataDetails?.skillData,
   );
 
   const jobTypeData = useSelector(
-    (state) => state?.persistData?.masterDataDetails?.jobTypeData
+    (state) => state?.persistData?.masterDataDetails?.jobTypeData,
   );
 
   const holidayType = useSelector(
-    (state) => state.persistData?.loginDetails?.masterData?.holidayTypes
+    (state) => state.persistData?.loginDetails?.masterData?.holidayTypes,
   );
 
   const designationData = useSelector(
-    (state) => state?.persistData?.masterDataDetails?.designationData
+    (state) => state?.persistData?.masterDataDetails?.designationData,
   );
   const bandData = useSelector(
-    (state) => state?.persistData?.masterDataDetails?.bandData
+    (state) => state?.persistData?.masterDataDetails?.bandData,
   );
 
   const officeLocationData = useSelector(
-    (state) => state?.persistData?.masterDataDetails?.officeLocationData
+    (state) => state?.persistData?.masterDataDetails?.officeLocationData,
   );
 
   const officeLocation = useSelector(
-    (state) => state?.persistData?.masterDataDetails?.officeLocation
+    (state) => state?.persistData?.masterDataDetails?.officeLocation,
   );
 
   const bandByID = useSelector(
-    (state) => state?.persistData?.masterDataDetails.bandValue
+    (state) => state?.persistData?.masterDataDetails.bandValue,
   );
 
   const holidayData = useSelector(
-    (state) => state?.persistData?.masterDataDetails?.holidayData
+    (state) => state?.persistData?.masterDataDetails?.holidayData,
   );
 
   const holiday = useSelector(
-    (state) => state?.persistData?.masterDataDetails?.holiday
+    (state) => state?.persistData?.masterDataDetails?.holiday,
   );
 
   const domineData = useSelector(
-    (state) => state?.persistData?.masterDataDetails?.domineData
+    (state) => state?.persistData?.masterDataDetails?.domineData,
   );
 
   const country = useSelector(
-    (state) => state?.persistData?.masterDataDetails?.countrydata
+    (state) => state?.persistData?.masterDataDetails?.countrydata,
   );
 
   const state = useSelector(
-    (state) => state?.persistData?.masterDataDetails?.statedata
+    (state) => state?.persistData?.masterDataDetails?.statedata,
   );
 
   const clinetData = useSelector(
-    (state) => state?.persistData?.masterDataDetails?.clientdata
+    (state) => state?.persistData?.masterDataDetails?.clientdata,
   );
 
   const clientDetails1 = useSelector(
-    (state) => state?.persistData?.masterDataDetails?.clientDetails
+    (state) => state?.persistData?.masterDataDetails?.clientDetails,
   );
 
   const LocationData = useSelector(
-    (state) => state?.persistData?.masterDataDetails?.LocationData
+    (state) => state?.persistData?.masterDataDetails?.LocationData,
   );
 
   const onsiteLocationData = useSelector(
-    (state) => state?.persistData?.masterDataDetails?.onsiteLocationData
+    (state) => state?.persistData?.masterDataDetails?.onsiteLocationData,
   );
 
   const onsiteLocation = useSelector(
-    (state) => state?.persistData?.masterDataDetails?.onsiteLocation
+    (state) => state?.persistData?.masterDataDetails?.onsiteLocation,
   );
 
   const DataValue = {};
@@ -277,7 +277,7 @@ export default function MasterData() {
         getAllState({
           parentId: officeLocation?.address?.countryId,
           dataType: "state",
-        })
+        }),
       );
     }
 
@@ -286,7 +286,7 @@ export default function MasterData() {
         getAllCitysAction({
           parentId: officeLocation?.address?.stateId,
           dataType: "city",
-        })
+        }),
       );
     }
     dispatch(getAllCountry({ parentId: 0, dataType: "country" }));
@@ -329,7 +329,7 @@ export default function MasterData() {
         getAllState({
           parentId: onsiteLocation?.address?.countryId,
           dataType: "state",
-        })
+        }),
       );
     }
     dispatch(getAllCountry({ parentId: 0, dataType: "country" }));
@@ -339,7 +339,7 @@ export default function MasterData() {
         getAllCitysAction({
           parentId: onsiteLocation?.address?.stateId,
           dataType: "city",
-        })
+        }),
       );
     }
 
@@ -363,7 +363,7 @@ export default function MasterData() {
         getAllState({
           parentId: clientDetails1?.address?.countryId,
           dataType: "state",
-        })
+        }),
       );
     }
     dispatch(getAllCountry({ parentId: 0, dataType: "country" }));
@@ -373,7 +373,7 @@ export default function MasterData() {
         getAllCitysAction({
           parentId: clientDetails1?.address?.stateId,
           dataType: "city",
-        })
+        }),
       );
     }
     if (clientDetails1) {
@@ -391,7 +391,7 @@ export default function MasterData() {
         clinetId: clientDetails1?.clientId || "",
       });
       setSelectedImage(
-        `data:image/png;base64,${clientDetails1?.fileStorage?.data}`
+        `data:image/png;base64,${clientDetails1?.fileStorage?.data}`,
       );
     }
   }, [onsiteLocation, clientDetails1]);
@@ -560,7 +560,7 @@ export default function MasterData() {
       dispatch(GetAllDomines());
     }
     if (clientDetailsExpand) {
-      dispatch(GatAllClinetDetails());
+      // dispatch(GatAllClinetDetails());
     }
     if (clientOfficeLocationExpand) {
       dispatch(GetAllOnsiteOfficeLocation());
@@ -632,7 +632,7 @@ export default function MasterData() {
           getAllCitysAction({
             parentId: id || "",
             dataType: "city",
-          })
+          }),
         );
       }
     } else if (field === "city") {
@@ -674,7 +674,7 @@ export default function MasterData() {
         getAllCitysAction({
           parentId: id || "",
           dataType: "city",
-        })
+        }),
       );
     } else if (field === "city") {
       setClinetDetails((prevFormData) => ({
@@ -715,7 +715,7 @@ export default function MasterData() {
         getAllCitysAction({
           parentId: id || "",
           dataType: "city",
-        })
+        }),
       );
     } else if (field === "city") {
       setClientLocationData((prevFormData) => ({
@@ -865,7 +865,7 @@ export default function MasterData() {
             payload.status = status;
           }
           await dispatch(CreateClinetDetails(payload, handleCloseDialog));
-          await dispatch(GatAllClinetDetails());
+          // await dispatch(GatAllClinetDetails());
         } else if (type === "clientOfficeLocation") {
           const payload = {
             locationId: id ? id : "",
@@ -885,7 +885,7 @@ export default function MasterData() {
             payload.status = status;
           }
           await dispatch(
-            CreateOnsiteOfficeLocation(payload, handleCloseDialog)
+            CreateOnsiteOfficeLocation(payload, handleCloseDialog),
           );
           await dispatch(GetAllOnsiteOfficeLocation());
         }
@@ -1010,7 +1010,7 @@ export default function MasterData() {
             payload.status = status;
           }
           await dispatch(UpdateClinetDetails(payload, handleCloseDialog));
-          await dispatch(GatAllClinetDetails());
+          // await dispatch(GatAllClinetDetails());
         } else if (type === "clientOfficeLocation") {
           const payload = {
             locationId: id ? id : "",
@@ -1030,7 +1030,7 @@ export default function MasterData() {
             payload.status = status;
           }
           await dispatch(
-            UpdateOnsiteOfficeLocation(payload, handleCloseDialog)
+            UpdateOnsiteOfficeLocation(payload, handleCloseDialog),
           );
           await dispatch(GetAllOnsiteOfficeLocation());
         }
@@ -1078,7 +1078,7 @@ export default function MasterData() {
         try {
           const isValid = postcodeValidator(
             officeData.postalCode,
-            countyCode || countryCode[officeData.countryId]
+            countyCode || countryCode[officeData.countryId],
           );
           if (!isValid) {
             errors.postalCode = "Invalid postal code";
@@ -1149,7 +1149,7 @@ export default function MasterData() {
         try {
           const isValid = postcodeValidator(
             clinetDetails.postalCode,
-            countyCode || countryCode[clinetDetails.countryId]
+            countyCode || countryCode[clinetDetails.countryId],
           );
           if (!isValid) {
             errors.postalCode = "Invalid postal code";
@@ -1187,7 +1187,7 @@ export default function MasterData() {
         try {
           const isValid = postcodeValidator(
             clientLocationData.postalCode,
-            countyCode || countryCode[clientLocationData.countryId]
+            countyCode || countryCode[clientLocationData.countryId],
           );
           if (!isValid) {
             errors.postalCode = "Invalid postal code";

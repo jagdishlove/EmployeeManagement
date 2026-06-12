@@ -1,12 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
-
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn("Missing Supabase credentials in .env");
-} else {
-  console.log("Supabase credentials loaded successfully");
-}
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Supabase removed — all auth and API calls now go through the backend.
+// This file is kept as a placeholder to avoid breaking existing imports.
+// Importing from this file will intentionally fail; update all imports.
+export const supabase = null;
