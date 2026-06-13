@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 import makeRequest from "../../../api/api";
 import { errorMessage, resetErrorMessage } from "../errors/errorsAction";
 import { getRefreshToken, login } from "../login/loginAction";
@@ -50,8 +50,8 @@ const resetPasswordFail = (payload) => {
   };
 };
 const customToastStyle = {
-   fontSize: '14px',
-}
+  fontSize: "14px",
+};
 export const forgotPasswordAction = (email, navigate) => {
   return async (dispatch) => {
     try {
@@ -61,7 +61,7 @@ export const forgotPasswordAction = (email, navigate) => {
       localStorage.setItem("otpSealedObject", response?.otpsealedobject);
       navigate("/create-new-password", {
         state: {
-          email: email,
+          email,
         },
       });
       dispatch(resetErrorMessage());
@@ -85,12 +85,12 @@ export const resetPassword = (data, navigate) => {
   return async (dispatch) => {
     try {
       dispatch(resetPasswordRequest());
-      const response = await makeRequest("POST", "/auth/resetPassword", data);
+      const response = await makeRequest("POST", "/auth/reset-password", data);
       dispatch(resetPasswordSuccess(response));
       localStorage.removeItem("otpSealedObject");
       const email = localStorage.getItem("email");
       dispatch(
-        login({ userName: email, password: data.newPassword }, navigate)
+        login({ userName: email, password: data.newPassword }, navigate),
       );
       toast.success("Your password reset is successful.", {
         position: toast.POSITION.BOTTOM_CENTER,

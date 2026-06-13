@@ -26,7 +26,7 @@ const CreateNewPassword = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const errorData = useSelector(
-    (state) => state.persistData.errorMessages.error
+    (state) => state.persistData.errorMessages.error,
   );
 
   useEffect(() => {
@@ -50,13 +50,11 @@ const CreateNewPassword = () => {
   };
 
   const location = useLocation();
+  console.log("location.state.email", location.state.email);
 
   const handleResendOtp = () => {
     dispatch(
-      forgotPasswordAction(
-        { userName: location.state.email.userName },
-        navigate
-      )
+      forgotPasswordAction({ email: location.state.email.email }, navigate),
     );
   };
 
@@ -317,7 +315,7 @@ const CreateNewPassword = () => {
                     onClick={onHandleSubmit}
                   >
                     <Typography variant="h6" sx={style.capitalizefont}>
-                      Sign In
+                      Reset Password
                     </Typography>
                   </Button>
                 </Box>

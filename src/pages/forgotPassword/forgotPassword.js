@@ -20,7 +20,7 @@ const ForgotPassword = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const errorData = useSelector(
-    (state) => state.persistData.errorMessages.error
+    (state) => state.persistData.errorMessages.error,
   );
 
   useEffect(() => {
@@ -69,7 +69,7 @@ const ForgotPassword = () => {
     } else {
       // Clear error and submit form if validation passes
       setEmailError("");
-      dispatch(forgotPasswordAction({ userName: email }, navigate));
+      dispatch(forgotPasswordAction({ email }, navigate));
     }
   };
 
@@ -110,7 +110,11 @@ const ForgotPassword = () => {
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <InputFields
-                      label={isMobile ? "Enter email.." : "Please enter your email address"}
+                      label={
+                        isMobile
+                          ? "Enter email.."
+                          : "Please enter your email address"
+                      }
                       type="email"
                       variant="outlined"
                       value={email}
@@ -130,7 +134,9 @@ const ForgotPassword = () => {
                   </Grid>
                   {errorData && (
                     <Grid item xs={12}>
-                      <Typography style={{ color: "red" }}>{errorData}</Typography>
+                      <Typography style={{ color: "red" }}>
+                        {errorData}
+                      </Typography>
                     </Grid>
                   )}
                   <Grid item xs={12}>
