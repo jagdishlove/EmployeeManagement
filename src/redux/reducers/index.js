@@ -19,6 +19,7 @@ import MyreoprteesReducer from "./dashboard/MyreoprteesReducer";
 import loginReducer from "./loginReducer";
 import ratingsReducer from "./ratingsReducer";
 import timesheetReportsReducer from "./dashboard/reportsReducer";
+import loaderReducer from "./loaderReducer";
 
 const rootReducer = combineReducers({
   forgotPassword: forgotPasswordReducer,
@@ -37,10 +38,11 @@ const rootReducer = combineReducers({
   adminLeaves: adminLeavesReducer,
   workSpace: workspaceReducer,
   dashboardProjectdetails: dashboardProjectReducer,
-  Myreoprtees : MyreoprteesReducer,
+  Myreoprtees: MyreoprteesReducer,
   Ratings: ratingsReducer,
-  timesheetreportsDetails:timesheetReportsReducer,
+  timesheetreportsDetails: timesheetReportsReducer,
   loginDetails: loginReducer,
+  loaderReducer: loaderReducer,
 });
 
 export default rootReducer;

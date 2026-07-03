@@ -1,5 +1,6 @@
 import axios from "axios";
 import { persistor, store } from "../redux/store/store";
+import { loaderStart, loaderStop } from "../redux/actions/loader/loaderAction";
 
 const baseURL = process.env.REACT_APP_API_BASE_URL;
 console.log("baseURL", baseURL);
@@ -12,18 +13,30 @@ const mainApi = axios.create({
   withCredentials: true,
 });
 
+mainApi.interceptors.request.use(
+  (config) => {
+    store.dispatch(loaderStart());
+    return config;
+  },
+  (error) => {
+    store.dispatch(loaderStop());
+    return Promise.reject(error);
+  },
+);
+
 mainApi.interceptors.response.use(
   async (response) => {
+    store.dispatch(loaderStop());
     return response;
   },
   async (error) => {
+    store.dispatch(loaderStop());
     if (error.response?.status === 403 || error.code === "ERR_NETWORK") {
       localStorage.removeItem("selectedItem");
       persistor.purge(["login"]);
       window.location.href = "/";
       localStorage.setItem("refreshLogout", true);
     }
-
     return Promise.reject(error);
   },
 );
